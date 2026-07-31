@@ -78,33 +78,52 @@ MAXLAG = 5                # ask MediaWiki to shed load when replication lag > th
 
 def api_get(base, params):
     # Wrap SESSION.get with retry/backoff. Adds maxlag so MediaWiki sheds our
-    # load (503 + Retry-After) instead of straining lagged replicas. Retries on
-    # connection/timeout errors and on 429/503, honoring Retry-After when given.
-    # A large search fans out into many sequential requests; without this a
-    # single transient blip aborts the whole run and discards partial progress.
+    # load instead of straining lagged replicas. Retries on connection/timeout
+    # errors, on 429/503, AND on a maxlag throttle -- which MediaWiki returns as
+    # HTTP 200 with a {"error": {"code": "maxlag"}} body and NO data, not a 5xx.
+    # Without detecting that body, a lagged replica silently yields zero results
+    # (empty entities/pages) that look like a legitimate "nothing found". On
+    # exhaustion we raise rather than return the throttled response, so the
+    # caller fails loudly instead of reporting an empty search.
     params = dict(params)
     params.setdefault("maxlag", MAXLAG)
-    last_exc = None
     for attempt in range(MAX_RETRIES):
         try:
             resp = SESSION.get(base, params=params, timeout=30)
-            if resp.status_code in (429, 503) and attempt < MAX_RETRIES - 1:
-                retry_after = resp.headers.get("Retry-After")
-                delay = (float(retry_after) if retry_after
-                         and retry_after.isdigit() else BACKOFF_BASE * 2 ** attempt)
-                time.sleep(delay)
-                continue
-            resp.raise_for_status()
-            return resp
-        except (requests.ConnectionError, requests.Timeout) as exc:
-            last_exc = exc
+        except (requests.ConnectionError, requests.Timeout):
             if attempt < MAX_RETRIES - 1:
                 time.sleep(BACKOFF_BASE * 2 ** attempt)
                 continue
             raise
-    # Exhausted retries on repeated 429/503 without ever raising above.
-    resp.raise_for_status()
-    return resp
+
+        throttled = resp.status_code in (429, 503) or is_maxlag(resp)
+        if throttled:
+            if attempt < MAX_RETRIES - 1:
+                time.sleep(retry_delay(resp, attempt))
+                continue
+            raise RuntimeError(
+                f"MediaWiki still throttled after {MAX_RETRIES} attempts "
+                f"({base}); aborting rather than returning partial results."
+            )
+
+        resp.raise_for_status()
+        return resp
+
+
+def is_maxlag(resp):
+    # A maxlag throttle arrives as HTTP 200 with an error body (see api_get).
+    # Guard the JSON parse: non-JSON or a normal body simply isn't a maxlag hit.
+    try:
+        return resp.json().get("error", {}).get("code") == "maxlag"
+    except ValueError:
+        return False
+
+
+def retry_delay(resp, attempt):
+    retry_after = resp.headers.get("Retry-After")
+    if retry_after and retry_after.isdigit():
+        return float(retry_after)
+    return BACKOFF_BASE * 2 ** attempt
 
 
 def chunked(seq, size=BATCH):
