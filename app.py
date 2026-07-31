@@ -785,6 +785,8 @@ INDEX_HTML = r"""<!DOCTYPE html>
   .toggle[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); }
   .toggle[aria-pressed="true"]::before { background: var(--accent); }
   .toggle[aria-pressed="true"]::after { transform: translateX(11px); }
+  .toggle:disabled { opacity: .4; cursor: default; }
+  .filter-item:has(.toggle:disabled) .filter-note { opacity: .5; }
   .filter-note { color: var(--muted); font-size: 12px; }
   label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 4px; }
   input { width: 100%; padding: 8px 10px; border: 1px solid var(--line);
@@ -810,6 +812,11 @@ INDEX_HTML = r"""<!DOCTYPE html>
   .pair { display: grid; grid-template-columns: 1fr 220px 220px 1fr; gap: 0 16px;
           align-items: start; background: var(--panel); border: 1px solid var(--line);
           border-radius: 10px; padding: 14px 16px; margin-bottom: 14px; }
+  /* No-depicts photos: photo + metadata, no comparison column. */
+  .pair-solo { grid-template-columns: 220px 1fr; }
+  .pair-solo .meta.left { text-align: left; }
+  .section-head { font-size: 13px; font-weight: 700; text-transform: uppercase;
+                  letter-spacing: .04em; color: var(--muted); margin: 22px 0 10px; }
   .photo img { width: 100%; max-height: 240px; object-fit: contain; background: #eef0f3;
                border-radius: 6px; display: block; }
   .photo .none { padding: 40px 8px; background: #eef0f3; border-radius: 6px; }
@@ -871,12 +878,19 @@ INDEX_HTML = r"""<!DOCTYPE html>
       <span class="filter-note">Infobox photo is already fresh and good quality
         (not old, not low-res).</span>
     </div>
+    <div class="filter-item">
+      <button type="button" id="show_no_depicts" class="toggle" aria-pressed="false">
+        Show no-depicts photos</button>
+      <span class="filter-note">Unused category photos with no depicts statement
+        at all (nothing to compare — they need one added).</span>
+    </div>
   </div>
   <div id="head" class="pair-head" hidden>
     <div class="h-left">Unused Commons photo (new candidate)</div>
     <div class="h-right">Current Wikipedia infobox photo (existing)</div>
   </div>
   <div id="results"></div>
+  <div id="nodepicts"></div>
 </main>
 <script>
 const $ = id => document.getElementById(id);
@@ -948,6 +962,11 @@ const pairRow = r =>
   `<div class="pair">${candidateMeta(r.candidate)}${candidatePhoto(r.candidate)}`
   + `${infoboxPhoto(r.infobox)}${infoboxMeta(r.infobox)}</div>`;
 
+// No-depicts photos: no subject, so a single row of photo + metadata (no
+// comparison column). Uses the same .pair grid via .pair-solo (2 columns).
+const noDepictsRow = c =>
+  `<div class="pair pair-solo">${candidatePhoto(c)}${candidateMeta(c)}</div>`;
+
 // Format local Y-M-D. toISOString() shifts to UTC and can roll the day back by
 // one under timezones ahead of UTC (e.g. BST).
 const iso = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
@@ -978,6 +997,7 @@ thisMonth();
 
 // Results are fetched once, then filtered client-side so the toggle is instant.
 let allResults = [];
+let allNoDepicts = [];
 
 const pressed = id => $(id).getAttribute("aria-pressed") === "true";
 
@@ -1009,15 +1029,35 @@ function isHidden(r) {
 }
 
 function renderResults() {
+  // The no-depicts view is exclusive: when on, show ONLY those photos and hide
+  // the comparison results (the other two filters don't apply to them).
+  const showND = pressed("show_no_depicts");
+  $("hide_same_author").disabled = showND;
+  $("hide_good_current").disabled = showND;
+
+  if (showND) {
+    $("head").hidden = true;
+    $("results").innerHTML = "";
+    $("nodepicts").innerHTML = allNoDepicts.length
+      ? `<div class="section-head">No depicts statement (${allNoDepicts.length}) — need one added</div>`
+        + allNoDepicts.map(noDepictsRow).join("")
+      : `<div class="none">No photos without a depicts statement.</div>`;
+    $("status").textContent =
+      `Showing ${allNoDepicts.length} unused photo(s) with no depicts statement.`;
+    return;
+  }
+
   const shown = allResults.filter(r => !isHidden(r));
   const hiddenCount = allResults.length - shown.length;
+  $("nodepicts").innerHTML = "";
   $("head").hidden = shown.length === 0;
   $("results").innerHTML = shown.map(pairRow).join("")
     || `<div class="none">No matching candidates.</div>`;
-  const base = `Found ${allResults.length} unused category photo(s) with a depicted subject.`;
-  $("status").textContent = hiddenCount
-    ? `${base} Showing ${shown.length}; ${hiddenCount} hidden by filters.`
-    : base;
+
+  let msg = `Found ${allResults.length} unused category photo(s) with a depicted subject.`;
+  if (hiddenCount) msg += ` Showing ${shown.length}; ${hiddenCount} hidden by filters.`;
+  if (allNoDepicts.length) msg += ` ${allNoDepicts.length} more have no depicts statement.`;
+  $("status").textContent = msg;
 }
 
 function bindToggle(id) {
@@ -1028,6 +1068,7 @@ function bindToggle(id) {
 }
 bindToggle("hide_same_author");
 bindToggle("hide_good_current");
+bindToggle("show_no_depicts");
 
 // Copy the candidate filename to the clipboard (delegated, survives re-render).
 async function copyText(text) {
@@ -1044,7 +1085,8 @@ async function copyText(text) {
     return ok;
   }
 }
-$("results").addEventListener("click", async e => {
+// Delegate on document so copy works in both #results and #nodepicts.
+document.addEventListener("click", async e => {
   const btn = e.target.closest(".copy-file");
   if (!btn) return;
   const ok = await copyText(btn.dataset.file);
@@ -1058,7 +1100,8 @@ $("f").addEventListener("submit", async e => {
   e.preventDefault();
   const status = $("status"), results = $("results"), go = $("go");
   status.className = ""; status.textContent = "Searching… (this can take a while)";
-  results.innerHTML = ""; $("head").hidden = true; $("filters").hidden = true;
+  results.innerHTML = ""; $("nodepicts").innerHTML = "";
+  $("head").hidden = true; $("filters").hidden = true;
   go.disabled = true;
   try {
     const resp = await fetch("/api/search", {
@@ -1071,7 +1114,8 @@ $("f").addEventListener("submit", async e => {
     const data = await resp.json();
     if (!resp.ok) throw new Error(data.error || ("HTTP " + resp.status));
     allResults = data.results;
-    $("filters").hidden = allResults.length === 0;
+    allNoDepicts = data.no_depicts || [];
+    $("filters").hidden = allResults.length === 0 && allNoDepicts.length === 0;
     renderResults();
   } catch (err) {
     status.className = "error"; status.textContent = "Error: " + err.message;
