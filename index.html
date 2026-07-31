@@ -72,6 +72,11 @@
   .pair { display: grid; grid-template-columns: 1fr 220px 220px 1fr; gap: 0 16px;
           align-items: start; background: var(--panel); border: 1px solid var(--line);
           border-radius: 10px; padding: 14px 16px; margin-bottom: 14px; }
+  /* No-depicts photos: photo + metadata, no comparison column. */
+  .pair-solo { grid-template-columns: 220px 1fr; }
+  .pair-solo .meta.left { text-align: left; }
+  .section-head { font-size: 13px; font-weight: 700; text-transform: uppercase;
+                  letter-spacing: .04em; color: var(--muted); margin: 22px 0 10px; }
   .photo img { width: 100%; max-height: 240px; object-fit: contain; background: #eef0f3;
                border-radius: 6px; display: block; }
   .photo .none { padding: 40px 8px; background: #eef0f3; border-radius: 6px; }
@@ -133,12 +138,19 @@
       <span class="filter-note">Infobox photo is already fresh and good quality
         (not old, not low-res).</span>
     </div>
+    <div class="filter-item">
+      <button type="button" id="show_no_depicts" class="toggle" aria-pressed="false">
+        Show no-depicts photos</button>
+      <span class="filter-note">Unused category photos with no depicts statement
+        at all (nothing to compare — they need one added).</span>
+    </div>
   </div>
   <div id="head" class="pair-head" hidden>
     <div class="h-left">Unused Commons photo (new candidate)</div>
     <div class="h-right">Current Wikipedia infobox photo (existing)</div>
   </div>
   <div id="results"></div>
+  <div id="nodepicts"></div>
 </main>
 <script>
 "use strict";
@@ -454,11 +466,15 @@ function isHuman(claims) {
   return false;
 }
 
-// Commons MediaInfo entity id is "M" + pageid. Keep files with >=1 P180.
+// Commons MediaInfo entity id is "M" + pageid. Split unused files into those
+// with >=1 P180 (kept) and those with none (noDepicts). The SDC claims are
+// fetched for every file regardless, so the noDepicts bucket costs nothing
+// extra. Returns { kept, noDepicts }.
 async function attachDepicts(files) {
   const byMid = {};
   for (const f of Object.values(files)) byMid["M" + f.pageid] = f;
   const kept = {};
+  const noDepicts = {};
   for (const batch of chunked(Object.keys(byMid))) {
     const entities = await wbGetEntities(COMMONS_API, batch, "claims");
     for (const [mid, entity] of Object.entries(entities)) {
@@ -468,9 +484,10 @@ async function attachDepicts(files) {
       const statements = entity.statements || entity.claims || {};
       const qids = allDepictsQids(statements);
       if (qids.length) { f.depicted_qids = qids; kept[f.pageid] = f; }
+      else noDepicts[f.pageid] = f;
     }
   }
-  return kept;
+  return { kept, noDepicts };
 }
 
 function firstP18Filename(claims) {
@@ -560,7 +577,8 @@ async function runSearch(category, startDate, endDate, onProgress) {
   say(`Filtering ${Object.keys(files).length} file(s) by usage…`);
   files = await filterUnused(files);
   say(`Checking depicts on ${Object.keys(files).length} unused file(s)…`);
-  files = await attachDepicts(files);
+  const { kept, noDepicts } = await attachDepicts(files);
+  files = kept;
   say("Fetching depicted subjects and infobox photos…");
   const { persons, infoboxInfo } = await fetchPersonData(files);
 
@@ -610,7 +628,20 @@ async function runSearch(category, startDate, endDate, onProgress) {
   results.sort((a, b) =>
     (a.candidate.date_uploaded < b.candidate.date_uploaded) ? 1 :
     (a.candidate.date_uploaded > b.candidate.date_uploaded) ? -1 : 0);
-  return results;
+
+  // Unused files with no depicts statement at all: no subject to compare, so a
+  // flat "needs a depicts statement" list. Fields mirror a candidate's.
+  const byDateDesc = (a, b) =>
+    (a.date_uploaded < b.date_uploaded) ? 1 : (a.date_uploaded > b.date_uploaded) ? -1 : 0;
+  const noDepictsList = Object.values(noDepicts).map(f => ({
+    title: f.title, file_page: f.descriptionurl, thumb: f.thumb,
+    date_taken: f.taken, date_uploaded: f.timestamp, description: f.description,
+    author: f.author, author_url: f.author_url,
+    width: f.width, height: f.height, megapixels: f.megapixels,
+    low_res: f.megapixels != null && f.megapixels < LOW_RES_MP,
+  })).sort(byDateDesc);
+
+  return { results, noDepicts: noDepictsList };
 }
 
 // =========================================================================
@@ -675,6 +706,11 @@ const pairRow = r =>
   `<div class="pair">${candidateMeta(r.candidate)}${candidatePhoto(r.candidate)}`
   + `${infoboxPhoto(r.infobox)}${infoboxMeta(r.infobox)}</div>`;
 
+// No-depicts photos: no subject, so a single row of photo + metadata (no
+// comparison column). Uses the same .pair grid via .pair-solo (2 columns).
+const noDepictsRow = c =>
+  `<div class="pair pair-solo">${candidatePhoto(c)}${candidateMeta(c)}</div>`;
+
 // =========================================================================
 // Date shortcuts
 // =========================================================================
@@ -701,6 +737,7 @@ thisMonth();
 // Filters (client-side, instant re-render)
 // =========================================================================
 let allResults = [];
+let allNoDepicts = [];
 const pressed = id => $(id).getAttribute("aria-pressed") === "true";
 
 // Current infobox photo is "good": present, fresh, and confirmed high-res.
@@ -727,10 +764,18 @@ function renderResults() {
   $("head").hidden = shown.length === 0;
   $("results").innerHTML = shown.map(pairRow).join("")
     || `<div class="none">No matching candidates.</div>`;
-  const base = `Found ${allResults.length} unused category photo(s) with a depicted subject.`;
-  $("status").textContent = hiddenCount
-    ? `${base} Showing ${shown.length}; ${hiddenCount} hidden by filters.`
-    : base;
+
+  // Separate no-depicts view, shown only when its toggle is on.
+  const showND = pressed("show_no_depicts");
+  $("nodepicts").innerHTML = (showND && allNoDepicts.length)
+    ? `<div class="section-head">No depicts statement (${allNoDepicts.length}) — need one added</div>`
+      + allNoDepicts.map(noDepictsRow).join("")
+    : (showND ? `<div class="section-head">No depicts statement (0)</div>` : "");
+
+  let msg = `Found ${allResults.length} unused category photo(s) with a depicted subject.`;
+  if (hiddenCount) msg += ` Showing ${shown.length}; ${hiddenCount} hidden by filters.`;
+  if (allNoDepicts.length) msg += ` ${allNoDepicts.length} more have no depicts statement.`;
+  $("status").textContent = msg;
 }
 
 function bindToggle(id) {
@@ -741,6 +786,7 @@ function bindToggle(id) {
 }
 bindToggle("hide_same_author");
 bindToggle("hide_good_current");
+bindToggle("show_no_depicts");
 
 // =========================================================================
 // Copy candidate filename (delegated, survives re-render)
@@ -755,7 +801,8 @@ async function copyText(text) {
     document.body.removeChild(ta); return ok;
   }
 }
-$("results").addEventListener("click", async e => {
+// Delegate on document so copy works in both #results and #nodepicts.
+document.addEventListener("click", async e => {
   const btn = e.target.closest(".copy-file");
   if (!btn) return;
   const ok = await copyText(btn.dataset.file);
@@ -772,14 +819,17 @@ $("f").addEventListener("submit", async e => {
   e.preventDefault();
   const status = $("status"), go = $("go");
   status.className = ""; status.textContent = "Searching…";
-  $("results").innerHTML = ""; $("head").hidden = true; $("filters").hidden = true;
+  $("results").innerHTML = ""; $("nodepicts").innerHTML = "";
+  $("head").hidden = true; $("filters").hidden = true;
   go.disabled = true;
   try {
     const category = normalizeCategory($("category").value);
-    allResults = await runSearch(
+    const search = await runSearch(
       category, $("start_date").value, $("end_date").value,
       msg => { status.textContent = msg; });
-    $("filters").hidden = allResults.length === 0;
+    allResults = search.results;
+    allNoDepicts = search.noDepicts;
+    $("filters").hidden = allResults.length === 0 && allNoDepicts.length === 0;
     renderResults();
   } catch (err) {
     status.className = "error";

@@ -404,11 +404,15 @@ def filter_unused(files):
 
 
 def attach_depicts(files):
-    # A Commons file's Structured Data entity id is "M" + pageid. Keep only
-    # files carrying at least one P180 (depicts) statement, recording every
-    # depicted Q-id (a photo may depict several entities).
+    # A Commons file's Structured Data entity id is "M" + pageid. Split the
+    # unused files into those carrying at least one P180 (depicts) statement
+    # (recording every depicted Q-id) and those with none. The SDC claims for
+    # every file are fetched here regardless, so the no-depicts bucket is free.
+    # Returns (kept, no_depicts) — no_depicts photos need a depicts statement
+    # added and have no subject to compare against.
     by_mid = {"M" + str(f["pageid"]): f for f in files.values()}
     kept = {}
+    no_depicts = {}
     for batch in chunked(list(by_mid.keys())):
         entities = wbgetentities(COMMONS_API, batch, props="claims")
         for mid, entity in entities.items():
@@ -422,7 +426,9 @@ def attach_depicts(files):
             if qids:
                 f["depicted_qids"] = qids
                 kept[f["pageid"]] = f
-    return kept
+            else:
+                no_depicts[f["pageid"]] = f
+    return kept, no_depicts
 
 
 def all_depicts_qids(claims):
@@ -553,7 +559,7 @@ def run_search(category, start_date, end_date):
 
     files = fetch_category_files(category, start, end)
     files = filter_unused(files)
-    files = attach_depicts(files)
+    files, no_depicts_files = attach_depicts(files)
     persons, infobox_info = fetch_person_data(files)
 
     results = []
@@ -622,7 +628,28 @@ def run_search(category, start_date, end_date):
         results.append({"candidate": candidate, "infobox": infobox})
 
     results.sort(key=lambda r: r["candidate"]["date_uploaded"], reverse=True)
-    return results
+
+    # Unused files with no depicts statement at all: no subject to compare, so
+    # they're returned as a flat list (a "needs a depicts statement" worklist).
+    no_depicts = [
+        {
+            "title": f["title"],
+            "file_page": f["descriptionurl"],
+            "thumb": f["thumb"],
+            "date_taken": f["taken"],
+            "date_uploaded": f["timestamp"],
+            "description": f["description"],
+            "author": f["author"],
+            "author_url": f["author_url"],
+            "width": f["width"],
+            "height": f["height"],
+            "megapixels": f["megapixels"],
+        }
+        for f in no_depicts_files.values()
+    ]
+    no_depicts.sort(key=lambda f: f["date_uploaded"], reverse=True)
+
+    return {"results": results, "no_depicts": no_depicts}
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -703,13 +730,17 @@ class Handler(BaseHTTPRequestHandler):
             self._send(400, json.dumps({"error": str(exc)}), "application/json")
             return
         try:
-            results = run_search(
+            search = run_search(
                 category,
                 payload.get("start_date", ""),
                 payload.get("end_date", ""),
             )
-            self._send(200, json.dumps({"results": results, "count": len(results)}),
-                       "application/json")
+            self._send(200, json.dumps({
+                "results": search["results"],
+                "count": len(search["results"]),
+                "no_depicts": search["no_depicts"],
+                "no_depicts_count": len(search["no_depicts"]),
+            }), "application/json")
         except Exception:
             # Unexpected failure (e.g. an upstream API error): log the detail
             # server-side, return a generic message so internals (paths,
