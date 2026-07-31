@@ -1,0 +1,10 @@
+# Python
+__pycache__/
+*.py[cod]
+
+# Local virtualenv (created by the user; not part of the app)
+.venv/
+venv/
+
+# macOS
+.DS_Store
