@@ -2,7 +2,8 @@
 Checks photos in a category against current photo in infobox.
 
 
-If you want to use a local Python server just grab app.py
-Install requests via ```pip install requests```
+If you want to use a local Python server: 
 
-Run app with ```python3 app.py``` and access at http://localhost:8000/
+1. Grab app.py file
+2. Install requests via ```pip install requests```
+3. Run app with ```python3 app.py``` and access at http://localhost:8000/
