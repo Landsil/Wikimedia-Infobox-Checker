@@ -669,6 +669,45 @@ const candidateFileRow = (page, title, author, authorUrl) =>
 const resolution = o => (o.megapixels != null && o.width && o.height)
   ? `${o.megapixels} MP (${o.width}×${o.height})` : "";
 
+// Words that mark the end of the person's name in a filename ("Name at Event",
+// "Name in Year"). Extend this list as new patterns show up.
+const NAME_SEPARATORS = ["at", "in"];
+// Best-effort person name from a filename: assume it starts with the name, and
+// a separator word (\b at | in \b) ends it. Strips "File:", extension, and any
+// trailing sequence number. Returns "" if the result isn't a plausible name
+// (needs >=2 words), so companies like "Waymo" don't produce a bogus search.
+function nameFromFilename(title) {
+  let t = String(title || "").replace(/^\s*File\s*:\s*/i, "")
+    .replace(/\.\w{2,4}$/, "").replace(/_/g, " ").trim();
+  const sep = new RegExp("\\b(?:" + NAME_SEPARATORS.join("|") + ")\\b", "i");
+  const m = sep.exec(t);
+  let name = (m ? t.slice(0, m.index) : t).trim();
+  name = name.replace(/\s+\d+$/, "").trim();     // drop trailing sequence number
+  return name.split(/\s+/).filter(Boolean).length >= 2 ? name : "";
+}
+
+// A phrase ("Name") search URL on a wiki's Special:Search (advanced, ns0).
+// Matches the form MediaWiki itself produces for a quoted phrase search.
+function phraseSearchUrl(host, name) {
+  const quoted = '"' + name + '"';
+  const p = new URLSearchParams({
+    search: quoted, title: "Special:Search", profile: "advanced", fulltext: "1",
+    "advancedSearch-current": JSON.stringify({ fields: { phrase: quoted } }),
+    ns0: "1",
+  });
+  return `https://${host}/w/index.php?${p.toString()}`;
+}
+
+// Search-link rows for a no-depicts photo: "<name>" on Wikidata / Wikipedia.
+function searchLinks(title) {
+  const name = nameFromFilename(title);
+  if (!name) return row("Search", "&mdash; (couldn't read a name from the filename)");
+  const q = `"${esc(name)}"`;
+  return row("Search", q + " on "
+    + link(phraseSearchUrl("www.wikidata.org", name), "Wikidata") + " · "
+    + q + " on " + link(phraseSearchUrl("en.wikipedia.org", name), "Wikipedia"));
+}
+
 function candidateMeta(c) {
   return `<div class="meta left">
     ${candidateFileRow(c.file_page, c.title, c.author, c.author_url)}
@@ -708,10 +747,24 @@ const pairRow = r =>
   `<div class="pair">${candidateMeta(r.candidate)}${candidatePhoto(r.candidate)}`
   + `${infoboxPhoto(r.infobox)}${infoboxMeta(r.infobox)}</div>`;
 
+// Metadata for a no-depicts photo. Unlike candidateMeta there's no depicted
+// subject; instead we show search links built from a name guessed from the
+// filename, to make finding the person's Wikidata/Wikipedia entry easy.
+function noDepictsMeta(c) {
+  return `<div class="meta left">
+    ${candidateFileRow(c.file_page, c.title, c.author, c.author_url)}
+    ${searchLinks(c.title)}
+    ${row("Resolution", resolution(c), c.low_res)}
+    ${row("Date taken", esc(c.date_taken))}
+    ${row("Date uploaded", esc(c.date_uploaded))}
+    ${row("Description", esc(c.description))}
+  </div>`;
+}
+
 // No-depicts photos: no subject, so a single row of photo + metadata (no
 // comparison column). Uses the same .pair grid via .pair-solo (2 columns).
 const noDepictsRow = c =>
-  `<div class="pair pair-solo">${candidatePhoto(c)}${candidateMeta(c)}</div>`;
+  `<div class="pair pair-solo">${candidatePhoto(c)}${noDepictsMeta(c)}</div>`;
 
 // =========================================================================
 // Date shortcuts
