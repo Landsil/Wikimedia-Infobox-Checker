@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wikimedia Infobox Finder</title>
+<!--
+  Wikimedia Infobox Finder — static, client-side build for GitHub Pages.
+
+  Finds recently-uploaded, *unused* photos in a Wikimedia Commons category that
+  depict a person (Structured Data "depicts", P180 -> P31 = Q5), and pairs each
+  against the subject's current Wikipedia infobox photo for side-by-side review.
+
+  This is a browser-only port of app.py: the same pipeline, rewritten to call
+  the Wikimedia APIs directly with fetch() + &origin=* (anonymous CORS). No
+  server, no build step. app.py remains as the local-server alternative.
+
+  Note: browsers forbid setting User-Agent, so requests carry the browser's UA
+  plus &origin=* (anonymous CORS) instead of the custom UA app.py sends.
+-->
+<style>
+  :root {
+    --bg: #f6f7f9; --panel: #fff; --ink: #1c1e21; --muted: #6b7178;
+    --line: #dfe3e8; --accent: #2b6cb0; --accent-ink: #fff; --new: #276749;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 15px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI",
+         Roboto, Helvetica, Arial, sans-serif; background: var(--bg); color: var(--ink); }
+  header { background: var(--panel); border-bottom: 1px solid var(--line);
+           padding: 18px 24px; }
+  h1 { margin: 0 0 12px; font-size: 20px; }
+  .quick { margin: 0 0 12px; display: flex; gap: 8px; }
+  .quick button { padding: 5px 12px; background: #eef2f7; color: var(--accent); font-size: 12px; }
+  form { display: grid; grid-template-columns: 1fr 150px 150px auto;
+         gap: 12px; align-items: end; max-width: 1100px; }
+  /* Post-search filter toggle bar. */
+  .filters { display: flex; flex-wrap: wrap; gap: 10px 28px; margin-bottom: 14px; }
+  .filter-item { display: flex; align-items: center; gap: 10px; }
+  .toggle { padding: 7px 14px; border: 1px solid var(--line); border-radius: 20px;
+            background: #fff; color: var(--ink); font-size: 13px; font-weight: 600;
+            cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
+  .toggle::before { content: ""; width: 26px; height: 15px; border-radius: 999px;
+                    background: #cbd2d9; position: relative; transition: background .15s; }
+  .toggle::after { content: ""; width: 11px; height: 11px; border-radius: 50%;
+                   background: #fff; position: absolute; margin-left: 2px;
+                   transition: transform .15s; }
+  .toggle[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); }
+  .toggle[aria-pressed="true"]::before { background: var(--accent); }
+  .toggle[aria-pressed="true"]::after { transform: translateX(11px); }
+  .filter-note { color: var(--muted); font-size: 12px; }
+  label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+  input { width: 100%; padding: 8px 10px; border: 1px solid var(--line);
+          border-radius: 6px; font-size: 14px; background: #fff; }
+  button { padding: 9px 18px; border: 0; border-radius: 6px; background: var(--accent);
+           color: var(--accent-ink); font-size: 14px; font-weight: 600; cursor: pointer; }
+  button:disabled { opacity: .6; cursor: default; }
+  main { padding: 20px 24px; max-width: 1100px; margin: 0 auto; }
+  #status { color: var(--muted); margin-bottom: 14px; min-height: 20px; }
+  #status.error { color: #b91c1c; }
+
+  /* Column headers, shown once above all pairs. */
+  .pair-head { display: grid; grid-template-columns: 1fr 220px 220px 1fr; gap: 0 16px;
+               padding: 4px 16px 10px; }
+  .pair-head div { font-size: 12px; font-weight: 700; text-transform: uppercase;
+                   letter-spacing: .04em; text-align: center; }
+  .pair-head .h-left { grid-column: 1 / 3; color: var(--new); }
+  .pair-head .h-right { grid-column: 3 / 5; color: var(--muted); }
+
+  /* Each pair: unused text | unused photo | current photo | current text.
+     align-items: start keeps every column top-aligned; centering made the
+     shorter text column look like it had a leading blank line. */
+  .pair { display: grid; grid-template-columns: 1fr 220px 220px 1fr; gap: 0 16px;
+          align-items: start; background: var(--panel); border: 1px solid var(--line);
+          border-radius: 10px; padding: 14px 16px; margin-bottom: 14px; }
+  .photo img { width: 100%; max-height: 240px; object-fit: contain; background: #eef0f3;
+               border-radius: 6px; display: block; }
+  .photo .none { padding: 40px 8px; background: #eef0f3; border-radius: 6px; }
+  .meta { font-size: 13px; }
+  .meta.left { text-align: right; }
+  .meta.right { text-align: left; }
+  .meta .row { margin: 4px 0; }
+  .meta .k { color: var(--muted); font-size: 12px; }
+  .meta .k::after { content: ": "; }
+  .meta .v { word-break: break-word; }
+  .meta .author { color: var(--muted); font-size: 12px; margin-top: 2px; }
+  .meta .warn { color: #b91c1c; font-weight: 600; }
+  .meta .warn::after { content: " \26A0"; }
+  /* Small inline action buttons (edit article, copy filename). */
+  .mini { display: inline-block; padding: 1px 7px; margin-left: 6px; border: 1px solid var(--line);
+          border-radius: 4px; background: #eef2f7; color: var(--accent); font-size: 11px;
+          font-weight: 600; cursor: pointer; text-decoration: none; vertical-align: baseline; }
+  .mini:hover { background: #e2e8f0; text-decoration: none; }
+  .mini.copied { background: #d7f0e0; color: var(--new); border-color: #b7e0c6; }
+  .none { color: var(--muted); font-style: italic; text-align: center; padding: 20px; }
+  a { color: var(--accent); text-decoration: none; } a:hover { text-decoration: underline; }
+
+  @media (max-width: 860px) {
+    .pair, .pair-head { grid-template-columns: 1fr 1fr; }
+    .pair-head .h-left { grid-column: 1 / 2; }
+    .pair-head .h-right { grid-column: 2 / 3; }
+    .meta.left { text-align: left; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>Wikimedia Infobox Finder</h1>
+  <div class="quick">
+    <button type="button" id="q_prev_month">Previous month</button>
+    <button type="button" id="q_month">This month</button>
+    <button type="button" id="q_year">This year</button>
+  </div>
+  <form id="f">
+    <div><label>Category</label>
+      <input id="category" value="WikiPortraits at 2026 FIFA World Cup"></div>
+    <div><label>Start date</label><input id="start_date" type="date"></div>
+    <div><label>End date</label><input id="end_date" type="date"></div>
+    <button id="go" type="submit">Search Candidates</button>
+  </form>
+</header>
+<main>
+  <div id="status"></div>
+  <div id="filters" class="filters" hidden>
+    <div class="filter-item">
+      <button type="button" id="hide_same_author" class="toggle" aria-pressed="true">
+        Hide same-author candidates</button>
+      <span class="filter-note">Author matches the infobox photo's, and that photo
+        isn't old or low-res.</span>
+    </div>
+    <div class="filter-item">
+      <button type="button" id="hide_good_current" class="toggle" aria-pressed="true">
+        Hide when current photo is good</button>
+      <span class="filter-note">Infobox photo is already fresh and good quality
+        (not old, not low-res).</span>
+    </div>
+  </div>
+  <div id="head" class="pair-head" hidden>
+    <div class="h-left">Unused Commons photo (new candidate)</div>
+    <div class="h-right">Current Wikipedia infobox photo (existing)</div>
+  </div>
+  <div id="results"></div>
+</main>
+<script>
+"use strict";
+
+// =========================================================================
+// Config
+// =========================================================================
+const COMMONS_API = "https://commons.wikimedia.org/w/api.php";
+const WIKIDATA_API = "https://www.wikidata.org/w/api.php";
+const BATCH = 50;              // titles=/ids= capped at 50 per request (non-bot)
+const THUMB_WIDTH = 320;
+const STALE_MONTHS = 12;       // infobox photo flagged red when older than this
+const LOW_RES_MP = 2.0;        // resolution flagged red below this (megapixels)
+const MAX_RETRIES = 4;
+const BACKOFF_BASE = 1.0;      // seconds; doubled each retry
+const MAXLAG = 5;              // ask MediaWiki to shed load when replica lag > this
+const NON_WIKIPEDIA_WIKIS = new Set([
+  "commonswiki", "wikidatawiki", "specieswiki", "metawiki",
+  "mediawikiwiki", "incubatorwiki", "sourceswiki", "foundationwiki",
+  "outreachwiki", "wikimaniawiki", "testwiki",
+]);
+
+// =========================================================================
+// Small helpers
+// =========================================================================
+const $ = id => document.getElementById(id);
+const esc = s => (s == null ? "" : String(s)).replace(/[&<>"]/g,
+  c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+function chunked(arr, size = BATCH) {
+  const out = [];
+  for (let i = 0; i < arr.length; i += size) out.push(arr.slice(i, i + size));
+  return out;
+}
+
+// Reduce an extmetadata HTML fragment to readable plain text.
+function stripHtml(value) {
+  if (!value) return "";
+  const el = document.createElement("div");
+  el.innerHTML = String(value).replace(/<[^>]+>/g, " ");
+  return (el.textContent || "").replace(/\s+/g, " ").trim();
+}
+
+// Accept any category spelling (spaces, underscores, "+", "%20", optional
+// "Category:" prefix in any case) and canonicalize to "Category:Name".
+function normalizeCategory(raw) {
+  let name = decodeURIComponent(String(raw || "").replace(/\+/g, " "))
+    .replace(/_/g, " ").trim();
+  if (!name) throw new Error("category is required");
+  if (name.toLowerCase().startsWith("category:")) name = name.slice(9).trim();
+  return "Category:" + name;
+}
+
+// Date-only inputs vs full ISO timestamps: append time bounds so string
+// comparison is correct and the end date includes its whole day.
+function normalizeBounds(startDate, endDate) {
+  return [
+    startDate ? `${startDate}T00:00:00Z` : null,
+    endDate ? `${endDate}T23:59:59Z` : null,
+  ];
+}
+
+function inRange(ts, start, end) {
+  if (start && ts < start) return false;
+  if (end && ts > end) return false;
+  return true;
+}
+
+// =========================================================================
+// API layer (fetch + &origin=* for CORS, with maxlag retry/backoff)
+// =========================================================================
+
+// A maxlag throttle arrives as HTTP 200 with {"error":{"code":"maxlag"}} and
+// no data, NOT a 5xx (see app.py). We must detect it in the body, else a
+// lagged replica silently yields zero results that look like "nothing found".
+function isMaxlag(data) {
+  return !!(data && data.error && data.error.code === "maxlag");
+}
+
+function retryDelayMs(resp, attempt) {
+  const ra = resp.headers.get("Retry-After");
+  if (ra && /^\d+$/.test(ra)) return parseFloat(ra) * 1000;
+  return BACKOFF_BASE * 2 ** attempt * 1000;
+}
+
+async function apiGet(base, params) {
+  const search = new URLSearchParams(params);
+  search.set("format", "json");
+  search.set("origin", "*");                       // anonymous CORS
+  if (!search.has("maxlag")) search.set("maxlag", String(MAXLAG));
+  const url = `${base}?${search.toString()}`;
+
+  for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+    let resp;
+    try {
+      resp = await fetch(url, { credentials: "omit" });
+    } catch (err) {                                // network/CORS failure
+      if (attempt < MAX_RETRIES - 1) { await sleep(BACKOFF_BASE * 2 ** attempt * 1000); continue; }
+      throw err;
+    }
+    let data = null;
+    try { data = JSON.parse(await resp.text()); } catch (_) { data = null; }
+
+    const throttled = resp.status === 429 || resp.status === 503 || isMaxlag(data);
+    if (throttled) {
+      if (attempt < MAX_RETRIES - 1) { await sleep(retryDelayMs(resp, attempt)); continue; }
+      throw new Error(`MediaWiki still throttled after ${MAX_RETRIES} attempts (${base}); `
+        + "aborting rather than returning partial results.");
+    }
+    if (!resp.ok) throw new Error(`HTTP ${resp.status} from ${base}`);
+    if (data === null) throw new Error(`Non-JSON response from ${base}`);
+    return data;
+  }
+}
+
+// action=query, following the continue protocol. Async generator: yields each
+// response's `query` object.
+async function* mwQuery(base, params) {
+  const p = { ...params, action: "query" };
+  while (true) {
+    const data = await apiGet(base, p);
+    if (data.query) yield data.query;
+    if (data.continue) Object.assign(p, data.continue);
+    else break;
+  }
+}
+
+async function wbGetEntities(base, ids, props, extra) {
+  const p = { action: "wbgetentities", ids: ids.join("|"), props, ...(extra || {}) };
+  const data = await apiGet(base, p);
+  return data.entities || {};
+}
+
+// =========================================================================
+// Metadata extraction
+// =========================================================================
+
+// extmetadata's Artist is raw HTML that usually wraps the uploader's name in a
+// link to their Commons user page. The display name often differs from the
+// username, so take the URL from the first anchor. Returns {name, url}.
+function parseAuthor(artistHtml) {
+  if (!artistHtml) return { name: "", url: null };
+  const m = /<a\b[^>]*\bhref="([^"]+)"[^>]*>([\s\S]*?)<\/a>/i.exec(artistHtml);
+  if (m) {
+    const inner = stripHtml(m[2]);
+    return { name: inner || stripHtml(artistHtml), url: sanitizeHref(m[1]) };
+  }
+  return { name: stripHtml(artistHtml), url: null };
+}
+
+// Artist HTML is untrusted: rewrite protocol-relative/site-relative forms to
+// absolute https, allow only http(s), drop anything else (javascript:, ...).
+function sanitizeHref(href) {
+  href = stripHtml(href).trim();
+  if (href.startsWith("//")) return "https:" + href;
+  if (href.startsWith("/")) return "https://commons.wikimedia.org" + href;
+  if (/^https?:\/\//i.test(href)) return href;
+  return null;
+}
+
+function extractImageinfoMeta(info) {
+  const ext = info.extmetadata || {};
+  const val = k => (ext[k] && ext[k].value) || "";
+  const uploaded = info.timestamp || "";
+  const taken = stripHtml(val("DateTimeOriginal")) || uploaded;
+  const author = parseAuthor(val("Artist"));
+  const width = info.width || null;
+  const height = info.height || null;
+  return {
+    taken, uploaded,
+    description: stripHtml(val("ImageDescription")),
+    author: author.name, author_url: author.url,
+    width, height,
+    megapixels: (width && height) ? Math.round(width * height / 100000) / 10 : null,
+  };
+}
+
+// Accept ISO instants and the date-only form DateTimeOriginal sometimes carries.
+function parseTs(value) {
+  if (!value) return null;
+  let d = new Date(value);
+  if (!isNaN(d)) return d;
+  const m = /(\d{4})-(\d{2})-(\d{2})/.exec(value);
+  if (m) return new Date(Date.UTC(+m[1], +m[2] - 1, +m[3]));
+  return null;
+}
+
+function isStale(taken, uploaded, now) {
+  const when = parseTs(taken) || parseTs(uploaded);
+  if (!when) return false;
+  const cutoff = new Date(now.getTime() - (365.25 / 12 * STALE_MONTHS) * 86400000);
+  return when < cutoff;
+}
+
+// =========================================================================
+// Wikipedia / Wikidata URL builders
+// =========================================================================
+function pickWikipediaSitelink(sitelinks) {
+  if (!sitelinks) return [null, null];
+  if (sitelinks.enwiki) return ["enwiki", sitelinks.enwiki.title];
+  for (const [site, link] of Object.entries(sitelinks)) {
+    if (site.endsWith("wiki") && !NON_WIKIPEDIA_WIKIS.has(site)) return [site, link.title];
+  }
+  return [null, null];
+}
+const wikiLang = site => site.slice(0, -4).replace(/_/g, "-");     // "enwiki" -> "en"
+const wikipediaArticleUrl = (site, title) =>
+  `https://${wikiLang(site)}.wikipedia.org/wiki/${encodeURIComponent(title.replace(/ /g, "_"))}`;
+const wikipediaEditUrl = (site, title) =>
+  `https://${wikiLang(site)}.wikipedia.org/w/index.php`
+  + `?title=${encodeURIComponent(title.replace(/ /g, "_"))}&action=edit`;
+const wikipediaApiUrl = site => `https://${wikiLang(site)}.wikipedia.org/w/api.php`;
+
+// The image an article actually displays is often set locally in wikitext and
+// diverges from Wikidata P18. pageimages returns the real lead/infobox image.
+// `articles` is an array of [site, title]; returns Map("site\ntitle" -> file).
+async function fetchArticleLeadImages(articles) {
+  const bySite = {};
+  for (const [site, title] of articles) (bySite[site] = bySite[site] || new Set()).add(title);
+
+  const lead = new Map();
+  for (const [site, titleSet] of Object.entries(bySite)) {
+    const api = wikipediaApiUrl(site);
+    for (const batch of chunked([...titleSet].sort())) {
+      const params = {
+        titles: batch.join("|"), prop: "pageimages",
+        piprop: "name", pilicense: "any", redirects: "1",
+      };
+      const alias = {};   // map normalized/redirected title back to requested
+      for await (const query of mwQuery(api, params)) {
+        for (const e of query.normalized || []) alias[e.to] = e.from;
+        for (const e of query.redirects || []) alias[e.to] = alias[e.from] || e.from;
+        for (const page of Object.values(query.pages || {})) {
+          const requested = alias[page.title] || page.title;
+          const name = page.pageimage;   // uses underscores; Commons uses spaces
+          lead.set(`${site}\n${requested}`, name ? "File:" + name.replace(/_/g, " ") : null);
+        }
+      }
+    }
+  }
+  return lead;
+}
+
+// =========================================================================
+// Pipeline steps
+// =========================================================================
+async function fetchCategoryFiles(category, start, end) {
+  const params = {
+    generator: "categorymembers", gcmtitle: category, gcmtype: "file",
+    gcmlimit: "max", prop: "imageinfo",
+    iiprop: "timestamp|url|extmetadata|user|size", iiurlwidth: String(THUMB_WIDTH),
+  };
+  const files = {};
+  for await (const query of mwQuery(COMMONS_API, params)) {
+    for (const page of Object.values(query.pages || {})) {
+      const info = (page.imageinfo || [])[0];
+      if (!info) continue;
+      const ts = info.timestamp || "";
+      if (!inRange(ts, start, end)) continue;
+      const meta = extractImageinfoMeta(info);
+      files[page.pageid] = {
+        pageid: page.pageid, title: page.title, timestamp: meta.uploaded,
+        descriptionurl: info.descriptionurl || "", thumb: info.thumburl || info.url || "",
+        taken: meta.taken, description: meta.description,
+        author: meta.author, author_url: meta.author_url,
+        width: meta.width, height: meta.height, megapixels: meta.megapixels,
+      };
+    }
+  }
+  return files;
+}
+
+// Discard images used in an article (namespace 0) on any wiki.
+async function filterUnused(files) {
+  const titles = Object.values(files).map(f => f.title);
+  const usedInArticle = new Set();
+  for (const batch of chunked(titles)) {
+    const params = { titles: batch.join("|"), prop: "globalusage",
+                     guprop: "namespace", gulimit: "max" };
+    for await (const query of mwQuery(COMMONS_API, params)) {
+      for (const page of Object.values(query.pages || {})) {
+        for (const usage of page.globalusage || []) {
+          if (String(usage.ns) === "0") usedInArticle.add(page.title);
+        }
+      }
+    }
+  }
+  const kept = {};
+  for (const [pid, f] of Object.entries(files)) if (!usedInArticle.has(f.title)) kept[pid] = f;
+  return kept;
+}
+
+function allDepictsQids(claims) {
+  const qids = [];
+  for (const st of (claims.P180 || [])) {
+    try {
+      const qid = st.mainsnak.datavalue.value.id;
+      if (qid && !qids.includes(qid)) qids.push(qid);
+    } catch (_) { /* skip malformed */ }
+  }
+  return qids;
+}
+
+// A depicted entity is a person iff its P31 (instance of) includes Q5.
+function isHuman(claims) {
+  for (const st of (claims.P31 || [])) {
+    try { if (st.mainsnak.datavalue.value.id === "Q5") return true; } catch (_) {}
+  }
+  return false;
+}
+
+// Commons MediaInfo entity id is "M" + pageid. Keep files with >=1 P180.
+async function attachDepicts(files) {
+  const byMid = {};
+  for (const f of Object.values(files)) byMid["M" + f.pageid] = f;
+  const kept = {};
+  for (const batch of chunked(Object.keys(byMid))) {
+    const entities = await wbGetEntities(COMMONS_API, batch, "claims");
+    for (const [mid, entity] of Object.entries(entities)) {
+      const f = byMid[mid];
+      if (!f) continue;
+      // MediaInfo nests claims under "statements" (Wikidata uses "claims").
+      const statements = entity.statements || entity.claims || {};
+      const qids = allDepictsQids(statements);
+      if (qids.length) { f.depicted_qids = qids; kept[f.pageid] = f; }
+    }
+  }
+  return kept;
+}
+
+function firstP18Filename(claims) {
+  for (const st of (claims.P18 || [])) {
+    try { const fn = st.mainsnak.datavalue.value; if (fn) return fn; } catch (_) {}
+  }
+  return null;
+}
+
+async function fetchFilesImageinfo(titles) {
+  const result = {};
+  for (const batch of chunked(titles)) {
+    const params = { titles: batch.join("|"), prop: "imageinfo",
+                     iiprop: "timestamp|url|extmetadata|user|size", iiurlwidth: String(THUMB_WIDTH) };
+    for await (const query of mwQuery(COMMONS_API, params)) {
+      for (const page of Object.values(query.pages || {})) {
+        const info = (page.imageinfo || [])[0];
+        if (!info) continue;
+        const meta = extractImageinfoMeta(info);
+        result[page.title] = {
+          title: page.title, descriptionurl: info.descriptionurl || "",
+          thumb: info.thumburl || info.url || "", taken: meta.taken,
+          timestamp: meta.uploaded, description: meta.description,
+          author: meta.author, author_url: meta.author_url,
+          width: meta.width, height: meta.height, megapixels: meta.megapixels,
+        };
+      }
+    }
+  }
+  return result;
+}
+
+// For every depicted entity: P31 human check; for humans keep label, sitelink,
+// P18, and the article's actual lead image (pageimages), P18 as fallback.
+async function fetchPersonData(files) {
+  const qidSet = new Set();
+  for (const f of Object.values(files)) for (const q of f.depicted_qids) qidSet.add(q);
+  const qids = [...qidSet].sort();
+  const persons = {};
+
+  for (const batch of chunked(qids)) {
+    const entities = await wbGetEntities(
+      WIKIDATA_API, batch, "claims|sitelinks|labels", { languages: "en" });
+    for (const [qid, entity] of Object.entries(entities)) {
+      const claims = entity.claims || {};
+      const human = isHuman(claims);
+      persons[qid] = { human };
+      if (!human) continue;
+      const [site, articleTitle] = pickWikipediaSitelink(entity.sitelinks || {});
+      const labels = entity.labels || {};
+      persons[qid].label = (labels.en && labels.en.value) || qid;
+      persons[qid].p18 = firstP18Filename(claims);
+      persons[qid].site = site;
+      persons[qid].article_title = articleTitle;
+    }
+  }
+
+  const articles = [];
+  for (const p of Object.values(persons))
+    if (p.human && p.site && p.article_title) articles.push([p.site, p.article_title]);
+  const lead = await fetchArticleLeadImages(articles);
+
+  const infoboxFiles = new Set();
+  for (const p of Object.values(persons)) {
+    if (!p.human) continue;
+    let image = null;
+    if (p.site && p.article_title) image = lead.get(`${p.site}\n${p.article_title}`) || null;
+    if (!image && p.p18) image = "File:" + p.p18;
+    p.infobox_file = image;
+    if (image) infoboxFiles.add(image);
+  }
+
+  const infoboxInfo = await fetchFilesImageinfo([...infoboxFiles].sort());
+  return { persons, infoboxInfo };
+}
+
+// =========================================================================
+// Orchestration — mirrors app.py run_search(), returns the same result shape.
+// =========================================================================
+async function runSearch(category, startDate, endDate, onProgress) {
+  const [start, end] = normalizeBounds(startDate, endDate);
+  const now = new Date();
+  const say = msg => { if (onProgress) onProgress(msg); };
+
+  say("Fetching category members…");
+  let files = await fetchCategoryFiles(category, start, end);
+  say(`Filtering ${Object.keys(files).length} file(s) by usage…`);
+  files = await filterUnused(files);
+  say(`Checking depicts on ${Object.keys(files).length} unused file(s)…`);
+  files = await attachDepicts(files);
+  say("Fetching depicted subjects and infobox photos…");
+  const { persons, infoboxInfo } = await fetchPersonData(files);
+
+  const results = [];
+  for (const f of Object.values(files)) {
+    const qid = f.depicted_qids.find(q => persons[q] && persons[q].human);
+    if (!qid) continue;                          // no depicted person -> skip
+    const person = persons[qid] || {};
+
+    const candidate = {
+      title: f.title, file_page: f.descriptionurl, thumb: f.thumb,
+      depicted_label: person.label || qid, depicted_qid: qid,
+      wikidata_url: `https://www.wikidata.org/wiki/${qid}`,
+      date_taken: f.taken, date_uploaded: f.timestamp, description: f.description,
+      author: f.author, author_url: f.author_url,
+      width: f.width, height: f.height, megapixels: f.megapixels,
+      low_res: f.megapixels != null && f.megapixels < LOW_RES_MP,
+    };
+
+    const infoboxFile = person.infobox_file;
+    const info = infoboxFile ? infoboxInfo[infoboxFile] : null;
+    const site = person.site, articleTitle = person.article_title;
+    const infobox = {
+      has_image: !!info,
+      title: info ? info.title : null,
+      file_page: info ? info.descriptionurl : null,
+      thumb: info ? info.thumb : null,
+      wiki_article_title: articleTitle || null,
+      wiki_article_url: (site && articleTitle) ? wikipediaArticleUrl(site, articleTitle) : null,
+      wiki_edit_url: (site && articleTitle) ? wikipediaEditUrl(site, articleTitle) : null,
+      wiki_site: site || null,
+      date_taken: info ? info.taken : null,
+      date_uploaded: info ? info.timestamp : null,
+      description: info ? info.description : null,
+      author: info ? info.author : null,
+      author_url: info ? info.author_url : null,
+      width: info ? info.width : null,
+      height: info ? info.height : null,
+      megapixels: info ? info.megapixels : null,
+      stale: !!info && isStale(info.taken, info.timestamp, now),
+      low_res: !!info && info.megapixels != null && info.megapixels < LOW_RES_MP,
+    };
+
+    results.push({ candidate, infobox });
+  }
+
+  results.sort((a, b) =>
+    (a.candidate.date_uploaded < b.candidate.date_uploaded) ? 1 :
+    (a.candidate.date_uploaded > b.candidate.date_uploaded) ? -1 : 0);
+  return results;
+}
+
+// =========================================================================
+// Rendering
+// =========================================================================
+const link = (url, text) =>
+  url ? `<a href="${esc(url)}" target="_blank" rel="noopener">${esc(text)}</a>` : esc(text);
+const row = (k, v, warn) =>
+  `<div class="row"><span class="k">${k}</span><span class="v${warn ? " warn" : ""}">${v || "&mdash;"}</span></div>`;
+const authorLine = (author, authorUrl) =>
+  author ? `<div class="author">by ${authorUrl ? link(authorUrl, author) : esc(author)}</div>` : "";
+// Drop the "File:" prefix for pasting into an infobox |image= field.
+const bareFilename = title => (title || "").replace(/^\s*File\s*:\s*/i, "");
+// Infobox file row: title already begins "File:...", so no "File" key label.
+const fileRow = (page, title, author, authorUrl) =>
+  `<div class="row"><span class="v">${link(page, title)}`
+  + authorLine(author, authorUrl) + `</span></div>`;
+// Candidate file row: same, plus a copy button for the bare filename.
+const candidateFileRow = (page, title, author, authorUrl) =>
+  `<div class="row"><span class="v">${link(page, title)}`
+  + `<button type="button" class="mini copy-file" data-file="${esc(bareFilename(title))}">Copy</button>`
+  + authorLine(author, authorUrl) + `</span></div>`;
+const resolution = o => (o.megapixels != null && o.width && o.height)
+  ? `${o.megapixels} MP (${o.width}×${o.height})` : "";
+
+function candidateMeta(c) {
+  return `<div class="meta left">
+    ${candidateFileRow(c.file_page, c.title, c.author, c.author_url)}
+    ${row("Depicted", link(c.wikidata_url, c.depicted_label + " (" + c.depicted_qid + ")"))}
+    ${row("Resolution", resolution(c), c.low_res)}
+    ${row("Date taken", esc(c.date_taken))}
+    ${row("Date uploaded", esc(c.date_uploaded))}
+    ${row("Description", esc(c.description))}
+  </div>`;
+}
+
+const editBtn = b => b.wiki_edit_url
+  ? ` <a class="mini" href="${esc(b.wiki_edit_url)}" target="_blank" rel="noopener">Edit</a>` : "";
+
+function infoboxMeta(b) {
+  if (!b.has_image) {
+    return `<div class="meta right">
+      ${row("Article", b.wiki_article_url ? link(b.wiki_article_url, b.wiki_article_title) + editBtn(b) : "&mdash;")}
+    </div>`;
+  }
+  return `<div class="meta right">
+    ${fileRow(b.file_page, b.title, b.author, b.author_url)}
+    ${row("Article", b.wiki_article_url ? link(b.wiki_article_url, b.wiki_article_title + " (" + b.wiki_site + ")") + editBtn(b) : "&mdash;")}
+    ${row("Resolution", resolution(b), b.low_res)}
+    ${row("Date taken", esc(b.date_taken), b.stale)}
+    ${row("Date uploaded", esc(b.date_uploaded))}
+    ${row("Description", esc(b.description))}
+  </div>`;
+}
+
+const candidatePhoto = c => `<div class="photo"><img src="${esc(c.thumb)}" alt="" loading="lazy"></div>`;
+const infoboxPhoto = b => b.has_image
+  ? `<div class="photo"><img src="${esc(b.thumb)}" alt="" loading="lazy"></div>`
+  : `<div class="photo"><div class="none">No image set in infobox</div></div>`;
+
+const pairRow = r =>
+  `<div class="pair">${candidateMeta(r.candidate)}${candidatePhoto(r.candidate)}`
+  + `${infoboxPhoto(r.infobox)}${infoboxMeta(r.infobox)}</div>`;
+
+// =========================================================================
+// Date shortcuts
+// =========================================================================
+const iso = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+function setRange(startDate, endDate) { $("start_date").value = iso(startDate); $("end_date").value = iso(endDate); }
+function thisMonth() {
+  const n = new Date();
+  setRange(new Date(n.getFullYear(), n.getMonth(), 1), new Date(n.getFullYear(), n.getMonth() + 1, 0));
+}
+function prevMonth() {
+  const n = new Date();
+  setRange(new Date(n.getFullYear(), n.getMonth() - 1, 1), new Date(n.getFullYear(), n.getMonth(), 0));
+}
+function thisYear() {
+  const n = new Date();
+  setRange(new Date(n.getFullYear(), 0, 1), new Date(n.getFullYear(), 11, 31));
+}
+$("q_prev_month").addEventListener("click", prevMonth);
+$("q_month").addEventListener("click", thisMonth);
+$("q_year").addEventListener("click", thisYear);
+thisMonth();
+
+// =========================================================================
+// Filters (client-side, instant re-render)
+// =========================================================================
+let allResults = [];
+const pressed = id => $(id).getAttribute("aria-pressed") === "true";
+
+// Current infobox photo is "good": present, fresh, and confirmed high-res.
+// Unknown resolution counts as NOT good, so we never hide on an unvouched photo.
+const currentIsGood = b => b.has_image && !b.stale && !b.low_res && b.megapixels != null;
+
+function sameAuthorRedundant(r) {
+  if (!currentIsGood(r.infobox)) return false;
+  const bId = r.infobox.author_url || r.infobox.author;
+  const cId = r.candidate.author_url || r.candidate.author;
+  return !!bId && !!cId && bId === cId;
+}
+const currentGoodRedundant = r => currentIsGood(r.infobox);
+
+function isHidden(r) {
+  if (pressed("hide_same_author") && sameAuthorRedundant(r)) return true;
+  if (pressed("hide_good_current") && currentGoodRedundant(r)) return true;
+  return false;
+}
+
+function renderResults() {
+  const shown = allResults.filter(r => !isHidden(r));
+  const hiddenCount = allResults.length - shown.length;
+  $("head").hidden = shown.length === 0;
+  $("results").innerHTML = shown.map(pairRow).join("")
+    || `<div class="none">No matching candidates.</div>`;
+  const base = `Found ${allResults.length} unused category photo(s) with a depicted subject.`;
+  $("status").textContent = hiddenCount
+    ? `${base} Showing ${shown.length}; ${hiddenCount} hidden by filters.`
+    : base;
+}
+
+function bindToggle(id) {
+  $(id).addEventListener("click", () => {
+    $(id).setAttribute("aria-pressed", pressed(id) ? "false" : "true");
+    renderResults();
+  });
+}
+bindToggle("hide_same_author");
+bindToggle("hide_good_current");
+
+// =========================================================================
+// Copy candidate filename (delegated, survives re-render)
+// =========================================================================
+async function copyText(text) {
+  try { await navigator.clipboard.writeText(text); return true; }
+  catch (_) {
+    const ta = document.createElement("textarea");
+    ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+    document.body.appendChild(ta); ta.select();
+    let ok = false; try { ok = document.execCommand("copy"); } catch (_) {}
+    document.body.removeChild(ta); return ok;
+  }
+}
+$("results").addEventListener("click", async e => {
+  const btn = e.target.closest(".copy-file");
+  if (!btn) return;
+  const ok = await copyText(btn.dataset.file);
+  const original = btn.textContent;
+  btn.textContent = ok ? "Copied!" : "Copy failed";
+  btn.classList.toggle("copied", ok);
+  setTimeout(() => { btn.textContent = original; btn.classList.remove("copied"); }, 1500);
+});
+
+// =========================================================================
+// Search submit
+// =========================================================================
+$("f").addEventListener("submit", async e => {
+  e.preventDefault();
+  const status = $("status"), go = $("go");
+  status.className = ""; status.textContent = "Searching…";
+  $("results").innerHTML = ""; $("head").hidden = true; $("filters").hidden = true;
+  go.disabled = true;
+  try {
+    const category = normalizeCategory($("category").value);
+    allResults = await runSearch(
+      category, $("start_date").value, $("end_date").value,
+      msg => { status.textContent = msg; });
+    $("filters").hidden = allResults.length === 0;
+    renderResults();
+  } catch (err) {
+    status.className = "error"; status.textContent = "Error: " + err.message;
+  } finally {
+    go.disabled = false;
+  }
+});
+</script>
+</body>
+</html>
