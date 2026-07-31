@@ -74,9 +74,10 @@
   .pair { display: grid; grid-template-columns: 1fr 220px 220px 1fr; gap: 0 16px;
           align-items: start; background: var(--panel); border: 1px solid var(--line);
           border-radius: 10px; padding: 14px 16px; margin-bottom: 14px; }
-  /* No-depicts photos: photo + metadata, no comparison column. */
-  .pair-solo { grid-template-columns: 220px 1fr; }
-  .pair-solo .meta.left { text-align: left; }
+  /* No-depicts photos: file metadata | photo | search links on the right
+     (mirrors the comparison layout so the search block is prominent). */
+  .pair-solo { grid-template-columns: 1fr 220px 1fr; }
+  .pair-solo .meta.left { text-align: right; }
   .section-head { font-size: 13px; font-weight: 700; text-transform: uppercase;
                   letter-spacing: .04em; color: var(--muted); margin: 22px 0 10px; }
   .photo img { width: 100%; max-height: 240px; object-fit: contain; background: #eef0f3;
@@ -102,10 +103,11 @@
   a { color: var(--accent); text-decoration: none; } a:hover { text-decoration: underline; }
 
   @media (max-width: 860px) {
-    .pair, .pair-head { grid-template-columns: 1fr 1fr; }
+    .pair, .pair-head, .pair-solo { grid-template-columns: 1fr 1fr; }
     .pair-head .h-left { grid-column: 1 / 2; }
     .pair-head .h-right { grid-column: 2 / 3; }
     .meta.left { text-align: left; }
+    .pair-solo .meta.left { text-align: left; }
   }
 </style>
 </head>
@@ -698,14 +700,20 @@ function phraseSearchUrl(host, name) {
   return `https://${host}/w/index.php?${p.toString()}`;
 }
 
-// Search-link rows for a no-depicts photo: "<name>" on Wikidata / Wikipedia.
-function searchLinks(title) {
+// Right-column search block for a no-depicts photo: the name guessed from the
+// filename (shown once) with phrase-search links to Wikidata and Wikipedia.
+function searchMeta(title) {
   const name = nameFromFilename(title);
-  if (!name) return row("Search", "&mdash; (couldn't read a name from the filename)");
-  const q = `"${esc(name)}"`;
-  return row("Search", q + " on "
-    + link(phraseSearchUrl("www.wikidata.org", name), "Wikidata") + " · "
-    + q + " on " + link(phraseSearchUrl("en.wikipedia.org", name), "Wikipedia"));
+  if (!name) {
+    return `<div class="meta right">
+      ${row("Search", "&mdash; (couldn't read a name from the filename)")}
+    </div>`;
+  }
+  return `<div class="meta right">
+    ${row("Search", "<strong>" + esc(name) + "</strong> on "
+      + link(phraseSearchUrl("www.wikidata.org", name), "Wikidata") + " · "
+      + link(phraseSearchUrl("en.wikipedia.org", name), "Wikipedia"))}
+  </div>`;
 }
 
 function candidateMeta(c) {
@@ -747,13 +755,10 @@ const pairRow = r =>
   `<div class="pair">${candidateMeta(r.candidate)}${candidatePhoto(r.candidate)}`
   + `${infoboxPhoto(r.infobox)}${infoboxMeta(r.infobox)}</div>`;
 
-// Metadata for a no-depicts photo. Unlike candidateMeta there's no depicted
-// subject; instead we show search links built from a name guessed from the
-// filename, to make finding the person's Wikidata/Wikipedia entry easy.
+// Left-column file metadata for a no-depicts photo (no depicted subject).
 function noDepictsMeta(c) {
   return `<div class="meta left">
     ${candidateFileRow(c.file_page, c.title, c.author, c.author_url)}
-    ${searchLinks(c.title)}
     ${row("Resolution", resolution(c), c.low_res)}
     ${row("Date taken", esc(c.date_taken))}
     ${row("Date uploaded", esc(c.date_uploaded))}
@@ -761,10 +766,9 @@ function noDepictsMeta(c) {
   </div>`;
 }
 
-// No-depicts photos: no subject, so a single row of photo + metadata (no
-// comparison column). Uses the same .pair grid via .pair-solo (2 columns).
+// No-depicts row: file metadata | photo | search links (right, for visibility).
 const noDepictsRow = c =>
-  `<div class="pair pair-solo">${candidatePhoto(c)}${noDepictsMeta(c)}</div>`;
+  `<div class="pair pair-solo">${noDepictsMeta(c)}${candidatePhoto(c)}${searchMeta(c.title)}</div>`;
 
 // =========================================================================
 // Date shortcuts
