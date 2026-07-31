@@ -71,8 +71,11 @@ NON_WIKIPEDIA_WIKIS = {
 SESSION = requests.Session()
 SESSION.headers.update(HEADERS)
 
-MAX_RETRIES = 4           # attempts per request before giving up
-BACKOFF_BASE = 1.0        # seconds; doubled each retry (1, 2, 4, ...)
+# Wikidata replicas lag routinely; maxlag=5 makes it shed our load then. We stay
+# polite (keep maxlag=5) but retry patiently so brief lag spikes ride out: with
+# each maxlag 200 carrying Retry-After: 5, six attempts wait ~25s before aborting.
+MAX_RETRIES = 6           # attempts per request before giving up
+BACKOFF_BASE = 1.0        # seconds; doubled each retry when no Retry-After given
 MAXLAG = 5                # ask MediaWiki to shed load when replication lag > this
 
 

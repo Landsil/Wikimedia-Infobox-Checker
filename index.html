@@ -152,8 +152,11 @@ const BATCH = 50;              // titles=/ids= capped at 50 per request (non-bot
 const THUMB_WIDTH = 320;
 const STALE_MONTHS = 12;       // infobox photo flagged red when older than this
 const LOW_RES_MP = 2.0;        // resolution flagged red below this (megapixels)
-const MAX_RETRIES = 4;
-const BACKOFF_BASE = 1.0;      // seconds; doubled each retry
+// Wikidata replicas lag routinely; maxlag=5 makes it shed our load then. Stay
+// polite (keep maxlag=5) but retry patiently so brief spikes ride out: with each
+// maxlag 200 carrying Retry-After: 5, six attempts wait ~25s before aborting.
+const MAX_RETRIES = 6;
+const BACKOFF_BASE = 1.0;      // seconds; doubled each retry when no Retry-After
 const MAXLAG = 5;              // ask MediaWiki to shed load when replica lag > this
 const NON_WIKIPEDIA_WIKIS = new Set([
   "commonswiki", "wikidatawiki", "specieswiki", "metawiki",
@@ -779,7 +782,10 @@ $("f").addEventListener("submit", async e => {
     $("filters").hidden = allResults.length === 0;
     renderResults();
   } catch (err) {
-    status.className = "error"; status.textContent = "Error: " + err.message;
+    status.className = "error";
+    status.textContent = /throttled/i.test(err.message)
+      ? "Wikidata is busy right now (replica lag). This is temporary — wait a moment and search again."
+      : "Error: " + err.message;
   } finally {
     go.disabled = false;
   }
