@@ -47,6 +47,8 @@
   .toggle[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); }
   .toggle[aria-pressed="true"]::before { background: var(--accent); }
   .toggle[aria-pressed="true"]::after { transform: translateX(11px); }
+  .toggle:disabled { opacity: .4; cursor: default; }
+  .filter-item:has(.toggle:disabled) .filter-note { opacity: .5; }
   .filter-note { color: var(--muted); font-size: 12px; }
   label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 4px; }
   input { width: 100%; padding: 8px 10px; border: 1px solid var(--line);
@@ -759,18 +761,30 @@ function isHidden(r) {
 }
 
 function renderResults() {
+  // The no-depicts view is exclusive: when on, show ONLY those photos and hide
+  // the comparison results (the other two filters don't apply to them).
+  const showND = pressed("show_no_depicts");
+  $("hide_same_author").disabled = showND;
+  $("hide_good_current").disabled = showND;
+
+  if (showND) {
+    $("head").hidden = true;
+    $("results").innerHTML = "";
+    $("nodepicts").innerHTML = allNoDepicts.length
+      ? `<div class="section-head">No depicts statement (${allNoDepicts.length}) — need one added</div>`
+        + allNoDepicts.map(noDepictsRow).join("")
+      : `<div class="none">No photos without a depicts statement.</div>`;
+    $("status").textContent =
+      `Showing ${allNoDepicts.length} unused photo(s) with no depicts statement.`;
+    return;
+  }
+
   const shown = allResults.filter(r => !isHidden(r));
   const hiddenCount = allResults.length - shown.length;
+  $("nodepicts").innerHTML = "";
   $("head").hidden = shown.length === 0;
   $("results").innerHTML = shown.map(pairRow).join("")
     || `<div class="none">No matching candidates.</div>`;
-
-  // Separate no-depicts view, shown only when its toggle is on.
-  const showND = pressed("show_no_depicts");
-  $("nodepicts").innerHTML = (showND && allNoDepicts.length)
-    ? `<div class="section-head">No depicts statement (${allNoDepicts.length}) — need one added</div>`
-      + allNoDepicts.map(noDepictsRow).join("")
-    : (showND ? `<div class="section-head">No depicts statement (0)</div>` : "");
 
   let msg = `Found ${allResults.length} unused category photo(s) with a depicted subject.`;
   if (hiddenCount) msg += ` Showing ${shown.length}; ${hiddenCount} hidden by filters.`;
