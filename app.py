@@ -1263,16 +1263,16 @@ function nameFromFilename(title) {
   return name.split(/\s+/).filter(Boolean).length >= 2 ? name : "";
 }
 
-// A phrase ("Name") search URL on a wiki's Special:Search (advanced, ns0).
-// Matches the form MediaWiki itself produces for a quoted phrase search.
+// A phrase ("Name") search URL, as the Special:Search/<phrase> PATH form.
+// Passing the quoted phrase via ?search= makes MediaWiki also try to resolve it
+// as a page title, so the results page carries a noisy 'The page "James Dow"
+// does not exist; did you mean James Dow?' notice above the (correct) results.
+// The path form searches without that title lookup. Spaces must be "+" encoded:
+// %20 or _ in the path bring the notice back. Verified on en.wikipedia and
+// wikidata: same phrase results, no notice.
 function phraseSearchUrl(host, name) {
-  const quoted = '"' + name + '"';
-  const p = new URLSearchParams({
-    search: quoted, title: "Special:Search", profile: "advanced", fulltext: "1",
-    "advancedSearch-current": JSON.stringify({ fields: { phrase: quoted } }),
-    ns0: "1",
-  });
-  return `https://${host}/w/index.php?${p.toString()}`;
+  const phrase = encodeURIComponent('"' + name + '"').replace(/%20/g, "+");
+  return `https://${host}/wiki/Special:Search/${phrase}?fulltext=1&ns0=1`;
 }
 
 // Right-column search block for a no-depicts photo: the name guessed from the

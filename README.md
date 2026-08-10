@@ -193,8 +193,20 @@ to help find the person's entry. The name is **guessed from the filename**:
   (`Hanna Flint at SXSW London 2026.jpg` → `Hanna Flint`).
 - The `File:` prefix, extension and any trailing sequence number are stripped.
   A result under two words is discarded, so `Waymo` produces no bogus search.
-- Links target each wiki's `Special:Search` in **advanced, exact-phrase** mode:
-  the quoted `"Hanna Flint"` as an adjacent phrase, restricted to namespace 0.
+- Links target each wiki's `Special:Search` as an **exact-phrase** search
+  restricted to namespace 0, using the **path** form:
+
+  ```
+  https://en.wikipedia.org/wiki/Special:Search/%22Hanna+Flint%22?fulltext=1&ns0=1
+  ```
+
+  Passing the quoted phrase as `?search="Hanna Flint"` instead makes MediaWiki
+  *also* try to resolve it as a page title, so the results page renders a noisy
+  `The page "Hanna Flint" does not exist; did you mean Hanna Flint?` notice above
+  the (otherwise correct) results. The path form skips that title lookup.
+  **Spaces must be `+`-encoded** — `%20` or `_` in the path bring the notice
+  back. Verified on en.wikipedia and wikidata: identical phrase results, no
+  notice, including names with apostrophes and non-ASCII characters.
 
 
 ## Rate limiting and reliability
