@@ -963,7 +963,11 @@ INDEX_HTML = r"""<!DOCTYPE html>
          Roboto, Helvetica, Arial, sans-serif; background: var(--bg); color: var(--ink); }
   header { background: var(--panel); border-bottom: 1px solid var(--line);
            padding: 18px 24px; }
-  h1 { margin: 0 0 12px; font-size: 20px; }
+  /* Title row: heading left, About button pinned right. */
+  .titlebar { display: flex; align-items: center; justify-content: space-between;
+              gap: 12px; margin: 0 0 12px; }
+  h1 { margin: 0; font-size: 20px; }
+  #about_btn { padding: 6px 14px; background: #eef2f7; color: var(--accent); font-size: 13px; }
   .quick { margin: 0 0 12px; display: flex; gap: 8px; }
   .quick button { padding: 5px 12px; background: #eef2f7; color: var(--accent); font-size: 12px; }
   form { display: grid; grid-template-columns: 1fr 150px 150px auto;
@@ -1037,6 +1041,26 @@ INDEX_HTML = r"""<!DOCTYPE html>
   .none { color: var(--muted); font-style: italic; text-align: center; padding: 20px; }
   a { color: var(--accent); text-decoration: none; } a:hover { text-decoration: underline; }
 
+  /* About overlay: sits over the current view so results are kept behind it. */
+  .overlay { position: fixed; inset: 0; background: rgba(28,30,33,.55);
+             display: flex; align-items: flex-start; justify-content: center;
+             padding: 40px 20px; overflow-y: auto; z-index: 50; }
+  .overlay[hidden] { display: none; }
+  .about { background: var(--panel); border-radius: 10px; max-width: 720px; width: 100%;
+           padding: 24px 28px 28px; box-shadow: 0 10px 40px rgba(0,0,0,.25); }
+  .about h2 { margin: 0; font-size: 19px; }
+  .about h3 { margin: 20px 0 6px; font-size: 14px; text-transform: uppercase;
+              letter-spacing: .04em; color: var(--muted); }
+  .about p, .about li { font-size: 14px; line-height: 1.5; }
+  .about ul { margin: 6px 0; padding-left: 20px; }
+  .about li { margin: 5px 0; }
+  .about .close-row { display: flex; justify-content: space-between; align-items: center; }
+  .about .flag { color: #b91c1c; font-weight: 600; }
+
+  /* Footer */
+  footer { border-top: 1px solid var(--line); margin-top: 30px; padding: 18px 24px 26px;
+           text-align: center; color: var(--muted); font-size: 13px; }
+
   @media (max-width: 860px) {
     .pair, .pair-head, .pair-solo { grid-template-columns: 1fr 1fr; }
     .pair-head .h-left { grid-column: 1 / 2; }
@@ -1048,7 +1072,10 @@ INDEX_HTML = r"""<!DOCTYPE html>
 </head>
 <body>
 <header>
-  <h1>Wikimedia Infobox Finder</h1>
+  <div class="titlebar">
+    <h1>Wikimedia Infobox Finder</h1>
+    <button type="button" id="about_btn">About</button>
+  </div>
   <div class="quick">
     <button type="button" id="q_prev_month">Previous month</button>
     <button type="button" id="q_month">This month</button>
@@ -1098,6 +1125,79 @@ INDEX_HTML = r"""<!DOCTYPE html>
   <div id="nodepicts"></div>
   <div id="current"></div>
 </main>
+
+<div class="overlay" id="about_overlay" hidden>
+  <div class="about" role="dialog" aria-modal="true" aria-labelledby="about_title">
+    <div class="close-row">
+      <h2 id="about_title">About this tool</h2>
+      <button type="button" id="about_close">Close</button>
+    </div>
+
+    <p>Finds photos in a Wikimedia Commons category that are <strong>not yet used
+    in any Wikipedia article</strong> and <strong>depict a person</strong>, then
+    pairs each with that person's <strong>current Wikipedia infobox photo</strong>
+    so you can see whether the new photo is an improvement.</p>
+
+    <h3>Searching</h3>
+    <ul>
+      <li><strong>Category</strong> — a Commons category, with or without the
+        <code>Category:</code> prefix. Spaces, underscores and <code>+</code> all work.</li>
+      <li><strong>Start / End date</strong> — filters by the file's
+        <strong>upload</strong> date. <em>Previous month</em>, <em>This month</em>
+        and <em>This year</em> prefill common ranges.</li>
+    </ul>
+
+    <h3>Toggles</h3>
+    <ul>
+      <li><strong>Hide same-author candidates</strong> (on) — hides a candidate when
+        the current infobox photo is by the same photographer <em>and</em> is already
+        good, so another of their photos adds nothing.</li>
+      <li><strong>Hide when current photo is good</strong> (on) — hides a match when
+        the infobox photo is already good, whoever took it.</li>
+      <li><strong>Show no-depicts photos</strong> (off) — switches to showing
+        <em>only</em> unused photos with no depicts statement. Nothing to compare, so
+        these are a "needs a depicts statement added" list, with search links that
+        guess the person's name from the filename.</li>
+      <li><strong>Show category photos already in use</strong> (off) — switches to
+        showing <em>only</em> category photos that <em>are</em> an article's current
+        infobox photo, each with a button to fetch the previous photo by a
+        different author.</li>
+    </ul>
+    <p>The last two are exclusive views: turning one on replaces the comparison
+    results and disables the other toggles.</p>
+
+    <h3>What "good" means</h3>
+    <p>A photo counts as good when it is present, <strong>not stale</strong> (taken
+    within the last 12 months, falling back to its upload date) and
+    <strong>not low-res</strong> (2 megapixels or more). Stale dates and low
+    resolutions are marked <span class="flag">in red</span>.</p>
+
+    <h3>Buttons on each row</h3>
+    <ul>
+      <li><strong>Copy</strong> — copies the bare filename (no <code>File:</code>
+        prefix) ready to paste into an infobox <code>|image=</code> field.</li>
+      <li><strong>Edit</strong> — opens the article in the wikitext editor.</li>
+      <li><strong>Find previous photo by a different author</strong> — walks the
+        article's revision history and shows the previous infobox photo that
+        someone else took, with when and by whom it was replaced.</li>
+    </ul>
+
+    <h3>Notes</h3>
+    <ul>
+      <li>The "current infobox photo" is the image the article actually displays,
+        which often differs from the photo set on Wikidata.</li>
+      <li>A photo can be live on several language Wikipedias; each appears as its
+        own row, because each wiki has its own history.</li>
+      <li>All data comes from read-only calls to the public Wikimedia APIs. If a
+        search fails with a "busy" message, Wikidata is lagging — wait and retry.</li>
+    </ul>
+  </div>
+</div>
+
+<footer>
+  <a href="https://github.com/Landsil/Wikimedia-Infobox-Checker" target="_blank"
+     rel="noopener">Wikimedia-Infobox-Checker on GitHub</a>
+</footer>
 <script>
 const $ = id => document.getElementById(id);
 const esc = s => (s == null ? "" : String(s)).replace(/[&<>"]/g,
@@ -1302,6 +1402,18 @@ $("q_prev_month").addEventListener("click", prevMonth);
 $("q_month").addEventListener("click", thisMonth);
 $("q_year").addEventListener("click", thisYear);
 thisMonth();
+
+// ---- About overlay ------------------------------------------------------- //
+const setAbout = open => { $("about_overlay").hidden = !open; };
+$("about_btn").addEventListener("click", () => setAbout(true));
+$("about_close").addEventListener("click", () => setAbout(false));
+// Click the backdrop (but not the panel) to dismiss.
+$("about_overlay").addEventListener("click", e => {
+  if (e.target === $("about_overlay")) setAbout(false);
+});
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape" && !$("about_overlay").hidden) setAbout(false);
+});
 
 // Results are fetched once, then filtered client-side so the toggle is instant.
 let allResults = [];
