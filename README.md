@@ -25,8 +25,11 @@ can compare the new candidate against what's live.
 
 ### Date buttons
 
+- The date fields default to the **last three months** (1st of the month two
+  months back through the end of the current month).
 - **Previous month** / **This month** / **This year** — prefill the start/end
-  date fields to a common range. Dates filter by the file's **upload timestamp**.
+  date fields to other common ranges. Dates filter by the file's **upload
+  timestamp**.
 
 ### Filter toggles (appear after a search)
 

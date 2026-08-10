@@ -22,9 +22,10 @@ Run the server:
 
 Then open the printed URL in a browser and fill in the form:
   - Category:  a Commons category name, with or without the "Category:" prefix
-               (e.g. "WikiPortraits at 2026 FIFA World Cup").
-  - Start/End: upload-date window. Defaults to the current month; the
-               "This month" / "This year" buttons prefill common ranges.
+               (e.g. "Photographs by Mateusz Malta").
+  - Start/End: upload-date window. Defaults to the last three months; the
+               "Previous month" / "This month" / "This year" buttons prefill
+               other common ranges.
 
 The tool lists each unused candidate photo beside the subject's current infobox
 photo. Everything runs locally; no data leaves your machine except the read-only
@@ -1083,7 +1084,7 @@ INDEX_HTML = r"""<!DOCTYPE html>
   </div>
   <form id="f">
     <div><label>Category</label>
-      <input id="category" value="WikiPortraits at 2026 FIFA World Cup"></div>
+      <input id="category" value="Photographs by Mateusz Malta"></div>
     <div><label>Start date</label><input id="start_date" type="date"></div>
     <div><label>End date</label><input id="end_date" type="date"></div>
     <button id="go" type="submit">Search Candidates</button>
@@ -1143,8 +1144,9 @@ INDEX_HTML = r"""<!DOCTYPE html>
       <li><strong>Category</strong> — a Commons category, with or without the
         <code>Category:</code> prefix. Spaces, underscores and <code>+</code> all work.</li>
       <li><strong>Start / End date</strong> — filters by the file's
-        <strong>upload</strong> date. <em>Previous month</em>, <em>This month</em>
-        and <em>This year</em> prefill common ranges.</li>
+        <strong>upload</strong> date. Defaults to the last three months;
+        <em>Previous month</em>, <em>This month</em> and <em>This year</em>
+        prefill other common ranges.</li>
     </ul>
 
     <h3>Toggles</h3>
@@ -1398,10 +1400,18 @@ function thisYear() {
   const n = new Date();
   setRange(new Date(n.getFullYear(), 0, 1), new Date(n.getFullYear(), 11, 31));
 }
+// Default on load: a 3-month window — the 1st of the month two months back
+// through the end of the current month. A negative month index rolls the year
+// back automatically (January -> November of the previous year).
+function lastThreeMonths() {
+  const n = new Date();
+  setRange(new Date(n.getFullYear(), n.getMonth() - 2, 1),
+           new Date(n.getFullYear(), n.getMonth() + 1, 0));
+}
 $("q_prev_month").addEventListener("click", prevMonth);
 $("q_month").addEventListener("click", thisMonth);
 $("q_year").addEventListener("click", thisYear);
-thisMonth();
+lastThreeMonths();
 
 // ---- About overlay ------------------------------------------------------- //
 const setAbout = open => { $("about_overlay").hidden = !open; };
