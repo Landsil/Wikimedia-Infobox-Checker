@@ -199,22 +199,52 @@ to help find the person's entry. The name is **guessed from the filename**:
 
 ## Rate limiting and reliability
 
-All calls go through `api_get()` / `apiGet()`, which sends `maxlag=5` so
-MediaWiki sheds load rather than straining lagged replicas, and retries with
-backoff (`MAX_RETRIES` = 6, honouring `Retry-After`).
+All calls go through `api_get()` / `apiGet()`, which retries with exponential
+backoff (`MAX_RETRIES` = 6, honouring `Retry-After`) on genuine rate limiting
+(HTTP 429/503) and on connection/timeout errors, and **raises** on exhaustion
+rather than returning a partial response that would look like "nothing found".
 
-**A `maxlag` throttle is HTTP 200, not a 5xx.** The body is
-`{"error": {"code": "maxlag"}}` with no data. Retrying only on status codes means
-a lagged replica silently returns *zero results that look like a legitimate
-"nothing found"* — so the body is inspected, and on exhaustion the code **raises**
-rather than returning an empty response. If a search reports that the wiki is
-busy, Wikidata is lagging; wait and retry.
+### Why there is no `maxlag`
 
-An API key wouldn't help much. Wikimedia has no read key; registering an account
-would only add `apihighlimits` (batches 50 → 500), which for a typical search
-means 8 calls instead of 4. It wouldn't affect maxlag throttling at all, and for
-the static build it would mean either leaking a credential in public source or
-forcing every visitor through an OAuth login.
+`maxlag` is deliberately **not** sent. The docs are explicit that it's for
+background work:
+
+> "Interactive tasks (where a user is waiting for the result) may omit the
+> `maxlag` parameter. Noninteractive tasks should always use it."
+> — [Manual:Maxlag parameter](https://www.mediawiki.org/wiki/Manual:Maxlag_parameter)
+
+This tool is the interactive case: somebody clicks Search and waits. `maxlag=5`
+is the recommended default for **bots**, where a low duty cycle under load is the
+intended behaviour precisely so that humans get priority.
+
+Sending it caused frequent, avoidable failures:
+
+- **Reads are not rate-limited.** `meta=userinfo&uiprop=ratelimits` returns only
+  write/expensive actions (`edit`, `sendemail`, `purge`, `renderfile`, captchas)
+  — no read entry. Per [API:Etiquette](https://www.mediawiki.org/wiki/API:Etiquette),
+  *"There is no hard speed limit on read requests."*
+- **It trips on Wikidata Query Service lag.** The lagged host reported was
+  `wdqs1012`, a SPARQL/WDQS node this tool never queries, pinned at 35–37s, while
+  the databases were fine (Commons 0.14s, en.wikipedia 0.85s) and no
+  `X-Database-Lag` header was present at all.
+- **The same requests succeed without it.** With lag reported at 35s,
+  `wbgetentities` with `maxlag=5` returned `error=maxlag` and zero entities;
+  the identical request without `maxlag` returned the entities.
+
+So the failures were self-imposed: refusing requests the servers were happy to
+serve. Etiquette for reads is still followed — serial (not parallel) requests,
+50-item batching, generators, and a descriptive `User-Agent` from `app.py`.
+
+There is no published SLA or typical-response-time figure for the Wikimedia
+APIs; WDQS lag is tracked only on Grafana dashboards with no documented "normal"
+value, so there is nothing meaningful to gate on anyway.
+
+### Would an API key help?
+
+Not really. Wikimedia has no read key; registering an account would only add
+`apihighlimits` (batches 50 → 500), which for a typical search means 4 calls
+instead of 8. For the static build it would mean either leaking a credential in
+public source or forcing every visitor through an OAuth login.
 
 
 ## Tunables
@@ -228,7 +258,7 @@ All at the top of `app.py`, mirrored in `index.html`:
 | `STALE_MONTHS` | 12 | Age at which a photo is flagged stale |
 | `LOW_RES_MP` | 2.0 | Megapixels below which resolution is flagged |
 | `MAX_RETRIES` | 6 | Attempts per request before aborting |
-| `MAXLAG` | 5 | Replica lag threshold (seconds) |
+| `BACKOFF_BASE` | 1.0 | Backoff seconds, doubled per retry when no `Retry-After` |
 | `HISTORY_REV_LIMIT` | 50 | Revisions fetched per history lookup |
 | `MAX_BODY_BYTES` | 64 KiB | `app.py` request-body cap |
 

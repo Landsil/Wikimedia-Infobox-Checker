@@ -72,25 +72,27 @@ NON_WIKIPEDIA_WIKIS = {
 SESSION = requests.Session()
 SESSION.headers.update(HEADERS)
 
-# Wikidata replicas lag routinely; maxlag=5 makes it shed our load then. We stay
-# polite (keep maxlag=5) but retry patiently so brief lag spikes ride out: with
-# each maxlag 200 carrying Retry-After: 5, six attempts wait ~25s before aborting.
 MAX_RETRIES = 6           # attempts per request before giving up
 BACKOFF_BASE = 1.0        # seconds; doubled each retry when no Retry-After given
-MAXLAG = 5                # ask MediaWiki to shed load when replication lag > this
 
 
 def api_get(base, params):
-    # Wrap SESSION.get with retry/backoff. Adds maxlag so MediaWiki sheds our
-    # load instead of straining lagged replicas. Retries on connection/timeout
-    # errors, on 429/503, AND on a maxlag throttle -- which MediaWiki returns as
-    # HTTP 200 with a {"error": {"code": "maxlag"}} body and NO data, not a 5xx.
-    # Without detecting that body, a lagged replica silently yields zero results
-    # (empty entities/pages) that look like a legitimate "nothing found". On
-    # exhaustion we raise rather than return the throttled response, so the
-    # caller fails loudly instead of reporting an empty search.
-    params = dict(params)
-    params.setdefault("maxlag", MAXLAG)
+    # Wrap SESSION.get with retry/backoff on genuine throttling (429/503) and on
+    # connection/timeout errors.
+    #
+    # Deliberately NO maxlag parameter. MediaWiki's guidance is that maxlag is
+    # for non-interactive work: "Interactive tasks (where a user is waiting for
+    # the result) may omit the maxlag parameter. Noninteractive tasks should
+    # always use it." (Manual:Maxlag_parameter, API:Etiquette.) Someone is
+    # sitting here waiting for a search, and reads have no hard rate limit --
+    # meta=userinfo&uiprop=ratelimits lists only writes/expensive actions, none
+    # for reads. Sending maxlag=5 made us refuse requests the servers were happy
+    # to serve: it also trips on Wikidata Query Service lag (host wdqs*), which
+    # this tool never queries, so a degraded SPARQL node blocked plain entity
+    # reads while the databases themselves were under a second behind.
+    #
+    # Etiquette for reads is still followed: serial (not parallel) requests,
+    # 50-item batching, generators, and a descriptive User-Agent.
     for attempt in range(MAX_RETRIES):
         try:
             resp = SESSION.get(base, params=params, timeout=30)
@@ -100,27 +102,17 @@ def api_get(base, params):
                 continue
             raise
 
-        throttled = resp.status_code in (429, 503) or is_maxlag(resp)
-        if throttled:
+        if resp.status_code in (429, 503):
             if attempt < MAX_RETRIES - 1:
                 time.sleep(retry_delay(resp, attempt))
                 continue
             raise RuntimeError(
-                f"MediaWiki still throttled after {MAX_RETRIES} attempts "
+                f"MediaWiki still rate-limiting after {MAX_RETRIES} attempts "
                 f"({base}); aborting rather than returning partial results."
             )
 
         resp.raise_for_status()
         return resp
-
-
-def is_maxlag(resp):
-    # A maxlag throttle arrives as HTTP 200 with an error body (see api_get).
-    # Guard the JSON parse: non-JSON or a normal body simply isn't a maxlag hit.
-    try:
-        return resp.json().get("error", {}).get("code") == "maxlag"
-    except ValueError:
-        return False
 
 
 def retry_delay(resp, attempt):
@@ -1206,7 +1198,8 @@ INDEX_HTML = r"""<!DOCTYPE html>
       <li>A photo can be live on several language Wikipedias; each appears as its
         own row, because each wiki has its own history.</li>
       <li>All data comes from read-only calls to the public Wikimedia APIs. If a
-        search fails with a "busy" message, Wikidata is lagging — wait and retry.</li>
+        search fails with a "busy" message, Wikimedia is briefly rate-limiting
+        us — wait a moment and retry.</li>
     </ul>
   </div>
 </div>
