@@ -35,8 +35,12 @@
   #about_btn { padding: 6px 14px; background: #eef2f7; color: var(--accent); font-size: 13px; }
   .quick { margin: 0 0 12px; display: flex; gap: 8px; }
   .quick button { padding: 5px 12px; background: #eef2f7; color: var(--accent); font-size: 12px; }
-  form { display: grid; grid-template-columns: 1fr 150px 150px auto;
+  form { display: grid; grid-template-columns: 1fr 150px 150px auto auto;
          gap: 12px; align-items: end; max-width: 1100px; }
+  /* Secondary action (copy shareable URL) sits next to the search button. */
+  button.secondary { background: #eef2f7; color: var(--accent); }
+  button.secondary:hover { background: #e2e8f0; }
+  button.secondary.copied { background: #d7f0e0; color: var(--new); }
   /* Post-search filter toggle bar. */
   .filters { display: flex; flex-wrap: wrap; gap: 10px 28px; margin-bottom: 14px; }
   .filter-item { display: flex; align-items: center; gap: 10px; }
@@ -152,6 +156,7 @@
     <div><label>Start date</label><input id="start_date" type="date"></div>
     <div><label>End date</label><input id="end_date" type="date"></div>
     <button id="go" type="submit">Search Candidates</button>
+    <button id="copy_url" type="button" class="secondary">Copy static URL</button>
   </form>
 </header>
 <main>
@@ -215,7 +220,10 @@
     <p>You can prefill the form from the URL:
     <code>?category=Photographs_by_Mateusz_Malta</code>, optionally with
     <code>&amp;start=2026-05-01&amp;end=2026-07-31</code>, and
-    <code>&amp;search=1</code> to run it immediately.</p>
+    <code>&amp;search=1</code> to run it immediately.
+    <strong>Copy static URL</strong> (next to the search button) builds that link
+    from whatever is currently in the form, so you can share a search without
+    assembling it by hand.</p>
 
     <h3>Toggles</h3>
     <ul>
@@ -1097,6 +1105,25 @@ function applyUrlParams() {
   return q.get("search") === "1";
 }
 const autoSearch = applyUrlParams();
+
+// "Copy static URL": the inverse of applyUrlParams() — encode the current form
+// state into a shareable link (including &search=1 so it runs on open).
+function staticUrl() {
+  const q = new URLSearchParams();
+  q.set("category", $("category").value.trim());
+  if ($("start_date").value) q.set("start", $("start_date").value);
+  if ($("end_date").value) q.set("end", $("end_date").value);
+  q.set("search", "1");
+  return `${location.origin}${location.pathname}?${q.toString()}`;
+}
+$("copy_url").addEventListener("click", async () => {
+  const btn = $("copy_url");
+  const ok = await copyText(staticUrl());
+  const original = btn.textContent;
+  btn.textContent = ok ? "URL copied!" : "Copy failed";
+  btn.classList.toggle("copied", ok);
+  setTimeout(() => { btn.textContent = original; btn.classList.remove("copied"); }, 1500);
+});
 
 // ---- About overlay ------------------------------------------------------- //
 const setAbout = open => { $("about_overlay").hidden = !open; };
