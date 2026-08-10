@@ -1482,10 +1482,28 @@ const pressed = id => $(id).getAttribute("aria-pressed") === "true";
 const currentIsGood = b =>
   b.has_image && !b.stale && !b.low_res && b.megapixels != null;
 
+// Commons crops are conventionally named "<original> (cropped).jpg" (also
+// "(cropped 2)", "(head crop)", ...). Derive the parent filename so the tool can
+// tell that an infobox photo is the *same photo* as a candidate, just cropped.
+// Commons also records this structurally via {{Extracted from}} in the file's
+// wikitext, which is authoritative but costs one non-batchable parse call per
+// file; the naming convention covers it for free.
+const CROP_SUFFIX = /^(?<base>.+?)\s*\((?:[^)]*crop[^)]*)\)(?<ext>\.\w+)$/i;
+function cropParent(title) {
+  const m = CROP_SUFFIX.exec(title || "");
+  return m ? m.groups.base + m.groups.ext : null;
+}
+// The infobox photo is a crop of this candidate -> already the same photo.
+const infoboxIsCropOfCandidate = r =>
+  r.infobox.has_image && cropParent(r.infobox.title) === r.candidate.title;
+
 // Filter 1: hide when the candidate's author matches the infobox photo's author
 // AND that photo is good (same photographer already has a good live photo, so
 // this candidate adds nothing). Match on author_url (canonical) else the name.
 function sameAuthorRedundant(r) {
+  // A crop of the candidate is the candidate, already in use: redundant whatever
+  // the crop's resolution is (a tight crop can fall under the low-res bar).
+  if (infoboxIsCropOfCandidate(r)) return true;
   if (!currentIsGood(r.infobox)) return false;
   const bId = r.infobox.author_url || r.infobox.author;
   const cId = r.candidate.author_url || r.candidate.author;

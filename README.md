@@ -82,7 +82,7 @@ client-side, so switching is instant and costs no API calls.
 
 | Toggle | Default | Effect |
 | :-- | :-- | :-- |
-| Hide same-author candidates | on | Hides a candidate when the current infobox photo is by the same author **and** is already good |
+| Hide same-author candidates | on | Hides a candidate when the current infobox photo is by the same author **and** is already good, or is a **crop of that candidate** |
 | Hide when current photo is good | on | Hides a match when the infobox photo is already good, whoever took it |
 | Show no-depicts photos | off | **Exclusive view**: only unused photos with no `P180` |
 | Show category photos already in use | off | **Exclusive view**: only category photos that *are* an article's current infobox photo |
@@ -91,10 +91,27 @@ The two exclusive views replace the comparison results and disable the other
 toggles (and each other). Author matching prefers the Commons **user-page URL**
 over the display name, because display names differ from usernames.
 
-Note that "hide same-author" is a strict subset of "hide when current photo is
-good" (it only fires when the current photo is good). Its value is letting you
-hide *your own* redundant duplicates while keeping good photos by *other*
-photographers visible — turn the second toggle off, first on.
+### Crops count as the same photo
+
+Commons crops are conventionally named `<original> (cropped).jpg` (also
+`(cropped 2)`, `(head crop)`, …). `cropParent()` derives the parent filename, so
+when an article's infobox photo is a crop of the candidate the tool treats it as
+**the same photo, already in use** — redundant regardless of the crop's
+resolution, since a tight crop can fall under the low-res bar and would otherwise
+show up as "replace this" against your own adopted photo.
+
+Commons records the relationship structurally too, via `{{Extracted from}}` in
+the crop's wikitext (and `{{Image extracted}}` on the original). That is
+authoritative, but wikitext is not batchable — one `action=parse` per file — so
+the naming convention is used instead, for free. It matches `(cropped)`,
+`(cropped 2)`, `(head crop)` and case variants, and deliberately does not match
+`(retouched)`, `(1930s)`, `(portrait)`, or a `(cropped)` that isn't the final
+qualifier.
+
+Apart from the crop case above, "hide same-author" is a strict subset of "hide
+when current photo is good" — it only fires when the current photo is good. Its
+value is letting you hide *your own* redundant duplicates while keeping good
+photos by *other* photographers visible: turn the second toggle off, the first on.
 
 ### What "good" means
 
