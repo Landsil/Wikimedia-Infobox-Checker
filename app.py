@@ -865,7 +865,10 @@ class Handler(BaseHTTPRequestHandler):
         if not self._host_ok():
             self._send(403, "Forbidden", "text/plain; charset=utf-8")
             return
-        if self.path in ("/", "/index.html"):
+        # Compare the path only: "/?category=..." must still serve the page, since
+        # the client reads those query params to prefill the form.
+        path = urlsplit(self.path).path or "/"
+        if path in ("/", "/index.html"):
             self._send(200, INDEX_HTML, "text/html; charset=utf-8")
         else:
             self._send(404, "Not found", "text/plain; charset=utf-8")
@@ -1148,6 +1151,10 @@ INDEX_HTML = r"""<!DOCTYPE html>
         <em>Previous month</em>, <em>This month</em> and <em>This year</em>
         prefill other common ranges.</li>
     </ul>
+    <p>You can prefill the form from the URL:
+    <code>?category=Photographs_by_Mateusz_Malta</code>, optionally with
+    <code>&amp;start=2026-05-01&amp;end=2026-07-31</code>, and
+    <code>&amp;search=1</code> to run it immediately.</p>
 
     <h3>Toggles</h3>
     <ul>
@@ -1413,6 +1420,23 @@ $("q_month").addEventListener("click", thisMonth);
 $("q_year").addEventListener("click", thisYear);
 lastThreeMonths();
 
+// ---- Prefill from the URL query string ----------------------------------- //
+// ?category=... overrides the default category (underscores and "+" are fine —
+// normalize_category handles them). ?start=/?end= (YYYY-MM-DD) override the
+// default 3-month range. ?search=1 also runs the search immediately, so a link
+// can share a ready-made result.
+function applyUrlParams() {
+  const q = new URLSearchParams(location.search);
+  const category = q.get("category");
+  if (category) $("category").value = category.replace(/_/g, " ").trim();
+  const isDate = v => /^\d{4}-\d{2}-\d{2}$/.test(v || "");
+  const start = q.get("start"), end = q.get("end");
+  if (isDate(start)) $("start_date").value = start;
+  if (isDate(end)) $("end_date").value = end;
+  return q.get("search") === "1";
+}
+const autoSearch = applyUrlParams();
+
 // ---- About overlay ------------------------------------------------------- //
 const setAbout = open => { $("about_overlay").hidden = !open; };
 $("about_btn").addEventListener("click", () => setAbout(true));
@@ -1605,6 +1629,9 @@ $("f").addEventListener("submit", async e => {
     go.disabled = false;
   }
 });
+
+// ?search=1 in the URL: run the prefilled search straight away.
+if (autoSearch) $("f").requestSubmit ? $("f").requestSubmit() : $("go").click();
 </script>
 </body>
 </html>
