@@ -937,16 +937,24 @@ function nameFromFilename(title) {
   return name.split(/\s+/).filter(Boolean).length >= 2 ? name : "";
 }
 
-// A phrase ("Name") search URL, as the Special:Search/<phrase> PATH form.
-// Passing the quoted phrase via ?search= makes MediaWiki also try to resolve it
-// as a page title, so the results page carries a noisy 'The page "James Dow"
-// does not exist; did you mean James Dow?' notice above the (correct) results.
-// The path form searches without that title lookup. Spaces must be "+" encoded:
-// %20 or _ in the path bring the notice back. Verified on en.wikipedia and
-// wikidata: same phrase results, no notice.
-function phraseSearchUrl(host, name) {
-  const phrase = encodeURIComponent('"' + name + '"').replace(/%20/g, "+");
-  return `https://${host}/wiki/Special:Search/${phrase}?fulltext=1&ns0=1`;
+// Search URL for a person's name on a wiki, restricted to article namespace.
+//
+// Uses a PLAIN (unquoted) search, which finds the person best: measured against
+// the alternatives on en.wikipedia, plain search ranks the actual article first
+// for names that have one (James Dow, Sharon Horgan, Kate Griggs), while an
+// exact-phrase ("Name") search buries or misses it -- 0 hits for A. Y. Chao, and
+// unrelated top hits for Hanna Flint -- and intitle:"Name" returns nothing at all
+// for people whose article title isn't an exact match. Quoting also made
+// MediaWiki try the phrase as a page title, adding a "does not exist" notice.
+//
+// Note: this is a query parameter, so spaces are "+" encoded by URLSearchParams.
+// Do not hand-build this as a /wiki/Special:Search/<name> path -- in a path
+// segment "+" is a literal plus, which corrupted names into "A.+Y.+Chao".
+function personSearchUrl(host, name) {
+  const p = new URLSearchParams({
+    title: "Special:Search", search: name, fulltext: "1", ns0: "1",
+  });
+  return `https://${host}/w/index.php?${p.toString()}`;
 }
 
 // Right-column search block for a no-depicts photo: the name guessed from the
@@ -960,8 +968,8 @@ function searchMeta(title) {
   }
   return `<div class="meta right">
     ${row("Search", "<strong>" + esc(name) + "</strong> on "
-      + link(phraseSearchUrl("www.wikidata.org", name), "Wikidata") + " · "
-      + link(phraseSearchUrl("en.wikipedia.org", name), "Wikipedia"))}
+      + link(personSearchUrl("www.wikidata.org", name), "Wikidata") + " · "
+      + link(personSearchUrl("en.wikipedia.org", name), "Wikipedia"))}
   </div>`;
 }
 

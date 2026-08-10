@@ -202,28 +202,35 @@ pulled from Wikidata with no local parameter.
 
 ### No-depicts search links
 
-For photos with no depicts statement, the right column offers phrase-search links
-to help find the person's entry. The name is **guessed from the filename**:
+For photos with no depicts statement, the right column offers search links to
+help find the person's entry. The name is **guessed from the filename**:
 
 - The filename is assumed to **start with the name**, and a **separator word**
   ends it — `NAME_SEPARATORS` = `at` / `in`, easy to extend
   (`Hanna Flint at SXSW London 2026.jpg` → `Hanna Flint`).
 - The `File:` prefix, extension and any trailing sequence number are stripped.
   A result under two words is discarded, so `Waymo` produces no bogus search.
-- Links target each wiki's `Special:Search` as an **exact-phrase** search
-  restricted to namespace 0, using the **path** form:
+- `personSearchUrl()` builds a **plain (unquoted)** `Special:Search` query
+  restricted to namespace 0:
 
   ```
-  https://en.wikipedia.org/wiki/Special:Search/%22Hanna+Flint%22?fulltext=1&ns0=1
+  https://en.wikipedia.org/w/index.php?title=Special%3ASearch&search=Hanna+Flint&fulltext=1&ns0=1
   ```
 
-  Passing the quoted phrase as `?search="Hanna Flint"` instead makes MediaWiki
-  *also* try to resolve it as a page title, so the results page renders a noisy
-  `The page "Hanna Flint" does not exist; did you mean Hanna Flint?` notice above
-  the (otherwise correct) results. The path form skips that title lookup.
-  **Spaces must be `+`-encoded** — `%20` or `_` in the path bring the notice
-  back. Verified on en.wikipedia and wikidata: identical phrase results, no
-  notice, including names with apostrophes and non-ASCII characters.
+**Why plain rather than an exact phrase.** Measured on en.wikipedia, plain search
+ranks the person's own article **first** where one exists (`James Dow`,
+`Sharon Horgan`, `Kate Griggs`), which is the whole point of the link. A quoted
+`"Name"` phrase search is worse for this: it returned **0 hits for `A. Y. Chao`**,
+and for `Hanna Flint` the top hits were unrelated pages. `intitle:"Name"` is
+worse still — 0 results for anyone whose article title isn't an exact match.
+Quoting also made MediaWiki try the phrase as a page title, adding a
+"does not exist" notice above the results.
+
+**Encoding trap.** This is a *query parameter*, so spaces are `+`-encoded by
+`URLSearchParams` and that is correct. An earlier version hand-built a
+`/wiki/Special:Search/<name>` **path** instead, where `+` is a **literal plus** —
+which corrupted names into `A.+Y.+Chao` and broke the search. Don't put the name
+in the path.
 
 
 ## Rate limiting and reliability
