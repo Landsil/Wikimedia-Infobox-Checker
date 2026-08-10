@@ -421,40 +421,50 @@ def find_current_photos(files, used_usages, now):
     # Category photos that ARE an article's current lead image. For every
     # (file, article) usage, compare the article's actual lead image
     # (pageimages) against the file; a match means this photo is live there.
-    # One entry per (file, article) — a photo can be current on several wikis,
-    # and each wiki has its own edit history.
+    #
+    # One entry per PHOTO, with every article it is live on collected in
+    # "articles" — the same photo is often the lead image on several language
+    # Wikipedias, and repeating the whole row per wiki was noisy. Each article
+    # keeps its own links because each wiki has its own edit history.
     by_title = {f["title"]: f for f in files.values()}
-    articles = sorted({a for lst in used_usages.values() for a in lst})
-    lead = fetch_article_lead_images(articles)
+    articles_wanted = sorted({a for lst in used_usages.values() for a in lst})
+    lead = fetch_article_lead_images(articles_wanted)
 
     current = []
     for ftitle, usages in used_usages.items():
         f = by_title.get(ftitle)
         if not f:
             continue
+        live_on = []
         for site, article in usages:
             if lead.get((site, article)) != ftitle:
                 continue
-            current.append({
-                "title": f["title"],
-                "file_page": f["descriptionurl"],
-                "thumb": f["thumb"],
-                "date_taken": f["taken"],
-                "date_uploaded": f["timestamp"],
-                "description": f["description"],
-                "author": f["author"],
-                "author_url": f["author_url"],
-                "width": f["width"],
-                "height": f["height"],
-                "megapixels": f["megapixels"],
-                "low_res": f["megapixels"] is not None and f["megapixels"] < LOW_RES_MP,
-                "stale": is_stale(f["taken"], f["timestamp"], now),
-                "wiki_site": site,
-                "wiki_article_title": article,
-                "wiki_article_url": wikipedia_article_url(site, article),
-                "wiki_edit_url": wikipedia_edit_url(site, article),
-                "wiki_history_api": wikipedia_api_url(site),
+            live_on.append({
+                "site": site,
+                "lang": wiki_lang(site).upper(),      # "enwiki" -> "EN"
+                "title": article,
+                "url": wikipedia_article_url(site, article),
+                "edit_url": wikipedia_edit_url(site, article),
             })
+        if not live_on:
+            continue
+        live_on.sort(key=lambda a: (a["lang"] != "EN", a["lang"]))  # English first
+        current.append({
+            "title": f["title"],
+            "file_page": f["descriptionurl"],
+            "thumb": f["thumb"],
+            "date_taken": f["taken"],
+            "date_uploaded": f["timestamp"],
+            "description": f["description"],
+            "author": f["author"],
+            "author_url": f["author_url"],
+            "width": f["width"],
+            "height": f["height"],
+            "megapixels": f["megapixels"],
+            "low_res": f["megapixels"] is not None and f["megapixels"] < LOW_RES_MP,
+            "stale": is_stale(f["taken"], f["timestamp"], now),
+            "articles": live_on,
+        })
     current.sort(key=lambda c: c["date_uploaded"], reverse=True)
     return current
 
@@ -1038,6 +1048,9 @@ INDEX_HTML = r"""<!DOCTYPE html>
           font-weight: 600; cursor: pointer; text-decoration: none; vertical-align: baseline; }
   .mini:hover { background: #e2e8f0; text-decoration: none; }
   .mini.copied { background: #d7f0e0; color: var(--new); border-color: #b7e0c6; }
+  /* Per-wiki lookup buttons wrap; first has no left margin so the row aligns. */
+  .prev-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+  .prev-actions .mini { margin-left: 0; }
   .none { color: var(--muted); font-style: italic; text-align: center; padding: 20px; }
   a { color: var(--accent); text-decoration: none; } a:hover { text-decoration: underline; }
 
@@ -1240,6 +1253,8 @@ const resolution = o => (o.megapixels != null && o.width && o.height)
 // Show dates without a time or timezone. Both "2026-06-04 18:34:01" and
 // "2026-07-11T17:03:40Z" reduce to the date; free-text dates that extmetadata
 // sometimes carries (e.g. "March 4, 2018") are left as they are.
+// "enwiki" -> "en" (for the short language label next to an article link).
+const wikiLang = site => String(site || "").slice(0, -4).replace(/_/g, "-");
 const dateOnly = v => {
   const s = (v == null ? "" : String(v)).trim();
   const m = /^(\d{4}-\d{2}-\d{2})/.exec(s);
@@ -1322,7 +1337,7 @@ function infoboxMeta(b) {
   }
   return `<div class="meta right">
     ${fileRow(b.file_page, b.title, b.author, b.author_url)}
-    ${row("Article", b.wiki_article_url ? link(b.wiki_article_url, b.wiki_article_title + " (" + b.wiki_site + ")") + editBtn(b) : "&mdash;")}
+    ${row("Article", b.wiki_article_url ? link(b.wiki_article_url, b.wiki_article_title) + " (" + esc(wikiLang(b.wiki_site || "").toUpperCase()) + ")" + editBtn(b) : "&mdash;")}
     ${row("Resolution", resolution(b), b.low_res)}
     ${row("Date taken", esc(dateOnly(b.date_taken)), b.stale)}
     ${row("Date uploaded", esc(dateOnly(b.date_uploaded)))}
@@ -1355,11 +1370,19 @@ const noDepictsRow = c =>
   `<div class="pair pair-solo">${noDepictsMeta(c)}${candidatePhoto(c)}${searchMeta(c.title)}</div>`;
 
 // ---- "Category photo is the current infobox photo" rows ------------------ //
-// Left metadata for a live category photo, including the article it's live on.
+// One row per photo. Every article it is live on is listed, each with its short
+// language code (EN, CA, BG...) and its own Edit link.
+const articleLine = a =>
+  `<div class="row"><span class="v">${link(a.url, a.title)} (${esc(a.lang)})`
+  + ` <a class="mini" href="${esc(a.edit_url)}" target="_blank" rel="noopener">Edit</a>`
+  + `</span></div>`;
+
 function currentPhotoMeta(c) {
+  const label = c.articles.length > 1 ? "Articles" : "Article";
   return `<div class="meta left">
     ${candidateFileRow(c.file_page, c.title, c.author, c.author_url)}
-    ${row("Article", link(c.wiki_article_url, c.wiki_article_title + " (" + c.wiki_site + ")") + editBtn(c))}
+    <div class="row"><span class="k">${label}</span></div>
+    ${c.articles.map(articleLine).join("")}
     ${row("Resolution", resolution(c), c.low_res)}
     ${row("Date taken", esc(dateOnly(c.date_taken)), c.stale)}
     ${row("Date uploaded", esc(dateOnly(c.date_uploaded)))}
@@ -1367,19 +1390,33 @@ function currentPhotoMeta(c) {
   </div>`;
 }
 
-// Right side starts as a button; the fetched previous photo replaces it in place.
-const previousPhotoSlot = i =>
-  `<div class="photo" id="prevphoto-${i}"></div>`
-  + `<div class="meta right" id="prevmeta-${i}">`
-  + `<button type="button" class="mini find-prev" data-idx="${i}">`
-  + `Find previous photo by a different author</button></div>`;
+// Right side: a heading, then a button to check every wiki this photo is live
+// on, plus one button per wiki. Results replace the button block in place.
+function previousPhotoSlot(c, i) {
+  const all = c.articles.length > 1
+    ? `<button type="button" class="mini find-prev" data-idx="${i}" data-lang="">All wikis</button>`
+    : "";
+  const perWiki = c.articles
+    .map(a => `<button type="button" class="mini find-prev" data-idx="${i}" `
+             + `data-lang="${esc(a.lang)}">${esc(a.lang)}</button>`)
+    .join("");
+  return `<div class="photo" id="prevphoto-${i}"></div>`
+    + `<div class="meta right">`
+    + `<div class="row"><span class="k">Find previous photo by a different author</span></div>`
+    + `<div class="row prev-actions" id="prevbtns-${i}">${all}${perWiki}</div>`
+    + `<div id="prevmeta-${i}"></div>`
+    + `</div>`;
+}
 
-// Rendered once the lookup returns: same formatting as every other photo block.
-function previousPhotoHtml(p) {
-  if (!p.found) return { photo: "", meta: row("Previous photo", esc(p.reason)) };
+// Rendered once a lookup returns: same formatting as every other photo block.
+// `lang` labels which wiki the result came from when several were checked.
+function previousPhotoHtml(p, lang) {
+  const head = `<div class="row"><span class="k">${esc(lang)}</span></div>`;
+  if (!p.found) return { photo: "", meta: head + row("Previous photo", esc(p.reason)) };
   return {
     photo: `<img src="${esc(p.thumb)}" alt="" loading="lazy">`,
-    meta: fileRow(p.file_page, p.title, p.author, p.author_url)
+    meta: head
+      + fileRow(p.file_page, p.title, p.author, p.author_url)
       + row("Resolution", resolution(p), p.low_res)
       + row("Date taken", esc(dateOnly(p.date_taken)))
       + row("Date uploaded", esc(dateOnly(p.date_uploaded)))
@@ -1389,9 +1426,9 @@ function previousPhotoHtml(p) {
   };
 }
 
-// Row: live category photo (left) | photo | previous-photo slot (right).
+// Row: live category photo (left) | photo | previous-photo lookup (right).
 const currentPhotoRow = (c, i) =>
-  `<div class="pair">${currentPhotoMeta(c)}${candidatePhoto(c)}${previousPhotoSlot(i)}</div>`;
+  `<div class="pair">${currentPhotoMeta(c)}${candidatePhoto(c)}${previousPhotoSlot(c, i)}</div>`;
 
 // Format local Y-M-D. toISOString() shifts to UTC and can roll the day back by
 // one under timezones ahead of UTC (e.g. BST).
@@ -1593,27 +1630,40 @@ bindToggle("show_current");
 // "Find previous photo by a different author" — fetched on click (the revision
 // history walk is the expensive part, so it stays out of the main search).
 // The local server does the walk so it keeps our custom User-Agent.
+// data-lang empty = check every wiki this photo is live on; otherwise just that
+// one. Each wiki's result is appended, labelled with its language code.
 document.addEventListener("click", async e => {
   const btn = e.target.closest(".find-prev");
   if (!btn) return;
   const i = Number(btn.dataset.idx);
   const c = allCurrent[i];
   if (!c) return;
-  btn.disabled = true; btn.textContent = "Looking through history…";
+  const lang = btn.dataset.lang || "";
+  const targets = lang ? c.articles.filter(a => a.lang === lang) : c.articles;
+  if (!targets.length) return;
+
+  const original = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = targets.length > 1 ? "Checking…" : `${lang} …`;
+  const photoEl = $(`prevphoto-${i}`), metaEl = $(`prevmeta-${i}`);
   try {
-    const resp = await fetch("/api/previous-photo", {
-      method: "POST", headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({
-        wiki_site: c.wiki_site, wiki_article_title: c.wiki_article_title,
-        author_url: c.author_url, author: c.author,
-      }),
-    });
-    const p = await resp.json();
-    if (!resp.ok) throw new Error(p.error || ("HTTP " + resp.status));
-    const out = previousPhotoHtml(p);
-    const photoEl = $(`prevphoto-${i}`), metaEl = $(`prevmeta-${i}`);
-    if (photoEl) photoEl.innerHTML = out.photo;
-    if (metaEl) metaEl.innerHTML = out.meta;
+    for (const a of targets) {
+      const resp = await fetch("/api/previous-photo", {
+        method: "POST", headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+          wiki_site: a.site, wiki_article_title: a.title,
+          author_url: c.author_url, author: c.author,
+        }),
+      });
+      const p = await resp.json();
+      if (!resp.ok) throw new Error(p.error || ("HTTP " + resp.status));
+      const out = previousPhotoHtml(p, a.lang);
+      // First photo found fills the image slot; every result appends its text.
+      if (photoEl && out.photo && !photoEl.innerHTML) photoEl.innerHTML = out.photo;
+      if (metaEl) metaEl.insertAdjacentHTML("beforeend", out.meta);
+    }
+    btn.textContent = original;      // leave it clickable to re-check
+    btn.disabled = false;
   } catch (err) {
     btn.disabled = false;
     btn.textContent = "Failed: " + err.message;

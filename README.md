@@ -85,7 +85,7 @@ client-side, so switching is instant and costs no API calls.
 | Hide same-author candidates | on | Hides a candidate when the current infobox photo is by the same author **and** is already good, or is a **crop of that candidate** |
 | Hide when current photo is good | on | Hides a match when the infobox photo is already good, whoever took it |
 | Show no-depicts photos | off | **Exclusive view**: only unused photos with no `P180` |
-| Show category photos already in use | off | **Exclusive view**: only category photos that *are* an article's current infobox photo |
+| Show category photos already in use | off | **Exclusive view**: only category photos that *are* an article's current infobox photo. One row per photo, listing every article it is live on |
 
 The two exclusive views replace the comparison results and disable the other
 toggles (and each other). Author matching prefers the Commons **user-page URL**
@@ -178,8 +178,14 @@ steps 2–5 proportionally, which is where the fan-out cost is.
 
 ### Previous-photo lookup
 
-On the already-in-use view, the button walks the article's revision history
-**on click** (it's the expensive call, so it stays out of the main search):
+Each row groups by **photo**, not by article: the same photo is often the lead
+image on several language Wikipedias, so all of them are listed with short
+language codes (`EN`, `CA`, `BG`, …) and their own Edit links. Because each wiki
+has its own history, the right-hand side offers an **All wikis** button plus one
+button per wiki; results are appended, each labelled with its language code.
+
+The lookup walks the article's revision history **on click** (it's the expensive
+call, so it stays out of the main search):
 
 1. `prop=revisions` with `rvprop=content&rvslots=main`, `rvdir=older`,
    `HISTORY_REV_LIMIT` = **50** revisions (content-bearing requests are capped at
