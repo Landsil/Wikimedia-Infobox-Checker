@@ -799,6 +799,14 @@ const candidateFileRow = (page, title, author, authorUrl) =>
   + authorLine(author, authorUrl) + `</span></div>`;
 const resolution = o => (o.megapixels != null && o.width && o.height)
   ? `${o.megapixels} MP (${o.width}×${o.height})` : "";
+// Show dates without a time or timezone. Both "2026-06-04 18:34:01" and
+// "2026-07-11T17:03:40Z" reduce to the date; free-text dates that extmetadata
+// sometimes carries (e.g. "March 4, 2018") are left as they are.
+const dateOnly = v => {
+  const s = (v == null ? "" : String(v)).trim();
+  const m = /^(\d{4}-\d{2}-\d{2})/.exec(s);
+  return m ? m[1] : s;
+};
 
 // Words that mark the end of the person's name in a filename ("Name at Event",
 // "Name in Year"). Extend this list as new patterns show up.
@@ -850,8 +858,8 @@ function candidateMeta(c) {
     ${candidateFileRow(c.file_page, c.title, c.author, c.author_url)}
     ${row("Depicted", link(c.wikidata_url, c.depicted_label + " (" + c.depicted_qid + ")"))}
     ${row("Resolution", resolution(c), c.low_res)}
-    ${row("Date taken", esc(c.date_taken))}
-    ${row("Date uploaded", esc(c.date_uploaded))}
+    ${row("Date taken", esc(dateOnly(c.date_taken)))}
+    ${row("Date uploaded", esc(dateOnly(c.date_uploaded)))}
     ${row("Description", esc(c.description))}
   </div>`;
 }
@@ -869,8 +877,8 @@ function infoboxMeta(b) {
     ${fileRow(b.file_page, b.title, b.author, b.author_url)}
     ${row("Article", b.wiki_article_url ? link(b.wiki_article_url, b.wiki_article_title + " (" + b.wiki_site + ")") + editBtn(b) : "&mdash;")}
     ${row("Resolution", resolution(b), b.low_res)}
-    ${row("Date taken", esc(b.date_taken), b.stale)}
-    ${row("Date uploaded", esc(b.date_uploaded))}
+    ${row("Date taken", esc(dateOnly(b.date_taken)), b.stale)}
+    ${row("Date uploaded", esc(dateOnly(b.date_uploaded)))}
     ${row("Description", esc(b.description))}
   </div>`;
 }
@@ -889,8 +897,8 @@ function noDepictsMeta(c) {
   return `<div class="meta left">
     ${candidateFileRow(c.file_page, c.title, c.author, c.author_url)}
     ${row("Resolution", resolution(c), c.low_res)}
-    ${row("Date taken", esc(c.date_taken))}
-    ${row("Date uploaded", esc(c.date_uploaded))}
+    ${row("Date taken", esc(dateOnly(c.date_taken)))}
+    ${row("Date uploaded", esc(dateOnly(c.date_uploaded)))}
     ${row("Description", esc(c.description))}
   </div>`;
 }
@@ -906,8 +914,8 @@ function currentPhotoMeta(c) {
     ${candidateFileRow(c.file_page, c.title, c.author, c.author_url)}
     ${row("Article", link(c.wiki_article_url, c.wiki_article_title + " (" + c.wiki_site + ")") + editBtn(c))}
     ${row("Resolution", resolution(c), c.low_res)}
-    ${row("Date taken", esc(c.date_taken), c.stale)}
-    ${row("Date uploaded", esc(c.date_uploaded))}
+    ${row("Date taken", esc(dateOnly(c.date_taken)), c.stale)}
+    ${row("Date uploaded", esc(dateOnly(c.date_uploaded)))}
     ${row("Description", esc(c.description))}
   </div>`;
 }
@@ -926,9 +934,9 @@ function previousPhotoHtml(p) {
     photo: `<img src="${esc(p.thumb)}" alt="" loading="lazy">`,
     meta: fileRow(p.file_page, p.title, p.author, p.author_url)
       + row("Resolution", resolution(p), p.low_res)
-      + row("Date taken", esc(p.date_taken))
-      + row("Date uploaded", esc(p.date_uploaded))
-      + row("Replaced on", esc(p.replaced_on) + " by " + esc(p.replaced_by_user)
+      + row("Date taken", esc(dateOnly(p.date_taken)))
+      + row("Date uploaded", esc(dateOnly(p.date_uploaded)))
+      + row("Replaced on", esc(dateOnly(p.replaced_on)) + " by " + esc(p.replaced_by_user)
           + (p.diff_url ? ` <a class="mini" href="${esc(p.diff_url)}" target="_blank" rel="noopener">Diff</a>` : ""))
       + row("Description", esc(p.description)),
   };
