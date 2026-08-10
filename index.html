@@ -110,6 +110,10 @@
   /* Per-wiki lookup buttons wrap; first has no left margin so the row aligns. */
   .prev-actions { display: flex; flex-wrap: wrap; gap: 6px; }
   .prev-actions .mini { margin-left: 0; }
+  /* One block per wiki checked, visibly separated, with a bold language label. */
+  .prev-result { margin-top: 14px; }
+  .prev-result + .prev-result { border-top: 1px solid var(--line); padding-top: 12px; }
+  .prev-lang { font-weight: 700; margin-bottom: 4px; }
   .none { color: var(--muted); font-style: italic; text-align: center; padding: 20px; }
   a { color: var(--accent); text-decoration: none; } a:hover { text-decoration: underline; }
 
@@ -1082,20 +1086,25 @@ function previousPhotoSlot(c, i) {
 }
 
 // Rendered once a lookup returns: same formatting as every other photo block.
-// `lang` labels which wiki the result came from when several were checked.
+// `lang` labels which wiki the result came from when several were checked. Each
+// result is its own .prev-result block so consecutive wikis are visibly split.
 function previousPhotoHtml(p, lang) {
-  const head = `<div class="row"><span class="k">${esc(lang)}</span></div>`;
-  if (!p.found) return { photo: "", meta: head + row("Previous photo", esc(p.reason)) };
+  const head = `<div class="prev-lang">${esc(lang)}</div>`;
+  if (!p.found) {
+    return { photo: "",
+             meta: `<div class="prev-result">${head}${row("Previous photo", esc(p.reason))}</div>` };
+  }
   return {
     photo: `<img src="${esc(p.thumb)}" alt="" loading="lazy">`,
-    meta: head
+    meta: `<div class="prev-result">` + head
       + fileRow(p.file_page, p.title, p.author, p.author_url)
       + row("Resolution", resolution(p), p.low_res)
       + row("Date taken", esc(dateOnly(p.date_taken)))
       + row("Date uploaded", esc(dateOnly(p.date_uploaded)))
       + row("Replaced on", esc(dateOnly(p.replaced_on)) + " by " + esc(p.replaced_by_user)
           + (p.diff_url ? ` <a class="mini" href="${esc(p.diff_url)}" target="_blank" rel="noopener">Diff</a>` : ""))
-      + row("Description", esc(p.description)),
+      + row("Description", esc(p.description))
+      + `</div>`,
   };
 }
 
@@ -1304,6 +1313,10 @@ document.addEventListener("click", async e => {
   btn.disabled = true;
   btn.textContent = targets.length > 1 ? "Checking…" : `${lang} …`;
   const photoEl = $(`prevphoto-${i}`), metaEl = $(`prevmeta-${i}`);
+  // Clear any earlier lookup for this row: re-clicking replaces its results
+  // rather than stacking a second copy underneath.
+  if (photoEl) photoEl.innerHTML = "";
+  if (metaEl) metaEl.innerHTML = "";
   try {
     for (const a of targets) {
       const p = await findPreviousPhoto(a.site, a.title, c.author_url, c.author);
