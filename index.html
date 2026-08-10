@@ -148,6 +148,12 @@
       <span class="filter-note">Unused category photos with no depicts statement
         at all (nothing to compare — they need one added).</span>
     </div>
+    <div class="filter-item">
+      <button type="button" id="show_current" class="toggle" aria-pressed="false">
+        Show category photos already in use</button>
+      <span class="filter-note">Category photos that are an article's current
+        infobox photo — with a button to fetch the previous one.</span>
+    </div>
   </div>
   <div id="head" class="pair-head" hidden>
     <div class="h-left">Unused Commons photo (new candidate)</div>
@@ -155,6 +161,7 @@
   </div>
   <div id="results"></div>
   <div id="nodepicts"></div>
+  <div id="current"></div>
 </main>
 <script>
 "use strict";
@@ -431,24 +438,77 @@ async function fetchCategoryFiles(category, start, end) {
   return files;
 }
 
-// Discard images used in an article (namespace 0) on any wiki.
+// "en.wikipedia.org" -> "enwiki"; null for non-Wikipedia projects (wikiquote,
+// wikisource, ...), which globalusage also reports.
+function wikipediaSiteFromHost(host) {
+  const parts = String(host || "").split(".");
+  if (parts.length < 2 || parts[1] !== "wikipedia") return null;
+  return parts[0].replace(/-/g, "_") + "wiki";
+}
+
+// Split by article usage. Returns { unused, usedUsages } where usedUsages maps
+// a file title -> array of [site, articleTitle] it is used on. The article title
+// comes free with guprop=url, and the used bucket powers the "category photo is
+// the current infobox photo" view.
 async function filterUnused(files) {
   const titles = Object.values(files).map(f => f.title);
-  const usedInArticle = new Set();
+  const usedUsages = new Map();
   for (const batch of chunked(titles)) {
     const params = { titles: batch.join("|"), prop: "globalusage",
-                     guprop: "namespace", gulimit: "max" };
+                     guprop: "namespace|url", gulimit: "max" };
     for await (const query of mwQuery(COMMONS_API, params)) {
       for (const page of Object.values(query.pages || {})) {
         for (const usage of page.globalusage || []) {
-          if (String(usage.ns) === "0") usedInArticle.add(page.title);
+          if (String(usage.ns) !== "0") continue;
+          const site = wikipediaSiteFromHost(usage.wiki);
+          if (!site) continue;
+          const article = String(usage.title || "").replace(/_/g, " ");
+          const list = usedUsages.get(page.title) || [];
+          if (!list.some(([s, a]) => s === site && a === article)) list.push([site, article]);
+          usedUsages.set(page.title, list);
         }
       }
     }
   }
-  const kept = {};
-  for (const [pid, f] of Object.entries(files)) if (!usedInArticle.has(f.title)) kept[pid] = f;
-  return kept;
+  const unused = {};
+  for (const [pid, f] of Object.entries(files)) if (!usedUsages.has(f.title)) unused[pid] = f;
+  return { unused, usedUsages };
+}
+
+// Category photos that ARE an article's current lead image. One entry per
+// (file, article): a photo can be current on several wikis, each with its own
+// edit history.
+async function findCurrentPhotos(files, usedUsages, now) {
+  const byTitle = {};
+  for (const f of Object.values(files)) byTitle[f.title] = f;
+  const articles = [];
+  for (const list of usedUsages.values())
+    for (const pair of list)
+      if (!articles.some(([s, a]) => s === pair[0] && a === pair[1])) articles.push(pair);
+  const lead = await fetchArticleLeadImages(articles);
+
+  const current = [];
+  for (const [ftitle, usages] of usedUsages) {
+    const f = byTitle[ftitle];
+    if (!f) continue;
+    for (const [site, article] of usages) {
+      if (lead.get(`${site}\n${article}`) !== ftitle) continue;
+      current.push({
+        title: f.title, file_page: f.descriptionurl, thumb: f.thumb,
+        date_taken: f.taken, date_uploaded: f.timestamp, description: f.description,
+        author: f.author, author_url: f.author_url,
+        width: f.width, height: f.height, megapixels: f.megapixels,
+        low_res: f.megapixels != null && f.megapixels < LOW_RES_MP,
+        stale: isStale(f.taken, f.timestamp, now),
+        wiki_site: site, wiki_article_title: article,
+        wiki_article_url: wikipediaArticleUrl(site, article),
+        wiki_edit_url: wikipediaEditUrl(site, article),
+      });
+    }
+  }
+  current.sort((a, b) =>
+    (a.date_uploaded < b.date_uploaded) ? 1 : (a.date_uploaded > b.date_uploaded) ? -1 : 0);
+  return current;
 }
 
 function allDepictsQids(claims) {
@@ -524,6 +584,72 @@ async function fetchFilesImageinfo(titles) {
   return result;
 }
 
+// ---- Infobox photo history (on demand) ---------------------------------- //
+const INFOBOX_IMAGE_PARAM = /\|\s*(?:image|image_name|photo|img)\s*=\s*([^\n|}]+)/i;
+const HISTORY_REV_LIMIT = 50;   // revisions per request when content is needed
+
+function infoboxImageInWikitext(text) {
+  const m = INFOBOX_IMAGE_PARAM.exec(text || "");
+  if (!m) return null;
+  return m[1].trim().replace(/^\s*(?:File|Image)\s*:\s*/i, "") || null;
+}
+
+// Walk the article's revisions (newest -> older), extract the infobox image from
+// each, and return the first EARLIER image whose author differs from the current
+// photo's. Walking newest->older, a run of revisions shares one image value and
+// the revision that INTRODUCED it is the newest of that run.
+async function findPreviousPhoto(site, article, currentAuthorUrl, currentAuthor) {
+  const api = wikipediaApiUrl(site);
+  const params = {
+    prop: "revisions", titles: article,
+    rvprop: "ids|timestamp|user|comment|content", rvslots: "main",
+    rvlimit: String(HISTORY_REV_LIMIT), rvdir: "older",
+  };
+  let revs = [];
+  for await (const query of mwQuery(api, params)) {
+    for (const page of Object.values(query.pages || {})) revs = revs.concat(page.revisions || []);
+    break;                                  // one page is enough in the common case
+  }
+
+  const timeline = [];
+  for (const rev of revs) {
+    const img = infoboxImageInWikitext(((rev.slots || {}).main || {})["*"]);
+    if (!img) continue;
+    if (!timeline.length || timeline[timeline.length - 1].image !== img) {
+      timeline.push({ image: img, revid: rev.revid, timestamp: rev.timestamp,
+                      user: rev.user, comment: rev.comment || "" });
+    }
+  }
+  if (timeline.length < 2) {
+    return { found: false,
+      reason: `No earlier infobox photo found in the last ${HISTORY_REV_LIMIT} revisions.` };
+  }
+
+  const curId = currentAuthorUrl || currentAuthor;
+  const info = await fetchFilesImageinfo(timeline.slice(1).map(t => "File:" + t.image));
+  for (let i = 1; i < timeline.length; i++) {
+    const t = timeline[i];
+    const meta = info["File:" + t.image];
+    if (!meta) continue;
+    const otherId = meta.author_url || meta.author;
+    if (curId && otherId && otherId === curId) continue;   // same author, look further back
+    const replacedBy = timeline[i - 1];                     // what replaced this photo
+    return {
+      found: true,
+      title: meta.title, file_page: meta.descriptionurl, thumb: meta.thumb,
+      date_taken: meta.taken, date_uploaded: meta.timestamp,
+      description: meta.description, author: meta.author, author_url: meta.author_url,
+      width: meta.width, height: meta.height, megapixels: meta.megapixels,
+      low_res: meta.megapixels != null && meta.megapixels < LOW_RES_MP,
+      replaced_on: replacedBy.timestamp, replaced_by_user: replacedBy.user,
+      replaced_comment: replacedBy.comment,
+      diff_url: `https://${wikiLang(site)}.wikipedia.org/w/index.php?diff=${replacedBy.revid}`,
+    };
+  }
+  return { found: false,
+    reason: `Every earlier infobox photo in the last ${HISTORY_REV_LIMIT} revisions is by the same author.` };
+}
+
 // For every depicted entity: P31 human check; for humans keep label, sitelink,
 // P18, and the article's actual lead image (pageimages), P18 as fallback.
 async function fetchPersonData(files) {
@@ -577,9 +703,12 @@ async function runSearch(category, startDate, endDate, onProgress) {
   const say = msg => { if (onProgress) onProgress(msg); };
 
   say("Fetching category members…");
-  let files = await fetchCategoryFiles(category, start, end);
-  say(`Filtering ${Object.keys(files).length} file(s) by usage…`);
-  files = await filterUnused(files);
+  const allFiles = await fetchCategoryFiles(category, start, end);
+  say(`Filtering ${Object.keys(allFiles).length} file(s) by usage…`);
+  const { unused, usedUsages } = await filterUnused(allFiles);
+  say("Checking which category photos are already the current infobox photo…");
+  const currentPhotos = await findCurrentPhotos(allFiles, usedUsages, now);
+  let files = unused;
   say(`Checking depicts on ${Object.keys(files).length} unused file(s)…`);
   const { kept, noDepicts } = await attachDepicts(files);
   files = kept;
@@ -645,7 +774,7 @@ async function runSearch(category, startDate, endDate, onProgress) {
     low_res: f.megapixels != null && f.megapixels < LOW_RES_MP,
   })).sort(byDateDesc);
 
-  return { results, noDepicts: noDepictsList };
+  return { results, noDepicts: noDepictsList, currentPhotos };
 }
 
 // =========================================================================
@@ -770,6 +899,45 @@ function noDepictsMeta(c) {
 const noDepictsRow = c =>
   `<div class="pair pair-solo">${noDepictsMeta(c)}${candidatePhoto(c)}${searchMeta(c.title)}</div>`;
 
+// ---- "Category photo is the current infobox photo" rows ------------------ //
+// Left metadata for a live category photo, including the article it's live on.
+function currentPhotoMeta(c) {
+  return `<div class="meta left">
+    ${candidateFileRow(c.file_page, c.title, c.author, c.author_url)}
+    ${row("Article", link(c.wiki_article_url, c.wiki_article_title + " (" + c.wiki_site + ")") + editBtn(c))}
+    ${row("Resolution", resolution(c), c.low_res)}
+    ${row("Date taken", esc(c.date_taken), c.stale)}
+    ${row("Date uploaded", esc(c.date_uploaded))}
+    ${row("Description", esc(c.description))}
+  </div>`;
+}
+
+// Right side starts as a button; the fetched previous photo replaces it in place.
+const previousPhotoSlot = i =>
+  `<div class="photo" id="prevphoto-${i}"></div>`
+  + `<div class="meta right" id="prevmeta-${i}">`
+  + `<button type="button" class="mini find-prev" data-idx="${i}">`
+  + `Find previous photo by a different author</button></div>`;
+
+// Rendered once the lookup returns: same formatting as every other photo block.
+function previousPhotoHtml(p) {
+  if (!p.found) return { photo: "", meta: row("Previous photo", esc(p.reason)) };
+  return {
+    photo: `<img src="${esc(p.thumb)}" alt="" loading="lazy">`,
+    meta: fileRow(p.file_page, p.title, p.author, p.author_url)
+      + row("Resolution", resolution(p), p.low_res)
+      + row("Date taken", esc(p.date_taken))
+      + row("Date uploaded", esc(p.date_uploaded))
+      + row("Replaced on", esc(p.replaced_on) + " by " + esc(p.replaced_by_user)
+          + (p.diff_url ? ` <a class="mini" href="${esc(p.diff_url)}" target="_blank" rel="noopener">Diff</a>` : ""))
+      + row("Description", esc(p.description)),
+  };
+}
+
+// Row: live category photo (left) | photo | previous-photo slot (right).
+const currentPhotoRow = (c, i) =>
+  `<div class="pair">${currentPhotoMeta(c)}${candidatePhoto(c)}${previousPhotoSlot(i)}</div>`;
+
 // =========================================================================
 // Date shortcuts
 // =========================================================================
@@ -797,6 +965,7 @@ thisMonth();
 // =========================================================================
 let allResults = [];
 let allNoDepicts = [];
+let allCurrent = [];
 const pressed = id => $(id).getAttribute("aria-pressed") === "true";
 
 // Current infobox photo is "good": present, fresh, and confirmed high-res.
@@ -818,15 +987,32 @@ function isHidden(r) {
 }
 
 function renderResults() {
-  // The no-depicts view is exclusive: when on, show ONLY those photos and hide
-  // the comparison results (the other two filters don't apply to them).
+  // The no-depicts and already-in-use views are exclusive: when either is on,
+  // show ONLY that list (the hide-filters apply to the comparison view only).
   const showND = pressed("show_no_depicts");
-  $("hide_same_author").disabled = showND;
-  $("hide_good_current").disabled = showND;
+  const showCur = pressed("show_current");
+  const exclusive = showND || showCur;
+  $("hide_same_author").disabled = exclusive;
+  $("hide_good_current").disabled = exclusive;
+  // The two exclusive views are mutually exclusive too.
+  $("show_no_depicts").disabled = showCur;
+  $("show_current").disabled = showND;
+
+  if (exclusive) { $("head").hidden = true; $("results").innerHTML = ""; }
+
+  if (showCur) {
+    $("nodepicts").innerHTML = "";
+    $("current").innerHTML = allCurrent.length
+      ? `<div class="section-head">Category photos already in use as the infobox photo (${allCurrent.length})</div>`
+        + allCurrent.map(currentPhotoRow).join("")
+      : `<div class="none">No category photos are currently used as an infobox photo.</div>`;
+    $("status").textContent =
+      `Showing ${allCurrent.length} category photo(s) that are an article's current infobox photo.`;
+    return;
+  }
+  $("current").innerHTML = "";
 
   if (showND) {
-    $("head").hidden = true;
-    $("results").innerHTML = "";
     $("nodepicts").innerHTML = allNoDepicts.length
       ? `<div class="section-head">No depicts statement (${allNoDepicts.length}) — need one added</div>`
         + allNoDepicts.map(noDepictsRow).join("")
@@ -846,6 +1032,7 @@ function renderResults() {
   let msg = `Found ${allResults.length} unused category photo(s) with a depicted subject.`;
   if (hiddenCount) msg += ` Showing ${shown.length}; ${hiddenCount} hidden by filters.`;
   if (allNoDepicts.length) msg += ` ${allNoDepicts.length} more have no depicts statement.`;
+  if (allCurrent.length) msg += ` ${allCurrent.length} are already in use.`;
   $("status").textContent = msg;
 }
 
@@ -858,6 +1045,30 @@ function bindToggle(id) {
 bindToggle("hide_same_author");
 bindToggle("hide_good_current");
 bindToggle("show_no_depicts");
+bindToggle("show_current");
+
+// "Find previous photo by a different author" — fetched on click (the revision
+// history walk is the expensive part, so it stays out of the main search).
+document.addEventListener("click", async e => {
+  const btn = e.target.closest(".find-prev");
+  if (!btn) return;
+  const i = Number(btn.dataset.idx);
+  const c = allCurrent[i];
+  if (!c) return;
+  btn.disabled = true; btn.textContent = "Looking through history…";
+  try {
+    const p = await findPreviousPhoto(c.wiki_site, c.wiki_article_title,
+                                      c.author_url, c.author);
+    const out = previousPhotoHtml(p);
+    const photoEl = $(`prevphoto-${i}`), metaEl = $(`prevmeta-${i}`);
+    if (photoEl) photoEl.innerHTML = out.photo;
+    if (metaEl) metaEl.innerHTML = out.meta;
+  } catch (err) {
+    btn.disabled = false;
+    btn.textContent = /throttled/i.test(err.message)
+      ? "Wiki busy — try again" : "Failed: " + err.message;
+  }
+});
 
 // =========================================================================
 // Copy candidate filename (delegated, survives re-render)
@@ -890,7 +1101,7 @@ $("f").addEventListener("submit", async e => {
   e.preventDefault();
   const status = $("status"), go = $("go");
   status.className = ""; status.textContent = "Searching…";
-  $("results").innerHTML = ""; $("nodepicts").innerHTML = "";
+  $("results").innerHTML = ""; $("nodepicts").innerHTML = ""; $("current").innerHTML = "";
   $("head").hidden = true; $("filters").hidden = true;
   go.disabled = true;
   try {
@@ -900,7 +1111,9 @@ $("f").addEventListener("submit", async e => {
       msg => { status.textContent = msg; });
     allResults = search.results;
     allNoDepicts = search.noDepicts;
-    $("filters").hidden = allResults.length === 0 && allNoDepicts.length === 0;
+    allCurrent = search.currentPhotos;
+    $("filters").hidden =
+      allResults.length === 0 && allNoDepicts.length === 0 && allCurrent.length === 0;
     renderResults();
   } catch (err) {
     status.className = "error";

@@ -384,23 +384,86 @@ def fetch_category_files(category, start, end):
     return files
 
 
+def wikipedia_site_from_host(host):
+    # "en.wikipedia.org" -> "enwiki". Returns None for non-Wikipedia projects
+    # (wikiquote/wikisource/...), which globalusage also reports.
+    parts = (host or "").split(".")
+    if len(parts) < 2 or parts[1] != "wikipedia":
+        return None
+    return parts[0].replace("-", "_") + "wiki"
+
+
 def filter_unused(files):
-    # Discard images used in an article (namespace 0) on any wiki.
+    # Split by article usage. Returns (unused, used_usages) where used_usages
+    # maps a file title -> list of (site, article_title) it is used on. The
+    # article title comes free with guprop=url, and the used bucket powers the
+    # "category photo is the current infobox photo" view.
     titles = [f["title"] for f in files.values()]
-    used_in_article = set()
+    used_usages = {}
     for batch in chunked(titles):
         params = {
             "titles": "|".join(batch),
             "prop": "globalusage",
-            "guprop": "namespace",
+            "guprop": "namespace|url",
             "gulimit": "max",
         }
         for query in mw_query(COMMONS_API, params):
             for page in query.get("pages", {}).values():
                 for usage in page.get("globalusage", []):
-                    if str(usage.get("ns")) == "0":
-                        used_in_article.add(page["title"])
-    return {pid: f for pid, f in files.items() if f["title"] not in used_in_article}
+                    if str(usage.get("ns")) != "0":
+                        continue
+                    site = wikipedia_site_from_host(usage.get("wiki"))
+                    if not site:
+                        continue
+                    article = (usage.get("title") or "").replace("_", " ")
+                    entry = (site, article)
+                    lst = used_usages.setdefault(page["title"], [])
+                    if entry not in lst:
+                        lst.append(entry)
+    unused = {pid: f for pid, f in files.items() if f["title"] not in used_usages}
+    return unused, used_usages
+
+
+def find_current_photos(files, used_usages, now):
+    # Category photos that ARE an article's current lead image. For every
+    # (file, article) usage, compare the article's actual lead image
+    # (pageimages) against the file; a match means this photo is live there.
+    # One entry per (file, article) — a photo can be current on several wikis,
+    # and each wiki has its own edit history.
+    by_title = {f["title"]: f for f in files.values()}
+    articles = sorted({a for lst in used_usages.values() for a in lst})
+    lead = fetch_article_lead_images(articles)
+
+    current = []
+    for ftitle, usages in used_usages.items():
+        f = by_title.get(ftitle)
+        if not f:
+            continue
+        for site, article in usages:
+            if lead.get((site, article)) != ftitle:
+                continue
+            current.append({
+                "title": f["title"],
+                "file_page": f["descriptionurl"],
+                "thumb": f["thumb"],
+                "date_taken": f["taken"],
+                "date_uploaded": f["timestamp"],
+                "description": f["description"],
+                "author": f["author"],
+                "author_url": f["author_url"],
+                "width": f["width"],
+                "height": f["height"],
+                "megapixels": f["megapixels"],
+                "low_res": f["megapixels"] is not None and f["megapixels"] < LOW_RES_MP,
+                "stale": is_stale(f["taken"], f["timestamp"], now),
+                "wiki_site": site,
+                "wiki_article_title": article,
+                "wiki_article_url": wikipedia_article_url(site, article),
+                "wiki_edit_url": wikipedia_edit_url(site, article),
+                "wiki_history_api": wikipedia_api_url(site),
+            })
+    current.sort(key=lambda c: c["date_uploaded"], reverse=True)
+    return current
 
 
 def attach_depicts(files):
@@ -553,12 +616,120 @@ def fetch_files_imageinfo(titles):
     return result
 
 
+INFOBOX_IMAGE_PARAM = re.compile(
+    r"\|\s*(?:image|image_name|photo|img)\s*=\s*([^\n|}]+)", re.IGNORECASE)
+HISTORY_REV_LIMIT = 50   # revisions per request when content is needed
+
+
+def infobox_image_in_wikitext(text):
+    m = INFOBOX_IMAGE_PARAM.search(text or "")
+    if not m:
+        return None
+    name = m.group(1).strip()
+    # Strip a leading "File:"/"Image:" prefix if the param carries one.
+    name = re.sub(r"^\s*(?:File|Image)\s*:\s*", "", name, flags=re.IGNORECASE)
+    return name or None
+
+
+def find_previous_photo(site, article, current_author_url, current_author):
+    # Walk the article's revisions (newest -> older), extracting the infobox
+    # image from each, and return the first EARLIER image whose author differs
+    # from the current photo's. The revision that introduced a value is the
+    # NEWER of an adjacent pair, so a change between revs[i] and revs[i+1] means
+    # revs[i] introduced revs[i]'s image and revs[i+1] still had the older one.
+    api = wikipedia_api_url(site)
+    params = {
+        "prop": "revisions",
+        "titles": article,
+        "rvprop": "ids|timestamp|user|comment|content",
+        "rvslots": "main",
+        "rvlimit": str(HISTORY_REV_LIMIT),
+        "rvdir": "older",
+    }
+    revs = []
+    for query in mw_query(api, params):
+        for page in query.get("pages", {}).values():
+            revs.extend(page.get("revisions", []))
+        break        # one page of revisions is enough for the common case
+
+    def image_of(rev):
+        return infobox_image_in_wikitext(
+            (rev.get("slots", {}).get("main", {}) or {}).get("*", ""))
+
+    # Distinct image values, newest first. Walking newest -> older, a run of
+    # revisions shares one image value; the revision that INTRODUCED that value
+    # is the newest one in the run (the older ones merely still carry it), so
+    # keep overwriting `intro` as we walk deeper into the same run.
+    timeline = []
+    for rev in revs:
+        img = image_of(rev)
+        if not img:
+            continue
+        if not timeline or timeline[-1]["image"] != img:
+            timeline.append({"image": img, "intro": rev})
+        else:
+            pass          # same value, older revision: intro stays the newest
+    # Flatten to the fields we need.
+    timeline = [{
+        "image": t["image"],
+        "revid": t["intro"].get("revid"),
+        "timestamp": t["intro"].get("timestamp"),
+        "user": t["intro"].get("user"),
+        "comment": t["intro"].get("comment", ""),
+    } for t in timeline]
+
+    if len(timeline) < 2:
+        return {"found": False,
+                "reason": "No earlier infobox photo found in the last "
+                          f"{HISTORY_REV_LIMIT} revisions."}
+
+    # Look at each earlier distinct image and keep the first by a different author.
+    cur_id = current_author_url or current_author
+    candidates = ["File:" + t["image"] for t in timeline[1:]]
+    info = fetch_files_imageinfo(candidates)
+    for t in timeline[1:]:
+        meta = info.get("File:" + t["image"])
+        if not meta:
+            continue
+        other_id = meta["author_url"] or meta["author"]
+        if cur_id and other_id and other_id == cur_id:
+            continue                      # same author, keep looking further back
+        replaced_by = timeline[timeline.index(t) - 1]
+        return {
+            "found": True,
+            "title": meta["title"],
+            "file_page": meta["descriptionurl"],
+            "thumb": meta["thumb"],
+            "date_taken": meta["taken"],
+            "date_uploaded": meta["timestamp"],
+            "description": meta["description"],
+            "author": meta["author"],
+            "author_url": meta["author_url"],
+            "width": meta["width"],
+            "height": meta["height"],
+            "megapixels": meta["megapixels"],
+            "low_res": meta["megapixels"] is not None
+                       and meta["megapixels"] < LOW_RES_MP,
+            # When/by whom it stopped being the infobox photo.
+            "replaced_on": replaced_by["timestamp"],
+            "replaced_by_user": replaced_by["user"],
+            "replaced_comment": replaced_by["comment"],
+            "diff_url": (f"https://{wiki_lang(site)}.wikipedia.org/w/index.php"
+                         f"?diff={replaced_by['revid']}"),
+        }
+
+    return {"found": False,
+            "reason": "Every earlier infobox photo in the last "
+                      f"{HISTORY_REV_LIMIT} revisions is by the same author."}
+
+
 def run_search(category, start_date, end_date):
     start, end = normalize_bounds(start_date, end_date)
     now = datetime.now(timezone.utc)
 
-    files = fetch_category_files(category, start, end)
-    files = filter_unused(files)
+    all_files = fetch_category_files(category, start, end)
+    files, used_usages = filter_unused(all_files)
+    current_photos = find_current_photos(all_files, used_usages, now)
     files, no_depicts_files = attach_depicts(files)
     persons, infobox_info = fetch_person_data(files)
 
@@ -649,7 +820,11 @@ def run_search(category, start_date, end_date):
     ]
     no_depicts.sort(key=lambda f: f["date_uploaded"], reverse=True)
 
-    return {"results": results, "no_depicts": no_depicts}
+    return {
+        "results": results,
+        "no_depicts": no_depicts,
+        "current_photos": current_photos,
+    }
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -698,7 +873,7 @@ class Handler(BaseHTTPRequestHandler):
         if not self._host_ok() or not self._origin_ok():
             self._send(403, json.dumps({"error": "Forbidden"}), "application/json")
             return
-        if self.path != "/api/search":
+        if self.path not in ("/api/search", "/api/previous-photo"):
             self._send(404, json.dumps({"error": "Not found"}),
                        "application/json")
             return
@@ -722,6 +897,26 @@ class Handler(BaseHTTPRequestHandler):
             self._send(400, json.dumps({"error": "JSON body must be an object"}),
                        "application/json")
             return
+
+        if self.path == "/api/previous-photo":
+            site = payload.get("wiki_site") or ""
+            article = payload.get("wiki_article_title") or ""
+            if not site or not article:
+                self._send(400, json.dumps(
+                    {"error": "wiki_site and wiki_article_title are required"}),
+                    "application/json")
+                return
+            try:
+                found = find_previous_photo(
+                    site, article,
+                    payload.get("author_url"), payload.get("author"))
+                self._send(200, json.dumps(found), "application/json")
+            except Exception:
+                self.log_message("previous-photo failed: %s", traceback.format_exc())
+                self._send(500, json.dumps({"error": "Internal server error"}),
+                           "application/json")
+            return
+
         try:
             category = normalize_category(payload.get("category") or "")
         except ValueError as exc:
@@ -740,6 +935,8 @@ class Handler(BaseHTTPRequestHandler):
                 "count": len(search["results"]),
                 "no_depicts": search["no_depicts"],
                 "no_depicts_count": len(search["no_depicts"]),
+                "current_photos": search["current_photos"],
+                "current_photos_count": len(search["current_photos"]),
             }), "application/json")
         except Exception:
             # Unexpected failure (e.g. an upstream API error): log the detail
@@ -886,6 +1083,12 @@ INDEX_HTML = r"""<!DOCTYPE html>
       <span class="filter-note">Unused category photos with no depicts statement
         at all (nothing to compare — they need one added).</span>
     </div>
+    <div class="filter-item">
+      <button type="button" id="show_current" class="toggle" aria-pressed="false">
+        Show category photos already in use</button>
+      <span class="filter-note">Category photos that are an article's current
+        infobox photo — with a button to fetch the previous one.</span>
+    </div>
   </div>
   <div id="head" class="pair-head" hidden>
     <div class="h-left">Unused Commons photo (new candidate)</div>
@@ -893,6 +1096,7 @@ INDEX_HTML = r"""<!DOCTYPE html>
   </div>
   <div id="results"></div>
   <div id="nodepicts"></div>
+  <div id="current"></div>
 </main>
 <script>
 const $ = id => document.getElementById(id);
@@ -1024,6 +1228,45 @@ function noDepictsMeta(c) {
 const noDepictsRow = c =>
   `<div class="pair pair-solo">${noDepictsMeta(c)}${candidatePhoto(c)}${searchMeta(c.title)}</div>`;
 
+// ---- "Category photo is the current infobox photo" rows ------------------ //
+// Left metadata for a live category photo, including the article it's live on.
+function currentPhotoMeta(c) {
+  return `<div class="meta left">
+    ${candidateFileRow(c.file_page, c.title, c.author, c.author_url)}
+    ${row("Article", link(c.wiki_article_url, c.wiki_article_title + " (" + c.wiki_site + ")") + editBtn(c))}
+    ${row("Resolution", resolution(c), c.low_res)}
+    ${row("Date taken", esc(c.date_taken), c.stale)}
+    ${row("Date uploaded", esc(c.date_uploaded))}
+    ${row("Description", esc(c.description))}
+  </div>`;
+}
+
+// Right side starts as a button; the fetched previous photo replaces it in place.
+const previousPhotoSlot = i =>
+  `<div class="photo" id="prevphoto-${i}"></div>`
+  + `<div class="meta right" id="prevmeta-${i}">`
+  + `<button type="button" class="mini find-prev" data-idx="${i}">`
+  + `Find previous photo by a different author</button></div>`;
+
+// Rendered once the lookup returns: same formatting as every other photo block.
+function previousPhotoHtml(p) {
+  if (!p.found) return { photo: "", meta: row("Previous photo", esc(p.reason)) };
+  return {
+    photo: `<img src="${esc(p.thumb)}" alt="" loading="lazy">`,
+    meta: fileRow(p.file_page, p.title, p.author, p.author_url)
+      + row("Resolution", resolution(p), p.low_res)
+      + row("Date taken", esc(p.date_taken))
+      + row("Date uploaded", esc(p.date_uploaded))
+      + row("Replaced on", esc(p.replaced_on) + " by " + esc(p.replaced_by_user)
+          + (p.diff_url ? ` <a class="mini" href="${esc(p.diff_url)}" target="_blank" rel="noopener">Diff</a>` : ""))
+      + row("Description", esc(p.description)),
+  };
+}
+
+// Row: live category photo (left) | photo | previous-photo slot (right).
+const currentPhotoRow = (c, i) =>
+  `<div class="pair">${currentPhotoMeta(c)}${candidatePhoto(c)}${previousPhotoSlot(i)}</div>`;
+
 // Format local Y-M-D. toISOString() shifts to UTC and can roll the day back by
 // one under timezones ahead of UTC (e.g. BST).
 const iso = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
@@ -1055,6 +1298,7 @@ thisMonth();
 // Results are fetched once, then filtered client-side so the toggle is instant.
 let allResults = [];
 let allNoDepicts = [];
+let allCurrent = [];
 
 const pressed = id => $(id).getAttribute("aria-pressed") === "true";
 
@@ -1086,15 +1330,32 @@ function isHidden(r) {
 }
 
 function renderResults() {
-  // The no-depicts view is exclusive: when on, show ONLY those photos and hide
-  // the comparison results (the other two filters don't apply to them).
+  // The no-depicts and already-in-use views are exclusive: when either is on,
+  // show ONLY that list (the hide-filters apply to the comparison view only).
   const showND = pressed("show_no_depicts");
-  $("hide_same_author").disabled = showND;
-  $("hide_good_current").disabled = showND;
+  const showCur = pressed("show_current");
+  const exclusive = showND || showCur;
+  $("hide_same_author").disabled = exclusive;
+  $("hide_good_current").disabled = exclusive;
+  // The two exclusive views are mutually exclusive too.
+  $("show_no_depicts").disabled = showCur;
+  $("show_current").disabled = showND;
+
+  if (exclusive) { $("head").hidden = true; $("results").innerHTML = ""; }
+
+  if (showCur) {
+    $("nodepicts").innerHTML = "";
+    $("current").innerHTML = allCurrent.length
+      ? `<div class="section-head">Category photos already in use as the infobox photo (${allCurrent.length})</div>`
+        + allCurrent.map(currentPhotoRow).join("")
+      : `<div class="none">No category photos are currently used as an infobox photo.</div>`;
+    $("status").textContent =
+      `Showing ${allCurrent.length} category photo(s) that are an article's current infobox photo.`;
+    return;
+  }
+  $("current").innerHTML = "";
 
   if (showND) {
-    $("head").hidden = true;
-    $("results").innerHTML = "";
     $("nodepicts").innerHTML = allNoDepicts.length
       ? `<div class="section-head">No depicts statement (${allNoDepicts.length}) — need one added</div>`
         + allNoDepicts.map(noDepictsRow).join("")
@@ -1114,6 +1375,7 @@ function renderResults() {
   let msg = `Found ${allResults.length} unused category photo(s) with a depicted subject.`;
   if (hiddenCount) msg += ` Showing ${shown.length}; ${hiddenCount} hidden by filters.`;
   if (allNoDepicts.length) msg += ` ${allNoDepicts.length} more have no depicts statement.`;
+  if (allCurrent.length) msg += ` ${allCurrent.length} are already in use.`;
   $("status").textContent = msg;
 }
 
@@ -1126,6 +1388,37 @@ function bindToggle(id) {
 bindToggle("hide_same_author");
 bindToggle("hide_good_current");
 bindToggle("show_no_depicts");
+bindToggle("show_current");
+
+// "Find previous photo by a different author" — fetched on click (the revision
+// history walk is the expensive part, so it stays out of the main search).
+// The local server does the walk so it keeps our custom User-Agent.
+document.addEventListener("click", async e => {
+  const btn = e.target.closest(".find-prev");
+  if (!btn) return;
+  const i = Number(btn.dataset.idx);
+  const c = allCurrent[i];
+  if (!c) return;
+  btn.disabled = true; btn.textContent = "Looking through history…";
+  try {
+    const resp = await fetch("/api/previous-photo", {
+      method: "POST", headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({
+        wiki_site: c.wiki_site, wiki_article_title: c.wiki_article_title,
+        author_url: c.author_url, author: c.author,
+      }),
+    });
+    const p = await resp.json();
+    if (!resp.ok) throw new Error(p.error || ("HTTP " + resp.status));
+    const out = previousPhotoHtml(p);
+    const photoEl = $(`prevphoto-${i}`), metaEl = $(`prevmeta-${i}`);
+    if (photoEl) photoEl.innerHTML = out.photo;
+    if (metaEl) metaEl.innerHTML = out.meta;
+  } catch (err) {
+    btn.disabled = false;
+    btn.textContent = "Failed: " + err.message;
+  }
+});
 
 // Copy the candidate filename to the clipboard (delegated, survives re-render).
 async function copyText(text) {
@@ -1157,7 +1450,7 @@ $("f").addEventListener("submit", async e => {
   e.preventDefault();
   const status = $("status"), results = $("results"), go = $("go");
   status.className = ""; status.textContent = "Searching… (this can take a while)";
-  results.innerHTML = ""; $("nodepicts").innerHTML = "";
+  results.innerHTML = ""; $("nodepicts").innerHTML = ""; $("current").innerHTML = "";
   $("head").hidden = true; $("filters").hidden = true;
   go.disabled = true;
   try {
@@ -1172,7 +1465,9 @@ $("f").addEventListener("submit", async e => {
     if (!resp.ok) throw new Error(data.error || ("HTTP " + resp.status));
     allResults = data.results;
     allNoDepicts = data.no_depicts || [];
-    $("filters").hidden = allResults.length === 0 && allNoDepicts.length === 0;
+    allCurrent = data.current_photos || [];
+    $("filters").hidden =
+      allResults.length === 0 && allNoDepicts.length === 0 && allCurrent.length === 0;
     renderResults();
   } catch (err) {
     status.className = "error"; status.textContent = "Error: " + err.message;
