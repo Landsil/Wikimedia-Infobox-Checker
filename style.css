@@ -150,3 +150,11 @@
   .badge.low-res { background: #fdf3e6; color: #9a5b00; }
   .badge.old { background: #eef2f7; color: var(--accent); }
   .cand-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+
+  /* Gaps: compact candidate thumbnails (P18 + depicting files). */
+  .cand-photo { margin: 6px 0; }
+  .cand-photo img { max-width: 100%; max-height: 150px; object-fit: contain;
+                    background: #eef0f3; border-radius: 6px; display: block; }
+  .cand-cap { font-size: 12px; color: var(--muted); margin-top: 2px; word-break: break-word; }
+  #loadmore { margin: 4px 0 24px; }
+  #loadmore button { padding: 9px 18px; }

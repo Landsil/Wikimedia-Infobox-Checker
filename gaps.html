@@ -7,10 +7,13 @@
 <!--
   Photo Gaps — one of the static, client-side tools on this site.
 
-  Given an English Wikipedia category, recurse it to a chosen depth, and list the
+  Given an English Wikipedia category, recurse it to a chosen depth and list the
   living people whose article has a missing, low-resolution or dated infobox
   photo. For each, report whether a candidate photo already exists via Wikidata
   P18 or via Commons files that depict them (SDC P180).
+
+  Enumeration is chunked and resumable: "Load more" continues the same category
+  walk and appends, so long trees don't need one giant blocking pass.
 
   Runs entirely in the browser: Wikimedia APIs via fetch() + &origin=* (CORS).
 -->
@@ -25,18 +28,22 @@
     <div><label>English Wikipedia category</label>
       <input id="category" value="Tunisian tennis players"></div>
     <div class="depth-field"><label>Subcategory depth</label>
-      <input id="depth" type="number" min="0" max="6" value="2"></div>
+      <input id="depth" type="number" min="0" value="2"></div>
     <button id="go" type="submit">Find gaps</button>
   </form>
 </header>
 <main>
   <div id="status"></div>
-  <div id="controls" class="filters" hidden>
-    <button type="button" id="check_all" class="toggle">Check all for Commons photos</button>
-    <span class="filter-note">Runs a depicting-files search for every listed
-      person. One request each, so it can take a while for long lists.</span>
+  <div id="filters" class="filters" hidden>
+    <div class="filter-item"><button type="button" id="f_missing" class="toggle" aria-pressed="true">Missing</button></div>
+    <div class="filter-item"><button type="button" id="f_lowres" class="toggle" aria-pressed="true">Low-res</button></div>
+    <div class="filter-item"><button type="button" id="f_old" class="toggle" aria-pressed="true">Old</button></div>
+    <div class="filter-item"><button type="button" id="f_cand" class="toggle" aria-pressed="true">Has candidate</button></div>
+    <div class="filter-item"><button type="button" id="f_nocand" class="toggle" aria-pressed="true">No candidate</button></div>
+    <div class="filter-item"><button type="button" id="check_all" class="toggle">Check all for Commons photos</button></div>
   </div>
   <div id="results"></div>
+  <div id="loadmore" hidden><button type="button" id="loadmore_btn">Load more articles</button></div>
 </main>
 <footer>
   <a href="https://github.com/Landsil/Wikimedia-Infobox-Checker" target="_blank"
@@ -55,7 +62,8 @@ const BATCH = 50;
 const THUMB_WIDTH = 320;
 const STALE_MONTHS = 12;        // infobox photo flagged when older than this
 const LOW_RES_MP = 2.0;         // flagged below this (megapixels)
-const GAP_ARTICLE_CAP = 5000;   // safety ceiling on enumerated articles
+const GAP_CHUNK = 1500;         // articles processed per "Find gaps" / "Load more"
+const DEPICT_LIMIT = 8;         // depicting files fetched per person
 const MAX_RETRIES = 6;
 const BACKOFF_BASE = 1.0;
 
@@ -70,6 +78,7 @@ const link = (url, text) =>
   url ? `<a href="${esc(url)}" target="_blank" rel="noopener">${esc(text)}</a>` : esc(text);
 const row = (k, v, warn) =>
   `<div class="row"><span class="k">${k}</span><span class="v${warn ? " warn" : ""}">${v || "&mdash;"}</span></div>`;
+const pressed = id => $(id).getAttribute("aria-pressed") === "true";
 function chunked(arr, size = BATCH) {
   const out = []; for (let i = 0; i < arr.length; i += size) out.push(arr.slice(i, i + size));
   return out;
@@ -101,8 +110,7 @@ const resolution = o => (o && o.megapixels != null && o.width && o.height)
   ? `${o.megapixels} MP (${o.width}×${o.height})` : "";
 
 // =========================================================================
-// API layer (fetch + &origin=* ; retry only on real 429/503). See the notes:
-// no maxlag on an interactive read tool.
+// API layer (fetch + &origin=* ; retry only on real 429/503; no maxlag)
 // =========================================================================
 function retryDelayMs(resp, attempt) {
   const ra = resp.headers.get("Retry-After");
@@ -144,7 +152,6 @@ async function wbGetEntities(base, ids, props, extra) {
   return (await apiGet(base, p)).entities || {};
 }
 
-// imageinfo for a set of "File:..." titles (Commons). size + dates + thumb.
 async function fetchFilesImageinfo(titles) {
   const result = {};
   for (const batch of chunked(titles)) {
@@ -175,34 +182,37 @@ async function fetchFilesImageinfo(titles) {
 const wikipediaArticleUrl = title =>
   "https://en.wikipedia.org/wiki/" + encodeURIComponent(title.replace(/ /g, "_"));
 
-// Breadth-first walk of the category tree. Returns { titles, truncated }.
-async function enumerateArticles(category, maxDepth, cap, onProgress) {
-  const seenCats = new Set(), articles = new Map();
-  let frontier = [[category, 0]], truncated = false;
-  while (frontier.length) {
-    const [cat, depth] = frontier.shift();
-    if (seenCats.has(cat)) continue;
-    seenCats.add(cat);
+// Resumable BFS. `state` holds the frontier + seen sets so it can continue.
+function newWalk(category, depth) {
+  if (!/^category:/i.test(category)) category = "Category:" + category;
+  return { frontier: [[category, 0]], seenCats: new Set(), maxDepth: depth,
+           truncated: false, done: false };
+}
+// Advance the walk until `maxNew` fresh article titles are found or it's done.
+async function collectMore(walk, maxNew, onProgress) {
+  const found = [];
+  while (walk.frontier.length && found.length < maxNew) {
+    const [cat, d] = walk.frontier.shift();
+    if (walk.seenCats.has(cat)) continue;
+    walk.seenCats.add(cat);
     const params = { list: "categorymembers", cmtitle: cat,
       cmtype: "page|subcat", cmprop: "title|type|ns", cmlimit: "max" };
     for await (const query of mwQuery(EN_WIKI_API, params)) {
       for (const m of query.categorymembers || []) {
         if (m.type === "subcat") {
-          if (depth < maxDepth) frontier.push([m.title, depth + 1]);
-          else truncated = true;
+          if (d < walk.maxDepth) walk.frontier.push([m.title, d + 1]);
+          else walk.truncated = true;
         } else if (m.ns === 0) {
-          if (articles.size >= cap) truncated = true;
-          else if (!articles.has(m.title)) articles.set(m.title, true);
+          found.push(m.title);
         }
       }
     }
-    if (onProgress) onProgress(`Enumerating category tree… ${articles.size} article(s)`);
-    if (articles.size >= cap) break;
+    if (onProgress) onProgress(`Enumerating category tree… ${found.length} new article(s)`);
   }
-  return { titles: [...articles.keys()], truncated };
+  if (!walk.frontier.length) walk.done = true;
+  return found;
 }
 
-// pageimages + wikidata id + "Living people" flag, one batched query per 50.
 async function fetchArticlePhotoState(titles, onProgress) {
   const out = {};
   let done = 0;
@@ -211,7 +221,6 @@ async function fetchArticlePhotoState(titles, onProgress) {
       prop: "pageimages|pageprops|categories", piprop: "name",
       ppprop: "wikibase_item", clcategories: "Category:Living people", cllimit: "max" };
     for await (const query of mwQuery(EN_WIKI_API, params)) {
-      // Titles can be normalized; map back so we key on the original.
       const alias = {};
       for (const n of query.normalized || []) alias[n.to] = n.from;
       for (const page of Object.values(query.pages || {})) {
@@ -249,37 +258,33 @@ async function fetchP18Images(qids) {
   return result;
 }
 
-async function findPhotoGaps(category, depth, onProgress) {
+// Turn a batch of article titles into gap records (living + missing/low-res/old).
+async function processTitles(titles, onProgress) {
   const now = new Date();
-  if (!/^category:/i.test(category)) category = "Category:" + category;
-
-  const { titles, truncated } = await enumerateArticles(category, depth, GAP_ARTICLE_CAP, onProgress);
   const state = await fetchArticlePhotoState(titles, onProgress);
-
   onProgress("Assessing existing infobox photos…");
-  const photoTitles = [...new Set(Object.values(state)
-    .map(s => s.pageimage).filter(Boolean))];
+  const photoTitles = [...new Set(Object.values(state).map(s => s.pageimage).filter(Boolean))];
   const info = await fetchFilesImageinfo(photoTitles);
 
   const gaps = [];
   for (const s of Object.values(state)) {
     if (!s.living) continue;
     const photo = s.pageimage ? info[s.pageimage] : null;
-    if (s.pageimage && !photo) continue;          // had an image we couldn't read
-    let reason, mp = null, cur = null;
+    if (s.pageimage && !photo) continue;
+    let reason, cur = null;
     if (!s.pageimage) {
       reason = "missing";
     } else {
-      cur = photo; mp = photo.megapixels;
-      const low = mp != null && mp < LOW_RES_MP;
-      const old = isStale(photo.taken, photo.timestamp, now);
-      if (!low && !old) continue;                 // photo is fine
+      cur = photo;
+      const low = cur.megapixels != null && cur.megapixels < LOW_RES_MP;
+      const old = isStale(cur.taken, cur.timestamp, now);
+      if (!low && !old) continue;
       reason = low ? "low-res" : "old";
     }
     gaps.push({
       title: s.title, article_url: s.article_url, qid: s.qid,
       wikidata_url: s.qid ? `https://www.wikidata.org/wiki/${s.qid}` : null,
-      reason, current: cur,
+      reason, current: cur, p18: null, depictChecked: false, depictFiles: null,
     });
   }
 
@@ -287,19 +292,18 @@ async function findPhotoGaps(category, depth, onProgress) {
   const p18 = await fetchP18Images(new Set(gaps.map(g => g.qid).filter(Boolean)));
   const p18Info = await fetchFilesImageinfo([...new Set(Object.values(p18).filter(Boolean))]);
   for (const g of gaps) {
-    const cand = g.qid ? p18[g.qid] : null;
+    let cand = g.qid ? p18[g.qid] : null;
+    // If the article's (bad) photo IS the P18 file, it's not a candidate.
+    if (cand && g.current && cand === g.current.title) cand = null;
     g.p18 = cand ? (p18Info[cand] || { title: cand }) : null;
   }
-
-  gaps.sort((a, b) => (a.reason !== "missing") - (b.reason !== "missing")
-    || a.title.localeCompare(b.title));
-  return { gaps, articleCount: titles.length, truncated };
+  return gaps;
 }
 
-// Commons files that depict a person (SDC P180). On-demand: one search per qid.
-async function fetchDepictingFiles(qid, limit = 6) {
+// Commons files that depict a person (SDC P180). On-demand.
+async function fetchDepictingFiles(qid) {
   const params = { list: "search", srsearch: `haswbstatement:P180=${qid}`,
-    srnamespace: "6", srlimit: String(limit) };
+    srnamespace: "6", srlimit: String(DEPICT_LIMIT) };
   const titles = [];
   for await (const query of mwQuery(COMMONS_API, params)) {
     for (const r of query.search || []) titles.push(r.title);
@@ -330,96 +334,158 @@ function personMeta(g) {
     ${cur}
   </div>`;
 }
+function candidatePhotoBlock(fp) {
+  return `<div class="cand-photo"><img src="${esc(fp.thumb)}" alt="" loading="lazy">`
+    + `<div class="cand-cap">${link(fp.descriptionurl, fp.title)}`
+    + (resolution(fp) ? ` — ${resolution(fp)}` : "") + `</div></div>`;
+}
+function depictBlock(g, i) {
+  if (!g.qid) return "";
+  if (!g.depictChecked) {
+    return `<div class="cand-actions"><button type="button" class="mini find-cands" data-idx="${i}">`
+      + `Find depicting files on Commons</button></div><div id="cands-${i}"></div>`;
+  }
+  const files = g.depictFiles || [];
+  const inner = files.length
+    ? `<div class="row"><span class="k">Depicting files (${files.length})</span></div>`
+      + files.map(candidatePhotoBlock).join("")
+    : row("Depicting files", "&mdash; none on Commons");
+  return `<div id="cands-${i}">${inner}</div>`;
+}
 function candidateCell(g, i) {
   let p18 = "";
   if (g.p18 && g.p18.thumb) {
     p18 = `<div class="row"><span class="k">Wikidata P18</span></div>`
-      + `<div class="photo"><img src="${esc(g.p18.thumb)}" alt="" loading="lazy"></div>`
-      + row("File", link(g.p18.descriptionurl, g.p18.title))
-      + row("Resolution", resolution(g.p18));
+      + candidatePhotoBlock(g.p18);
   } else if (g.p18) {
-    p18 = row("Wikidata P18", link("https://commons.wikimedia.org/wiki/" + encodeURIComponent(g.p18.title), g.p18.title));
+    p18 = row("Wikidata P18",
+      link("https://commons.wikimedia.org/wiki/" + encodeURIComponent(g.p18.title), g.p18.title));
   } else {
     p18 = row("Wikidata P18", "&mdash; none");
   }
-  const btn = g.qid
-    ? `<div class="cand-actions"><button type="button" class="mini find-cands" data-idx="${i}">`
-      + `Find depicting files on Commons</button></div><div id="cands-${i}"></div>`
-    : "";
-  return `<div class="meta right">${p18}${btn}</div>`;
+  return `<div class="meta right">${p18}${depictBlock(g, i)}</div>`;
 }
 const gapRow = (g, i) =>
   `<div class="gap">${personMeta(g)}${currentPhotoCell(g)}${candidateCell(g, i)}</div>`;
 
-function depictingHtml(files) {
-  if (!files.length) return row("Depicting files", "&mdash; none on Commons");
-  return `<div class="row"><span class="k">Depicting files (${files.length})</span></div>`
-    + files.map(fp => `<div class="row"><span class="v">`
-        + `${link(fp.descriptionurl, fp.title)} — ${resolution(fp) || "?"}`
-        + `</span></div>`).join("");
+// =========================================================================
+// State + filters
+// =========================================================================
+let walk = null;            // resumable BFS state
+let allGaps = [];           // every gap found so far (across load-more presses)
+let scanned = 0;            // articles processed so far
+
+// A gap has a candidate if P18 gave one, or a depicts check found files.
+const hasCandidate = g => !!g.p18 || (g.depictChecked && g.depictFiles && g.depictFiles.length > 0);
+const REASON_TOGGLE = { "missing": "f_missing", "low-res": "f_lowres", "old": "f_old" };
+function isShown(g) {
+  if (!pressed(REASON_TOGGLE[g.reason])) return false;
+  const hc = hasCandidate(g);
+  if (hc && !pressed("f_cand")) return false;
+  if (!hc && !pressed("f_nocand")) return false;
+  return true;
 }
 
-// =========================================================================
-// State + handlers
-// =========================================================================
-let allGaps = [];
+function renderGaps() {
+  // gapRow needs each gap's index in allGaps (for the depicts buttons), so map
+  // with the real index and filter after.
+  const html = allGaps.map((g, i) => isShown(g) ? gapRow(g, i) : "").join("");
+  $("results").innerHTML = html || `<div class="none">Nothing matches the current filters.</div>`;
+  const shown = allGaps.filter(isShown).length;
+  const base = `${scanned} article(s) scanned; ${allGaps.length} living `
+    + `${allGaps.length === 1 ? "person needs" : "people need"} a photo`;
+  const filtered = shown !== allGaps.length ? ` (showing ${shown})` : "";
+  const more = walk && !walk.done ? " — more of the category remains; use Load more." : "";
+  $("status").textContent = base + filtered + "." + more;
+  $("loadmore").hidden = !(walk && !walk.done);
+}
 
+function bindToggle(id) {
+  $(id).addEventListener("click", () => {
+    $(id).setAttribute("aria-pressed", pressed(id) ? "false" : "true");
+    renderGaps();
+  });
+}
+["f_missing", "f_lowres", "f_old", "f_cand", "f_nocand"].forEach(bindToggle);
+
+// =========================================================================
+// Depicts lookups (on demand)
+// =========================================================================
 async function runDepicts(i) {
   const g = allGaps[i];
+  if (!g || !g.qid) return;
   const slot = $(`cands-${i}`);
-  if (!g || !g.qid || !slot) return;
-  slot.innerHTML = row("Depicting files", "searching…");
+  if (slot) slot.innerHTML = row("Depicting files", "searching…");
   try {
-    const files = await fetchDepictingFiles(g.qid);
-    slot.innerHTML = depictingHtml(files);
+    let files = await fetchDepictingFiles(g.qid);
+    // Drop the article's own (bad) photo from the candidates.
+    if (g.current) files = files.filter(f => f.title !== g.current.title);
+    g.depictFiles = files; g.depictChecked = true;
   } catch (err) {
-    slot.innerHTML = row("Depicting files", esc("failed: " + err.message));
+    g.depictFiles = []; g.depictChecked = true;
+    if (slot) { slot.innerHTML = row("Depicting files", esc("failed: " + err.message)); return; }
   }
+  renderGaps();   // re-render so the candidate filter reflects the new result
 }
-
 $("results").addEventListener("click", e => {
   const btn = e.target.closest(".find-cands");
   if (btn) runDepicts(Number(btn.dataset.idx));
 });
-
 $("check_all").addEventListener("click", async () => {
   const btn = $("check_all");
   btn.disabled = true;
-  const withQid = allGaps.map((g, i) => [g, i]).filter(([g]) => g.qid);
-  for (let n = 0; n < withQid.length; n++) {
-    btn.textContent = `Checking ${n + 1}/${withQid.length}…`;
-    await runDepicts(withQid[n][1]);
+  const todo = allGaps.map((g, i) => [g, i]).filter(([g]) => g.qid && !g.depictChecked);
+  for (let n = 0; n < todo.length; n++) {
+    const [g, i] = todo[n];
+    btn.textContent = `Checking ${n + 1}/${todo.length}…`;
+    try {
+      let files = await fetchDepictingFiles(g.qid);
+      if (g.current) files = files.filter(f => f.title !== g.current.title);
+      g.depictFiles = files;
+    } catch (_) { g.depictFiles = []; }
+    g.depictChecked = true;
   }
   btn.textContent = "Checked all"; btn.disabled = false;
+  renderGaps();
 });
 
-$("f").addEventListener("submit", async e => {
-  e.preventDefault();
-  const status = $("status"), go = $("go");
-  status.className = ""; status.textContent = "Searching…";
-  $("results").innerHTML = ""; $("controls").hidden = true; go.disabled = true;
+// =========================================================================
+// Search + load more
+// =========================================================================
+async function loadChunk(reset) {
+  const go = $("go"), lm = $("loadmore_btn");
+  go.disabled = true; lm.disabled = true;
+  const status = $("status"); status.className = "";
   try {
-    const category = $("category").value.trim();
-    const depth = Math.max(0, Math.min(6, parseInt($("depth").value, 10) || 0));
-    const out = await findPhotoGaps(category, depth, msg => { status.textContent = msg; });
-    allGaps = out.gaps;
-    $("controls").hidden = allGaps.length === 0;
-    $("results").innerHTML = allGaps.map(gapRow).join("")
-      || `<div class="none">No living people with a photo gap found.</div>`;
-    let msg = `${out.articleCount} article(s) scanned; ${allGaps.length} living `
-      + `${allGaps.length === 1 ? "person needs" : "people need"} a photo.`;
-    if (out.truncated) msg += " (Some subcategories were not expanded — raise the depth, or the "
-      + GAP_ARTICLE_CAP + "-article cap was hit.)";
-    status.textContent = msg;
+    const say = msg => { status.textContent = msg; };
+    const titles = await collectMore(walk, GAP_CHUNK, say);
+    if (titles.length) {
+      const gaps = await processTitles(titles, say);
+      scanned += titles.length;
+      allGaps = allGaps.concat(gaps);
+    }
+    $("filters").hidden = allGaps.length === 0 && walk.done;
+    renderGaps();
   } catch (err) {
     status.className = "error";
     status.textContent = /rate-limiting/i.test(err.message)
       ? "Wikimedia is rate-limiting us right now. Wait a moment and try again."
       : "Error: " + err.message;
   } finally {
-    go.disabled = false;
+    go.disabled = false; lm.disabled = false;
   }
+}
+
+$("f").addEventListener("submit", e => {
+  e.preventDefault();
+  const category = $("category").value.trim();
+  const depth = Math.max(0, parseInt($("depth").value, 10) || 0);
+  walk = newWalk(category, depth);
+  allGaps = []; scanned = 0;
+  $("results").innerHTML = ""; $("filters").hidden = true; $("loadmore").hidden = true;
+  loadChunk(true);
 });
+$("loadmore_btn").addEventListener("click", () => loadChunk(false));
 </script>
 </body>
 </html>
