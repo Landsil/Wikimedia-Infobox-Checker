@@ -26,10 +26,11 @@
   </div>
   <form id="f">
     <div><label>English Wikipedia category</label>
-      <input id="category" value="Tunisian tennis players"></div>
+      <input id="category" value="Wimbledon champions"></div>
     <div class="depth-field"><label>Subcategory depth</label>
       <input id="depth" type="number" min="0" value="2"></div>
     <button id="go" type="submit">Find gaps</button>
+    <button id="copy_url" type="button" class="secondary">Copy static URL</button>
   </form>
 </header>
 <main>
@@ -38,8 +39,12 @@
     <div class="filter-item"><button type="button" id="f_missing" class="toggle" aria-pressed="true">Missing</button></div>
     <div class="filter-item"><button type="button" id="f_lowres" class="toggle" aria-pressed="true">Low-res</button></div>
     <div class="filter-item"><button type="button" id="f_old" class="toggle" aria-pressed="true">Old</button></div>
-    <div class="filter-item"><button type="button" id="f_cand" class="toggle" aria-pressed="true">Has candidate</button></div>
-    <div class="filter-item"><button type="button" id="f_nocand" class="toggle" aria-pressed="true">No candidate</button></div>
+    <div class="filter-item"><label class="age-filter">Candidate
+      <select id="cand_filter">
+        <option value="all">any</option>
+        <option value="has">has one</option>
+        <option value="none">none</option>
+      </select></label></div>
     <div class="filter-item"><label class="age-filter">Max age
       <input type="number" id="max_age" min="0" placeholder="any"></label></div>
     <div class="filter-item"><button type="button" id="check_all" class="toggle">Check all for Commons photos</button></div>
@@ -286,6 +291,21 @@ function isGoodCandidate(info, now) {
   return !low && !isStale(info.taken, info.timestamp, now);
 }
 
+// "X (cropped).jpg" / "(cropped 2)" / "(head crop)" -> parent "X.jpg".
+const CROP_SUFFIX = /^(?<base>.+?)\s*\((?:[^)]*crop[^)]*)\)(?<ext>\.\w+)$/i;
+function cropParent(title) {
+  const m = CROP_SUFFIX.exec(title || "");
+  return m ? m.groups.base + m.groups.ext : null;
+}
+// Same photo, allowing for a crop either way — a crop of the article's photo
+// (or the reverse) is the same image, not a genuinely different candidate.
+// Filename-based only: free. (The structural {{Extracted from}} relation is
+// authoritative but needs a per-file action=parse call, so it's not used here.)
+function sameOrCrop(a, b) {
+  if (!a || !b) return false;
+  return a === b || cropParent(a) === b || cropParent(b) === a;
+}
+
 // Turn a batch of article titles into gap records (living + missing/low-res/old).
 async function processTitles(titles, onProgress) {
   const now = new Date();
@@ -325,9 +345,9 @@ async function processTitles(titles, onProgress) {
     const w = g.qid ? wd[g.qid] : null;
     g.age = (w && w.birthYear) ? nowYear - w.birthYear : null;
     let cand = w ? w.p18 : null;
-    // Drop the candidate if it's the article's own (bad) photo, or if the
-    // candidate itself is old / low-res (not worth offering).
-    if (cand && g.current && cand === g.current.title) cand = null;
+    // Drop the candidate if it's the article's own (bad) photo or a crop of it,
+    // or if the candidate itself is old / low-res (not worth offering).
+    if (cand && g.current && sameOrCrop(cand, g.current.title)) cand = null;
     let ci = cand ? (p18Info[cand] || { title: cand }) : null;
     if (ci && ci.thumb && !isGoodCandidate(ci, now)) ci = null;
     g.p18 = ci;
@@ -416,9 +436,10 @@ const hasCandidate = g => !!g.p18 || (g.depictChecked && g.depictFiles && g.depi
 const REASON_TOGGLE = { "missing": "f_missing", "low-res": "f_lowres", "old": "f_old" };
 function isShown(g) {
   if (!pressed(REASON_TOGGLE[g.reason])) return false;
+  const cf = $("cand_filter").value;            // all | has | none
   const hc = hasCandidate(g);
-  if (hc && !pressed("f_cand")) return false;
-  if (!hc && !pressed("f_nocand")) return false;
+  if (cf === "has" && !hc) return false;
+  if (cf === "none" && hc) return false;
   // Max-age filter: exclude only when the age is KNOWN and over the limit.
   // Blank field or unknown age -> keep (per the "no DOB -> no change" rule).
   const maxAge = parseInt($("max_age").value, 10);
@@ -446,8 +467,53 @@ function bindToggle(id) {
     renderGaps();
   });
 }
-["f_missing", "f_lowres", "f_old", "f_cand", "f_nocand"].forEach(bindToggle);
+["f_missing", "f_lowres", "f_old"].forEach(bindToggle);
+$("cand_filter").addEventListener("change", renderGaps);
 $("max_age").addEventListener("input", renderGaps);
+
+// =========================================================================
+// Static URL: remember category, depth and all filter settings, and auto-run.
+// =========================================================================
+async function copyText(text) {
+  try { await navigator.clipboard.writeText(text); return true; }
+  catch (_) {
+    const ta = document.createElement("textarea");
+    ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+    document.body.appendChild(ta); ta.select();
+    let ok = false; try { ok = document.execCommand("copy"); } catch (_) {}
+    document.body.removeChild(ta); return ok;
+  }
+}
+function staticUrl() {
+  const q = new URLSearchParams();
+  q.set("category", $("category").value.trim());
+  q.set("depth", String(parseInt($("depth").value, 10) || 0));
+  for (const id of ["f_missing", "f_lowres", "f_old"]) q.set(id, pressed(id) ? "1" : "0");
+  q.set("cand", $("cand_filter").value);
+  if ($("max_age").value) q.set("maxage", $("max_age").value);
+  q.set("search", "1");
+  return `${location.origin}${location.pathname}?${q.toString()}`;
+}
+$("copy_url").addEventListener("click", async () => {
+  const btn = $("copy_url"), original = btn.textContent;
+  const ok = await copyText(staticUrl());
+  btn.textContent = ok ? "URL copied!" : "Copy failed";
+  btn.classList.toggle("copied", ok);
+  setTimeout(() => { btn.textContent = original; btn.classList.remove("copied"); }, 1500);
+});
+// Read state from the URL on load; return true if it asked to auto-search.
+function applyUrlParams() {
+  const q = new URLSearchParams(location.search);
+  if (q.get("category")) $("category").value = q.get("category").replace(/_/g, " ").trim();
+  if (/^\d+$/.test(q.get("depth") || "")) $("depth").value = q.get("depth");
+  for (const id of ["f_missing", "f_lowres", "f_old"]) {
+    const v = q.get(id);
+    if (v === "0" || v === "1") $(id).setAttribute("aria-pressed", v === "1" ? "true" : "false");
+  }
+  if (["all", "has", "none"].includes(q.get("cand"))) $("cand_filter").value = q.get("cand");
+  if (/^\d+$/.test(q.get("maxage") || "")) $("max_age").value = q.get("maxage");
+  return q.get("search") === "1";
+}
 
 // =========================================================================
 // CSV export (no auth; downloads a file). Exports the currently-shown gaps.
@@ -535,9 +601,9 @@ async function runDepicts(i) {
   try {
     const now = new Date();
     let files = await fetchDepictingFiles(g.qid);
-    // Drop the article's own (bad) photo, and any candidate that is itself
-    // old or low-res (no point offering it).
-    files = files.filter(f => (!g.current || f.title !== g.current.title)
+    // Drop the article's own (bad) photo (or a crop of it), and any candidate
+    // that is itself old or low-res (no point offering it).
+    files = files.filter(f => (!g.current || !sameOrCrop(f.title, g.current.title))
                               && isGoodCandidate(f, now));
     g.depictFiles = files; g.depictChecked = true;
   } catch (err) {
@@ -560,7 +626,7 @@ $("check_all").addEventListener("click", async () => {
     try {
       const now = new Date();
       let files = await fetchDepictingFiles(g.qid);
-      files = files.filter(f => (!g.current || f.title !== g.current.title)
+      files = files.filter(f => (!g.current || !sameOrCrop(f.title, g.current.title))
                                 && isGoodCandidate(f, now));
       g.depictFiles = files;
     } catch (_) { g.depictFiles = []; }
@@ -597,16 +663,19 @@ async function loadChunk(reset) {
   }
 }
 
-$("f").addEventListener("submit", e => {
-  e.preventDefault();
+function startSearch() {
   const category = $("category").value.trim();
   const depth = Math.max(0, parseInt($("depth").value, 10) || 0);
   walk = newWalk(category, depth);
   allGaps = []; scanned = 0;
   $("results").innerHTML = ""; $("filters").hidden = true; $("loadmore").hidden = true;
   loadChunk(true);
-});
+}
+$("f").addEventListener("submit", e => { e.preventDefault(); startSearch(); });
 $("loadmore_btn").addEventListener("click", () => loadChunk(false));
+
+// Prefill from the URL; ?search=1 runs it immediately.
+if (applyUrlParams()) startSearch();
 </script>
 </body>
 </html>
