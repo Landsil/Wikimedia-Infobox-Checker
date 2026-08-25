@@ -41,6 +41,8 @@
     <div class="filter-item"><button type="button" id="f_cand" class="toggle" aria-pressed="true">Has candidate</button></div>
     <div class="filter-item"><button type="button" id="f_nocand" class="toggle" aria-pressed="true">No candidate</button></div>
     <div class="filter-item"><button type="button" id="check_all" class="toggle">Check all for Commons photos</button></div>
+    <div class="filter-item"><button type="button" id="export_raw" class="secondary">Export CSV</button></div>
+    <div class="filter-item"><button type="button" id="export_sheets" class="secondary">Export CSV for Sheets</button></div>
   </div>
   <div id="results"></div>
   <div id="loadmore" hidden><button type="button" id="loadmore_btn">Load more articles</button></div>
@@ -407,6 +409,81 @@ function bindToggle(id) {
   });
 }
 ["f_missing", "f_lowres", "f_old", "f_cand", "f_nocand"].forEach(bindToggle);
+
+// =========================================================================
+// CSV export (no auth; downloads a file). Exports the currently-shown gaps.
+// Two flavours: raw data, and a Sheets version whose cells are =IMAGE/
+// =HYPERLINK formulas so photos and links come through on import.
+// =========================================================================
+// Wrap every field in quotes and double internal quotes — valid CSV, and it's
+// what makes a cell like =IMAGE("url") survive the round-trip into Sheets.
+const csvCell = v => '"' + (v == null ? "" : String(v)).replace(/"/g, '""') + '"';
+const csvRow = cells => cells.map(csvCell).join(",");
+const csvImg = url => url ? `=IMAGE("${url}")` : "";
+const csvLink = (url, label) => url ? `=HYPERLINK("${url}","${(label || url)}")` : "";
+const commonsDepictSearch = qid =>
+  "https://commons.wikimedia.org/w/index.php?title=Special:Search&fulltext=1&ns6=1"
+  + "&search=" + encodeURIComponent("haswbstatement:P180=" + qid);
+
+function downloadCsv(filename, text) {
+  const blob = new Blob(["﻿" + text], { type: "text/csv;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(url);
+}
+
+function buildRawCsv(gaps) {
+  const header = ["Name", "Reason", "Article URL", "QID", "Wikidata URL",
+    "Current file", "Current file page", "Current MP", "Current date",
+    "P18 file", "P18 file page", "P18 MP",
+    "Depicts checked", "Depict count", "Depict files"];
+  const rows = gaps.map(g => [
+    g.title, g.reason, g.article_url, g.qid || "", g.wikidata_url || "",
+    g.current ? g.current.title : "", g.current ? g.current.descriptionurl : "",
+    g.current && g.current.megapixels != null ? g.current.megapixels : "",
+    g.current ? dateOnly(g.current.taken) : "",
+    g.p18 ? g.p18.title : "", g.p18 ? (g.p18.descriptionurl || "") : "",
+    g.p18 && g.p18.megapixels != null ? g.p18.megapixels : "",
+    g.depictChecked ? "yes" : "no",
+    g.depictChecked ? (g.depictFiles || []).length : "",
+    (g.depictFiles || []).map(f => f.title).join("; "),
+  ]);
+  return [csvRow(header), ...rows.map(csvRow)].join("\r\n");
+}
+
+function buildSheetsCsv(gaps) {
+  const header = ["Person", "Reason", "Current photo", "Current file", "Current MP",
+    "Candidate (P18)", "P18 file", "P18 MP", "Depicting files"];
+  const rows = gaps.map(g => {
+    let depict = "";
+    if (g.qid) {
+      const label = g.depictChecked ? `${(g.depictFiles || []).length} file(s)` : "search Commons";
+      depict = csvLink(commonsDepictSearch(g.qid), label);
+    }
+    return [
+      csvLink(g.article_url, g.title), g.reason,
+      g.current ? csvImg(g.current.thumb) : "",
+      g.current ? csvLink(g.current.descriptionurl, g.current.title) : "",
+      g.current && g.current.megapixels != null ? g.current.megapixels : "",
+      g.p18 ? csvImg(g.p18.thumb) : "",
+      g.p18 ? csvLink(g.p18.descriptionurl, g.p18.title) : "",
+      g.p18 && g.p18.megapixels != null ? g.p18.megapixels : "",
+      depict,
+    ];
+  });
+  return [csvRow(header), ...rows.map(csvRow)].join("\r\n");
+}
+
+function exportCsv(kind) {
+  const shown = allGaps.filter(isShown);
+  if (!shown.length) return;
+  const text = kind === "sheets" ? buildSheetsCsv(shown) : buildRawCsv(shown);
+  downloadCsv(kind === "sheets" ? "photo-gaps-sheets.csv" : "photo-gaps.csv", text);
+}
+$("export_raw").addEventListener("click", () => exportCsv("raw"));
+$("export_sheets").addEventListener("click", () => exportCsv("sheets"));
 
 // =========================================================================
 // Depicts lookups (on demand)
