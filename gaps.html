@@ -40,6 +40,8 @@
     <div class="filter-item"><button type="button" id="f_old" class="toggle" aria-pressed="true">Old</button></div>
     <div class="filter-item"><button type="button" id="f_cand" class="toggle" aria-pressed="true">Has candidate</button></div>
     <div class="filter-item"><button type="button" id="f_nocand" class="toggle" aria-pressed="true">No candidate</button></div>
+    <div class="filter-item"><label class="age-filter">Max age
+      <input type="number" id="max_age" min="0" placeholder="any"></label></div>
     <div class="filter-item"><button type="button" id="check_all" class="toggle">Check all for Commons photos</button></div>
     <div class="filter-item"><button type="button" id="export_raw" class="secondary">Export CSV</button></div>
     <div class="filter-item"><button type="button" id="export_sheets" class="secondary">Export CSV for Sheets</button></div>
@@ -248,16 +250,40 @@ function firstP18(claims) {
   }
   return null;
 }
-async function fetchP18Images(qids) {
+// Birth year from P569, only when precision is year-or-finer (9=year, 10=month,
+// 11=day). Coarser (decade/century) or missing -> null = "age unknown".
+function birthYearFromClaims(claims) {
+  for (const st of (claims.P569 || [])) {
+    try {
+      const v = st.mainsnak.datavalue.value;
+      if (v.precision >= 9) {
+        const m = /^\+(\d{4})/.exec(v.time);
+        if (m) return parseInt(m[1], 10);
+      }
+    } catch (_) {}
+  }
+  return null;
+}
+// One claims call per 50 gives both the P18 image and the birth year.
+async function fetchPersonWikidata(qids) {
   const result = {};
   for (const batch of chunked([...qids].sort())) {
     const entities = await wbGetEntities(WIKIDATA_API, batch, "claims");
     for (const [qid, e] of Object.entries(entities)) {
-      const fn = firstP18(e.claims || {});
-      result[qid] = fn ? "File:" + fn : null;
+      const claims = e.claims || {};
+      const fn = firstP18(claims);
+      result[qid] = { p18: fn ? "File:" + fn : null, birthYear: birthYearFromClaims(claims) };
     }
   }
   return result;
+}
+
+// A candidate is only worth offering if it isn't itself old or low-res. Unknown
+// resolution/date is treated as "not known bad" -> still shown.
+function isGoodCandidate(info, now) {
+  if (!info) return false;
+  const low = info.megapixels != null && info.megapixels < LOW_RES_MP;
+  return !low && !isStale(info.taken, info.timestamp, now);
 }
 
 // Turn a batch of article titles into gap records (living + missing/low-res/old).
@@ -286,18 +312,25 @@ async function processTitles(titles, onProgress) {
     gaps.push({
       title: s.title, article_url: s.article_url, qid: s.qid,
       wikidata_url: s.qid ? `https://www.wikidata.org/wiki/${s.qid}` : null,
-      reason, current: cur, p18: null, depictChecked: false, depictFiles: null,
+      reason, current: cur, age: null, p18: null, depictChecked: false, depictFiles: null,
     });
   }
 
-  onProgress("Looking for candidate photos (Wikidata P18)…");
-  const p18 = await fetchP18Images(new Set(gaps.map(g => g.qid).filter(Boolean)));
-  const p18Info = await fetchFilesImageinfo([...new Set(Object.values(p18).filter(Boolean))]);
+  onProgress("Looking for candidate photos and ages (Wikidata)…");
+  const nowYear = now.getFullYear();
+  const wd = await fetchPersonWikidata(new Set(gaps.map(g => g.qid).filter(Boolean)));
+  const p18files = new Set(Object.values(wd).map(w => w.p18).filter(Boolean));
+  const p18Info = await fetchFilesImageinfo([...p18files]);
   for (const g of gaps) {
-    let cand = g.qid ? p18[g.qid] : null;
-    // If the article's (bad) photo IS the P18 file, it's not a candidate.
+    const w = g.qid ? wd[g.qid] : null;
+    g.age = (w && w.birthYear) ? nowYear - w.birthYear : null;
+    let cand = w ? w.p18 : null;
+    // Drop the candidate if it's the article's own (bad) photo, or if the
+    // candidate itself is old / low-res (not worth offering).
     if (cand && g.current && cand === g.current.title) cand = null;
-    g.p18 = cand ? (p18Info[cand] || { title: cand }) : null;
+    let ci = cand ? (p18Info[cand] || { title: cand }) : null;
+    if (ci && ci.thumb && !isGoodCandidate(ci, now)) ci = null;
+    g.p18 = ci;
   }
   return gaps;
 }
@@ -333,6 +366,7 @@ function personMeta(g) {
   return `<div class="meta left">
     <div class="row"><span class="v"><strong>${link(g.article_url, g.title)}</strong> ${badge}</span></div>
     ${g.wikidata_url ? row("Wikidata", link(g.wikidata_url, g.qid)) : ""}
+    ${g.age != null ? row("Age", "~" + g.age) : ""}
     ${cur}
   </div>`;
 }
@@ -385,6 +419,10 @@ function isShown(g) {
   const hc = hasCandidate(g);
   if (hc && !pressed("f_cand")) return false;
   if (!hc && !pressed("f_nocand")) return false;
+  // Max-age filter: exclude only when the age is KNOWN and over the limit.
+  // Blank field or unknown age -> keep (per the "no DOB -> no change" rule).
+  const maxAge = parseInt($("max_age").value, 10);
+  if (!isNaN(maxAge) && g.age != null && g.age > maxAge) return false;
   return true;
 }
 
@@ -409,6 +447,7 @@ function bindToggle(id) {
   });
 }
 ["f_missing", "f_lowres", "f_old", "f_cand", "f_nocand"].forEach(bindToggle);
+$("max_age").addEventListener("input", renderGaps);
 
 // =========================================================================
 // CSV export (no auth; downloads a file). Exports the currently-shown gaps.
@@ -435,12 +474,12 @@ function downloadCsv(filename, text) {
 }
 
 function buildRawCsv(gaps) {
-  const header = ["Name", "Reason", "Article URL", "QID", "Wikidata URL",
+  const header = ["Name", "Reason", "Age", "Article URL", "QID", "Wikidata URL",
     "Current file", "Current file page", "Current MP", "Current date",
     "P18 file", "P18 file page", "P18 MP",
     "Depicts checked", "Depict count", "Depict files"];
   const rows = gaps.map(g => [
-    g.title, g.reason, g.article_url, g.qid || "", g.wikidata_url || "",
+    g.title, g.reason, g.age != null ? g.age : "", g.article_url, g.qid || "", g.wikidata_url || "",
     g.current ? g.current.title : "", g.current ? g.current.descriptionurl : "",
     g.current && g.current.megapixels != null ? g.current.megapixels : "",
     g.current ? dateOnly(g.current.taken) : "",
@@ -454,7 +493,7 @@ function buildRawCsv(gaps) {
 }
 
 function buildSheetsCsv(gaps) {
-  const header = ["Person", "Reason", "Current photo", "Current file", "Current MP",
+  const header = ["Person", "Reason", "Age", "Current photo", "Current file", "Current MP",
     "Candidate (P18)", "P18 file", "P18 MP", "Depicting files"];
   const rows = gaps.map(g => {
     let depict = "";
@@ -463,7 +502,7 @@ function buildSheetsCsv(gaps) {
       depict = csvLink(commonsDepictSearch(g.qid), label);
     }
     return [
-      csvLink(g.article_url, g.title), g.reason,
+      csvLink(g.article_url, g.title), g.reason, g.age != null ? g.age : "",
       g.current ? csvImg(g.current.thumb) : "",
       g.current ? csvLink(g.current.descriptionurl, g.current.title) : "",
       g.current && g.current.megapixels != null ? g.current.megapixels : "",
@@ -494,9 +533,12 @@ async function runDepicts(i) {
   const slot = $(`cands-${i}`);
   if (slot) slot.innerHTML = row("Depicting files", "searching…");
   try {
+    const now = new Date();
     let files = await fetchDepictingFiles(g.qid);
-    // Drop the article's own (bad) photo from the candidates.
-    if (g.current) files = files.filter(f => f.title !== g.current.title);
+    // Drop the article's own (bad) photo, and any candidate that is itself
+    // old or low-res (no point offering it).
+    files = files.filter(f => (!g.current || f.title !== g.current.title)
+                              && isGoodCandidate(f, now));
     g.depictFiles = files; g.depictChecked = true;
   } catch (err) {
     g.depictFiles = []; g.depictChecked = true;
@@ -516,8 +558,10 @@ $("check_all").addEventListener("click", async () => {
     const [g, i] = todo[n];
     btn.textContent = `Checking ${n + 1}/${todo.length}…`;
     try {
+      const now = new Date();
       let files = await fetchDepictingFiles(g.qid);
-      if (g.current) files = files.filter(f => f.title !== g.current.title);
+      files = files.filter(f => (!g.current || f.title !== g.current.title)
+                                && isGoodCandidate(f, now));
       g.depictFiles = files;
     } catch (_) { g.depictFiles = []; }
     g.depictChecked = true;
