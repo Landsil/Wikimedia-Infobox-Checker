@@ -1,52 +1,41 @@
 # Wikimedia-Infobox-Checker
 
-Checks photos in a Wikimedia Commons category against the current photo in the
-subject's Wikipedia infobox.
-
-It finds photos in a category that are **not yet used in any Wikipedia article**
-and **depict a person**, then pairs each with that person's **current Wikipedia
-infobox photo** so you can judge whether the new photo is an improvement. It also
-lists category photos that have **no depicts statement**, and ones that are
-**already in use** as an infobox photo (with a lookup for the photo they replaced).
+A small **static, browser-only** site of tools for finding and improving photos
+on Wikipedia and Wikimedia Commons. No server, no build step — every page calls
+the Wikimedia APIs directly from the browser with `fetch()` + `&origin=*`
+(anonymous CORS).
 
 > This README is the developer-facing document: how it's built, which APIs it
-> calls, and where the gotchas are. The in-app **About** button covers the same
-> ground for someone who just wants to use the tool.
+> calls, and where the gotchas are. Each tool's in-page **About** covers the same
+> ground for someone who just wants to use it.
 
 
 ## Try it
 
 **Website (no install):** https://mb-malta.co.uk/Wikimedia-Infobox-Checker/
 
-**Local Python server:**
-
-1. Grab `app.py`
-2. Install requests: `pip install requests`
-3. Run: `python3 app.py` (or `python3 app.py 9000` for another port) and open
-   http://localhost:8000/
-
 <img width="1153" height="1194" alt="Screenshot 2026-07-31 at 13 31 01" src="https://github.com/user-attachments/assets/38f24aae-7237-44e2-b17c-fba63feea376" />
 
 
-## Two interfaces, one behaviour
+## Structure
 
-| | `app.py` | `index.html` |
-| :-- | :-- | :-- |
-| Runs as | local `ThreadingHTTPServer` (stdlib only + `requests`) | static page, no server |
-| Pipeline runs | in Python, on the server | in the browser, via `fetch` |
-| Talks to APIs | `requests.Session`, custom `User-Agent` | `fetch` + `&origin=*` (anonymous CORS) |
-| Endpoints | `GET /`, `POST /api/search`, `POST /api/previous-photo` | none |
-| Hosted at | localhost | GitHub Pages |
+A landing hub links to self-contained tool pages; all share one stylesheet.
 
-They are **not** the same file: `app.py` embeds a thin client (`INDEX_HTML`) that
-POSTs to its own endpoints, while `index.html` embeds the whole pipeline. Both
-share the same UI, CSS, render helpers, filter logic and thresholds.
+| File | What |
+| :-- | :-- |
+| `index.html` | Landing hub — links to the tools |
+| `finder.html` | **Infobox Finder** — Commons category → unused photos depicting people, compared to the current infobox photo |
+| `gaps.html` | **Photo Gaps** — Wikipedia category → living people whose article has a missing/poor infobox photo |
+| `style.css` | Shared styles for all three pages |
 
-**When changing pipeline logic or the frontend, update both.** The shared surface
-must stay in sync; only the transport layer differs.
+Each tool page embeds its own JS pipeline (they don't share a script), so a page
+is independently openable. Deployed on GitHub Pages from `main` /root.
 
-Browsers forbid setting `User-Agent`, so the static build can't send the
-descriptive UA that `app.py` does — a documented limitation, not a bug.
+Everything is client-side. That has one consequence worth knowing: **browsers
+forbid setting `User-Agent`**, so requests go out with the browser's UA plus
+`&origin=*` rather than a descriptive tool UA. (An earlier local Python server,
+`app.py`, sent a proper UA; it was retired once the browser build covered
+everything.)
 
 
 ## Usage
@@ -135,9 +124,9 @@ Stale dates and low resolutions render in red with a ⚠.
   see below.
 
 
-## Pipeline
+## Infobox Finder pipeline (`finder.html`)
 
-`run_search()` / `runSearch()` in order. Each step feeds the next a shrinking set.
+`runSearch()` in order. Each step feeds the next a shrinking set.
 
 | # | Step | API | Batching |
 | :-- | :-- | :-- | :-- |
@@ -289,9 +278,27 @@ instead of 8. For the static build it would mean either leaking a credential in
 public source or forcing every visitor through an OAuth login.
 
 
+## Photo Gaps pipeline (`gaps.html`)
+
+Given an English Wikipedia category and a subcategory depth:
+
+| # | Step | API | Notes |
+| :-- | :-- | :-- | :-- |
+| 1 | `enumerateArticles` | `list=categorymembers` (`cmtype=page\|subcat`) | BFS to the chosen depth; deduped; capped at `GAP_ARTICLE_CAP`; flags `truncated` |
+| 2 | `fetchArticlePhotoState` | `prop=pageimages\|pageprops\|categories` | One batched call per 50: lead image? Wikidata id? in `Category:Living people`? |
+| 3 | assess | Commons `imageinfo` on the lead images | resolution + age of existing photos |
+| 4 | `fetchP18Images` | Wikidata `wbgetentities` | candidate via P18, batched |
+| 5 | (on demand) `fetchDepictingFiles` | Commons `list=search` `haswbstatement:P180=Q…` | files that depict the person; one search per person, so a per-row + "check all" button |
+
+A gap = a **living** person whose article photo is **missing, under 2 MP, or
+>12 months old**. `Category:Tennis players` is almost all subcategories, so a
+flat (depth 0) search finds nothing — hence the depth control and the honest
+`truncated` flag.
+
+
 ## Tunables
 
-All at the top of `app.py`, mirrored in `index.html`:
+At the top of each tool's `<script>`:
 
 | Constant | Value | Meaning |
 | :-- | :-- | :-- |
@@ -301,11 +308,8 @@ All at the top of `app.py`, mirrored in `index.html`:
 | `LOW_RES_MP` | 2.0 | Megapixels below which resolution is flagged |
 | `MAX_RETRIES` | 6 | Attempts per request before aborting |
 | `BACKOFF_BASE` | 1.0 | Backoff seconds, doubled per retry when no `Retry-After` |
-| `HISTORY_REV_LIMIT` | 50 | Revisions fetched per history lookup |
-| `MAX_BODY_BYTES` | 64 KiB | `app.py` request-body cap |
-
-`app.py` also validates the `Host` header and rejects cross-origin POSTs, since
-it binds loopback but the `Host` header is attacker-controllable (DNS rebinding).
+| `HISTORY_REV_LIMIT` | 50 | (finder) Revisions fetched per history lookup |
+| `GAP_ARTICLE_CAP` | 5000 | (gaps) Max articles enumerated from a category tree |
 
 
 ## Licence

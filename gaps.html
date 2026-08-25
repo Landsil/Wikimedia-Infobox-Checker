@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Photo Gaps</title>
+<!--
+  Photo Gaps — one of the static, client-side tools on this site.
+
+  Given an English Wikipedia category, recurse it to a chosen depth, and list the
+  living people whose article has a missing, low-resolution or dated infobox
+  photo. For each, report whether a candidate photo already exists via Wikidata
+  P18 or via Commons files that depict them (SDC P180).
+
+  Runs entirely in the browser: Wikimedia APIs via fetch() + &origin=* (CORS).
+-->
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <div class="titlebar">
+    <h1><a href="index.html" class="home-link">Wikimedia tools</a> › Photo Gaps</h1>
+  </div>
+  <form id="f">
+    <div><label>English Wikipedia category</label>
+      <input id="category" value="Tunisian tennis players"></div>
+    <div class="depth-field"><label>Subcategory depth</label>
+      <input id="depth" type="number" min="0" max="6" value="2"></div>
+    <button id="go" type="submit">Find gaps</button>
+  </form>
+</header>
+<main>
+  <div id="status"></div>
+  <div id="controls" class="filters" hidden>
+    <button type="button" id="check_all" class="toggle">Check all for Commons photos</button>
+    <span class="filter-note">Runs a depicting-files search for every listed
+      person. One request each, so it can take a while for long lists.</span>
+  </div>
+  <div id="results"></div>
+</main>
+<footer>
+  <a href="https://github.com/Landsil/Wikimedia-Infobox-Checker" target="_blank"
+     rel="noopener">Wikimedia-Infobox-Checker on GitHub</a>
+</footer>
+<script>
+"use strict";
+
+// =========================================================================
+// Config
+// =========================================================================
+const EN_WIKI_API = "https://en.wikipedia.org/w/api.php";
+const COMMONS_API = "https://commons.wikimedia.org/w/api.php";
+const WIKIDATA_API = "https://www.wikidata.org/w/api.php";
+const BATCH = 50;
+const THUMB_WIDTH = 320;
+const STALE_MONTHS = 12;        // infobox photo flagged when older than this
+const LOW_RES_MP = 2.0;         // flagged below this (megapixels)
+const GAP_ARTICLE_CAP = 5000;   // safety ceiling on enumerated articles
+const MAX_RETRIES = 6;
+const BACKOFF_BASE = 1.0;
+
+// =========================================================================
+// Small helpers
+// =========================================================================
+const $ = id => document.getElementById(id);
+const esc = s => (s == null ? "" : String(s)).replace(/[&<>"]/g,
+  c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const link = (url, text) =>
+  url ? `<a href="${esc(url)}" target="_blank" rel="noopener">${esc(text)}</a>` : esc(text);
+const row = (k, v, warn) =>
+  `<div class="row"><span class="k">${k}</span><span class="v${warn ? " warn" : ""}">${v || "&mdash;"}</span></div>`;
+function chunked(arr, size = BATCH) {
+  const out = []; for (let i = 0; i < arr.length; i += size) out.push(arr.slice(i, i + size));
+  return out;
+}
+function stripHtml(v) {
+  if (!v) return "";
+  const el = document.createElement("div");
+  el.innerHTML = String(v).replace(/<[^>]+>/g, " ");
+  return (el.textContent || "").replace(/\s+/g, " ").trim();
+}
+const dateOnly = v => {
+  const s = (v == null ? "" : String(v)).trim();
+  const m = /^(\d{4}-\d{2}-\d{2})/.exec(s);
+  return m ? m[1] : s;
+};
+function parseTs(value) {
+  if (!value) return null;
+  let d = new Date(value);
+  if (!isNaN(d)) return d;
+  const m = /(\d{4})-(\d{2})-(\d{2})/.exec(value);
+  return m ? new Date(Date.UTC(+m[1], +m[2] - 1, +m[3])) : null;
+}
+function isStale(taken, uploaded, now) {
+  const when = parseTs(taken) || parseTs(uploaded);
+  if (!when) return false;
+  return when < new Date(now.getTime() - (365.25 / 12 * STALE_MONTHS) * 86400000);
+}
+const resolution = o => (o && o.megapixels != null && o.width && o.height)
+  ? `${o.megapixels} MP (${o.width}×${o.height})` : "";
+
+// =========================================================================
+// API layer (fetch + &origin=* ; retry only on real 429/503). See the notes:
+// no maxlag on an interactive read tool.
+// =========================================================================
+function retryDelayMs(resp, attempt) {
+  const ra = resp.headers.get("Retry-After");
+  if (ra && /^\d+$/.test(ra)) return parseFloat(ra) * 1000;
+  return BACKOFF_BASE * 2 ** attempt * 1000;
+}
+async function apiGet(base, params) {
+  const search = new URLSearchParams(params);
+  search.set("format", "json"); search.set("origin", "*");
+  const url = `${base}?${search.toString()}`;
+  for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+    let resp;
+    try { resp = await fetch(url, { credentials: "omit" }); }
+    catch (err) {
+      if (attempt < MAX_RETRIES - 1) { await sleep(BACKOFF_BASE * 2 ** attempt * 1000); continue; }
+      throw err;
+    }
+    let data = null;
+    try { data = JSON.parse(await resp.text()); } catch (_) {}
+    if (resp.status === 429 || resp.status === 503) {
+      if (attempt < MAX_RETRIES - 1) { await sleep(retryDelayMs(resp, attempt)); continue; }
+      throw new Error(`Wikimedia rate-limiting after ${MAX_RETRIES} attempts (${base}).`);
+    }
+    if (!resp.ok) throw new Error(`HTTP ${resp.status} from ${base}`);
+    if (data === null) throw new Error(`Non-JSON response from ${base}`);
+    return data;
+  }
+}
+async function* mwQuery(base, params) {
+  const p = { ...params, action: "query" };
+  while (true) {
+    const data = await apiGet(base, p);
+    if (data.query) yield data.query;
+    if (data.continue) Object.assign(p, data.continue); else break;
+  }
+}
+async function wbGetEntities(base, ids, props, extra) {
+  const p = { action: "wbgetentities", ids: ids.join("|"), props, ...(extra || {}) };
+  return (await apiGet(base, p)).entities || {};
+}
+
+// imageinfo for a set of "File:..." titles (Commons). size + dates + thumb.
+async function fetchFilesImageinfo(titles) {
+  const result = {};
+  for (const batch of chunked(titles)) {
+    const params = { titles: batch.join("|"), prop: "imageinfo",
+      iiprop: "timestamp|url|extmetadata|size", iiurlwidth: String(THUMB_WIDTH) };
+    for await (const query of mwQuery(COMMONS_API, params)) {
+      for (const page of Object.values(query.pages || {})) {
+        const info = (page.imageinfo || [])[0];
+        if (!info) continue;
+        const ext = info.extmetadata || {};
+        const taken = stripHtml((ext.DateTimeOriginal || {}).value) || info.timestamp || "";
+        const w = info.width || null, h = info.height || null;
+        result[page.title] = {
+          title: page.title, descriptionurl: info.descriptionurl || "",
+          thumb: info.thumburl || info.url || "", taken, timestamp: info.timestamp || "",
+          width: w, height: h,
+          megapixels: (w && h) ? Math.round(w * h / 100000) / 10 : null,
+        };
+      }
+    }
+  }
+  return result;
+}
+
+// =========================================================================
+// Pipeline
+// =========================================================================
+const wikipediaArticleUrl = title =>
+  "https://en.wikipedia.org/wiki/" + encodeURIComponent(title.replace(/ /g, "_"));
+
+// Breadth-first walk of the category tree. Returns { titles, truncated }.
+async function enumerateArticles(category, maxDepth, cap, onProgress) {
+  const seenCats = new Set(), articles = new Map();
+  let frontier = [[category, 0]], truncated = false;
+  while (frontier.length) {
+    const [cat, depth] = frontier.shift();
+    if (seenCats.has(cat)) continue;
+    seenCats.add(cat);
+    const params = { list: "categorymembers", cmtitle: cat,
+      cmtype: "page|subcat", cmprop: "title|type|ns", cmlimit: "max" };
+    for await (const query of mwQuery(EN_WIKI_API, params)) {
+      for (const m of query.categorymembers || []) {
+        if (m.type === "subcat") {
+          if (depth < maxDepth) frontier.push([m.title, depth + 1]);
+          else truncated = true;
+        } else if (m.ns === 0) {
+          if (articles.size >= cap) truncated = true;
+          else if (!articles.has(m.title)) articles.set(m.title, true);
+        }
+      }
+    }
+    if (onProgress) onProgress(`Enumerating category tree… ${articles.size} article(s)`);
+    if (articles.size >= cap) break;
+  }
+  return { titles: [...articles.keys()], truncated };
+}
+
+// pageimages + wikidata id + "Living people" flag, one batched query per 50.
+async function fetchArticlePhotoState(titles, onProgress) {
+  const out = {};
+  let done = 0;
+  for (const batch of chunked(titles)) {
+    const params = { titles: batch.join("|"),
+      prop: "pageimages|pageprops|categories", piprop: "name",
+      ppprop: "wikibase_item", clcategories: "Category:Living people", cllimit: "max" };
+    for await (const query of mwQuery(EN_WIKI_API, params)) {
+      // Titles can be normalized; map back so we key on the original.
+      const alias = {};
+      for (const n of query.normalized || []) alias[n.to] = n.from;
+      for (const page of Object.values(query.pages || {})) {
+        const title = alias[page.title] || page.title;
+        const cur = out[title] || (out[title] = {
+          title, pageimage: null, qid: null, living: false,
+          article_url: wikipediaArticleUrl(title),
+        });
+        if (page.pageimage) cur.pageimage = "File:" + page.pageimage.replace(/_/g, " ");
+        if ((page.pageprops || {}).wikibase_item) cur.qid = page.pageprops.wikibase_item;
+        if (page.categories) cur.living = true;
+      }
+    }
+    done += batch.length;
+    if (onProgress) onProgress(`Checking ${done}/${titles.length} article(s)…`);
+  }
+  return out;
+}
+
+function firstP18(claims) {
+  for (const st of (claims.P18 || [])) {
+    try { const fn = st.mainsnak.datavalue.value; if (fn) return fn; } catch (_) {}
+  }
+  return null;
+}
+async function fetchP18Images(qids) {
+  const result = {};
+  for (const batch of chunked([...qids].sort())) {
+    const entities = await wbGetEntities(WIKIDATA_API, batch, "claims");
+    for (const [qid, e] of Object.entries(entities)) {
+      const fn = firstP18(e.claims || {});
+      result[qid] = fn ? "File:" + fn : null;
+    }
+  }
+  return result;
+}
+
+async function findPhotoGaps(category, depth, onProgress) {
+  const now = new Date();
+  if (!/^category:/i.test(category)) category = "Category:" + category;
+
+  const { titles, truncated } = await enumerateArticles(category, depth, GAP_ARTICLE_CAP, onProgress);
+  const state = await fetchArticlePhotoState(titles, onProgress);
+
+  onProgress("Assessing existing infobox photos…");
+  const photoTitles = [...new Set(Object.values(state)
+    .map(s => s.pageimage).filter(Boolean))];
+  const info = await fetchFilesImageinfo(photoTitles);
+
+  const gaps = [];
+  for (const s of Object.values(state)) {
+    if (!s.living) continue;
+    const photo = s.pageimage ? info[s.pageimage] : null;
+    if (s.pageimage && !photo) continue;          // had an image we couldn't read
+    let reason, mp = null, cur = null;
+    if (!s.pageimage) {
+      reason = "missing";
+    } else {
+      cur = photo; mp = photo.megapixels;
+      const low = mp != null && mp < LOW_RES_MP;
+      const old = isStale(photo.taken, photo.timestamp, now);
+      if (!low && !old) continue;                 // photo is fine
+      reason = low ? "low-res" : "old";
+    }
+    gaps.push({
+      title: s.title, article_url: s.article_url, qid: s.qid,
+      wikidata_url: s.qid ? `https://www.wikidata.org/wiki/${s.qid}` : null,
+      reason, current: cur,
+    });
+  }
+
+  onProgress("Looking for candidate photos (Wikidata P18)…");
+  const p18 = await fetchP18Images(new Set(gaps.map(g => g.qid).filter(Boolean)));
+  const p18Info = await fetchFilesImageinfo([...new Set(Object.values(p18).filter(Boolean))]);
+  for (const g of gaps) {
+    const cand = g.qid ? p18[g.qid] : null;
+    g.p18 = cand ? (p18Info[cand] || { title: cand }) : null;
+  }
+
+  gaps.sort((a, b) => (a.reason !== "missing") - (b.reason !== "missing")
+    || a.title.localeCompare(b.title));
+  return { gaps, articleCount: titles.length, truncated };
+}
+
+// Commons files that depict a person (SDC P180). On-demand: one search per qid.
+async function fetchDepictingFiles(qid, limit = 6) {
+  const params = { list: "search", srsearch: `haswbstatement:P180=${qid}`,
+    srnamespace: "6", srlimit: String(limit) };
+  const titles = [];
+  for await (const query of mwQuery(COMMONS_API, params)) {
+    for (const r of query.search || []) titles.push(r.title);
+    break;
+  }
+  const info = await fetchFilesImageinfo(titles);
+  return titles.map(t => info[t]).filter(Boolean);
+}
+
+// =========================================================================
+// Rendering
+// =========================================================================
+function currentPhotoCell(g) {
+  if (!g.current) return `<div class="photo"><div class="none">No infobox photo</div></div>`;
+  return `<div class="photo"><img src="${esc(g.current.thumb)}" alt="" loading="lazy"></div>`;
+}
+function personMeta(g) {
+  const badge = `<span class="badge ${g.reason}">${g.reason}</span>`;
+  let cur = "";
+  if (g.current) {
+    cur = row("Current", link(g.current.descriptionurl, g.current.title))
+      + row("Resolution", resolution(g.current), g.reason === "low-res")
+      + row("Date", esc(dateOnly(g.current.taken)), g.reason === "old");
+  }
+  return `<div class="meta left">
+    <div class="row"><span class="v"><strong>${link(g.article_url, g.title)}</strong> ${badge}</span></div>
+    ${g.wikidata_url ? row("Wikidata", link(g.wikidata_url, g.qid)) : ""}
+    ${cur}
+  </div>`;
+}
+function candidateCell(g, i) {
+  let p18 = "";
+  if (g.p18 && g.p18.thumb) {
+    p18 = `<div class="row"><span class="k">Wikidata P18</span></div>`
+      + `<div class="photo"><img src="${esc(g.p18.thumb)}" alt="" loading="lazy"></div>`
+      + row("File", link(g.p18.descriptionurl, g.p18.title))
+      + row("Resolution", resolution(g.p18));
+  } else if (g.p18) {
+    p18 = row("Wikidata P18", link("https://commons.wikimedia.org/wiki/" + encodeURIComponent(g.p18.title), g.p18.title));
+  } else {
+    p18 = row("Wikidata P18", "&mdash; none");
+  }
+  const btn = g.qid
+    ? `<div class="cand-actions"><button type="button" class="mini find-cands" data-idx="${i}">`
+      + `Find depicting files on Commons</button></div><div id="cands-${i}"></div>`
+    : "";
+  return `<div class="meta right">${p18}${btn}</div>`;
+}
+const gapRow = (g, i) =>
+  `<div class="gap">${personMeta(g)}${currentPhotoCell(g)}${candidateCell(g, i)}</div>`;
+
+function depictingHtml(files) {
+  if (!files.length) return row("Depicting files", "&mdash; none on Commons");
+  return `<div class="row"><span class="k">Depicting files (${files.length})</span></div>`
+    + files.map(fp => `<div class="row"><span class="v">`
+        + `${link(fp.descriptionurl, fp.title)} — ${resolution(fp) || "?"}`
+        + `</span></div>`).join("");
+}
+
+// =========================================================================
+// State + handlers
+// =========================================================================
+let allGaps = [];
+
+async function runDepicts(i) {
+  const g = allGaps[i];
+  const slot = $(`cands-${i}`);
+  if (!g || !g.qid || !slot) return;
+  slot.innerHTML = row("Depicting files", "searching…");
+  try {
+    const files = await fetchDepictingFiles(g.qid);
+    slot.innerHTML = depictingHtml(files);
+  } catch (err) {
+    slot.innerHTML = row("Depicting files", esc("failed: " + err.message));
+  }
+}
+
+$("results").addEventListener("click", e => {
+  const btn = e.target.closest(".find-cands");
+  if (btn) runDepicts(Number(btn.dataset.idx));
+});
+
+$("check_all").addEventListener("click", async () => {
+  const btn = $("check_all");
+  btn.disabled = true;
+  const withQid = allGaps.map((g, i) => [g, i]).filter(([g]) => g.qid);
+  for (let n = 0; n < withQid.length; n++) {
+    btn.textContent = `Checking ${n + 1}/${withQid.length}…`;
+    await runDepicts(withQid[n][1]);
+  }
+  btn.textContent = "Checked all"; btn.disabled = false;
+});
+
+$("f").addEventListener("submit", async e => {
+  e.preventDefault();
+  const status = $("status"), go = $("go");
+  status.className = ""; status.textContent = "Searching…";
+  $("results").innerHTML = ""; $("controls").hidden = true; go.disabled = true;
+  try {
+    const category = $("category").value.trim();
+    const depth = Math.max(0, Math.min(6, parseInt($("depth").value, 10) || 0));
+    const out = await findPhotoGaps(category, depth, msg => { status.textContent = msg; });
+    allGaps = out.gaps;
+    $("controls").hidden = allGaps.length === 0;
+    $("results").innerHTML = allGaps.map(gapRow).join("")
+      || `<div class="none">No living people with a photo gap found.</div>`;
+    let msg = `${out.articleCount} article(s) scanned; ${allGaps.length} living `
+      + `${allGaps.length === 1 ? "person needs" : "people need"} a photo.`;
+    if (out.truncated) msg += " (Some subcategories were not expanded — raise the depth, or the "
+      + GAP_ARTICLE_CAP + "-article cap was hit.)";
+    status.textContent = msg;
+  } catch (err) {
+    status.className = "error";
+    status.textContent = /rate-limiting/i.test(err.message)
+      ? "Wikimedia is rate-limiting us right now. Wait a moment and try again."
+      : "Error: " + err.message;
+  } finally {
+    go.disabled = false;
+  }
+});
+</script>
+</body>
+</html>

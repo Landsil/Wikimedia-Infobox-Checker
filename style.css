@@ -1,0 +1,152 @@
+/* Shared styles for the Wikimedia tools site (hub, finder, gaps). */
+  :root {
+    --bg: #f6f7f9; --panel: #fff; --ink: #1c1e21; --muted: #6b7178;
+    --line: #dfe3e8; --accent: #2b6cb0; --accent-ink: #fff; --new: #276749;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 15px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI",
+         Roboto, Helvetica, Arial, sans-serif; background: var(--bg); color: var(--ink); }
+  header { background: var(--panel); border-bottom: 1px solid var(--line);
+           padding: 18px 24px; }
+  /* Title row: heading left, About button pinned right. */
+  .titlebar { display: flex; align-items: center; justify-content: space-between;
+              gap: 12px; margin: 0 0 12px; }
+  h1 { margin: 0; font-size: 20px; }
+  #about_btn { padding: 6px 14px; background: #eef2f7; color: var(--accent); font-size: 13px; }
+  .quick { margin: 0 0 12px; display: flex; gap: 8px; }
+  .quick button { padding: 5px 12px; background: #eef2f7; color: var(--accent); font-size: 12px; }
+  form { display: grid; grid-template-columns: 1fr 150px 150px auto auto;
+         gap: 12px; align-items: end; max-width: 1100px; }
+  /* Secondary action (copy shareable URL) sits next to the search button. */
+  button.secondary { background: #eef2f7; color: var(--accent); }
+  button.secondary:hover { background: #e2e8f0; }
+  button.secondary.copied { background: #d7f0e0; color: var(--new); }
+  /* Post-search filter toggle bar. */
+  .filters { display: flex; flex-wrap: wrap; gap: 10px 28px; margin-bottom: 14px; }
+  .filter-item { display: flex; align-items: center; gap: 10px; }
+  .toggle { padding: 7px 14px; border: 1px solid var(--line); border-radius: 20px;
+            background: #fff; color: var(--ink); font-size: 13px; font-weight: 600;
+            cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
+  .toggle::before { content: ""; width: 26px; height: 15px; border-radius: 999px;
+                    background: #cbd2d9; position: relative; transition: background .15s; }
+  .toggle::after { content: ""; width: 11px; height: 11px; border-radius: 50%;
+                   background: #fff; position: absolute; margin-left: 2px;
+                   transition: transform .15s; }
+  .toggle[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); }
+  .toggle[aria-pressed="true"]::before { background: var(--accent); }
+  .toggle[aria-pressed="true"]::after { transform: translateX(11px); }
+  .toggle:disabled { opacity: .4; cursor: default; }
+  .filter-item:has(.toggle:disabled) .filter-note { opacity: .5; }
+  .filter-note { color: var(--muted); font-size: 12px; }
+  label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+  input { width: 100%; padding: 8px 10px; border: 1px solid var(--line);
+          border-radius: 6px; font-size: 14px; background: #fff; }
+  button { padding: 9px 18px; border: 0; border-radius: 6px; background: var(--accent);
+           color: var(--accent-ink); font-size: 14px; font-weight: 600; cursor: pointer; }
+  button:disabled { opacity: .6; cursor: default; }
+  main { padding: 20px 24px; max-width: 1100px; margin: 0 auto; }
+  #status { color: var(--muted); margin-bottom: 14px; min-height: 20px; }
+  #status.error { color: #b91c1c; }
+
+  /* Column headers, shown once above all pairs. */
+  .pair-head { display: grid; grid-template-columns: 1fr 220px 220px 1fr; gap: 0 16px;
+               padding: 4px 16px 10px; }
+  .pair-head div { font-size: 12px; font-weight: 700; text-transform: uppercase;
+                   letter-spacing: .04em; text-align: center; }
+  .pair-head .h-left { grid-column: 1 / 3; color: var(--new); }
+  .pair-head .h-right { grid-column: 3 / 5; color: var(--muted); }
+
+  /* Each pair: unused text | unused photo | current photo | current text.
+     align-items: start keeps every column top-aligned; centering made the
+     shorter text column look like it had a leading blank line. */
+  .pair { display: grid; grid-template-columns: 1fr 220px 220px 1fr; gap: 0 16px;
+          align-items: start; background: var(--panel); border: 1px solid var(--line);
+          border-radius: 10px; padding: 14px 16px; margin-bottom: 14px; }
+  /* No-depicts photos: file metadata | photo | search links on the right
+     (mirrors the comparison layout so the search block is prominent). */
+  .pair-solo { grid-template-columns: 1fr 220px 1fr; }
+  .pair-solo .meta.left { text-align: right; }
+  .section-head { font-size: 13px; font-weight: 700; text-transform: uppercase;
+                  letter-spacing: .04em; color: var(--muted); margin: 22px 0 10px; }
+  .photo img { width: 100%; max-height: 240px; object-fit: contain; background: #eef0f3;
+               border-radius: 6px; display: block; }
+  .photo .none { padding: 40px 8px; background: #eef0f3; border-radius: 6px; }
+  .meta { font-size: 13px; }
+  .meta.left { text-align: right; }
+  .meta.right { text-align: left; }
+  .meta .row { margin: 4px 0; }
+  .meta .k { color: var(--muted); font-size: 12px; }
+  .meta .k::after { content: ": "; }
+  .meta .v { word-break: break-word; }
+  .meta .author { color: var(--muted); font-size: 12px; margin-top: 2px; }
+  .meta .warn { color: #b91c1c; font-weight: 600; }
+  .meta .warn::after { content: " \26A0"; }
+  /* Small inline action buttons (edit article, copy filename). */
+  .mini { display: inline-block; padding: 1px 7px; margin-left: 6px; border: 1px solid var(--line);
+          border-radius: 4px; background: #eef2f7; color: var(--accent); font-size: 11px;
+          font-weight: 600; cursor: pointer; text-decoration: none; vertical-align: baseline; }
+  .mini:hover { background: #e2e8f0; text-decoration: none; }
+  .mini.copied { background: #d7f0e0; color: var(--new); border-color: #b7e0c6; }
+  /* Per-wiki lookup buttons wrap; first has no left margin so the row aligns. */
+  .prev-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+  .prev-actions .mini { margin-left: 0; }
+  /* One block per wiki checked, visibly separated, with a bold language label. */
+  .prev-result { margin-top: 14px; }
+  .prev-result + .prev-result { border-top: 1px solid var(--line); padding-top: 12px; }
+  .prev-lang { font-weight: 700; margin-bottom: 4px; }
+  .none { color: var(--muted); font-style: italic; text-align: center; padding: 20px; }
+  a { color: var(--accent); text-decoration: none; } a:hover { text-decoration: underline; }
+
+  /* About overlay: sits over the current view so results are kept behind it. */
+  .overlay { position: fixed; inset: 0; background: rgba(28,30,33,.55);
+             display: flex; align-items: flex-start; justify-content: center;
+             padding: 40px 20px; overflow-y: auto; z-index: 50; }
+  .overlay[hidden] { display: none; }
+  .about { background: var(--panel); border-radius: 10px; max-width: 720px; width: 100%;
+           padding: 24px 28px 28px; box-shadow: 0 10px 40px rgba(0,0,0,.25); }
+  .about h2 { margin: 0; font-size: 19px; }
+  .about h3 { margin: 20px 0 6px; font-size: 14px; text-transform: uppercase;
+              letter-spacing: .04em; color: var(--muted); }
+  .about p, .about li { font-size: 14px; line-height: 1.5; }
+  .about ul { margin: 6px 0; padding-left: 20px; }
+  .about li { margin: 5px 0; }
+  .about .close-row { display: flex; justify-content: space-between; align-items: center; }
+  .about .flag { color: #b91c1c; font-weight: 600; }
+
+  /* Footer */
+  footer { border-top: 1px solid var(--line); margin-top: 30px; padding: 18px 24px 26px;
+           text-align: center; color: var(--muted); font-size: 13px; }
+
+  @media (max-width: 860px) {
+    .pair, .pair-head, .pair-solo { grid-template-columns: 1fr 1fr; }
+    .pair-head .h-left { grid-column: 1 / 2; }
+    .pair-head .h-right { grid-column: 2 / 3; }
+    .meta.left { text-align: left; }
+    .pair-solo .meta.left { text-align: left; }
+  }
+
+  /* ---- Multi-page site: hub + shared nav ---- */
+  .home-link { color: inherit; }
+  .home-link:hover { color: var(--accent); }
+  .lead { color: var(--muted); font-size: 15px; max-width: 720px; margin: 0 0 4px; }
+  .tools { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+           gap: 16px; max-width: 1100px; margin: 8px 0; }
+  .tool-card { display: block; background: var(--panel); border: 1px solid var(--line);
+               border-radius: 10px; padding: 18px 20px; text-decoration: none; color: var(--ink); }
+  .tool-card:hover { border-color: var(--accent); text-decoration: none;
+                     box-shadow: 0 4px 16px rgba(0,0,0,.06); }
+  .tool-card h2 { margin: 0 0 6px; font-size: 17px; color: var(--accent); }
+  .tool-card p { margin: 0; font-size: 14px; color: var(--muted); line-height: 1.5; }
+
+  /* ---- Gaps tool ---- */
+  .depth-field { display: flex; align-items: center; gap: 8px; }
+  .depth-field input { width: 64px; }
+  .gap { display: grid; grid-template-columns: 1fr 220px 1fr; gap: 0 16px; align-items: start;
+         background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+         padding: 14px 16px; margin-bottom: 14px; }
+  .gap .badge { display: inline-block; font-size: 11px; font-weight: 700; text-transform: uppercase;
+                letter-spacing: .04em; padding: 1px 8px; border-radius: 4px; }
+  .badge.missing { background: #fdecec; color: #b91c1c; }
+  .badge.low-res { background: #fdf3e6; color: #9a5b00; }
+  .badge.old { background: #eef2f7; color: var(--accent); }
+  .cand-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
