@@ -82,7 +82,9 @@ const COMMONS_API = "https://commons.wikimedia.org/w/api.php";
 const WIKIDATA_API = "https://www.wikidata.org/w/api.php";
 const BATCH = 50;
 const THUMB_WIDTH = 320;
-const HISTORY_REV_LIMIT = 50;   // revisions read to reconstruct the timeline
+const REV_PAGE = 50;            // revisions fetched per API page (rvlimit)
+const SINGLE_REV_LIMIT = 500;   // max revisions walked for a single article/file
+const CAT_REV_LIMIT = 100;      // max revisions walked per person in category mode
 const PREVIOUS = 2;             // previous photos shown (current + PREVIOUS)
 const CAT_CHUNK = 20;           // people scanned per "Scan more people" (one history walk each)
 const CAT_ARTICLE_CAP = 3000;   // safety cap on articles enumerated from a category tree
@@ -244,29 +246,37 @@ async function currentLead(lang, article) {
 }
 
 // Distinct infobox photos, newest first (crop variants collapsed to one).
+// Pages through revisions (following `continue`) until `wantDistinct` photos are
+// found or `maxRevs` revisions have been read. Returns { timeline, more } where
+// `more` means the cap was hit with unwalked history still remaining — i.e. a
+// deeper search could turn up more.
 const INFOBOX_IMG = /\|\s*(?:image|image_name|photo|img)\s*=\s*([^\n|}]+)/i;
-async function buildTimeline(lang, article) {
-  let revs = [];
-  for await (const query of mwQuery(wpApi(lang), { prop: "revisions", titles: article,
-      rvprop: "ids|timestamp|user|comment|content", rvslots: "main",
-      rvlimit: String(HISTORY_REV_LIMIT), rvdir: "older" })) {
-    for (const p of Object.values(query.pages || {})) revs = revs.concat(p.revisions || []);
-    break;
-  }
+async function buildTimeline(lang, article, maxRevs, wantDistinct) {
   const timeline = [];
-  for (const r of revs) {
-    const wt = ((r.slots || {}).main || {})["*"] || "";
-    const m = INFOBOX_IMG.exec(wt); if (!m) continue;
-    // Editors leave HTML comments / tags after the filename ("Foo.jpg <!-- note -->");
-    // strip comments and cut at any remaining "<" before building the File: title.
-    const val = m[1].replace(/<!--[\s\S]*?-->/g, "").replace(/<.*$/, "").trim();
-    if (!val) continue;
-    const file = "File:" + val.replace(/^\s*(?:File|Image)\s*:\s*/i, "");
-    const key = cropParent(file) || file;
-    if (!timeline.length || timeline[timeline.length - 1].key !== key)
-      timeline.push({ file, key, rev: r.revid, ts: r.timestamp, user: r.user });
+  let read = 0;
+  const p = { action: "query", prop: "revisions", titles: article,
+    rvprop: "ids|timestamp|user|comment|content", rvslots: "main",
+    rvlimit: String(REV_PAGE), rvdir: "older" };
+  while (true) {
+    const d = await apiGet(wpApi(lang), p);
+    const page = Object.values((d.query || {}).pages || {})[0];
+    for (const r of (page && page.revisions) || []) {
+      read++;
+      const wt = ((r.slots || {}).main || {})["*"] || "";
+      const m = INFOBOX_IMG.exec(wt); if (!m) continue;
+      // Editors leave HTML comments / tags after the filename ("Foo.jpg <!-- note -->");
+      // strip comments and cut at any remaining "<" before building the File: title.
+      const val = m[1].replace(/<!--[\s\S]*?-->/g, "").replace(/<.*$/, "").trim();
+      if (!val) continue;
+      const file = "File:" + val.replace(/^\s*(?:File|Image)\s*:\s*/i, "");
+      const key = cropParent(file) || file;
+      if (!timeline.length || timeline[timeline.length - 1].key !== key)
+        timeline.push({ file, key, rev: r.revid, ts: r.timestamp, user: r.user });
+      if (timeline.length >= wantDistinct) return { timeline, more: false };
+    }
+    if (read >= maxRevs) return { timeline, more: !!d.continue };
+    if (d.continue) Object.assign(p, d.continue); else return { timeline, more: false };
   }
-  return timeline;
 }
 
 // Base + crop variants of a photo (excluding `exclude`). One prefixsearch + imageinfo.
@@ -314,22 +324,49 @@ async function scanCatChunk() {
   const people = [];
   for (const article of batch) {
     cat.scanned++;
-    let timeline;
-    try { timeline = await buildTimeline(cat.lang, article); } catch (_) { continue; }
-    if (timeline.length < 2) continue;   // "photo actually changed"
-    people.push({ article, shown: timeline.slice(0, PREVIOUS + 1) });
+    let res;
+    try { res = await buildTimeline(cat.lang, article, CAT_REV_LIMIT, PREVIOUS + 1); } catch (_) { continue; }
+    if (res.timeline.length < 2) continue;   // "photo actually changed"
+    people.push({ article, shown: res.timeline.slice(0, PREVIOUS + 1), more: res.more });
   }
-  const files = [...new Set(people.flatMap(p => p.shown.map(e => e.file)))];
-  const info = files.length ? await fetchFilesImageinfo(files) : {};
-  for (const p of people) for (const e of p.shown) e.info = info[e.file] || null;
+  await attachInfo(people);
   cat.changed += people.length;
   return people;
 }
 
-function renderPerson(p) {
+// Fetch imageinfo for every shown photo across a set of people, in one batch.
+async function attachInfo(people) {
+  const files = [...new Set(people.flatMap(p => p.shown.map(e => e.file)))];
+  const info = files.length ? await fetchFilesImageinfo(files) : {};
+  for (const p of people) for (const e of p.shown) e.info = info[e.file] || null;
+}
+
+let personSeq = 0;   // stable ids so a single row can be re-rendered in place
+function renderPerson(p) { return renderPersonBlock("pb-" + personSeq++, p); }
+function renderPersonBlock(id, p) {
   const cards = p.shown.map((e, i) => tlCard(e, i, p.shown[i - 1])).join("");
-  return `<div class="tl-person">${link(wpArticleUrl(cat.lang, p.article), p.article)}</div>`
-    + `<div class="timeline">${cards}</div>`;
+  // Only when the category cap left us short AND more history exists: offer a
+  // per-row deeper walk (up to SINGLE_REV_LIMIT). `deepDone` suppresses it after.
+  const deep = (p.more && !p.deepDone)
+    ? ` <button type="button" class="mini deep-btn" data-id="${id}" data-article="${esc(p.article)}">`
+      + `Search deeper (${SINGLE_REV_LIMIT} revisions)</button>` : "";
+  return `<div class="tl-person-block" id="${id}">`
+    + `<div class="tl-person">${link(wpArticleUrl(cat.lang, p.article), p.article)}${deep}</div>`
+    + `<div class="timeline">${cards}</div></div>`;
+}
+// Delegated handler for the per-row "Search deeper" buttons.
+async function deepSearch(id, article) {
+  const el = $(id); if (!el) return;
+  const btn = el.querySelector(".deep-btn");
+  if (btn) { btn.disabled = true; btn.textContent = "Searching…"; }
+  try {
+    const res = await buildTimeline(cat.lang, article, SINGLE_REV_LIMIT, PREVIOUS + 1);
+    const p = { article, shown: res.timeline.slice(0, PREVIOUS + 1), more: res.more, deepDone: true };
+    await attachInfo([p]);
+    el.outerHTML = renderPersonBlock(id, p);
+  } catch (err) {
+    if (btn) { btn.disabled = false; btn.textContent = "Search deeper — retry"; }
+  }
 }
 
 // ---- render ----
@@ -433,7 +470,7 @@ async function run() {
     LANG = lang;
 
     status.textContent = "Reading the article's revision history…";
-    const timeline = await buildTimeline(lang, article);
+    const { timeline } = await buildTimeline(lang, article, SINGLE_REV_LIMIT, PREVIOUS + 1);
     if (!timeline.length) { showError(`No infobox photo found in ${article}'s recent history.`); return; }
 
     const shown = timeline.slice(0, PREVIOUS + 1);
@@ -462,6 +499,10 @@ async function run() {
 }
 $("f").addEventListener("submit", e => { e.preventDefault(); run(); });
 $("loadmore_btn").addEventListener("click", () => scanAndRender());
+$("results").addEventListener("click", e => {
+  const btn = e.target.closest(".deep-btn");
+  if (btn) deepSearch(btn.getAttribute("data-id"), btn.getAttribute("data-article"));
+});
 
 // ---- shareable static URL: remembers the query (+ depth) and auto-runs ----
 async function copyText(text) {
