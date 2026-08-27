@@ -10,9 +10,11 @@
   Given a Commons photo (name or link) or a Wikipedia article, show the current
   infobox photo of the depicted person plus the two photos it replaced, side by
   side. Recognises crop variants as the same photo, and shows each photo's crop
-  family. Runs entirely in the browser via the Wikimedia APIs (fetch + origin=*).
+  family. Given a category instead, scan its people in chunks and list only those
+  whose infobox photo actually changed (>=2 distinct photos in recent history).
+  Runs entirely in the browser via the Wikimedia APIs (fetch + origin=*).
 -->
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v=3">
 </head>
 <body>
 <header>
@@ -20,8 +22,10 @@
     <h1><a href="index.html" class="home-link">Wikimedia tools</a> › Infobox History</h1>
   </div>
   <form id="f">
-    <div><label>Article link, file name, or file link</label>
+    <div><label>Article link, file name, file link, or category</label>
       <input id="q" value="File:Sharon Horgan at SXSW London 2026 1 (cropped).jpg"></div>
+    <div class="depth-field"><label>Subcategory depth</label>
+      <input id="depth" type="number" min="0" value="1"></div>
     <button id="go" type="submit">Show history</button>
   </form>
 </header>
@@ -29,6 +33,7 @@
   <div id="status"></div>
   <div id="subject"></div>
   <div id="results"></div>
+  <div id="loadmore" hidden><button type="button" id="loadmore_btn">Scan more people</button></div>
 </main>
 <footer>
   <a href="https://github.com/Landsil/Wikimedia-Infobox-Checker" target="_blank"
@@ -43,6 +48,8 @@ const BATCH = 50;
 const THUMB_WIDTH = 320;
 const HISTORY_REV_LIMIT = 50;   // revisions read to reconstruct the timeline
 const PREVIOUS = 2;             // previous photos shown (current + PREVIOUS)
+const CAT_CHUNK = 20;           // people scanned per "Scan more people" (one history walk each)
+const CAT_ARTICLE_CAP = 3000;   // safety cap on articles enumerated from a category tree
 const MAX_RETRIES = 6;
 const BACKOFF_BASE = 1.0;
 const NON_WIKIPEDIA_WIKIS = new Set([
@@ -150,8 +157,11 @@ function parseInput(raw) {
   if (!s) return null;
   let m = s.match(/commons\.wikimedia\.org\/(?:wiki\/|entity\/)?(File:[^?#]+)/i);
   if (m) return { type: "file", title: decodeURIComponent(m[1]).replace(/_/g, " ") };
+  m = s.match(/([a-z-]+)\.wikipedia\.org\/wiki\/(Category:[^?#]+)/i);
+  if (m) return { type: "category", lang: m[1], title: decodeURIComponent(m[2]).replace(/_/g, " ") };
   m = s.match(/([a-z-]+)\.wikipedia\.org\/wiki\/([^?#]+)/i);
   if (m) return { type: "article", lang: m[1], title: decodeURIComponent(m[2]).replace(/_/g, " ") };
+  if (/^category:/i.test(s)) return { type: "category", lang: "en", title: s.replace(/_/g, " ") };
   if (/^file:/i.test(s)) return { type: "file", title: s.replace(/_/g, " ") };
   if (/\.(jpe?g|png|gif|tiff?|webp|svg)$/i.test(s)) return { type: "file", title: "File:" + s.replace(/_/g, " ") };
   return { type: "article", lang: "en", title: s.replace(/_/g, " ") };
@@ -211,7 +221,11 @@ async function buildTimeline(lang, article) {
   for (const r of revs) {
     const wt = ((r.slots || {}).main || {})["*"] || "";
     const m = INFOBOX_IMG.exec(wt); if (!m) continue;
-    const file = "File:" + m[1].trim().replace(/^\s*(?:File|Image)\s*:\s*/i, "");
+    // Editors leave HTML comments / tags after the filename ("Foo.jpg <!-- note -->");
+    // strip comments and cut at any remaining "<" before building the File: title.
+    const val = m[1].replace(/<!--[\s\S]*?-->/g, "").replace(/<.*$/, "").trim();
+    if (!val) continue;
+    const file = "File:" + val.replace(/^\s*(?:File|Image)\s*:\s*/i, "");
     const key = cropParent(file) || file;
     if (!timeline.length || timeline[timeline.length - 1].key !== key)
       timeline.push({ file, key, rev: r.revid, ts: r.timestamp, user: r.user });
@@ -230,6 +244,56 @@ async function cropFamily(fileTitle, exclude) {
   if (!titles.length) return [];
   const info = await fetchFilesImageinfo(titles);
   return titles.map(t => info[t]).filter(Boolean);
+}
+
+// ---- category mode ----
+// Enumerate article titles (ns0) in a category tree, recursing subcats to `depth`.
+// Cheap relative to the per-person history walks; capped so a huge tree can't run away.
+async function enumerateArticles(lang, category, depth) {
+  const articles = [], seen = new Set(), visitedCats = new Set();
+  let queue = [{ cat: category, d: 0 }];
+  while (queue.length && articles.length < CAT_ARTICLE_CAP) {
+    const { cat, d } = queue.shift();
+    if (visitedCats.has(cat)) continue;
+    visitedCats.add(cat);
+    for await (const q of mwQuery(wpApi(lang), { list: "categorymembers", cmtitle: cat,
+        cmtype: d < depth ? "page|subcat" : "page", cmlimit: "500" })) {
+      for (const m of q.categorymembers || []) {
+        if (m.ns === 14) { if (d < depth) queue.push({ cat: m.title, d: d + 1 }); }
+        else if (m.ns === 0 && !seen.has(m.title)) { seen.add(m.title); articles.push(m.title); }
+      }
+      if (articles.length >= CAT_ARTICLE_CAP) break;
+    }
+  }
+  return articles.slice(0, CAT_ARTICLE_CAP);
+}
+
+// Category walk state: the remaining article queue plus running tallies.
+const cat = { lang: "en", queue: [], scanned: 0, changed: 0, truncated: false };
+
+// Process the next CAT_CHUNK articles: keep only people whose infobox photo
+// actually changed (>=2 distinct photos), and fetch details for the shown photos.
+async function scanCatChunk() {
+  const batch = cat.queue.splice(0, CAT_CHUNK);
+  const people = [];
+  for (const article of batch) {
+    cat.scanned++;
+    let timeline;
+    try { timeline = await buildTimeline(cat.lang, article); } catch (_) { continue; }
+    if (timeline.length < 2) continue;   // "photo actually changed"
+    people.push({ article, shown: timeline.slice(0, PREVIOUS + 1) });
+  }
+  const files = [...new Set(people.flatMap(p => p.shown.map(e => e.file)))];
+  const info = files.length ? await fetchFilesImageinfo(files) : {};
+  for (const p of people) for (const e of p.shown) e.info = info[e.file] || null;
+  cat.changed += people.length;
+  return people;
+}
+
+function renderPerson(p) {
+  const cards = p.shown.map((e, i) => tlCard(e, i, p.shown[i - 1])).join("");
+  return `<div class="tl-person">${link(wpArticleUrl(cat.lang, p.article), p.article)}</div>`
+    + `<div class="timeline">${cards}</div>`;
 }
 
 // ---- render ----
@@ -270,13 +334,53 @@ let LANG = "en";   // wiki of the article being shown (for diff links)
 function showError(msg) { const s = $("status"); s.className = "error"; s.textContent = msg; }
 function showWarn(msg) { return `<div class="warn-banner">${esc(msg)}</div>`; }
 
+// Category mode: scan people in chunks; render only those whose photo changed.
+function updateCatStatus() {
+  const s = $("status"); s.className = "";
+  const remaining = cat.queue.length;
+  s.textContent = `Scanned ${cat.scanned} article(s); ${cat.changed} with a changed infobox photo.`
+    + (remaining ? ` ${remaining} left to scan.` : " Done.")
+    + (cat.truncated ? ` (Category capped at ${CAT_ARTICLE_CAP} articles.)` : "");
+  $("loadmore").hidden = remaining === 0;
+}
+async function scanAndRender() {
+  const go = $("go"), more = $("loadmore_btn");
+  go.disabled = true; more.disabled = true;
+  try {
+    $("status").className = ""; $("status").textContent = "Scanning revision histories…";
+    const people = await scanCatChunk();
+    if (people.length) $("results").insertAdjacentHTML("beforeend", people.map(renderPerson).join(""));
+    else if (!cat.queue.length && !cat.changed)
+      $("results").innerHTML = `<p class="none">No one in this category has a changed infobox photo in recent history.</p>`;
+    updateCatStatus();
+  } catch (err) {
+    showError(/rate-limiting/i.test(err.message)
+      ? "Wikimedia is rate-limiting us right now. Wait a moment and try again." : "Error: " + err.message);
+  } finally {
+    go.disabled = false; more.disabled = false;
+  }
+}
+async function runCategory(inp) {
+  cat.lang = inp.lang; cat.queue = []; cat.scanned = 0; cat.changed = 0; cat.truncated = false;
+  LANG = inp.lang;
+  $("status").className = ""; $("status").textContent = `Enumerating articles in ${inp.title}…`;
+  const articles = await enumerateArticles(inp.lang, inp.title, Math.max(0, parseInt($("depth").value, 10) || 0));
+  if (!articles.length) { showError(`No articles found in ${inp.title}.`); return; }
+  cat.truncated = articles.length >= CAT_ARTICLE_CAP;
+  cat.queue = articles;
+  $("subject").innerHTML = `<p class="lead"><strong>${esc(inp.title)}</strong> — `
+    + `${articles.length}${cat.truncated ? "+" : ""} article(s); showing only people whose infobox photo changed.</p>`;
+  await scanAndRender();
+}
+
 async function run() {
   const status = $("status"), go = $("go");
   status.className = ""; status.textContent = "Resolving…";
-  $("subject").innerHTML = ""; $("results").innerHTML = ""; go.disabled = true;
+  $("subject").innerHTML = ""; $("results").innerHTML = ""; $("loadmore").hidden = true; go.disabled = true;
   try {
     const inp = parseInput($("q").value);
-    if (!inp) { showError("Enter an article link, a file name, or a file link."); return; }
+    if (!inp) { showError("Enter an article link, a file name, a file link, or a category."); return; }
+    if (inp.type === "category") { await runCategory(inp); return; }
 
     let lang, article, label = null, qid = null, warnMsg = "";
     if (inp.type === "file") {
@@ -321,6 +425,7 @@ async function run() {
   }
 }
 $("f").addEventListener("submit", e => { e.preventDefault(); run(); });
+$("loadmore_btn").addEventListener("click", () => scanAndRender());
 </script>
 </body>
 </html>

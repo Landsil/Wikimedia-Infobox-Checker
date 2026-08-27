@@ -166,8 +166,11 @@
   /* ---- Infobox History timeline ---- */
   .warn-banner { background: #fdf3e6; color: #9a5b00; border: 1px solid #f0d9b5;
                  border-radius: 8px; padding: 10px 12px; margin-bottom: 14px; font-size: 14px; }
-  .timeline { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px;
-              align-items: start; margin: 8px 0; }
+  /* auto-fit keeps the photos side by side on laptop widths and only wraps when
+     genuinely narrow — no hard breakpoint that could stack them unexpectedly. */
+  .timeline { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+              gap: 16px; align-items: start; margin: 8px 0; }
+  .tl-person { margin: 20px 0 6px; font-size: 15px; font-weight: 600; }
   .tl-card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
              padding: 14px 16px; }
   .tl-card.current { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; }
@@ -175,4 +178,3 @@
              color: var(--muted); margin-bottom: 8px; }
   .tl-card.current .tl-head { color: var(--accent); }
   .tl-fam-title { font-size: 12px; color: var(--muted); margin: 10px 0 2px; }
-  @media (max-width: 860px) { .timeline { grid-template-columns: 1fr; } }
