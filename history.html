@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Infobox History</title>
+<!--
+  Infobox History — one of the static, client-side tools on this site.
+
+  Given a Commons photo (name or link) or a Wikipedia article, show the current
+  infobox photo of the depicted person plus the two photos it replaced, side by
+  side. Recognises crop variants as the same photo, and shows each photo's crop
+  family. Runs entirely in the browser via the Wikimedia APIs (fetch + origin=*).
+-->
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <div class="titlebar">
+    <h1><a href="index.html" class="home-link">Wikimedia tools</a> › Infobox History</h1>
+  </div>
+  <form id="f">
+    <div><label>Article link, file name, or file link</label>
+      <input id="q" value="File:Sharon Horgan at SXSW London 2026 1 (cropped).jpg"></div>
+    <button id="go" type="submit">Show history</button>
+  </form>
+</header>
+<main>
+  <div id="status"></div>
+  <div id="subject"></div>
+  <div id="results"></div>
+</main>
+<footer>
+  <a href="https://github.com/Landsil/Wikimedia-Infobox-Checker" target="_blank"
+     rel="noopener">Wikimedia-Infobox-Checker on GitHub</a>
+</footer>
+<script>
+"use strict";
+
+const COMMONS_API = "https://commons.wikimedia.org/w/api.php";
+const WIKIDATA_API = "https://www.wikidata.org/w/api.php";
+const BATCH = 50;
+const THUMB_WIDTH = 320;
+const HISTORY_REV_LIMIT = 50;   // revisions read to reconstruct the timeline
+const PREVIOUS = 2;             // previous photos shown (current + PREVIOUS)
+const MAX_RETRIES = 6;
+const BACKOFF_BASE = 1.0;
+const NON_WIKIPEDIA_WIKIS = new Set([
+  "commonswiki", "wikidatawiki", "specieswiki", "metawiki", "mediawikiwiki",
+  "incubatorwiki", "sourceswiki", "foundationwiki", "outreachwiki", "wikimaniawiki", "testwiki",
+]);
+
+// ---- helpers ----
+const $ = id => document.getElementById(id);
+const esc = s => (s == null ? "" : String(s)).replace(/[&<>"]/g,
+  c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const link = (url, text) =>
+  url ? `<a href="${esc(url)}" target="_blank" rel="noopener">${esc(text)}</a>` : esc(text);
+const row = (k, v) =>
+  `<div class="row"><span class="k">${k}</span><span class="v">${v || "&mdash;"}</span></div>`;
+function chunked(a, n = BATCH) { const o = []; for (let i = 0; i < a.length; i += n) o.push(a.slice(i, i + n)); return o; }
+function stripHtml(v) {
+  if (!v) return "";
+  const el = document.createElement("div");
+  el.innerHTML = String(v).replace(/<[^>]+>/g, " ");
+  return (el.textContent || "").replace(/\s+/g, " ").trim();
+}
+const dateOnly = v => { const m = /^(\d{4}-\d{2}-\d{2})/.exec((v == null ? "" : String(v)).trim()); return m ? m[1] : (v || ""); };
+const resolution = o => (o && o.megapixels != null && o.width && o.height) ? `${o.megapixels} MP (${o.width}×${o.height})` : "";
+const wikiLang = site => site.slice(0, -4).replace(/_/g, "-");   // "enwiki" -> "en"
+const wpApi = lang => `https://${lang}.wikipedia.org/w/api.php`;
+const wpArticleUrl = (lang, t) => `https://${lang}.wikipedia.org/wiki/${encodeURIComponent(t.replace(/ /g, "_"))}`;
+
+// Crop helpers (shared behaviour with the other tools).
+const CROP_SUFFIX = /^(?<base>.+?)\s*\((?:[^)]*crop[^)]*)\)(?<ext>\.\w+)$/i;
+const cropParent = t => { const m = CROP_SUFFIX.exec(t || ""); return m ? m.groups.base + m.groups.ext : null; };
+const sameOrCrop = (a, b) => !!a && !!b && (a === b || cropParent(a) === b || cropParent(b) === a);
+
+function sanitizeHref(href) {
+  href = stripHtml(href).trim();
+  if (href.startsWith("//")) return "https:" + href;
+  if (href.startsWith("/")) return "https://commons.wikimedia.org" + href;
+  if (/^https?:\/\//i.test(href)) return href;
+  return null;
+}
+function parseAuthor(artistHtml) {
+  if (!artistHtml) return { name: "", url: null };
+  const m = /<a\b[^>]*\bhref="([^"]+)"[^>]*>([\s\S]*?)<\/a>/i.exec(artistHtml);
+  if (m) return { name: stripHtml(m[2]) || stripHtml(artistHtml), url: sanitizeHref(m[1]) };
+  return { name: stripHtml(artistHtml), url: null };
+}
+
+// ---- API ----
+function retryDelayMs(resp, attempt) {
+  const ra = resp.headers.get("Retry-After");
+  if (ra && /^\d+$/.test(ra)) return parseFloat(ra) * 1000;
+  return BACKOFF_BASE * 2 ** attempt * 1000;
+}
+async function apiGet(base, params) {
+  const s = new URLSearchParams(params); s.set("format", "json"); s.set("origin", "*");
+  const url = `${base}?${s.toString()}`;
+  for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+    let resp;
+    try { resp = await fetch(url, { credentials: "omit" }); }
+    catch (err) { if (attempt < MAX_RETRIES - 1) { await sleep(BACKOFF_BASE * 2 ** attempt * 1000); continue; } throw err; }
+    let data = null; try { data = JSON.parse(await resp.text()); } catch (_) {}
+    if (resp.status === 429 || resp.status === 503) {
+      if (attempt < MAX_RETRIES - 1) { await sleep(retryDelayMs(resp, attempt)); continue; }
+      throw new Error(`Wikimedia rate-limiting after ${MAX_RETRIES} attempts.`);
+    }
+    if (!resp.ok) throw new Error(`HTTP ${resp.status} from ${base}`);
+    if (data === null) throw new Error(`Non-JSON response from ${base}`);
+    return data;
+  }
+}
+async function* mwQuery(base, params) {
+  const p = { ...params, action: "query" };
+  while (true) { const d = await apiGet(base, p); if (d.query) yield d.query; if (d.continue) Object.assign(p, d.continue); else break; }
+}
+async function wbGetEntities(base, ids, props, extra) {
+  return (await apiGet(base, { action: "wbgetentities", ids: ids.join("|"), props, ...(extra || {}) })).entities || {};
+}
+async function fetchFilesImageinfo(titles) {
+  const result = {};
+  for (const batch of chunked(titles)) {
+    for await (const query of mwQuery(COMMONS_API, { titles: batch.join("|"), prop: "imageinfo",
+        iiprop: "timestamp|url|extmetadata|size", iiurlwidth: String(THUMB_WIDTH) })) {
+      for (const page of Object.values(query.pages || {})) {
+        const info = (page.imageinfo || [])[0]; if (!info) continue;
+        const ext = info.extmetadata || {};
+        const author = parseAuthor((ext.Artist || {}).value);
+        const w = info.width || null, h = info.height || null;
+        result[page.title] = {
+          title: page.title, descriptionurl: info.descriptionurl || "",
+          thumb: info.thumburl || info.url || "",
+          taken: stripHtml((ext.DateTimeOriginal || {}).value) || info.timestamp || "",
+          timestamp: info.timestamp || "", author: author.name, author_url: author.url,
+          width: w, height: h, megapixels: (w && h) ? Math.round(w * h / 100000) / 10 : null,
+        };
+      }
+    }
+  }
+  return result;
+}
+
+// ---- input parsing ----
+function parseInput(raw) {
+  const s = (raw || "").trim();
+  if (!s) return null;
+  let m = s.match(/commons\.wikimedia\.org\/(?:wiki\/|entity\/)?(File:[^?#]+)/i);
+  if (m) return { type: "file", title: decodeURIComponent(m[1]).replace(/_/g, " ") };
+  m = s.match(/([a-z-]+)\.wikipedia\.org\/wiki\/([^?#]+)/i);
+  if (m) return { type: "article", lang: m[1], title: decodeURIComponent(m[2]).replace(/_/g, " ") };
+  if (/^file:/i.test(s)) return { type: "file", title: s.replace(/_/g, " ") };
+  if (/\.(jpe?g|png|gif|tiff?|webp|svg)$/i.test(s)) return { type: "file", title: "File:" + s.replace(/_/g, " ") };
+  return { type: "article", lang: "en", title: s.replace(/_/g, " ") };
+}
+
+function allDepictsQids(claims) {
+  const out = [];
+  for (const st of (claims.P180 || [])) {
+    try { const id = st.mainsnak.datavalue.value.id; if (id && !out.includes(id)) out.push(id); } catch (_) {}
+  }
+  return out;
+}
+
+// File -> depicted person -> their article. Returns {lang,article,label,qid} or {error}.
+async function resolveSubjectFromFile(fileTitle) {
+  const d = await apiGet(COMMONS_API, { action: "query", titles: fileTitle, prop: "info" });
+  const page = Object.values(d.query.pages)[0];
+  if (!page || "missing" in page) return { error: `No such Commons file: ${fileTitle}` };
+  const ents = await wbGetEntities(COMMONS_API, ["M" + page.pageid], "claims");
+  const ent = ents["M" + page.pageid] || {};
+  const st = ent.statements || ent.claims || {};
+  const qids = allDepictsQids(st);
+  if (!qids.length) return { error: `“${fileTitle}” has no depicts (P180) statement, so I can't tell who it's of.` };
+  const we = await wbGetEntities(WIKIDATA_API, qids.slice(0, BATCH), "claims|sitelinks|labels", { languages: "en" });
+  for (const q of qids) {
+    const e = we[q]; if (!e) continue;
+    const claims = e.claims || {};
+    const human = (claims.P31 || []).some(s => { try { return s.mainsnak.datavalue.value.id === "Q5"; } catch (_) { return false; } });
+    if (!human) continue;
+    const sl = e.sitelinks || {};
+    const label = (e.labels && e.labels.en && e.labels.en.value) || q;
+    let site = "enwiki", title = (sl.enwiki || {}).title;
+    if (!title) for (const [s, l] of Object.entries(sl)) { if (s.endsWith("wiki") && !NON_WIKIPEDIA_WIKIS.has(s)) { site = s; title = l.title; break; } }
+    if (!title) return { error: `${label} (the depicted person) has no Wikipedia article.` };
+    return { lang: wikiLang(site), article: title, label, qid: q };
+  }
+  return { error: `“${fileTitle}” depicts something that isn't a person.` };
+}
+
+async function currentLead(lang, article) {
+  const d = await apiGet(wpApi(lang), { action: "query", titles: article, prop: "pageimages", piprop: "name", redirects: "1" });
+  const p = Object.values((d.query || {}).pages || {})[0];
+  return (p && p.pageimage) ? "File:" + p.pageimage.replace(/_/g, " ") : null;
+}
+
+// Distinct infobox photos, newest first (crop variants collapsed to one).
+const INFOBOX_IMG = /\|\s*(?:image|image_name|photo|img)\s*=\s*([^\n|}]+)/i;
+async function buildTimeline(lang, article) {
+  let revs = [];
+  for await (const query of mwQuery(wpApi(lang), { prop: "revisions", titles: article,
+      rvprop: "ids|timestamp|user|comment|content", rvslots: "main",
+      rvlimit: String(HISTORY_REV_LIMIT), rvdir: "older" })) {
+    for (const p of Object.values(query.pages || {})) revs = revs.concat(p.revisions || []);
+    break;
+  }
+  const timeline = [];
+  for (const r of revs) {
+    const wt = ((r.slots || {}).main || {})["*"] || "";
+    const m = INFOBOX_IMG.exec(wt); if (!m) continue;
+    const file = "File:" + m[1].trim().replace(/^\s*(?:File|Image)\s*:\s*/i, "");
+    const key = cropParent(file) || file;
+    if (!timeline.length || timeline[timeline.length - 1].key !== key)
+      timeline.push({ file, key, rev: r.revid, ts: r.timestamp, user: r.user });
+  }
+  return timeline;
+}
+
+// Base + crop variants of a photo (excluding `exclude`). One prefixsearch + imageinfo.
+async function cropFamily(fileTitle, exclude) {
+  const baseFile = cropParent(fileTitle) || fileTitle;
+  const baseNoExt = baseFile.replace(/^File:/i, "").replace(/\.\w+$/, "");
+  const d = await apiGet(COMMONS_API, { action: "query", list: "prefixsearch",
+    pssearch: baseNoExt, psnamespace: "6", pslimit: "20" });
+  const titles = ((d.query || {}).prefixsearch || []).map(r => r.title)
+    .filter(t => sameOrCrop(t, baseFile) && t !== exclude);
+  if (!titles.length) return [];
+  const info = await fetchFilesImageinfo(titles);
+  return titles.map(t => info[t]).filter(Boolean);
+}
+
+// ---- render ----
+const HEADS = ["Current infobox photo", "Previous", "Before that"];
+function famBlock(fam) {
+  if (!fam.length) return "";
+  return `<div class="tl-fam-title">Crop family (${fam.length})</div>`
+    + fam.map(f => `<div class="cand-photo"><img src="${esc(f.thumb)}" alt="" loading="lazy">`
+        + `<div class="cand-cap">${link(f.descriptionurl, f.title)}`
+        + (resolution(f) ? ` — ${resolution(f)}` : "") + `</div></div>`).join("");
+}
+function tlCard(entry, i, newer) {
+  const info = entry.info;
+  const photo = info && info.thumb
+    ? `<div class="photo"><img src="${esc(info.thumb)}" alt="" loading="lazy"></div>`
+    : `<div class="photo"><div class="none">photo not readable</div></div>`;
+  const author = info && info.author
+    ? `<div class="author">by ${info.author_url ? link(info.author_url, info.author) : esc(info.author)}</div>` : "";
+  const usedInfo = i === 0
+    ? row("In use since", esc(dateOnly(entry.ts)) + " (by " + esc(entry.user) + ")")
+    : row("Was replaced", esc(dateOnly(newer.ts)) + " by " + esc(newer.user)
+        + ` <a class="mini" href="https://${esc(LANG)}.wikipedia.org/w/index.php?diff=${esc(newer.rev)}" target="_blank" rel="noopener">diff</a>`);
+  return `<div class="tl-card${i === 0 ? " current" : ""}">
+    <div class="tl-head">${esc(HEADS[i] || "Earlier")}</div>
+    ${photo}
+    <div class="meta left" style="text-align:left">
+      ${row("File", link(info ? info.descriptionurl : "", entry.file))}${author}
+      ${info ? row("Resolution", resolution(info)) : ""}
+      ${info ? row("Date taken", esc(dateOnly(info.taken))) : ""}
+      ${usedInfo}
+    </div>
+    ${famBlock(entry.fam || [])}
+  </div>`;
+}
+
+let LANG = "en";   // wiki of the article being shown (for diff links)
+
+function showError(msg) { const s = $("status"); s.className = "error"; s.textContent = msg; }
+function showWarn(msg) { return `<div class="warn-banner">${esc(msg)}</div>`; }
+
+async function run() {
+  const status = $("status"), go = $("go");
+  status.className = ""; status.textContent = "Resolving…";
+  $("subject").innerHTML = ""; $("results").innerHTML = ""; go.disabled = true;
+  try {
+    const inp = parseInput($("q").value);
+    if (!inp) { showError("Enter an article link, a file name, or a file link."); return; }
+
+    let lang, article, label = null, qid = null, warnMsg = "";
+    if (inp.type === "file") {
+      const r = await resolveSubjectFromFile(inp.title);
+      if (r.error) { showError(r.error); return; }
+      ({ lang, article, label, qid } = r);
+      const lead = await currentLead(lang, article);
+      if (!lead) warnMsg = `${label} currently has no infobox photo — showing the history that exists.`;
+      else if (!sameOrCrop(inp.title, lead))
+        warnMsg = `“${inp.title}” isn't ${label}'s current infobox photo (that's ${lead}). Showing ${label}'s history below.`;
+    } else {
+      lang = inp.lang; article = inp.title;
+    }
+    LANG = lang;
+
+    status.textContent = "Reading the article's revision history…";
+    const timeline = await buildTimeline(lang, article);
+    if (!timeline.length) { showError(`No infobox photo found in ${article}'s recent history.`); return; }
+
+    const shown = timeline.slice(0, PREVIOUS + 1);
+    status.textContent = "Fetching photo details…";
+    const info = await fetchFilesImageinfo(shown.map(e => e.file));
+    for (const e of shown) e.info = info[e.file] || null;
+    // Crop family per shown photo (excludes the photo itself).
+    for (const e of shown) e.fam = await cropFamily(e.file, e.file);
+
+    const subjHtml = label
+      ? `<p class="lead"><strong>${link(wpArticleUrl(lang, article), label)}</strong>`
+        + (qid ? ` · ${link("https://www.wikidata.org/wiki/" + qid, qid)}` : "") + `</p>`
+      : `<p class="lead"><strong>${link(wpArticleUrl(lang, article), article)}</strong></p>`;
+    $("subject").innerHTML = subjHtml;
+
+    const cards = shown.map((e, i) => tlCard(e, i, shown[i - 1])).join("");
+    $("results").innerHTML = (warnMsg ? showWarn(warnMsg) : "") + `<div class="timeline">${cards}</div>`;
+    status.className = ""; status.textContent =
+      `${shown.length} infobox photo(s) shown` + (timeline.length > shown.length ? ` (of ${timeline.length} in recent history)` : "") + ".";
+  } catch (err) {
+    showError(/rate-limiting/i.test(err.message)
+      ? "Wikimedia is rate-limiting us right now. Wait a moment and try again." : "Error: " + err.message);
+  } finally {
+    go.disabled = false;
+  }
+}
+$("f").addEventListener("submit", e => { e.preventDefault(); run(); });
+</script>
+</body>
+</html>
