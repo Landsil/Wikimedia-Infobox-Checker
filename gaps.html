@@ -22,7 +22,8 @@
 <body>
 <header>
   <div class="titlebar">
-    <h1><a href="index.html" class="home-link">Wikimedia tools</a> › Photo Gaps</h1>
+    <h1><a href="index.html" class="home-link">Wikimedia</a> › Photo Gaps</h1>
+    <button type="button" id="about_btn">About</button>
   </div>
   <form id="f">
     <div><label>English Wikipedia category</label>
@@ -54,6 +55,40 @@
   <div id="results"></div>
   <div id="loadmore" hidden><button type="button" id="loadmore_btn">Load more articles</button></div>
 </main>
+
+<div class="overlay" id="about_overlay" hidden>
+  <div class="about" role="dialog" aria-modal="true" aria-labelledby="about_title">
+    <div class="close-row">
+      <h2 id="about_title">About this tool</h2>
+      <button type="button" id="about_close">Close</button>
+    </div>
+    <p>Given an English Wikipedia category, lists the <strong>living people</strong>
+    whose article has a <strong>missing, low-resolution or dated</strong> infobox
+    photo — the gaps worth filling.</p>
+    <h3>How it works</h3>
+    <ul>
+      <li><strong>Subcategory depth</strong> sets how deep the category tree is
+        walked. Enumeration is chunked: <em>Load more articles</em> continues the
+        same walk and appends.</li>
+      <li>For each person it reports whether a candidate photo already exists —
+        via Wikidata <em>image</em> (P18) or Commons files that <em>depict</em>
+        them (SDC P180). Old or low-res candidates are ignored.</li>
+      <li>A photo is <strong>low-res</strong> below 2 megapixels and <strong>old</strong>
+        past 12 months.</li>
+    </ul>
+    <h3>Filters &amp; export</h3>
+    <ul>
+      <li>Toggle which gap reasons show (Missing / Low-res / Old), filter by
+        whether a candidate exists, and cap candidate age.</li>
+      <li><strong>Export CSV</strong> downloads the currently-shown rows; the
+        <strong>Sheets</strong> version uses <code>=IMAGE()</code>/<code>=HYPERLINK()</code>
+        formulas so photos and links render on import (no sign-in).</li>
+      <li><strong>Copy static URL</strong> builds a shareable link that prefills
+        every setting and runs automatically.</li>
+    </ul>
+  </div>
+</div>
+
 <footer>
   <a href="https://github.com/Landsil/Wikimedia-Infobox-Checker" target="_blank"
      rel="noopener">Wikimedia-Infobox-Checker on GitHub</a>
@@ -501,6 +536,13 @@ $("copy_url").addEventListener("click", async () => {
   btn.classList.toggle("copied", ok);
   setTimeout(() => { btn.textContent = original; btn.classList.remove("copied"); }, 1500);
 });
+// ---- About overlay ----
+const setAbout = open => { $("about_overlay").hidden = !open; };
+$("about_btn").addEventListener("click", () => setAbout(true));
+$("about_close").addEventListener("click", () => setAbout(false));
+$("about_overlay").addEventListener("click", e => { if (e.target === $("about_overlay")) setAbout(false); });
+document.addEventListener("keydown", e => { if (e.key === "Escape" && !$("about_overlay").hidden) setAbout(false); });
+
 // Read state from the URL on load; return true if it asked to auto-search.
 function applyUrlParams() {
   const q = new URLSearchParams(location.search);

@@ -19,7 +19,8 @@
 <body>
 <header>
   <div class="titlebar">
-    <h1><a href="index.html" class="home-link">Wikimedia tools</a> › Infobox History</h1>
+    <h1><a href="index.html" class="home-link">Wikimedia</a> › Infobox History</h1>
+    <button type="button" id="about_btn">About</button>
   </div>
   <form id="f">
     <div><label>Article link, file name, file link, or category</label>
@@ -27,6 +28,7 @@
     <div class="depth-field"><label>Subcategory depth</label>
       <input id="depth" type="number" min="0" value="1"></div>
     <button id="go" type="submit">Show history</button>
+    <button id="copy_url" type="button" class="secondary">Copy static URL</button>
   </form>
 </header>
 <main>
@@ -35,6 +37,40 @@
   <div id="results"></div>
   <div id="loadmore" hidden><button type="button" id="loadmore_btn">Scan more people</button></div>
 </main>
+
+<div class="overlay" id="about_overlay" hidden>
+  <div class="about" role="dialog" aria-modal="true" aria-labelledby="about_title">
+    <div class="close-row">
+      <h2 id="about_title">About this tool</h2>
+      <button type="button" id="about_close">Close</button>
+    </div>
+    <p>Shows how a Wikipedia infobox photo has changed over time: the current
+    photo of the depicted person plus the two it replaced, side by side, each
+    with when and by whom it was swapped in.</p>
+    <h3>Input</h3>
+    <ul>
+      <li><strong>A Commons photo</strong> (file name or link) — resolves the
+        depicted person via the file's <em>depicts</em> (P180) statement, then
+        their Wikipedia article. Warns if the photo isn't that person's current
+        infobox photo, but still shows the history.</li>
+      <li><strong>A Wikipedia article</strong> (name or link).</li>
+      <li><strong>A category</strong> (<code>Category:…</code> or a category
+        link) — scans its people in chunks and lists only those whose infobox
+        photo <em>actually changed</em> (two or more distinct photos in recent
+        history). <em>Subcategory depth</em> sets how deep the tree is walked;
+        <em>Scan more people</em> continues the scan.</li>
+    </ul>
+    <h3>Notes</h3>
+    <ul>
+      <li>Crop variants of the same photo are treated as one; for a single
+        subject, each photo's other crops are listed beneath it.</li>
+      <li><strong>Copy static URL</strong> builds a shareable link that prefills
+        the box and runs automatically.</li>
+      <li>All data comes from read-only calls to the public Wikimedia APIs.</li>
+    </ul>
+  </div>
+</div>
+
 <footer>
   <a href="https://github.com/Landsil/Wikimedia-Infobox-Checker" target="_blank"
      rel="noopener">Wikimedia-Infobox-Checker on GitHub</a>
@@ -426,6 +462,48 @@ async function run() {
 }
 $("f").addEventListener("submit", e => { e.preventDefault(); run(); });
 $("loadmore_btn").addEventListener("click", () => scanAndRender());
+
+// ---- shareable static URL: remembers the query (+ depth) and auto-runs ----
+async function copyText(text) {
+  try { await navigator.clipboard.writeText(text); return true; }
+  catch (_) {
+    const ta = document.createElement("textarea");
+    ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+    document.body.appendChild(ta); ta.select();
+    let ok = false; try { ok = document.execCommand("copy"); } catch (_) {}
+    document.body.removeChild(ta); return ok;
+  }
+}
+function staticUrl() {
+  const q = new URLSearchParams();
+  q.set("q", $("q").value.trim());
+  q.set("depth", String(parseInt($("depth").value, 10) || 0));
+  q.set("search", "1");
+  return `${location.origin}${location.pathname}?${q.toString()}`;
+}
+$("copy_url").addEventListener("click", async () => {
+  const btn = $("copy_url"), original = btn.textContent;
+  const ok = await copyText(staticUrl());
+  btn.textContent = ok ? "URL copied!" : "Copy failed";
+  btn.classList.toggle("copied", ok);
+  setTimeout(() => { btn.textContent = original; btn.classList.remove("copied"); }, 1500);
+});
+function applyUrlParams() {
+  const p = new URLSearchParams(location.search);
+  if (p.get("q")) $("q").value = p.get("q");
+  if (/^\d+$/.test(p.get("depth") || "")) $("depth").value = p.get("depth");
+  return p.get("search") === "1";
+}
+
+// ---- About overlay ----
+const setAbout = open => { $("about_overlay").hidden = !open; };
+$("about_btn").addEventListener("click", () => setAbout(true));
+$("about_close").addEventListener("click", () => setAbout(false));
+$("about_overlay").addEventListener("click", e => { if (e.target === $("about_overlay")) setAbout(false); });
+document.addEventListener("keydown", e => { if (e.key === "Escape" && !$("about_overlay").hidden) setAbout(false); });
+
+// Prefill from the URL; ?search=1 runs it immediately.
+if (applyUrlParams()) run();
 </script>
 </body>
 </html>
