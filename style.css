@@ -178,3 +178,6 @@
              color: var(--muted); margin-bottom: 8px; }
   .tl-card.current .tl-head { color: var(--accent); }
   .tl-fam-title { font-size: 12px; color: var(--muted); margin: 10px 0 2px; }
+  /* "Search another N revisions" control under a single-subject timeline. */
+  .tl-extend { margin: 12px 0 4px; }
+  .tl-extend-note { color: var(--muted); font-size: 13px; margin-left: 8px; }

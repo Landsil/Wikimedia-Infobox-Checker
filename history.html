@@ -14,7 +14,7 @@
   whose infobox photo actually changed (>=2 distinct photos in recent history).
   Runs entirely in the browser via the Wikimedia APIs (fetch + origin=*).
 -->
-<link rel="stylesheet" href="style.css?v=3">
+<link rel="stylesheet" href="style.css?v=4">
 </head>
 <body>
 <header>
@@ -83,7 +83,8 @@ const WIKIDATA_API = "https://www.wikidata.org/w/api.php";
 const BATCH = 50;
 const THUMB_WIDTH = 320;
 const REV_PAGE = 50;            // revisions fetched per API page (rvlimit)
-const SINGLE_REV_LIMIT = 500;   // max revisions walked for a single article/file
+const SINGLE_REV_LIMIT = 500;   // revisions walked on the first single article/file pass
+const SINGLE_REV_EXTEND = 1000; // extra revisions per "Search another N revisions" click
 const CAT_REV_LIMIT = 100;      // max revisions walked per person in category mode
 const PREVIOUS = 2;             // previous photos shown (current + PREVIOUS)
 const CAT_CHUNK = 20;           // people scanned per "Scan more people" (one history walk each)
@@ -246,17 +247,20 @@ async function currentLead(lang, article) {
 }
 
 // Distinct infobox photos, newest first (crop variants collapsed to one).
-// Pages through revisions (following `continue`) until `wantDistinct` photos are
-// found or `maxRevs` revisions have been read. Returns { timeline, more } where
-// `more` means the cap was hit with unwalked history still remaining — i.e. a
-// deeper search could turn up more.
+// Reads up to `budget` NEW revisions this call, following `continue`, stopping
+// once `wantDistinct` photos are collected. `resume` ({ timeline, cont }) lets a
+// follow-up call continue exactly where a previous one stopped, so extra budget
+// is spent on unseen history rather than re-reading it. Returns { timeline, more,
+// cont, read }: `more` = budget hit with history still remaining; `cont` = the
+// continue token to resume from; `read` = revisions read this call.
 const INFOBOX_IMG = /\|\s*(?:image|image_name|photo|img)\s*=\s*([^\n|}]+)/i;
-async function buildTimeline(lang, article, maxRevs, wantDistinct) {
-  const timeline = [];
+async function buildTimeline(lang, article, budget, wantDistinct, resume) {
+  const timeline = resume ? resume.timeline : [];
   let read = 0;
   const p = { action: "query", prop: "revisions", titles: article,
     rvprop: "ids|timestamp|user|comment|content", rvslots: "main",
     rvlimit: String(REV_PAGE), rvdir: "older" };
+  if (resume && resume.cont) Object.assign(p, resume.cont);
   while (true) {
     const d = await apiGet(wpApi(lang), p);
     const page = Object.values((d.query || {}).pages || {})[0];
@@ -272,10 +276,10 @@ async function buildTimeline(lang, article, maxRevs, wantDistinct) {
       const key = cropParent(file) || file;
       if (!timeline.length || timeline[timeline.length - 1].key !== key)
         timeline.push({ file, key, rev: r.revid, ts: r.timestamp, user: r.user });
-      if (timeline.length >= wantDistinct) return { timeline, more: false };
+      if (timeline.length >= wantDistinct) return { timeline, more: false, cont: null, read };
     }
-    if (read >= maxRevs) return { timeline, more: !!d.continue };
-    if (d.continue) Object.assign(p, d.continue); else return { timeline, more: false };
+    if (read >= budget) return { timeline, more: !!d.continue, cont: d.continue || null, read };
+    if (d.continue) Object.assign(p, d.continue); else return { timeline, more: false, cont: null, read };
   }
 }
 
@@ -470,15 +474,8 @@ async function run() {
     LANG = lang;
 
     status.textContent = "Reading the article's revision history…";
-    const { timeline } = await buildTimeline(lang, article, SINGLE_REV_LIMIT, PREVIOUS + 1);
-    if (!timeline.length) { showError(`No infobox photo found in ${article}'s recent history.`); return; }
-
-    const shown = timeline.slice(0, PREVIOUS + 1);
-    status.textContent = "Fetching photo details…";
-    const info = await fetchFilesImageinfo(shown.map(e => e.file));
-    for (const e of shown) e.info = info[e.file] || null;
-    // Crop family per shown photo (excludes the photo itself).
-    for (const e of shown) e.fam = await cropFamily(e.file, e.file);
+    const res = await buildTimeline(lang, article, SINGLE_REV_LIMIT, PREVIOUS + 1);
+    if (!res.timeline.length) { showError(`No infobox photo found in ${article}'s recent history.`); return; }
 
     const subjHtml = label
       ? `<p class="lead"><strong>${link(wpArticleUrl(lang, article), label)}</strong>`
@@ -486,10 +483,9 @@ async function run() {
       : `<p class="lead"><strong>${link(wpArticleUrl(lang, article), article)}</strong></p>`;
     $("subject").innerHTML = subjHtml;
 
-    const cards = shown.map((e, i) => tlCard(e, i, shown[i - 1])).join("");
-    $("results").innerHTML = (warnMsg ? showWarn(warnMsg) : "") + `<div class="timeline">${cards}</div>`;
-    status.className = ""; status.textContent =
-      `${shown.length} infobox photo(s) shown` + (timeline.length > shown.length ? ` (of ${timeline.length} in recent history)` : "") + ".";
+    single = { lang, article, warnMsg, timeline: res.timeline, more: res.more,
+               cont: res.cont, scanned: res.read };
+    await finishSingle();
   } catch (err) {
     showError(/rate-limiting/i.test(err.message)
       ? "Wikimedia is rate-limiting us right now. Wait a moment and try again." : "Error: " + err.message);
@@ -497,11 +493,51 @@ async function run() {
     go.disabled = false;
   }
 }
+
+// Single-subject state (article/file mode), so an extend walk can resume from
+// exactly where the previous one stopped instead of re-reading history.
+let single = null;
+async function finishSingle() {
+  const s = single;
+  $("status").className = ""; $("status").textContent = "Fetching photo details…";
+  s.shown = s.timeline.slice(0, PREVIOUS + 1);
+  const info = await fetchFilesImageinfo(s.shown.map(e => e.file));
+  for (const e of s.shown) e.info = info[e.file] || null;
+  for (const e of s.shown) e.fam = await cropFamily(e.file, e.file);   // crops of each shown photo
+  renderSingle();
+  $("status").className = "";
+  $("status").textContent = `${s.shown.length} infobox photo(s) shown; checked ${s.scanned} revision(s)`
+    + (s.more ? " — more history exists." : ".");
+}
+function renderSingle() {
+  const s = single;
+  const cards = s.shown.map((e, i) => tlCard(e, i, s.shown[i - 1])).join("");
+  const extend = s.more
+    ? `<div class="tl-extend"><button type="button" class="secondary extend-btn">`
+      + `Search another ${SINGLE_REV_EXTEND} revisions</button>`
+      + `<span class="tl-extend-note">Checked ${s.scanned} revisions so far.</span></div>` : "";
+  $("results").innerHTML = (s.warnMsg ? showWarn(s.warnMsg) : "") + `<div class="timeline">${cards}</div>` + extend;
+}
+// Walk SINGLE_REV_EXTEND more revisions, resuming from where we stopped.
+async function extendSingle() {
+  const s = single; if (!s) return;
+  const btn = $("results").querySelector(".extend-btn");
+  if (btn) { btn.disabled = true; btn.textContent = "Searching…"; }
+  try {
+    const res = await buildTimeline(s.lang, s.article, SINGLE_REV_EXTEND, PREVIOUS + 1,
+      { timeline: s.timeline, cont: s.cont });
+    s.timeline = res.timeline; s.more = res.more; s.cont = res.cont; s.scanned += res.read;
+    await finishSingle();
+  } catch (err) {
+    if (btn) { btn.disabled = false; btn.textContent = `Search another ${SINGLE_REV_EXTEND} — retry`; }
+  }
+}
 $("f").addEventListener("submit", e => { e.preventDefault(); run(); });
 $("loadmore_btn").addEventListener("click", () => scanAndRender());
 $("results").addEventListener("click", e => {
-  const btn = e.target.closest(".deep-btn");
-  if (btn) deepSearch(btn.getAttribute("data-id"), btn.getAttribute("data-article"));
+  const deep = e.target.closest(".deep-btn");
+  if (deep) { deepSearch(deep.getAttribute("data-id"), deep.getAttribute("data-article")); return; }
+  if (e.target.closest(".extend-btn")) extendSingle();
 });
 
 // ---- shareable static URL: remembers the query (+ depth) and auto-runs ----
