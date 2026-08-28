@@ -33,6 +33,7 @@
     <div class="depth-field"><label>Subcategory depth</label>
       <input id="depth" type="number" min="0" value="1"></div>
     <button id="go" type="submit">Show history</button>
+    <button id="uncapped_scan" type="button" class="secondary">Slow un-capped scan</button>
     <button id="copy_url" type="button" class="secondary">Copy static URL</button>
   </form>
   <div class="filters">
@@ -70,8 +71,11 @@
         <code>Category:…</code>, or a category link) — scans its files in chunks,
         resolves who each depicts, and lists the people whose <em>current</em>
         infobox photo is one of those files (crop-aware), with each person's
-        history. <em>Subcategory depth</em> sets how deep the tree is walked;
-        <em>Scan more files</em> continues the scan.</li>
+        history, newest current photo first. <em>Subcategory depth</em> sets how
+        deep the tree is walked; <em>Scan more files</em> continues the scan.
+        Enumeration is capped at a few thousand files; <em>Slow un-capped scan</em>
+        walks the whole tree. You can Save partway through and resume in a later
+        session.</li>
     </ul>
     <h3>Notes</h3>
     <ul>
@@ -401,13 +405,13 @@ async function cropFamily(fileTitle, exclude) {
 
 // ---- category mode (Commons photo category) ----
 // Enumerate files (ns6) in a Commons category tree, recursing subcats to `depth`.
-// Cheap relative to the per-file depicts/history lookups; capped so a huge tree
-// can't run away.
-async function enumerateFiles(category, depth) {
+// Cheap relative to the per-file depicts/history lookups. `cap` bounds the count
+// (CAT_FILE_CAP normally; Infinity for the "slow un-capped scan").
+async function enumerateFiles(category, depth, cap = CAT_FILE_CAP) {
   const files = [], seen = new Set(), visited = new Set();
   let addedThrough = "";                                   // latest category-add timestamp seen
   let queue = [{ c: category, d: 0 }];
-  while (queue.length && files.length < CAT_FILE_CAP) {
+  while (queue.length && files.length < cap) {
     const { c, d } = queue.shift();
     if (visited.has(c)) continue;
     visited.add(c);
@@ -420,10 +424,10 @@ async function enumerateFiles(category, depth) {
           if (m.timestamp && m.timestamp > addedThrough) addedThrough = m.timestamp;
         }
       }
-      if (files.length >= CAT_FILE_CAP) break;
+      if (files.length >= cap) break;
     }
   }
-  return { files: files.slice(0, CAT_FILE_CAP), addedThrough };
+  return { files: files.slice(0, cap), addedThrough };
 }
 
 // Files in a Commons category tree added strictly after `since` (ISO timestamp).
@@ -434,7 +438,9 @@ async function filesAddedSince(category, depth, since) {
   const files = [], seen = new Set(), visited = new Set();
   let addedThrough = since || "";
   let queue = [{ c: category, d: 0 }];
-  while (queue.length && files.length < CAT_FILE_CAP) {
+  // No file cap here: the delta must see every new file across the whole tree
+  // (only genuinely new files are collected, and they're processed in chunks).
+  while (queue.length) {
     const { c, d } = queue.shift();
     if (visited.has(c)) continue;
     visited.add(c);
@@ -447,7 +453,6 @@ async function filesAddedSince(category, depth, since) {
           if (m.timestamp > addedThrough) addedThrough = m.timestamp;
         }
       }
-      if (files.length >= CAT_FILE_CAP) break;
     }
   }
   return { files, addedThrough };
@@ -611,7 +616,7 @@ function updateCatStatus() {
   const remaining = cat.queue.length;
   s.textContent = `Scanned ${cat.scanned} file(s); ${cat.people.length} currently live in an infobox.`
     + (remaining ? ` ${remaining} file(s) left — Save now to resume later.` : " Done.")
-    + (cat.truncated ? ` (Category capped at ${CAT_FILE_CAP} files.)` : "");
+    + (cat.truncated ? ` (Capped at ${CAT_FILE_CAP} files — use “Slow un-capped scan” for the whole category.)` : "");
   $("loadmore").hidden = remaining === 0;
   if (cat.people.length) showSave();   // any results (even partial) can be saved
 }
@@ -636,12 +641,15 @@ function resetCat(inp) {
   cat.queue = []; cat.scanned = 0; cat.truncated = false;
   cat.count = imgCount(); cat.done = new Set(); cat.addedThrough = ""; cat.people = [];
 }
-async function runCategory(inp) {
+async function runCategory(inp, opts) {
+  opts = opts || {};
   resetCat(inp);
-  $("status").className = ""; $("status").textContent = `Listing files in ${inp.title}…`;
-  const { files, addedThrough } = await enumerateFiles(inp.title, Math.max(0, parseInt($("depth").value, 10) || 0));
+  const cap = opts.uncapped ? Infinity : CAT_FILE_CAP;
+  $("status").className = "";
+  $("status").textContent = `Listing files in ${inp.title}…` + (opts.uncapped ? " (un-capped — this may take a while)" : "");
+  const { files, addedThrough } = await enumerateFiles(inp.title, Math.max(0, parseInt($("depth").value, 10) || 0), cap);
   if (!files.length) { showError(`No files found in ${inp.title}.`); return; }
-  cat.truncated = files.length >= CAT_FILE_CAP;
+  cat.truncated = !opts.uncapped && files.length >= CAT_FILE_CAP;
   cat.addedThrough = addedThrough;
   cat.queue = files;
   $("subject").innerHTML = `<p class="lead"><strong>${esc(inp.title)}</strong> — `
@@ -935,6 +943,23 @@ async function hydrateCategory(data, inp) {
 
 $("save_gh").addEventListener("click", saveToGitHub);
 $("f").addEventListener("submit", e => { e.preventDefault(); run(); });
+// Slow un-capped scan: a fresh full-tree scan of a category with no file cap,
+// bypassing the read-through cache. Save partway and resume across sessions.
+$("uncapped_scan").addEventListener("click", async () => {
+  const inp = parseInput($("q").value);
+  if (!inp || inp.type !== "category") {
+    showError("The un-capped scan is for a category — enter a Commons category (bare name, Category:…, or a category link).");
+    return;
+  }
+  $("status").className = ""; $("subject").innerHTML = ""; $("results").innerHTML = "";
+  $("loadmore").hidden = true; hideSave(); single = null; shownPeople = {}; personSeq = 0;
+  currentInput = inp; $("go").disabled = true;
+  try { await runCategory(inp, { uncapped: true }); }
+  catch (err) {
+    showError(/rate-limiting/i.test(err.message)
+      ? "Wikimedia is rate-limiting us right now. Wait a moment and try again." : "Error: " + err.message);
+  } finally { $("go").disabled = false; }
+});
 $("loadmore_btn").addEventListener("click", () => scanAndRender());
 $("results").addEventListener("click", e => {
   const deep = e.target.closest(".deep-btn");
