@@ -2,7 +2,7 @@
   "schema": 1,
   "algoVersion": 3,
   "identity": "category|Category:WikiPortraits uploads",
-  "asOf": "2026-08-28T19:21:56.874Z",
+  "asOf": "2026-08-28T19:47:14.824Z",
   "input": {
     "type": "category",
     "title": "Category:WikiPortraits uploads"
@@ -11,7 +11,7 @@
   "count": 3,
   "addedThrough": "2026-08-28T14:26:31Z",
   "uncapped": true,
-  "scanned": 24200,
+  "scanned": 29200,
   "pending": null,
   "done": [
     "fr:Laurène Marx",
@@ -2134,7 +2134,214 @@
     "en:Bobby Schagen",
     "de:Hendrik Wagner",
     "de:Jan Mudrow",
-    "de:Jakub Powarzyński"
+    "de:Jakub Powarzyński",
+    "de:Philip Ambrosius",
+    "de:Vanja Radić",
+    "de:Björn Zintel",
+    "de:Christian Wilhelm (Handballspieler)",
+    "de:Frank Schumann (Handballspieler)",
+    "de:Frieder Bandlow",
+    "de:Ian Hüter",
+    "de:Kristian van der Merwe",
+    "de:Mark Bult",
+    "de:Maximilian Lux",
+    "en:Albin Lagergren",
+    "arz:بينيت ويكرت",
+    "en:Christian O'Sullivan",
+    "en:Matej Mandić",
+    "en:Matthias Musche",
+    "en:Sergey Hernández",
+    "de:Alexander Pfeifer",
+    "de:Jan Hrdlička",
+    "de:Maxim Orlov",
+    "de:Tom Wolf (Handballspieler, 1994)",
+    "de:Adin Faljić",
+    "de:Marc-Robin Eisel",
+    "de:Vincent Bülow",
+    "en:Dario Quenstedt",
+    "de:Sebastian Firnhaber",
+    "de:Darío Sanz de Nicolás",
+    "en:André Kristensen",
+    "de:Edney Silva Oliveira",
+    "en:Francisco Costa (handballer)",
+    "en:Mamadou Gassama (handballer)",
+    "en:Martim Costa",
+    "en:Orri Freyr Þorkelsson",
+    "de:Ricardo Costa (Handballspieler)",
+    "en:Salvador Salvador",
+    "en:Bartłomiej Bis",
+    "de:Jakob Knauer",
+    "de:Jannes Krone",
+    "en:Petros Boukovinas",
+    "de:Savvas Savvas",
+    "en:Tin Kontrec",
+    "en:Heine Jensen",
+    "en:Ditaji Kambundji",
+    "en:Emmanouil Karalis",
+    "en:KC Lightfoot",
+    "en:Kurtis Marschall",
+    "en:Rumesh Tharanga",
+    "en:Zach Bradford",
+    "en:Anthony Dixon",
+    "en:Steve Mariucci",
+    "en:Amy Chow",
+    "en:Barbora Vránková",
+    "en:Iida Karhunen",
+    "en:Sofia Samodelkina",
+    "en:Nan-Wei Gong",
+    "en:Anna Beck",
+    "en:Birgitta Henriques-Normark",
+    "en:Drew Weissman",
+    "en:Ellen Moons",
+    "sv:Frida Bäcke",
+    "en:Jessie Sommarström",
+    "en:John M. Jumper",
+    "en:Juleen Zierath",
+    "en:Olav Njølstad",
+    "en:Rosalind Lee",
+    "en:Sabeeha Merchant",
+    "en:Simon Johnson (economist)",
+    "en:Terumi Tanaka",
+    "en:Toshiyuki Mimaki",
+    "en:Victor Ambros",
+    "en:Yamuna Krishnan",
+    "en:John M. Martinis",
+    "en:María Corina Machado",
+    "en:Richard Robson (chemist)",
+    "en:Ambyr Childers",
+    "en:Andi Matichak",
+    "en:Daniel DeSanto",
+    "en:Helena Mattsson",
+    "en:Jake Choi",
+    "en:Joris Jarsky",
+    "en:Kris Holden-Ried",
+    "en:Madeline Zima",
+    "de:Marielle Scott",
+    "en:Nolan Gould",
+    "en:Parker Croft",
+    "en:Scott Cavalheiro",
+    "en:Steven Strait",
+    "en:Thomas Sadoski",
+    "en:Vivica A. Fox",
+    "en:Ana Cabrera",
+    "en:Daisy Hernández",
+    "en:Diana Fuentes",
+    "en:Katherine Reynolds Lewis",
+    "en:Lori Montenegro",
+    "en:Ray Suarez",
+    "en:Chris Turner (comedian)",
+    "en:Dan Tiernan",
+    "en:Finlay Christie (comedian)",
+    "en:Jason John Whitehead",
+    "en:Joe Thomas (actor)",
+    "en:Jordan Brookes",
+    "en:Josh Jones (comedian)",
+    "en:Paul Williams (comedian)",
+    "en:Stuart Goldsmith",
+    "en:Tom Ballard (comedian)",
+    "en:Tom Cashman (comedian)",
+    "en:Vir Das",
+    "en:Cameron Winter",
+    "en:Emily Green (musician)",
+    "en:Megan McConnell",
+    "en:Knut Aalefjær",
+    "en:François Damiens",
+    "en:Geoff Arbourne",
+    "en:Nadah El Shazly",
+    "en:Nebojša Slijepčević",
+    "en:Alastair Campbell",
+    "en:Philippa Gregory",
+    "en:Rita Bullwinkel",
+    "es:Jon López",
+    "en:David Oelhoffen",
+    "en:La Dani",
+    "en:Blake Neely",
+    "ca:Joan Martorell Adrover",
+    "en:Christopher Lennertz",
+    "en:Mela Lee",
+    "en:Troy Baker",
+    "en:Hoest",
+    "en:Bastian Obermayer",
+    "en:Jane Martinson",
+    "en:Jesselyn Radack",
+    "en:Jodie Ginsberg",
+    "en:Julie Pace",
+    "en:Laurent Richard",
+    "ba:Седлецкая Наталья Юрьевна",
+    "en:Ron Haviv",
+    "en:Tyler Shultz",
+    "en:Vivian Schiller",
+    "en:Kristoffer Lo",
+    "de:Mette Rasmussen",
+    "en:Morten Qvenild",
+    "de:Savannah Harris",
+    "en:Val Jeanty",
+    "en:Abril Zamora",
+    "en:Adriana Ozores",
+    "en:Agustina Palma",
+    "es:Almagro San Miguel",
+    "en:Almudena Cid",
+    "en:Ana Fernández García",
+    "en:Andrea Jaurrieta",
+    "en:André Lamoglia",
+    "en:Beatriz Arjona",
+    "en:Belinda Washington",
+    "en:Belén Rueda",
+    "en:Benito Zambrano",
+    "en:Boré Buika",
+    "ca:Canco Rodríguez",
+    "en:Carlos Bardem",
+    "ca:Carlos Fuentes Guillén",
+    "en:Celia Rico Clavellino",
+    "es:Claudio Portalo Bueno",
+    "en:Darío Grandinetti",
+    "en:El Langui",
+    "en:Elisa Hipólito",
+    "en:Fele Martínez",
+    "en:Gabriel G. Mourreau",
+    "en:Goya Toledo",
+    "en:Irene Ferreiro",
+    "en:Isak Férriz",
+    "en:Iván Sánchez",
+    "en:Jaime Lorente",
+    "en:Javier Pereira (actor)",
+    "en:Jaydy Michel",
+    "en:Joaquín Furriel",
+    "en:José Corbacho",
+    "en:José Pastor (actor)",
+    "en:Julieta Zylberberg",
+    "en:Julián López (comedian)",
+    "en:Julián Villagrán",
+    "en:Kerem Bürsin",
+    "es:Lola Amores",
+    "en:Lola Herrera",
+    "ca:Lola Lolita",
+    "es:Loreto Sesma",
+    "en:Maggie Civantos",
+    "ca:Marta Belenguer",
+    "es:Mireya Bravo",
+    "en:Nancho Novo",
+    "en:Olivia Molina (actress)",
+    "en:Óscar Ladoire",
+    "en:Patricia López Arnaiz",
+    "en:Paula Usero",
+    "sv:Pepe Barroso",
+    "en:Peter Vives",
+    "en:Pilar López de Ayala",
+    "en:Pol Granch",
+    "en:Pol López",
+    "en:Raúl Tejón",
+    "en:Rubén Cortada",
+    "en:Samantha Hudson",
+    "en:Silma López",
+    "en:Stéphanie Magnin",
+    "en:Unax Ugalde",
+    "en:Verónica Echegui",
+    "en:Àlex Brendemühl",
+    "ca:Álex Montoya",
+    "en:Aslag Guttormsgaard",
+    "no:Per Borten (musiker)",
+    "no:Rolf Martin Snustad"
   ],
   "people": [
     {
@@ -2388,6 +2595,258 @@
           "rev": 1258898951,
           "ts": "2024-11-22T06:58:41Z",
           "user": "JJMC89 bot III"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Bartłomiej Bis",
+      "label": "Bartłomiej Bis",
+      "qid": "Q29078208",
+      "topRev": 1349428166,
+      "more": false,
+      "lead": "File:2026-08-21 Bartlomiej Bis by mroptimax.jpg",
+      "timeline": [
+        {
+          "file": "File:2026-08-21 Bartlomiej Bis by mroptimax.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "de",
+      "article": "Jakob Knauer",
+      "label": "Jakob Knauer",
+      "qid": "Q42555047",
+      "topRev": 269880860,
+      "more": false,
+      "lead": "File:2026-08-21 Jakob Knauer by mroptimax.jpg",
+      "timeline": [
+        {
+          "file": "File:2026-08-21 Jakob Knauer by mroptimax.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "de",
+      "article": "Jannes Krone",
+      "label": "Jannes Krone",
+      "qid": "Q131341221",
+      "topRev": 269880369,
+      "more": false,
+      "lead": "File:2026-08-21 Jannes Krone by mroptimax.jpg",
+      "timeline": [
+        {
+          "file": "File:2026-08-21 Jannes Krone by mroptimax.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Petros Boukovinas",
+      "label": "Petros Boukovinas",
+      "qid": "Q117069653",
+      "topRev": 1369868883,
+      "more": false,
+      "lead": "File:2026-08-21 Petros Boukovinas by mroptimax.jpg",
+      "timeline": [
+        {
+          "file": "File:2026-08-21 Petros Boukovinas by mroptimax.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "de",
+      "article": "Savvas Savvas",
+      "label": "Savvas Savvas",
+      "qid": "Q20164884",
+      "topRev": 269879513,
+      "more": false,
+      "lead": "File:2026-08-21 Savvas Savvas by mroptimax.jpg",
+      "timeline": [
+        {
+          "file": "File:2026-08-21 Savvas Savvas by mroptimax.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Tin Kontrec",
+      "label": "Tin Kontrec",
+      "qid": "Q28474632",
+      "topRev": 1370654715,
+      "more": false,
+      "lead": "File:2026-08-21 Tin Kontrec by mroptimax.jpg",
+      "timeline": [
+        {
+          "file": "File:2026-08-21 Tin Kontrec by mroptimax.jpg",
+          "rev": 1370654715,
+          "ts": "2026-08-22T09:15:34Z",
+          "user": "Rudermeister"
+        },
+        {
+          "file": "File:Tin Kontrec 20160904.jpg",
+          "rev": 1356615990,
+          "ts": "2026-05-28T21:03:46Z",
+          "user": "Fregerslev"
+        },
+        {
+          "file": "File:Tin Kontrec.jpg",
+          "rev": 848531201,
+          "ts": "2018-07-02T14:37:35Z",
+          "user": "Lole484"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Ditaji Kambundji",
+      "label": "Ditaji Kambundji",
+      "qid": "Q105852598",
+      "topRev": 1371453384,
+      "more": false,
+      "lead": "File:Ditaji Kambundji at a press conference during the Wanda Diamond League Athletissima athletics competition. 01.jpg",
+      "timeline": [
+        {
+          "file": "File:Ditaji Kambundji at a press conference during the Wanda Diamond League Athletissima athletics competition. 01.jpg",
+          "rev": 1371453384,
+          "ts": "2026-08-26T14:52:50Z",
+          "user": "Rashinseita"
+        },
+        {
+          "file": "File:Ditaji Kambundji 2023 cropped.jpg",
+          "rev": 1370511803,
+          "ts": "2026-08-21T15:11:06Z",
+          "user": "Pietaster"
+        },
+        {
+          "file": "File:2018-10-14 Heat 3 (Girls 100 metre hurdles Stage 2) at 2018 Summer Youth Olympics by Sandro Halank–017.jpg",
+          "rev": 1143300627,
+          "ts": "2023-03-06T23:24:56Z",
+          "user": "Track1News"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Emmanouil Karalis",
+      "label": "Emmanouíl Karalís",
+      "qid": "Q23714545",
+      "topRev": 1371824681,
+      "more": true,
+      "lead": "File:Emmanouil Karalis at the 2026 Wanda Diamond League Athletissima athletics competition. 05.jpg",
+      "timeline": [
+        {
+          "file": "File:Emmanouil Karalis at the 2026 Wanda Diamond League Athletissima athletics competition. 05.jpg",
+          "rev": 1371824681,
+          "ts": "2026-08-28T18:09:28Z",
+          "user": "Maldo45"
+        },
+        {
+          "file": "File:WK040202 polsstok karalis.jpg",
+          "rev": 1370473394,
+          "ts": "2026-08-21T08:31:53Z",
+          "user": "Vasarchit"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "KC Lightfoot",
+      "label": "KC Lightfoot",
+      "qid": "Q65993195",
+      "topRev": 1371685053,
+      "more": false,
+      "lead": "File:KC Lightfoot at the 2026 Wanda Diamond League Athletissima athletics competition. 06.jpg",
+      "timeline": [
+        {
+          "file": "File:KC Lightfoot at the 2026 Wanda Diamond League Athletissima athletics competition. 06.jpg",
+          "rev": 1371685053,
+          "ts": "2026-08-27T21:35:17Z",
+          "user": "BardeChoco"
+        },
+        {
+          "file": "File:https://di262mgurvkjm.cloudfront.net/c1413428-b4c4-456a-a731-f383969da6ae/20190928_Doha2019_Day2_192129_D05118050_xgaplus.jpg",
+          "rev": 1239166031,
+          "ts": "2024-08-07T18:00:05Z",
+          "user": "219.89.36.149"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Kurtis Marschall",
+      "label": "Kurtis Marschall",
+      "qid": "Q25927186",
+      "topRev": 1371455320,
+      "more": false,
+      "lead": "File:Kurtis Marschall at the 2026 Wanda Diamond League Athletissima athletics competition. 04.jpg",
+      "timeline": [
+        {
+          "file": "File:Kurtis Marschall at the 2026 Wanda Diamond League Athletissima athletics competition. 04.jpg",
+          "rev": 1371455320,
+          "ts": "2026-08-26T15:07:45Z",
+          "user": "Rashinseita"
+        },
+        {
+          "file": "File:WKBO4434 Polevault M final Marschall (53173093596).jpg",
+          "rev": 1369945297,
+          "ts": "2026-08-18T04:30:07Z",
+          "user": "Pietaster"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Rumesh Tharanga",
+      "label": "Rumesh Tharanga Pathirage",
+      "qid": "Q134707084",
+      "topRev": 1371824353,
+      "more": false,
+      "lead": "File:Rumesh Tharanga Pathirage at a press conference during the Wanda Diamond League Athletissima athletics competition. 01.jpg",
+      "timeline": [
+        {
+          "file": "File:Rumesh Tharanga Pathirage at a press conference during the Wanda Diamond League Athletissima athletics competition. 01.jpg",
+          "rev": 1371824353,
+          "ts": "2026-08-28T18:06:51Z",
+          "user": "Kasper2006"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Zach Bradford",
+      "label": "Zach Bradford",
+      "qid": "Q65988350",
+      "topRev": 1371461827,
+      "more": false,
+      "lead": "File:Zach Bradford at the 2026 Wanda Diamond League Athletissima athletics competition. 06.jpg",
+      "timeline": [
+        {
+          "file": "File:Zach Bradford at the 2026 Wanda Diamond League Athletissima athletics competition. 06.jpg",
+          "rev": 1371461827,
+          "ts": "2026-08-26T15:47:47Z",
+          "user": "Rashinseita"
+        },
+        {
+          "file": "File:Zach Bradford - Täby Stavhoppsgala - Sweden - May 2024 - 3.jpg",
+          "rev": 1362043267,
+          "ts": "2026-07-01T16:36:11Z",
+          "user": "PrimeBOT"
         }
       ]
     },
@@ -2728,6 +3187,23 @@
     },
     {
       "lang": "en",
+      "article": "Amy Chow",
+      "label": "Amy Chow",
+      "qid": "Q886902",
+      "topRev": 1369248191,
+      "more": true,
+      "lead": "File:Amy Chow at the 2026 U.S. Gymnastics Championships 01.jpg",
+      "timeline": [
+        {
+          "file": "File:Amy Chow at the 2026 U.S. Gymnastics Championships 01.jpg",
+          "rev": 1369248191,
+          "ts": "2026-08-13T20:12:43Z",
+          "user": "TaurusEmerald"
+        }
+      ]
+    },
+    {
+      "lang": "en",
       "article": "Charlie Cox",
       "label": "Charlie Cox",
       "qid": "Q454231",
@@ -3050,6 +3526,148 @@
     },
     {
       "lang": "en",
+      "article": "André Kristensen",
+      "label": "André Bergsholm Kristensen",
+      "qid": "Q131587549",
+      "topRev": 1366697868,
+      "more": false,
+      "lead": "File:2026-08-01 Andre Bergsholm Kristensen by mroptimax.jpg",
+      "timeline": [
+        {
+          "file": "File:2026-08-01 Andre Bergsholm Kristensen by mroptimax.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "de",
+      "article": "Edney Silva Oliveira",
+      "label": "Edney Silva Oliveira",
+      "qid": "Q131916896",
+      "topRev": 269654626,
+      "more": false,
+      "lead": "File:2026-08-01 Edney Silva Oliveira by mroptimax (2).jpg",
+      "timeline": [
+        {
+          "file": "File:2026-08-01 Edney Silva Oliveira by mroptimax (2).jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Francisco Costa (handballer)",
+      "label": "Francisco Mota da Costa",
+      "qid": "Q111908236",
+      "topRev": 1365774627,
+      "more": false,
+      "lead": "File:2026-08-01 Francisco Costa by mroptimax (2).jpg",
+      "timeline": [
+        {
+          "file": "File:2026-08-01 Francisco Costa by mroptimax (2).jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Mamadou Gassama (handballer)",
+      "label": "Mamadou Gassama",
+      "qid": "Q42428800",
+      "topRev": 1299977954,
+      "more": false,
+      "lead": "File:2026-08-01 Mamadou Gassama by mroptimax.jpg",
+      "timeline": [
+        {
+          "file": "File:2026-08-01 Mamadou Gassama by mroptimax.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Martim Costa",
+      "label": "Martim Costa",
+      "qid": "Q111919593",
+      "topRev": 1346281030,
+      "more": false,
+      "lead": "File:2026-08-01 Martim Costa by mroptimax.jpg",
+      "timeline": [
+        {
+          "file": "File:2026-08-01 Martim Costa by mroptimax.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Orri Freyr Þorkelsson",
+      "label": "Orri Freyr Þorkelsson",
+      "qid": "Q124649386",
+      "topRev": 1336039243,
+      "more": false,
+      "lead": "File:2026-08-01 Orri Freyr Thorkelsson by mroptimax.jpg",
+      "timeline": [
+        {
+          "file": "File:2026-08-01 Orri Freyr Thorkelsson by mroptimax.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "de",
+      "article": "Ricardo Costa (Handballspieler)",
+      "label": "Ricardo Costa",
+      "qid": "Q2148685",
+      "topRev": 269295526,
+      "more": false,
+      "lead": "File:2026-08-01 Ricardo Costa by mroptimax.jpg",
+      "timeline": [
+        {
+          "file": "File:2026-08-01 Ricardo Costa by mroptimax.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Salvador Salvador",
+      "label": "Salvador Salvador",
+      "qid": "Q110561370",
+      "topRev": 1367226298,
+      "more": false,
+      "lead": "File:2026-08-01 Salvador Salvador by mroptimax.jpg",
+      "timeline": [
+        {
+          "file": "File:2026-08-01 Salvador Salvador by mroptimax.jpg",
+          "rev": 1367226298,
+          "ts": "2026-08-01T20:46:17Z",
+          "user": "Rudermeister"
+        },
+        {
+          "file": "File:Beach handball at the 2018 Summer Youth Olympics – Boys Semifinal ARG-POR 022 (cropped).jpg",
+          "rev": 1364581498,
+          "ts": "2026-07-17T10:00:36Z",
+          "user": "CeeGee"
+        }
+      ]
+    },
+    {
+      "lang": "en",
       "article": "Jeff Smith (cartoonist)",
       "label": "Jeff Smith",
       "qid": "Q1335436",
@@ -3097,6 +3715,23 @@
           "rev": 491781987,
           "ts": "2012-05-10T11:50:13Z",
           "user": "Waacstats"
+        }
+      ]
+    },
+    {
+      "lang": "de",
+      "article": "Darío Sanz de Nicolás",
+      "label": "Darío Sanz de Nicolás",
+      "qid": "Q119794160",
+      "topRev": 269124339,
+      "more": false,
+      "lead": "File:2026-07-26 Dario Sanz de Nicolas by mroptimax.jpg",
+      "timeline": [
+        {
+          "file": "File:2026-07-26 Dario Sanz de Nicolas by mroptimax.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
         }
       ]
     },
@@ -8335,6 +8970,46 @@
     },
     {
       "lang": "en",
+      "article": "Dario Quenstedt",
+      "label": "Dario Quenstedt",
+      "qid": "Q1165963",
+      "topRev": 1358586683,
+      "more": false,
+      "lead": "File:2026-06-07 Dario Quenstedt by mroptimax.jpg",
+      "timeline": [
+        {
+          "file": "File:2026-06-07 Dario Quenstedt by mroptimax.jpg",
+          "rev": 1358586683,
+          "ts": "2026-06-09T17:31:47Z",
+          "user": "Rudermeister"
+        },
+        {
+          "file": "File:090817GERSLO2Quenstedt.jpg",
+          "rev": 1272402956,
+          "ts": "2025-01-28T13:05:37Z",
+          "user": "Jevansen"
+        }
+      ]
+    },
+    {
+      "lang": "de",
+      "article": "Sebastian Firnhaber",
+      "label": "Sebastian Firnhaber",
+      "qid": "Q29963197",
+      "topRev": 268558481,
+      "more": false,
+      "lead": "File:2026-06-07 Sebastian Firnhaber by mroptimax.jpg",
+      "timeline": [
+        {
+          "file": "File:2026-06-07 Sebastian Firnhaber by mroptimax.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "en",
       "article": "Ashley Padilla",
       "label": "Ashley Padilla",
       "qid": "Q130270364",
@@ -8514,6 +9189,86 @@
           "rev": 1353161980,
           "ts": "2026-05-08T15:14:30Z",
           "user": "~2026-17784-47"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Anthony Dixon",
+      "label": "Anthony Dixon",
+      "qid": "Q3618486",
+      "topRev": 1357618579,
+      "more": true,
+      "lead": "File:Anthony Dixon Coach Mooch Battle of the Bay Charity Bocce 2026 03.jpg",
+      "timeline": [
+        {
+          "file": "File:Anthony Dixon Coach Mooch Battle of the Bay Charity Bocce 2026 03.jpg",
+          "rev": 1357618579,
+          "ts": "2026-06-03T17:37:08Z",
+          "user": "WikiOriginal-9"
+        },
+        {
+          "file": "File:Anthony Dixon.JPG",
+          "rev": 1352953873,
+          "ts": "2026-05-07T06:39:28Z",
+          "user": "Bagumba"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Steve Mariucci",
+      "label": "Steve Mariucci",
+      "qid": "Q7613262",
+      "topRev": 1357597898,
+      "more": true,
+      "lead": "File:Steve Mariucci Coach Mooch Battle of the Bay Charity Bocce 2026 01.jpg",
+      "timeline": [
+        {
+          "file": "File:Steve Mariucci Coach Mooch Battle of the Bay Charity Bocce 2026 01.jpg",
+          "rev": 1357597898,
+          "ts": "2026-06-03T15:22:18Z",
+          "user": "Jessekornblum"
+        },
+        {
+          "file": "File:Steve Mariucci 2011 (cropped).jpg",
+          "rev": 1346313352,
+          "ts": "2026-03-31T04:45:42Z",
+          "user": "Jessekornblum"
+        }
+      ]
+    },
+    {
+      "lang": "de",
+      "article": "Marc-Robin Eisel",
+      "label": "Marc-Robin Eisel",
+      "qid": "Q128795974",
+      "topRev": 267631569,
+      "more": false,
+      "lead": "File:2026-05-31 Marc-Robin Eisel by mroptimax.jpg",
+      "timeline": [
+        {
+          "file": "File:2026-05-31 Marc-Robin Eisel by mroptimax.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "de",
+      "article": "Vincent Bülow",
+      "label": "Vincent Bülow",
+      "qid": "Q122925092",
+      "topRev": 267631621,
+      "more": false,
+      "lead": "File:2026-05-31 Vincent Bülow by mroptimax.jpg",
+      "timeline": [
+        {
+          "file": "File:2026-05-31 Vincent Bülow by mroptimax.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
         }
       ]
     },
@@ -8808,6 +9563,23 @@
           "rev": 1368103065,
           "ts": "2026-08-07T01:34:53Z",
           "user": "Bringingthewood"
+        }
+      ]
+    },
+    {
+      "lang": "de",
+      "article": "Adin Faljić",
+      "label": "Adin Faljić",
+      "qid": "Q138030173",
+      "topRev": 268415225,
+      "more": false,
+      "lead": "File:2026-05-24 Adin Faljic by mroptimax-1.jpg",
+      "timeline": [
+        {
+          "file": "File:2026-05-24 Adin Faljic by mroptimax-1.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
         }
       ]
     },
@@ -11783,6 +12555,74 @@
       ]
     },
     {
+      "lang": "de",
+      "article": "Alexander Pfeifer",
+      "label": "Alexander Pfeifer",
+      "qid": "Q128801619",
+      "topRev": 268564453,
+      "more": false,
+      "lead": "File:2026-05-09 Alexander Pfeifer by mroptimax.jpg",
+      "timeline": [
+        {
+          "file": "File:2026-05-09 Alexander Pfeifer by mroptimax.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "de",
+      "article": "Jan Hrdlička",
+      "label": "Jan Hrdlička",
+      "qid": "Q135443650",
+      "topRev": 268564371,
+      "more": false,
+      "lead": "File:2026-05-09 Jan Hrdlicka by mroptimax (2).jpg",
+      "timeline": [
+        {
+          "file": "File:2026-05-09 Jan Hrdlicka by mroptimax (2).jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "de",
+      "article": "Maxim Orlov",
+      "label": "Maxim Orlov",
+      "qid": "Q130273047",
+      "topRev": 268564045,
+      "more": false,
+      "lead": "File:2026-05-09 Maxim Orlov by mroptimax.jpg",
+      "timeline": [
+        {
+          "file": "File:2026-05-09 Maxim Orlov by mroptimax.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "de",
+      "article": "Tom Wolf (Handballspieler, 1994)",
+      "label": "Tom Wolf",
+      "qid": "Q139736639",
+      "topRev": 268509162,
+      "more": false,
+      "lead": "File:2026-05-09 Tom Wolf by mroptimax.jpg",
+      "timeline": [
+        {
+          "file": "File:2026-05-09 Tom Wolf by mroptimax.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
       "lang": "en",
       "article": "Beth Ostrosky Stern",
       "label": "Beth Ostrosky Stern",
@@ -12349,6 +13189,150 @@
     },
     {
       "lang": "en",
+      "article": "Albin Lagergren",
+      "label": "Albin Lagergren",
+      "qid": "Q27881726",
+      "topRev": 1358086051,
+      "more": false,
+      "lead": "File:2026-04-26 Albin Lagergren by mroptimax.jpg",
+      "timeline": [
+        {
+          "file": "File:2026-04-26 Albin Lagergren by mroptimax.jpg",
+          "rev": 1358086051,
+          "ts": "2026-06-06T13:23:32Z",
+          "user": "Fregerslev"
+        },
+        {
+          "file": "File:2024-10-27 Handball TVB Stuttgart - SC Magdeburg by mroptimax-19.jpg",
+          "rev": 1344434519,
+          "ts": "2026-03-20T12:37:34Z",
+          "user": "Rageking890m"
+        },
+        {
+          "file": "File:Albin Lagergren 20170118.jpg",
+          "rev": 1236795072,
+          "ts": "2024-07-26T15:17:35Z",
+          "user": "Kante4"
+        }
+      ]
+    },
+    {
+      "lang": "arz",
+      "article": "بينيت ويكرت",
+      "label": "Bennet Wiegert",
+      "qid": "Q817837",
+      "topRev": 12792309,
+      "more": false,
+      "lead": "File:2026-04-26 Bennet Wiegert by mroptimax.jpg",
+      "timeline": [
+        {
+          "file": "File:2026-04-26 Bennet Wiegert by mroptimax.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Christian O'Sullivan",
+      "label": "Christian O'Sullivan",
+      "qid": "Q15935247",
+      "topRev": 1363607924,
+      "more": false,
+      "lead": "File:2026-04-26 Christian O'Sullivan by mroptimax.jpg",
+      "timeline": [
+        {
+          "file": "File:2026-04-26 Christian O'Sullivan by mroptimax.jpg",
+          "rev": 1363607924,
+          "ts": "2026-07-11T06:34:48Z",
+          "user": "Chartah"
+        },
+        {
+          "file": "File:2024-10-27 Handball TVB Stuttgart - SC Magdeburg by mroptimax-22.jpg",
+          "rev": 1350946621,
+          "ts": "2026-04-25T00:40:57Z",
+          "user": "Zyxw"
+        },
+        {
+          "file": "File:Christian O´Sullivan.jpeg",
+          "rev": 1242936102,
+          "ts": "2024-08-29T15:33:52Z",
+          "user": "Crowsus"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Matej Mandić",
+      "label": "Matej Mandić",
+      "qid": "Q124140685",
+      "topRev": 1359636055,
+      "more": false,
+      "lead": "File:2026-04-26 Matej Mandic by mroptimax.jpg",
+      "timeline": [
+        {
+          "file": "File:2026-04-26 Matej Mandic by mroptimax.jpg",
+          "rev": 1359636055,
+          "ts": "2026-06-16T10:17:09Z",
+          "user": "Clariniie"
+        },
+        {
+          "file": "File:Matej Mandić (RK Zagreb).jpg",
+          "rev": 1343329619,
+          "ts": "2026-03-13T16:35:21Z",
+          "user": "Clariniie"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Matthias Musche",
+      "label": "Matthias Musche",
+      "qid": "Q1910160",
+      "topRev": 1351568137,
+      "more": false,
+      "lead": "File:2026-04-26 Matthias Musche by mroptimax.jpg",
+      "timeline": [
+        {
+          "file": "File:2026-04-26 Matthias Musche by mroptimax.jpg",
+          "rev": 1351568137,
+          "ts": "2026-04-28T20:02:02Z",
+          "user": "Rudermeister"
+        },
+        {
+          "file": "File:2024-10-27 Handball TVB Stuttgart - SC Magdeburg by mroptimax-21.jpg",
+          "rev": 1272983281,
+          "ts": "2025-01-31T04:10:00Z",
+          "user": "Jevansen"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Sergey Hernández",
+      "label": "Sergey Hernández",
+      "qid": "Q57786045",
+      "topRev": 1351568498,
+      "more": false,
+      "lead": "File:2026-04-26 Sergey Hernandez Ferrer by mroptimax.jpg",
+      "timeline": [
+        {
+          "file": "File:2026-04-26 Sergey Hernandez Ferrer by mroptimax.jpg",
+          "rev": 1351568498,
+          "ts": "2026-04-28T20:04:43Z",
+          "user": "Rudermeister"
+        },
+        {
+          "file": "File:2024-10-27 Handball TVB Stuttgart - SC Magdeburg by mroptimax-12.jpg",
+          "rev": 1334788047,
+          "ts": "2026-01-25T17:38:41Z",
+          "user": "InternetArchiveBot"
+        }
+      ]
+    },
+    {
+      "lang": "en",
       "article": "Aldana Cometti",
       "label": "Aldana Cometti",
       "qid": "Q51861076",
@@ -12500,6 +13484,142 @@
           "rev": 1351250264,
           "ts": "2026-04-26T21:35:13Z",
           "user": "Npgeek73"
+        }
+      ]
+    },
+    {
+      "lang": "de",
+      "article": "Björn Zintel",
+      "label": "Björn Zintel",
+      "qid": "Q123472032",
+      "topRev": 268495032,
+      "more": false,
+      "lead": "File:2026-04-25 Björn Zintel by mroptimax.jpg",
+      "timeline": [
+        {
+          "file": "File:2026-04-25 Björn Zintel by mroptimax.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "de",
+      "article": "Christian Wilhelm (Handballspieler)",
+      "label": "Christian Wilhelm",
+      "qid": "Q121623187",
+      "topRev": 266499252,
+      "more": false,
+      "lead": "File:2026-04-25 Christian Wilhelm by mroptimax.jpg",
+      "timeline": [
+        {
+          "file": "File:2026-04-25 Christian Wilhelm by mroptimax.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "de",
+      "article": "Frank Schumann (Handballspieler)",
+      "label": "Frank Schumann",
+      "qid": "Q1444156",
+      "topRev": 269740267,
+      "more": false,
+      "lead": "File:2026-04-25 Frank Schumann by mroptimax.jpg",
+      "timeline": [
+        {
+          "file": "File:2026-04-25 Frank Schumann by mroptimax.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "de",
+      "article": "Frieder Bandlow",
+      "label": "Frieder Bandlow",
+      "qid": "Q123968868",
+      "topRev": 268558218,
+      "more": false,
+      "lead": "File:2026-04-25 Frieder Bandlow by mroptimax.jpg",
+      "timeline": [
+        {
+          "file": "File:2026-04-25 Frieder Bandlow by mroptimax.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "de",
+      "article": "Ian Hüter",
+      "label": "Ian Hüter",
+      "qid": "Q115898917",
+      "topRev": 266523791,
+      "more": false,
+      "lead": "File:2026-04-25 Ian Hüter by mroptimax.jpg",
+      "timeline": [
+        {
+          "file": "File:2026-04-25 Ian Hüter by mroptimax.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "de",
+      "article": "Kristian van der Merwe",
+      "label": "Kristian van der Merwe",
+      "qid": "Q124055363",
+      "topRev": 268553113,
+      "more": false,
+      "lead": "File:2026-04-25 Kristian van der Merwe by mroptimax.jpg",
+      "timeline": [
+        {
+          "file": "File:2026-04-25 Kristian van der Merwe by mroptimax.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "de",
+      "article": "Mark Bult",
+      "label": "Mark Bult",
+      "qid": "Q1532477",
+      "topRev": 267465797,
+      "more": false,
+      "lead": "File:2026-04-25 Mark Bult by mroptimax.jpg",
+      "timeline": [
+        {
+          "file": "File:2026-04-25 Mark Bult by mroptimax.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "de",
+      "article": "Maximilian Lux",
+      "label": "Maximilian Lux",
+      "qid": "Q126119525",
+      "topRev": 266499548,
+      "more": false,
+      "lead": "File:2026-04-25 Maximilian Lux by mroptimax.jpg",
+      "timeline": [
+        {
+          "file": "File:2026-04-25 Maximilian Lux by mroptimax.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
         }
       ]
     },
@@ -12992,6 +14112,40 @@
       "timeline": [
         {
           "file": "File:2026-04-12 Jakub Powarzynski by mroptimax (2).jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "de",
+      "article": "Philip Ambrosius",
+      "label": "Philip Ambrosius",
+      "qid": "Q121009652",
+      "topRev": 266092895,
+      "more": false,
+      "lead": "File:2026-04-12 Philip Ambrosius by mroptimax.jpg",
+      "timeline": [
+        {
+          "file": "File:2026-04-12 Philip Ambrosius by mroptimax.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "de",
+      "article": "Vanja Radić",
+      "label": "Q137076607",
+      "qid": "Q137076607",
+      "topRev": 266092972,
+      "more": false,
+      "lead": "File:2026-04-12 Vanja Radic by mroptimax.jpg",
+      "timeline": [
+        {
+          "file": "File:2026-04-12 Vanja Radic by mroptimax.jpg",
           "rev": null,
           "ts": null,
           "user": null
@@ -13685,6 +14839,35 @@
     },
     {
       "lang": "en",
+      "article": "Sofia Samodelkina",
+      "label": "Sofia Samodelkina",
+      "qid": "Q109563001",
+      "topRev": 1371033543,
+      "more": false,
+      "lead": "File:Sofia Samodelkina at Womens Free Skating Program at 2026 ISU World Figure Skating Championships Prague 16 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Sofia Samodelkina at Womens Free Skating Program at 2026 ISU World Figure Skating Championships Prague 16 (cropped).jpg",
+          "rev": 1371033543,
+          "ts": "2026-08-24T05:46:09Z",
+          "user": "User08121938"
+        },
+        {
+          "file": "File:Sofia Samodelkina 2025 Worlds Free Skate 04.jpg",
+          "rev": 1366666301,
+          "ts": "2026-07-29T11:42:25Z",
+          "user": "Tireqvfx"
+        },
+        {
+          "file": "File:Sofia Samodelkina at the Channel One Cup 2023.jpg",
+          "rev": 1289544038,
+          "ts": "2025-05-09T08:47:04Z",
+          "user": "Rainbowed-Sunned-Spirit"
+        }
+      ]
+    },
+    {
+      "lang": "en",
       "article": "Josh Sapan",
       "label": "Josh Sapan",
       "qid": "Q16150260",
@@ -13790,6 +14973,52 @@
           "rev": 740461855,
           "ts": "2016-09-21T06:09:41Z",
           "user": "Yobot"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Barbora Vránková",
+      "label": "Barbora Vránková",
+      "qid": "Q140444362",
+      "topRev": 1370742761,
+      "more": false,
+      "lead": "File:Barbora Vrankova competing in Womens Short Program at 2026 ISU World Figure Skating Championships Prague 09 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Barbora Vrankova competing in Womens Short Program at 2026 ISU World Figure Skating Championships Prague 09 (cropped).jpg",
+          "rev": 1370742761,
+          "ts": "2026-08-22T21:26:23Z",
+          "user": "Tireqvfx"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Iida Karhunen",
+      "label": "Iida Karhunen",
+      "qid": "Q116956654",
+      "topRev": 1370971646,
+      "more": false,
+      "lead": "File:Iida Karhunen at Womens Short Program at 2026 ISU World Figure Skating Championships Prague 01 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Iida Karhunen at Womens Short Program at 2026 ISU World Figure Skating Championships Prague 01 (cropped).jpg",
+          "rev": 1370971646,
+          "ts": "2026-08-24T00:12:12Z",
+          "user": "~2026-43975-54"
+        },
+        {
+          "file": "File:Iida KARHUNEN of Finland at the 2026 Winter Olympics by YantsImages 01 (cropped).jpg",
+          "rev": 1363204940,
+          "ts": "2026-07-08T18:28:25Z",
+          "user": "Crestfalling"
+        },
+        {
+          "file": "File:Iida KARHUNEN3 of Finland at the 2026 Winter Olympics by YantsImages 01 (cropped).jpg",
+          "rev": 1347928979,
+          "ts": "2026-04-09T17:34:15Z",
+          "user": "Tireqvfx"
         }
       ]
     },
@@ -14472,6 +15701,127 @@
     },
     {
       "lang": "en",
+      "article": "Joris Jarsky",
+      "label": "Joris Jarsky",
+      "qid": "Q3183923",
+      "topRev": 1357025275,
+      "more": false,
+      "lead": "File:Joris Jarsky Cinequest 2026 01.jpg",
+      "timeline": [
+        {
+          "file": "File:Joris Jarsky Cinequest 2026 01.jpg",
+          "rev": 1357025275,
+          "ts": "2026-05-31T09:27:42Z",
+          "user": "PrimeBOT"
+        },
+        {
+          "file": "File:JorisJarsky09TIFF.jpg",
+          "rev": 1329424304,
+          "ts": "2025-12-26T02:06:16Z",
+          "user": "Poopdecktheoverlord"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Kris Holden-Ried",
+      "label": "Kris Holden-Ried",
+      "qid": "Q978469",
+      "topRev": 1370778340,
+      "more": false,
+      "lead": "File:Kris Holden-Ried Cinequest 2026 01.jpg",
+      "timeline": [
+        {
+          "file": "File:Kris Holden-Ried Cinequest 2026 01.jpg",
+          "rev": 1370778340,
+          "ts": "2026-08-23T01:48:36Z",
+          "user": "CarciaNullius"
+        },
+        {
+          "file": "File:Kristen Holden-Ried at Fan Expo 1.jpg",
+          "rev": 1342718688,
+          "ts": "2026-03-10T10:34:01Z",
+          "user": "LionmerterTHE"
+        },
+        {
+          "file": "File:Kris Holden-Ried at Fan Expo 1.jpg",
+          "rev": 920029073,
+          "ts": "2019-10-07T08:17:48Z",
+          "user": "2601:603:1C7F:1880:750A:5072:4B46:2BDD"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Madeline Zima",
+      "label": "Madeline Zima",
+      "qid": "Q230296",
+      "topRev": 1371071046,
+      "more": false,
+      "lead": "File:Madeline Zima Cinequest 2026 05.jpg",
+      "timeline": [
+        {
+          "file": "File:Madeline Zima Cinequest 2026 05.jpg",
+          "rev": 1371071046,
+          "ts": "2026-08-24T11:59:59Z",
+          "user": "JuanBoss105"
+        },
+        {
+          "file": "File:Madeline Zima Cinequest 2026 02.jpg",
+          "rev": 1345538832,
+          "ts": "2026-03-26T16:45:22Z",
+          "user": "JuanBoss105"
+        },
+        {
+          "file": "File:Madeline Zima in 2008.jpg",
+          "rev": 1339874385,
+          "ts": "2026-02-22T19:29:07Z",
+          "user": "Teblick"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Scott Cavalheiro",
+      "label": "Scott Cavalheiro",
+      "qid": "Q64049107",
+      "topRev": 1353372182,
+      "more": false,
+      "lead": "File:Scott Cavalheiro Cinequest 2026 01.jpg",
+      "timeline": [
+        {
+          "file": "File:Scott Cavalheiro Cinequest 2026 01.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Vivica A. Fox",
+      "label": "Vivica A. Fox",
+      "qid": "Q220396",
+      "topRev": 1371335474,
+      "more": true,
+      "lead": "File:Vivica A. Fox Cinequest 2026 04 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Vivica A. Fox Cinequest 2026 04 (cropped).jpg",
+          "rev": 1371335474,
+          "ts": "2026-08-25T23:27:49Z",
+          "user": "~2026-42504-55"
+        },
+        {
+          "file": "File:10.5.17VivicaAFoxByLuigiNovi1.jpg",
+          "rev": 1342135115,
+          "ts": "2026-03-07T06:14:51Z",
+          "user": "Noelle deltarune"
+        }
+      ]
+    },
+    {
+      "lang": "en",
       "article": "Tim Cook",
       "label": "Tim Cook",
       "qid": "Q265852",
@@ -14496,6 +15846,231 @@
           "rev": 1351722635,
           "ts": "2026-04-29T19:00:59Z",
           "user": "Maxeto0910"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Ambyr Childers",
+      "label": "Ambyr Childers",
+      "qid": "Q4742029",
+      "topRev": 1369781363,
+      "more": false,
+      "lead": "File:Ambyr Childers Cinequest 2026 02.jpg",
+      "timeline": [
+        {
+          "file": "File:Ambyr Childers Cinequest 2026 02.jpg",
+          "rev": 1369781363,
+          "ts": "2026-08-17T03:18:55Z",
+          "user": "Ser Amantio di Nicolao"
+        },
+        {
+          "file": "File:Actress Ambyr Childers (cropped).jpg",
+          "rev": 1344017807,
+          "ts": "2026-03-17T20:01:07Z",
+          "user": "Jessekornblum"
+        },
+        {
+          "file": "File:Ambyr Childers Cinequest 2026 01.jpg",
+          "rev": 1344017553,
+          "ts": "2026-03-17T19:59:13Z",
+          "user": "Jessekornblum"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Andi Matichak",
+      "label": "Andi Matichak",
+      "qid": "Q50359276",
+      "topRev": 1356695889,
+      "more": true,
+      "lead": "File:Andi Matichak Cinequest 2026 02.jpg",
+      "timeline": [
+        {
+          "file": "File:Andi Matichak Cinequest 2026 02.jpg",
+          "rev": 1356695889,
+          "ts": "2026-05-29T07:35:48Z",
+          "user": "The Film Creator"
+        },
+        {
+          "file": "File:Andimatichak.jpg",
+          "rev": 1116053252,
+          "ts": "2022-10-14T15:14:38Z",
+          "user": "Altair110"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Helena Mattsson",
+      "label": "Helena Mattsson",
+      "qid": "Q241854",
+      "topRev": 1365334759,
+      "more": false,
+      "lead": "File:Helena Mattsson Cinequest 2026 02.jpg",
+      "timeline": [
+        {
+          "file": "File:Helena Mattsson Cinequest 2026 02.jpg",
+          "rev": 1365334759,
+          "ts": "2026-07-21T19:31:12Z",
+          "user": "GreenC bot"
+        },
+        {
+          "file": "File:Helena Mattsson 2015.jpeg",
+          "rev": 1341897024,
+          "ts": "2026-03-05T20:21:27Z",
+          "user": "~2026-76720-1"
+        },
+        {
+          "file": "File:Helena Mattsson 2001.jpg",
+          "rev": 709252889,
+          "ts": "2016-03-09T23:06:58Z",
+          "user": "The Ink Daddy!"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Jake Choi",
+      "label": "Jake Choi",
+      "qid": "Q46080879",
+      "topRev": 1365251712,
+      "more": false,
+      "lead": "File:Jake Choi Cinequest 2026.jpg",
+      "timeline": [
+        {
+          "file": "File:Jake Choi Cinequest 2026.jpg",
+          "rev": 1365251712,
+          "ts": "2026-07-21T05:49:28Z",
+          "user": "~2026-36447-17"
+        }
+      ]
+    },
+    {
+      "lang": "de",
+      "article": "Marielle Scott",
+      "label": "Marielle Scott",
+      "qid": "Q71701329",
+      "topRev": 269560777,
+      "more": false,
+      "lead": "File:Marielle Scott Cinequest 2026 04.jpg",
+      "timeline": [
+        {
+          "file": "File:Marielle Scott Cinequest 2026 04.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Nolan Gould",
+      "label": "Nolan Gould",
+      "qid": "Q552085",
+      "topRev": 1364723750,
+      "more": false,
+      "lead": "File:Nolan Gould Cinequest 2026 01.jpg",
+      "timeline": [
+        {
+          "file": "File:Nolan Gould Cinequest 2026 01.jpg",
+          "rev": 1364723750,
+          "ts": "2026-07-18T04:04:04Z",
+          "user": "GreenC bot"
+        },
+        {
+          "file": "File:Nolan Gould at 2015 PaleyFest.jpg",
+          "rev": 1341299758,
+          "ts": "2026-03-02T12:08:08Z",
+          "user": "Waxworker"
+        },
+        {
+          "file": "File:Nolan Gould 2024.png",
+          "rev": 1341163808,
+          "ts": "2026-03-01T20:31:36Z",
+          "user": "BlueStar1669"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Parker Croft",
+      "label": "Parker Croft",
+      "qid": "Q7138296",
+      "topRev": 1364208087,
+      "more": false,
+      "lead": "File:Parker Croft Cinequest 2026 01.jpg",
+      "timeline": [
+        {
+          "file": "File:Parker Croft Cinequest 2026 01.jpg",
+          "rev": 1364208087,
+          "ts": "2026-07-15T04:19:58Z",
+          "user": "GreenC bot"
+        },
+        {
+          "file": "File:parkercroft.jpg",
+          "rev": 637540511,
+          "ts": "2014-12-10T22:58:47Z",
+          "user": "84.90.246.129"
+        },
+        {
+          "file": "File:4-06-09.ronson party08.jpg",
+          "rev": 398372264,
+          "ts": "2010-11-23T03:10:57Z",
+          "user": "Bearcat"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Steven Strait",
+      "label": "Steven Strait",
+      "qid": "Q200407",
+      "topRev": 1371037880,
+      "more": false,
+      "lead": "File:Steven Strait Cinequest 2026 02.jpg",
+      "timeline": [
+        {
+          "file": "File:Steven Strait Cinequest 2026 02.jpg",
+          "rev": 1371037880,
+          "ts": "2026-08-24T06:14:51Z",
+          "user": "Jevansen"
+        },
+        {
+          "file": "File:Steven Strait -7- (32695752360) (cropped).jpg",
+          "rev": 1343765492,
+          "ts": "2026-03-16T06:34:28Z",
+          "user": "LionmerterTHE"
+        },
+        {
+          "file": "File:Steven Strait -2- (32262204163).jpg",
+          "rev": 938792710,
+          "ts": "2020-02-02T10:46:36Z",
+          "user": "OwenBlacker"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Thomas Sadoski",
+      "label": "Thomas Sadoski",
+      "qid": "Q3525542",
+      "topRev": 1356879807,
+      "more": true,
+      "lead": "File:Thomas Sadoski Cinequest 2026 03.jpg",
+      "timeline": [
+        {
+          "file": "File:Thomas Sadoski Cinequest 2026 03.jpg",
+          "rev": 1356879807,
+          "ts": "2026-05-30T11:44:34Z",
+          "user": "PrimeBOT"
+        },
+        {
+          "file": "File:Thomas Sadoski at PaleyFest 2013.jpg",
+          "rev": 1333586217,
+          "ts": "2026-01-18T17:33:36Z",
+          "user": "WOSlinker"
         }
       ]
     },
@@ -23156,6 +24731,23 @@
     },
     {
       "lang": "en",
+      "article": "María Corina Machado",
+      "label": "María Corina Machado",
+      "qid": "Q439564",
+      "topRev": 1369004700,
+      "more": true,
+      "lead": "File:Nobel Peace Prize 2025 - María Corina Machado press conference (3x4 cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Nobel Peace Prize 2025 - María Corina Machado press conference (3x4 cropped).jpg",
+          "rev": 1369004700,
+          "ts": "2026-08-12T08:38:29Z",
+          "user": "Burrobert"
+        }
+      ]
+    },
+    {
+      "lang": "en",
       "article": "Anthony Hopkins",
       "label": "Anthony Hopkins",
       "qid": "Q65932",
@@ -23610,6 +25202,29 @@
           "rev": 1326236567,
           "ts": "2025-12-07T22:21:59Z",
           "user": "Rudermeister"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "John M. Martinis",
+      "label": "John M. Martinis",
+      "qid": "Q28976188",
+      "topRev": 1369247514,
+      "more": true,
+      "lead": "File:John M. Martinis, American physicst and 2025 Nobel laurate in physics.jpg",
+      "timeline": [
+        {
+          "file": "File:John M. Martinis, American physicst and 2025 Nobel laurate in physics.jpg",
+          "rev": 1369247514,
+          "ts": "2026-08-13T20:06:57Z",
+          "user": "Old Man Consequences"
+        },
+        {
+          "file": "File:John Martinis (cropped).jpg",
+          "rev": 1328912427,
+          "ts": "2025-12-22T14:57:10Z",
+          "user": "ReyHahn"
         }
       ]
     },
@@ -33732,6 +35347,109 @@
     },
     {
       "lang": "en",
+      "article": "Ana Cabrera",
+      "label": "Ana Cabrera",
+      "qid": "Q28966676",
+      "topRev": 1359991096,
+      "more": false,
+      "lead": "File:Ana Cabrera at the National Association of Hispanic Journalists conference in 2025 05.jpg",
+      "timeline": [
+        {
+          "file": "File:Ana Cabrera at the National Association of Hispanic Journalists conference in 2025 05.jpg",
+          "rev": 1359991096,
+          "ts": "2026-06-18T15:01:25Z",
+          "user": "Rlebica"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Diana Fuentes",
+      "label": "Diana Fuentes (journalist)",
+      "qid": "Q136448673",
+      "topRev": 1371220095,
+      "more": false,
+      "lead": "File:Diana Fuentes at the National Association of Hispanic Journalists conference in 2025 01.jpg",
+      "timeline": [
+        {
+          "file": "File:Diana Fuentes at the National Association of Hispanic Journalists conference in 2025 01.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Katherine Reynolds Lewis",
+      "label": "Katherine Reynolds Lewis",
+      "qid": "Q46993342",
+      "topRev": 1368974481,
+      "more": false,
+      "lead": "File:Katherine Reynolds Lewis at the National Association of Hispanic Journalists conference in 2025.jpg",
+      "timeline": [
+        {
+          "file": "File:Katherine Reynolds Lewis at the National Association of Hispanic Journalists conference in 2025.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        },
+        {
+          "file": "File:Katherine Reynolds Lewis o.jpg",
+          "rev": 914495812,
+          "ts": "2019-09-07T20:03:14Z",
+          "user": "Coveyclovey"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Lori Montenegro",
+      "label": "Lori Montenegro",
+      "qid": "Q135458367",
+      "topRev": 1325026339,
+      "more": false,
+      "lead": "File:Lori Montenegro at the National Association of Hispanic Journalists conference in 2025 02 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Lori Montenegro at the National Association of Hispanic Journalists conference in 2025 02 (cropped).jpg",
+          "rev": 1325026339,
+          "ts": "2025-11-30T20:41:38Z",
+          "user": "Cornmazes"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Ray Suarez",
+      "label": "Ray Suarez",
+      "qid": "Q7298172",
+      "topRev": 1367041012,
+      "more": false,
+      "lead": "File:Ray Suarez at the National Association of Hispanic Journalists conference in 2025 01 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Ray Suarez at the National Association of Hispanic Journalists conference in 2025 01 (cropped).jpg",
+          "rev": 1367041012,
+          "ts": "2026-07-31T16:00:35Z",
+          "user": "Derek R Bullamore"
+        },
+        {
+          "file": "File:Ray Suarez 2024 Texas Book Festival.jpg",
+          "rev": 1295082108,
+          "ts": "2025-06-11T15:46:54Z",
+          "user": "Julipero"
+        },
+        {
+          "file": "File:Ray Suarez.jpg",
+          "rev": 1213252397,
+          "ts": "2024-03-11T22:43:51Z",
+          "user": "Mercster"
+        }
+      ]
+    },
+    {
+      "lang": "en",
       "article": "Rory A. Cooper",
       "label": "Rory A. Cooper",
       "qid": "Q30223700",
@@ -33779,6 +35497,23 @@
           "rev": 1122395535,
           "ts": "2022-11-17T10:27:15Z",
           "user": "194.214.210.19"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Daisy Hernández",
+      "label": "Daisy Hernández",
+      "qid": "Q5209721",
+      "topRev": 1371378009,
+      "more": false,
+      "lead": "File:Daisy Hernandez at the National Association of Hispanic Journalists conference in 2025 01.jpg",
+      "timeline": [
+        {
+          "file": "File:Daisy Hernandez at the National Association of Hispanic Journalists conference in 2025 01.jpg",
+          "rev": 1371378009,
+          "ts": "2026-08-26T03:39:55Z",
+          "user": "ZackBot"
         }
       ]
     },
@@ -38986,6 +40721,23 @@
     },
     {
       "lang": "en",
+      "article": "Nan-Wei Gong",
+      "label": "Nan-Wei Gong",
+      "qid": "Q111626843",
+      "topRev": 1316597416,
+      "more": false,
+      "lead": "File:CES2025 NanWei Gong.jpg",
+      "timeline": [
+        {
+          "file": "File:CES2025 NanWei Gong.jpg",
+          "rev": 1316597416,
+          "ts": "2025-10-13T11:55:19Z",
+          "user": "Phuzion"
+        }
+      ]
+    },
+    {
+      "lang": "en",
       "article": "Emi Nakamura",
       "label": "Emi Nakamura",
       "qid": "Q28919982",
@@ -39977,6 +41729,304 @@
     },
     {
       "lang": "en",
+      "article": "Anna Beck",
+      "label": "Anna Beck",
+      "qid": "Q108541899",
+      "topRev": 1362050625,
+      "more": false,
+      "lead": "File:Anna Beck, Swedish Para-Cyclist and National Team Captain, Swedish Paralympic Committee.jpg",
+      "timeline": [
+        {
+          "file": "File:Anna Beck, Swedish Para-Cyclist and National Team Captain, Swedish Paralympic Committee.jpg",
+          "rev": 1362050625,
+          "ts": "2026-07-01T17:24:13Z",
+          "user": "PrimeBOT"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Drew Weissman",
+      "label": "Drew Weissman",
+      "qid": "Q88608402",
+      "topRev": 1367276923,
+      "more": false,
+      "lead": "File:Drew Weissman, 2023 Nobel Laureate in Medicine (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Drew Weissman, 2023 Nobel Laureate in Medicine (cropped).jpg",
+          "rev": 1367276923,
+          "ts": "2026-08-02T03:03:17Z",
+          "user": "~2026-42667-82"
+        },
+        {
+          "file": "File:Drew Weissman Life Science medalist (cropped).jpg",
+          "rev": 1254824597,
+          "ts": "2024-11-01T21:35:01Z",
+          "user": "Wabbuh"
+        },
+        {
+          "file": "File:Angrytarsier.jpg",
+          "rev": 1187080784,
+          "ts": "2023-11-27T09:56:15Z",
+          "user": "178.22.207.122"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Juleen Zierath",
+      "label": "Juleen Zierath",
+      "qid": "Q4990943",
+      "topRev": 1363201068,
+      "more": false,
+      "lead": "File:Juleen Zierath, Professor of Clinical Integrative Physiology, Karolinska Institutet (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Juleen Zierath, Professor of Clinical Integrative Physiology, Karolinska Institutet (cropped).jpg",
+          "rev": 1363201068,
+          "ts": "2026-07-08T18:04:05Z",
+          "user": "~2026-38858-75"
+        },
+        {
+          "file": "File:Juleen Zierath 01.jpg",
+          "rev": 1257918801,
+          "ts": "2024-11-17T07:05:33Z",
+          "user": "GreenC bot"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Olav Njølstad",
+      "label": "Olav Njølstad",
+      "qid": "Q7083201",
+      "topRev": 1371349847,
+      "more": false,
+      "lead": "File:Olav Njølstad at the 2024 Nobel Peace Prize press conference-61496.jpg",
+      "timeline": [
+        {
+          "file": "File:Olav Njølstad at the 2024 Nobel Peace Prize press conference-61496.jpg",
+          "rev": 1371349847,
+          "ts": "2026-08-26T01:21:01Z",
+          "user": "Jevansen"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Terumi Tanaka",
+      "label": "Terumi Tanaka",
+      "qid": "Q27150734",
+      "topRev": 1362021737,
+      "more": false,
+      "lead": "File:Terumi Tanaka at the Nobel Peace Prize Ceremony Oslo 2024-61445 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Terumi Tanaka at the Nobel Peace Prize Ceremony Oslo 2024-61445 (cropped).jpg",
+          "rev": 1362021737,
+          "ts": "2026-07-01T13:40:26Z",
+          "user": "平和行橋"
+        },
+        {
+          "file": "File:Terumi Tanaka (Nagasaki survivor).jpg",
+          "rev": 1260886489,
+          "ts": "2024-12-03T03:04:48Z",
+          "user": "218.218.107.100"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Toshiyuki Mimaki",
+      "label": "Toshiyuki Mimaki",
+      "qid": "Q131442985",
+      "topRev": 1329158869,
+      "more": false,
+      "lead": "File:Toshiyuki Mimaki at the Nobel Peace Prize Ceremony Oslo 2024-61604 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Toshiyuki Mimaki at the Nobel Peace Prize Ceremony Oslo 2024-61604 (cropped).jpg",
+          "rev": 1329158869,
+          "ts": "2025-12-24T02:57:58Z",
+          "user": "Jevansen"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Birgitta Henriques-Normark",
+      "label": "Birgitta Henriques-Normark",
+      "qid": "Q28323271",
+      "topRev": 1341048116,
+      "more": false,
+      "lead": "File:Birgitta Henriques-Normark at 2024 Nobel Prize Lectures 3 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Birgitta Henriques-Normark at 2024 Nobel Prize Lectures 3 (cropped).jpg",
+          "rev": 1341048116,
+          "ts": "2026-03-01T03:46:40Z",
+          "user": "JJMC89 bot III"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Ellen Moons",
+      "label": "Ellen Moons",
+      "qid": "Q21259150",
+      "topRev": 1346855320,
+      "more": false,
+      "lead": "File:Ellen Moons at 2024 Nobel Prize Lectures 6 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Ellen Moons at 2024 Nobel Prize Lectures 6 (cropped).jpg",
+          "rev": 1346855320,
+          "ts": "2026-04-03T09:30:14Z",
+          "user": "~2026-20741-65"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "John M. Jumper",
+      "label": "John Michael Jumper",
+      "qid": "Q89620738",
+      "topRev": 1370661676,
+      "more": false,
+      "lead": "File:John M. Jumper presenting his Nobel Lecture at the 2024 Nobel Prizes.jpg",
+      "timeline": [
+        {
+          "file": "File:John M. Jumper presenting his Nobel Lecture at the 2024 Nobel Prizes.jpg",
+          "rev": 1370661676,
+          "ts": "2026-08-22T10:43:51Z",
+          "user": "Jaydixit"
+        },
+        {
+          "file": "File:John Jumper, 2024 Nobel Prize Laureate in Chemistry.jpg",
+          "rev": 1369529239,
+          "ts": "2026-08-15T14:59:53Z",
+          "user": "YuanqiYuan"
+        },
+        {
+          "file": "File:John Jumper, 2024 Nobel Prize Laureate in Chemistry 3 (cropped).jpg",
+          "rev": 1282884710,
+          "ts": "2025-03-29T06:01:33Z",
+          "user": "Jenny8lee"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Rosalind Lee",
+      "label": "Rosalind Lee",
+      "qid": "Q130457403",
+      "topRev": 1364189136,
+      "more": false,
+      "lead": "File:Rosalind Lee.jpg",
+      "timeline": [
+        {
+          "file": "File:Rosalind Lee.jpg",
+          "rev": 1364189136,
+          "ts": "2026-07-15T01:48:34Z",
+          "user": "Smasongarrison"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Sabeeha Merchant",
+      "label": "Sabeeha Merchant",
+      "qid": "Q32824142",
+      "topRev": 1366962692,
+      "more": false,
+      "lead": "File:Sabeeha Merchant at 2024 Nobel Prize Lectures 4 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Sabeeha Merchant at 2024 Nobel Prize Lectures 4 (cropped).jpg",
+          "rev": 1366962692,
+          "ts": "2026-07-31T02:36:37Z",
+          "user": "GreenC bot"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Yamuna Krishnan",
+      "label": "Yamuna Krishnan",
+      "qid": "Q15144906",
+      "topRev": 1345157884,
+      "more": false,
+      "lead": "File:Yamuna Krishnan at 2024 Nobel Prize Lectures 2 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Yamuna Krishnan at 2024 Nobel Prize Lectures 2 (cropped).jpg",
+          "rev": 1345157884,
+          "ts": "2026-03-24T16:19:38Z",
+          "user": "LionmerterTHE"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Simon Johnson (economist)",
+      "label": "Simon Johnson",
+      "qid": "Q1461050",
+      "topRev": 1369968080,
+      "more": false,
+      "lead": "File:Simon Johnson, 2024 Nobel Prize Laureate in Economics 4 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Simon Johnson, 2024 Nobel Prize Laureate in Economics 4 (cropped).jpg",
+          "rev": 1369968080,
+          "ts": "2026-08-18T08:36:18Z",
+          "user": "Asto77"
+        },
+        {
+          "file": "File:Simon Johnson on Institute for New Economic Thinking.jpg",
+          "rev": 1262697286,
+          "ts": "2024-12-12T18:41:41Z",
+          "user": "Phibeatrice"
+        },
+        {
+          "file": "File:Simon Johnson.png",
+          "rev": 898352079,
+          "ts": "2019-05-23T00:19:41Z",
+          "user": "Simsong"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Victor Ambros",
+      "label": "Victor Ambros",
+      "qid": "Q983858",
+      "topRev": 1346433728,
+      "more": false,
+      "lead": "File:Victor Ambros, 2024 Nobel Prize Laureate in Medicine.jpg",
+      "timeline": [
+        {
+          "file": "File:Victor Ambros, 2024 Nobel Prize Laureate in Medicine.jpg",
+          "rev": 1346433728,
+          "ts": "2026-03-31T20:22:30Z",
+          "user": "JJMC89 bot III"
+        },
+        {
+          "file": "File:Victor Ambros 3x4.jpg",
+          "rev": 1260729850,
+          "ts": "2024-12-02T08:33:44Z",
+          "user": "Shirkiwe"
+        },
+        {
+          "file": "File:ambros3.jpg",
+          "rev": 1250415579,
+          "ts": "2024-10-10T07:56:48Z",
+          "user": "Boghog"
+        }
+      ]
+    },
+    {
+      "lang": "en",
       "article": "Ludvig Hallbäck",
       "label": "Ludvig Hallbäck",
       "qid": "Q59727790",
@@ -40023,6 +42073,40 @@
           "rev": null,
           "ts": null,
           "user": null
+        }
+      ]
+    },
+    {
+      "lang": "sv",
+      "article": "Frida Bäcke",
+      "label": "Frida Bäcke",
+      "qid": "Q131465276",
+      "topRev": 59353944,
+      "more": false,
+      "lead": "File:Frida Bäcke at the 2024 Nobel Prize week opening press conference (cropped2).jpg",
+      "timeline": [
+        {
+          "file": "File:Frida Bäcke at the 2024 Nobel Prize week opening press conference (cropped2).jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Jessie Sommarström",
+      "label": "Jessie Sommarström",
+      "qid": "Q119226945",
+      "topRev": 1350618764,
+      "more": false,
+      "lead": "File:Jessie Sommarström at the 2024 Nobel Prize week opening press conference (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Jessie Sommarström at the 2024 Nobel Prize week opening press conference (cropped).jpg",
+          "rev": 1350618764,
+          "ts": "2026-04-23T00:20:55Z",
+          "user": "Tom.Reding"
         }
       ]
     },
@@ -40767,6 +42851,23 @@
       ]
     },
     {
+      "lang": "es",
+      "article": "Jon López",
+      "label": "Jon López",
+      "qid": "Q113990077",
+      "topRev": 172129825,
+      "more": false,
+      "lead": "File:Fancine 2024 - Jon López (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Fancine 2024 - Jon López (cropped).jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
       "lang": "de",
       "article": "Philipp Porges",
       "label": "Philipp Porges",
@@ -40983,6 +43084,40 @@
       ]
     },
     {
+      "lang": "ca",
+      "article": "Joan Martorell Adrover",
+      "label": "Joan Martorell Adrover",
+      "qid": "Q11927817",
+      "topRev": 37597505,
+      "more": false,
+      "lead": "File:Mosma 2024 - Joan Martorell 02 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Mosma 2024 - Joan Martorell 02 (cropped).jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Christopher Lennertz",
+      "label": "Christopher Lennertz",
+      "qid": "Q938849",
+      "topRev": 1370379816,
+      "more": true,
+      "lead": "File:Mosma 2024 - Matt Bowen & Christopher Lennertz (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Mosma 2024 - Matt Bowen & Christopher Lennertz (cropped).jpg",
+          "rev": 1370379816,
+          "ts": "2026-08-20T20:09:26Z",
+          "user": "SibTower1987"
+        }
+      ]
+    },
+    {
       "lang": "en",
       "article": "Sherri Chung",
       "label": "Sherri Chung",
@@ -40996,6 +43131,52 @@
           "rev": 1361486623,
           "ts": "2026-06-28T06:08:20Z",
           "user": "Afrowriter"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Blake Neely",
+      "label": "Blake Neely",
+      "qid": "Q881273",
+      "topRev": 1366894394,
+      "more": false,
+      "lead": "File:Mosma 2024 - Blake Neely 03 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Mosma 2024 - Blake Neely 03 (cropped).jpg",
+          "rev": 1366894394,
+          "ts": "2026-07-30T20:07:16Z",
+          "user": "Lollo.palo"
+        },
+        {
+          "file": "File:Blake Neely SDCC 2014.jpg",
+          "rev": 1291393689,
+          "ts": "2025-05-20T23:20:48Z",
+          "user": "Samuel Ekhator"
+        },
+        {
+          "file": "File:190218 Blake C2 1973.jpg",
+          "rev": 1169582018,
+          "ts": "2023-08-10T00:37:41Z",
+          "user": "Raykyee"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Heine Jensen",
+      "label": "Heine Jensen",
+      "qid": "Q656417",
+      "topRev": 1341700930,
+      "more": false,
+      "lead": "File:Heine Ernst Jensen.jpg",
+      "timeline": [
+        {
+          "file": "File:Heine Ernst Jensen.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
         }
       ]
     },
@@ -41019,6 +43200,46 @@
           "rev": 1300609657,
           "ts": "2025-07-15T10:16:57Z",
           "user": "Guerreroast"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "David Oelhoffen",
+      "label": "David Oelhoffen",
+      "qid": "Q3018550",
+      "topRev": 1283007329,
+      "more": false,
+      "lead": "File:Festival de cine francés de Málaga 2024 - David Oelhoffen (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Festival de cine francés de Málaga 2024 - David Oelhoffen (cropped).jpg",
+          "rev": 1283007329,
+          "ts": "2025-03-29T21:54:59Z",
+          "user": "1857a"
+        },
+        {
+          "file": "File:David Oelhoffen.png",
+          "rev": 1274891215,
+          "ts": "2025-02-09T21:02:13Z",
+          "user": "2A01:E0A:31B:9720:2C0F:CEF3:C8F:5ED"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "La Dani",
+      "label": "La Dani",
+      "qid": "Q118363564",
+      "topRev": 1365341956,
+      "more": false,
+      "lead": "File:Festival de cine francés de Málaga 2024 - La Dani.jpg",
+      "timeline": [
+        {
+          "file": "File:Festival de cine francés de Málaga 2024 - La Dani.jpg",
+          "rev": 1365341956,
+          "ts": "2026-07-21T20:21:33Z",
+          "user": "ZimZalaBim"
         }
       ]
     },
@@ -44184,6 +46405,52 @@
     },
     {
       "lang": "en",
+      "article": "Jordan Brookes",
+      "label": "Jordan Brookes",
+      "qid": "Q67609997",
+      "topRev": 1340995210,
+      "more": false,
+      "lead": "File:Jordan Brookes at the 2024 Edinburgh Festival Fringe (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Jordan Brookes at the 2024 Edinburgh Festival Fringe (cropped).jpg",
+          "rev": 1340995210,
+          "ts": "2026-02-28T22:42:34Z",
+          "user": "Stonecold415"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Alastair Campbell",
+      "label": "Alastair Campbell",
+      "qid": "Q653236",
+      "topRev": 1370902427,
+      "more": false,
+      "lead": "File:Alastair Campbell at the 2024 Edinburgh International Book Festival (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Alastair Campbell at the 2024 Edinburgh International Book Festival (cropped).jpg",
+          "rev": 1370902427,
+          "ts": "2026-08-23T17:14:26Z",
+          "user": "Ser Amantio di Nicolao"
+        },
+        {
+          "file": "File:Alastair Campbell - Wooferendum 2018.jpg",
+          "rev": 1305794032,
+          "ts": "2025-08-14T03:59:06Z",
+          "user": "Citation bot"
+        },
+        {
+          "file": "File:Alastair Campbell (cropped).jpg",
+          "rev": 1235623230,
+          "ts": "2024-07-20T08:34:48Z",
+          "user": "ThingsCanOnlyGetWetter"
+        }
+      ]
+    },
+    {
+      "lang": "en",
       "article": "Sophie Duker",
       "label": "Sophie Duker",
       "qid": "Q63011331",
@@ -44213,6 +46480,103 @@
     },
     {
       "lang": "en",
+      "article": "Chris Turner (comedian)",
+      "label": "Chris Turner",
+      "qid": "Q130251391",
+      "topRev": 1362662776,
+      "more": false,
+      "lead": "File:Chris Turner at the 2024 Edinburgh Festival Fringe (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Chris Turner at the 2024 Edinburgh Festival Fringe (cropped).jpg",
+          "rev": 1362662776,
+          "ts": "2026-07-05T13:30:00Z",
+          "user": "CheeseAndJamSamdwich"
+        },
+        {
+          "file": "File:chris turner 2020 1.jpg",
+          "rev": 1242283229,
+          "ts": "2024-08-26T00:14:39Z",
+          "user": "Tassedethe"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Finlay Christie (comedian)",
+      "label": "Finlay Christie",
+      "qid": "Q130244219",
+      "topRev": 1353900558,
+      "more": false,
+      "lead": "File:Finlay Christie at the 2024 Edinburgh Festival Fringe.jpg",
+      "timeline": [
+        {
+          "file": "File:Finlay Christie at the 2024 Edinburgh Festival Fringe.jpg",
+          "rev": 1353900558,
+          "ts": "2026-05-13T02:21:14Z",
+          "user": "Ollie231213"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Jason John Whitehead",
+      "label": "Jason John Whitehead",
+      "qid": "Q6162795",
+      "topRev": 1363483161,
+      "more": false,
+      "lead": "File:JJ Whitehead at the 2024 Edinburgh Festival Fringe (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:JJ Whitehead at the 2024 Edinburgh Festival Fringe (cropped).jpg",
+          "rev": 1363483161,
+          "ts": "2026-07-10T13:48:05Z",
+          "user": "Earl Andrew"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Philippa Gregory",
+      "label": "Philippa Gregory",
+      "qid": "Q240212",
+      "topRev": 1371251981,
+      "more": true,
+      "lead": "File:Philippa Gregory at the 2024 Edinburgh International Book Festival.jpg",
+      "timeline": [
+        {
+          "file": "File:Philippa Gregory at the 2024 Edinburgh International Book Festival.jpg",
+          "rev": 1371251981,
+          "ts": "2026-08-25T12:58:58Z",
+          "user": "Proscribe"
+        },
+        {
+          "file": "File:Philippa gregory 2011.jpg",
+          "rev": 1305835566,
+          "ts": "2025-08-14T10:31:20Z",
+          "user": "2A04:4A43:903F:F50D:B9D6:810:6D13:6FBC"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Rita Bullwinkel",
+      "label": "Rita Bullwinkel",
+      "qid": "Q127026658",
+      "topRev": 1360724134,
+      "more": false,
+      "lead": "File:Rita Bullwinkel at the 2024 Edinburgh International Book Festival (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Rita Bullwinkel at the 2024 Edinburgh International Book Festival (cropped).jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "en",
       "article": "Ambrose Kenny-Smith",
       "label": "Ambrose Kenny-Smith",
       "qid": "Q123865518",
@@ -44231,6 +46595,75 @@
           "rev": 1325907239,
           "ts": "2025-12-05T22:14:44Z",
           "user": "Stonecold415"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Tom Ballard (comedian)",
+      "label": "Tom Ballard",
+      "qid": "Q7814852",
+      "topRev": 1368116948,
+      "more": true,
+      "lead": "File:Tom Ballard at the 2024 Edinburgh Festival Fringe.jpg",
+      "timeline": [
+        {
+          "file": "File:Tom Ballard at the 2024 Edinburgh Festival Fringe.jpg",
+          "rev": 1368116948,
+          "ts": "2026-08-07T03:10:20Z",
+          "user": "Augmented Seventh"
+        },
+        {
+          "file": "File:Tom and Alex (11149404806).jpg",
+          "rev": 1245141460,
+          "ts": "2024-09-11T07:36:06Z",
+          "user": "Laterthanyouthink"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Cameron Winter",
+      "label": "Cameron Winter",
+      "qid": "Q134691738",
+      "topRev": 1371037939,
+      "more": true,
+      "lead": "File:Cameron Winter with Geese, Boston 2024 (cropped2).jpg",
+      "timeline": [
+        {
+          "file": "File:Cameron Winter with Geese, Boston 2024 (cropped2).jpg",
+          "rev": 1371037939,
+          "ts": "2026-08-24T06:15:07Z",
+          "user": "Jevansen"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Emily Green (musician)",
+      "label": "Emily Green",
+      "qid": "Q138663447",
+      "topRev": 1368706432,
+      "more": false,
+      "lead": "File:Geese Boston 2024 Emily Green (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Geese Boston 2024 Emily Green (cropped).jpg",
+          "rev": 1368706432,
+          "ts": "2026-08-10T16:55:48Z",
+          "user": "B.J"
+        },
+        {
+          "file": "File:E Green Geese 2025.png",
+          "rev": 1363679449,
+          "ts": "2026-07-11T17:26:53Z",
+          "user": "Fionaphilia"
+        },
+        {
+          "file": "File:Emily Green Geese.jpg",
+          "rev": 1342199881,
+          "ts": "2026-03-07T17:06:52Z",
+          "user": "Fionaphilia"
         }
       ]
     },
@@ -44340,6 +46773,29 @@
     },
     {
       "lang": "en",
+      "article": "Dan Tiernan",
+      "label": "Dan Tiernan",
+      "qid": "Q115148391",
+      "topRev": 1371694446,
+      "more": false,
+      "lead": "File:Dan Tiernan at the 2024 Edinburgh Festival Fringe (cropped) (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Dan Tiernan at the 2024 Edinburgh Festival Fringe (cropped) (cropped).jpg",
+          "rev": 1371694446,
+          "ts": "2026-08-27T23:03:32Z",
+          "user": "RobboK78"
+        },
+        {
+          "file": "File:Dan Tiernan at the 2024 Edinburgh Festival Fringe (cropped).jpg",
+          "rev": 1348998368,
+          "ts": "2026-04-15T07:50:55Z",
+          "user": "Pikkupapupata"
+        }
+      ]
+    },
+    {
+      "lang": "en",
       "article": "Hannah Platt",
       "label": "Hannah Platt",
       "qid": "Q134864474",
@@ -44381,6 +46837,23 @@
           "rev": 1298652063,
           "ts": "2025-07-03T20:31:57Z",
           "user": "Human Right Wiki"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Josh Jones (comedian)",
+      "label": "Josh Jones",
+      "qid": "Q121463452",
+      "topRev": 1353269354,
+      "more": false,
+      "lead": "File:Josh Jones at the 2024 Edinburgh Festival Fringe 3.jpg",
+      "timeline": [
+        {
+          "file": "File:Josh Jones at the 2024 Edinburgh Festival Fringe 3.jpg",
+          "rev": 1353269354,
+          "ts": "2026-05-09T06:55:06Z",
+          "user": "Jevansen"
         }
       ]
     },
@@ -44437,6 +46910,46 @@
     },
     {
       "lang": "en",
+      "article": "Paul Williams (comedian)",
+      "label": "Paul Williams",
+      "qid": "Q107038706",
+      "topRev": 1368139428,
+      "more": false,
+      "lead": "File:Paul Williams at the 2024 Edinburgh Festival Fringe 3.jpg",
+      "timeline": [
+        {
+          "file": "File:Paul Williams at the 2024 Edinburgh Festival Fringe 3.jpg",
+          "rev": 1368139428,
+          "ts": "2026-08-07T06:33:17Z",
+          "user": "AnomieBOT"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Joe Thomas (actor)",
+      "label": "Joe Thomas",
+      "qid": "Q6212645",
+      "topRev": 1370017645,
+      "more": true,
+      "lead": "File:Joe Thomas at the 2024 Edinburgh Festival Fringe 2.jpg",
+      "timeline": [
+        {
+          "file": "File:Joe Thomas at the 2024 Edinburgh Festival Fringe 2.jpg",
+          "rev": 1370017645,
+          "ts": "2026-08-18T16:57:16Z",
+          "user": "Cresh92"
+        },
+        {
+          "file": "File:Joe Thomas 2012.jpg",
+          "rev": 1239573648,
+          "ts": "2024-08-10T04:20:20Z",
+          "user": "206.45.49.151"
+        }
+      ]
+    },
+    {
+      "lang": "en",
       "article": "Anna Akana",
       "label": "Anna Akana",
       "qid": "Q17305622",
@@ -44484,6 +46997,29 @@
           "rev": 1316647977,
           "ts": "2025-10-13T18:34:27Z",
           "user": "ClueBot NG"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Stuart Goldsmith",
+      "label": "Stuart Goldsmith",
+      "qid": "Q7626585",
+      "topRev": 1357306394,
+      "more": false,
+      "lead": "File:Stuart Goldsmith at the 2024 Edinburgh Festival Fringe 2.jpg",
+      "timeline": [
+        {
+          "file": "File:Stuart Goldsmith at the 2024 Edinburgh Festival Fringe 2.jpg",
+          "rev": 1357306394,
+          "ts": "2026-06-01T22:22:48Z",
+          "user": "PrimeBOT"
+        },
+        {
+          "file": "File:Stuart Goldsmith 2019 Glastonbury Festival 05 crop.jpg",
+          "rev": 1213159433,
+          "ts": "2024-03-11T12:11:06Z",
+          "user": "Ernsanchez00"
         }
       ]
     },
@@ -44604,6 +47140,52 @@
     },
     {
       "lang": "en",
+      "article": "Tom Cashman (comedian)",
+      "label": "Tom Cashman",
+      "qid": "Q116745285",
+      "topRev": 1369984052,
+      "more": false,
+      "lead": "File:Tom Cashman at the 2024 Edinburgh Festival Fringe.jpg",
+      "timeline": [
+        {
+          "file": "File:Tom Cashman at the 2024 Edinburgh Festival Fringe.jpg",
+          "rev": 1369984052,
+          "ts": "2026-08-18T11:54:47Z",
+          "user": "~2026-45223-59"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Vir Das",
+      "label": "Vir Das",
+      "qid": "Q7933532",
+      "topRev": 1368789291,
+      "more": false,
+      "lead": "File:Vir Das at the 2024 Edinburgh Festival Fringe (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Vir Das at the 2024 Edinburgh Festival Fringe (cropped).jpg",
+          "rev": 1368789291,
+          "ts": "2026-08-11T02:58:22Z",
+          "user": "SdkbBot"
+        },
+        {
+          "file": "File:Vir Das introduce standup comedy at Apicus 08.jpg",
+          "rev": 1244712347,
+          "ts": "2024-09-08T18:37:34Z",
+          "user": "ItsKhan Aman"
+        },
+        {
+          "file": "File:introduce standup comedy at Apicus 08.jpg",
+          "rev": 1107122421,
+          "ts": "2022-08-28T08:10:36Z",
+          "user": "72.92.0.39"
+        }
+      ]
+    },
+    {
+      "lang": "en",
       "article": "Don Airey",
       "label": "Don Airey",
       "qid": "Q310708",
@@ -44662,6 +47244,143 @@
           "rev": null,
           "ts": null,
           "user": null
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Aslag Guttormsgaard",
+      "label": "Aslag Guttormsgaard",
+      "qid": "Q4807257",
+      "topRev": 1363253480,
+      "more": false,
+      "lead": "File:Aslag Guttormsgaard Måkeskrik.jpg",
+      "timeline": [
+        {
+          "file": "File:Aslag Guttormsgaard Måkeskrik.jpg",
+          "rev": 1363253480,
+          "ts": "2026-07-09T00:50:39Z",
+          "user": "Jevansen"
+        }
+      ]
+    },
+    {
+      "lang": "no",
+      "article": "Per Borten (musiker)",
+      "label": "Per Borten",
+      "qid": "Q65234917",
+      "topRev": 24701619,
+      "more": false,
+      "lead": "File:Per Borten.jpg",
+      "timeline": [
+        {
+          "file": "File:Per Borten.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "no",
+      "article": "Rolf Martin Snustad",
+      "label": "Rolf Martin Snustad",
+      "qid": "Q11998271",
+      "topRev": 25708391,
+      "more": false,
+      "lead": "File:Rolf Martin Snustad.jpg",
+      "timeline": [
+        {
+          "file": "File:Rolf Martin Snustad.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "de",
+      "article": "Mette Rasmussen",
+      "label": "Mette Rasmussen",
+      "qid": "Q45406389",
+      "topRev": 268702177,
+      "more": false,
+      "lead": "File:Mette Rasmussen ØKSE.jpg",
+      "timeline": [
+        {
+          "file": "File:Mette Rasmussen ØKSE.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "de",
+      "article": "Savannah Harris",
+      "label": "Savannah Harris",
+      "qid": "Q107089573",
+      "topRev": 259418674,
+      "more": false,
+      "lead": "File:Savannah Harris ØKSE 2025-2.jpg",
+      "timeline": [
+        {
+          "file": "File:Savannah Harris ØKSE 2025-2.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Val Jeanty",
+      "label": "Val Jeanty",
+      "qid": "Q19665431",
+      "topRev": 1364882329,
+      "more": false,
+      "lead": "File:Val Jeanty ØKSE 2025-3.jpg",
+      "timeline": [
+        {
+          "file": "File:Val Jeanty ØKSE 2025-3.jpg",
+          "rev": 1364882329,
+          "ts": "2026-07-19T01:55:25Z",
+          "user": "Red Director"
+        },
+        {
+          "file": "File:Val jeanty.jpg",
+          "rev": 1301330824,
+          "ts": "2025-07-19T06:56:24Z",
+          "user": "InternetArchiveBot"
+        },
+        {
+          "file": "File:Val Jeanty.jpg",
+          "rev": 805084165,
+          "ts": "2017-10-12T23:28:26Z",
+          "user": "NihlusBOT"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Morten Qvenild",
+      "label": "Morten Qvenild",
+      "qid": "Q1948696",
+      "topRev": 1370987018,
+      "more": false,
+      "lead": "File:Morten Qvenild Kongsberg Jazzfestival 2024.jpg",
+      "timeline": [
+        {
+          "file": "File:Morten Qvenild Kongsberg Jazzfestival 2024.jpg",
+          "rev": 1370987018,
+          "ts": "2026-08-24T01:24:24Z",
+          "user": "Jevansen"
+        },
+        {
+          "file": "File:Morten Qvenild.jpg",
+          "rev": 1197136846,
+          "ts": "2024-01-19T11:01:43Z",
+          "user": "Malmsimp"
         }
       ]
     },
@@ -44800,6 +47519,23 @@
           "rev": 1365372104,
           "ts": "2026-07-22T00:15:15Z",
           "user": "Martineden83"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Nebojša Slijepčević",
+      "label": "Q27042397",
+      "qid": "Q27042397",
+      "topRev": 1311925937,
+      "more": false,
+      "lead": "File:Nebojša Slijepčević at 2024 Cannes Film Festival (The Man Who Could Not Remain Silent director).jpg",
+      "timeline": [
+        {
+          "file": "File:Nebojša Slijepčević at 2024 Cannes Film Festival (The Man Who Could Not Remain Silent director).jpg",
+          "rev": 1311925937,
+          "ts": "2025-09-17T17:37:46Z",
+          "user": "LordTort"
         }
       ]
     },
@@ -45224,6 +47960,35 @@
       ]
     },
     {
+      "lang": "en",
+      "article": "François Damiens",
+      "label": "François Damiens",
+      "qid": "Q164976",
+      "topRev": 1369137174,
+      "more": false,
+      "lead": "File:François Damiens at the 2024 Cannes Film Festival 2.jpg",
+      "timeline": [
+        {
+          "file": "File:François Damiens at the 2024 Cannes Film Festival 2.jpg",
+          "rev": 1369137174,
+          "ts": "2026-08-13T03:17:49Z",
+          "user": "Ptdetd"
+        },
+        {
+          "file": "File:Francois DAMIENS Cannes 2024.jpg",
+          "rev": 1227460843,
+          "ts": "2024-06-05T21:13:59Z",
+          "user": "Οἶδα"
+        },
+        {
+          "file": "File:François Damiens 2014.jpg",
+          "rev": 1223949476,
+          "ts": "2024-05-15T10:09:05Z",
+          "user": "Onel5969"
+        }
+      ]
+    },
+    {
       "lang": "de",
       "article": "Lilian Corbeille",
       "label": "Lilian Corbeille",
@@ -45529,6 +48294,46 @@
     },
     {
       "lang": "en",
+      "article": "Jesselyn Radack",
+      "label": "Jesselyn Radack",
+      "qid": "Q6187015",
+      "topRev": 1371736685,
+      "more": true,
+      "lead": "File:Jesselyn Radack at the International Journalism Festival 2024 in Perugia, Italy 4 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Jesselyn Radack at the International Journalism Festival 2024 in Perugia, Italy 4 (cropped).jpg",
+          "rev": 1371736685,
+          "ts": "2026-08-28T04:18:19Z",
+          "user": "ZackBot"
+        },
+        {
+          "file": "File:Jesselyn Radack on Whistleblower TV.jpg",
+          "rev": 1240394001,
+          "ts": "2024-08-15T04:57:20Z",
+          "user": "GreenC bot"
+        }
+      ]
+    },
+    {
+      "lang": "ba",
+      "article": "Седлецкая Наталья Юрьевна",
+      "label": "Nataliya Sedletska",
+      "qid": "Q16708694",
+      "topRev": 1196243,
+      "more": false,
+      "lead": "File:Natalie Sedletska at the International Journalism Festival 2024 in Perugia, Italy 2.jpg",
+      "timeline": [
+        {
+          "file": "File:Natalie Sedletska at the International Journalism Festival 2024 in Perugia, Italy 2.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "en",
       "article": "S. Mitra Kalita",
       "label": "S. Mitra Kalita",
       "qid": "Q103231964",
@@ -45541,6 +48346,207 @@
           "rev": 1353911719,
           "ts": "2026-05-13T03:38:39Z",
           "user": "Zackmann08"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Bastian Obermayer",
+      "label": "Bastian Obermayer",
+      "qid": "Q23882969",
+      "topRev": 1362435657,
+      "more": false,
+      "lead": "File:Bastian Obermayer at the International Journalism Festival 2024 in Perugia, Italy (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Bastian Obermayer at the International Journalism Festival 2024 in Perugia, Italy (cropped).jpg",
+          "rev": 1362435657,
+          "ts": "2026-07-03T22:56:31Z",
+          "user": "BD2412"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Jane Martinson",
+      "label": "Jane Martinson",
+      "qid": "Q23888229",
+      "topRev": 1370599060,
+      "more": false,
+      "lead": "File:Jane Martinson at the International Journalism Festival 2024 in Perugia, Italy (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Jane Martinson at the International Journalism Festival 2024 in Perugia, Italy (cropped).jpg",
+          "rev": 1370599060,
+          "ts": "2026-08-22T01:35:34Z",
+          "user": "SchlurcherBot"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Jodie Ginsberg",
+      "label": "Jodie Ginsberg",
+      "qid": "Q60693451",
+      "topRev": 1350976168,
+      "more": false,
+      "lead": "File:Jodie Ginsberg at the International Journalism Festival 2024 in Perugia, Italy (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Jodie Ginsberg at the International Journalism Festival 2024 in Perugia, Italy (cropped).jpg",
+          "rev": 1350976168,
+          "ts": "2026-04-25T05:00:01Z",
+          "user": "Yedaman54"
+        },
+        {
+          "file": "File:2018_Human_Rights_and_Democracy_Report_(48013652831).jpg",
+          "rev": 1240095060,
+          "ts": "2024-08-13T14:12:51Z",
+          "user": "38.88.199.50"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Julie Pace",
+      "label": "Julie Pace",
+      "qid": "Q34666768",
+      "topRev": 1371344618,
+      "more": false,
+      "lead": "File:Julie Pace at the International Journalism Festival 2024 in Perugia, Italy photo 2 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Julie Pace at the International Journalism Festival 2024 in Perugia, Italy photo 2 (cropped).jpg",
+          "rev": 1371344618,
+          "ts": "2026-08-26T00:40:09Z",
+          "user": "Mollystarkdean"
+        },
+        {
+          "file": "File:Julie Pace of A.P.jpg",
+          "rev": 1232526023,
+          "ts": "2024-07-04T05:36:11Z",
+          "user": "Tony1"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Laurent Richard",
+      "label": "Laurent Richard",
+      "qid": "Q65140581",
+      "topRev": 1361007840,
+      "more": false,
+      "lead": "File:Laurent Richard at the International Journalism Festival 2024 in Perugia, Italy.jpg",
+      "timeline": [
+        {
+          "file": "File:Laurent Richard at the International Journalism Festival 2024 in Perugia, Italy.jpg",
+          "rev": 1361007840,
+          "ts": "2026-06-25T01:48:50Z",
+          "user": "Gnomingstuff"
+        },
+        {
+          "file": "File:Laurent Richard founder of Forbidden Stories.jpg",
+          "rev": 1348900262,
+          "ts": "2026-04-14T21:10:04Z",
+          "user": "Xil2"
+        },
+        {
+          "file": "File:Photo Laurent Richard.jpg",
+          "rev": 1338884804,
+          "ts": "2026-02-17T20:31:55Z",
+          "user": "Mainnyao"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Ron Haviv",
+      "label": "Ron Haviv",
+      "qid": "Q7363895",
+      "topRev": 1371491544,
+      "more": false,
+      "lead": "File:Ron Haviv at the International Journalism Festival 2024 in Perugia, Italy (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Ron Haviv at the International Journalism Festival 2024 in Perugia, Italy (cropped).jpg",
+          "rev": 1371491544,
+          "ts": "2026-08-26T19:39:55Z",
+          "user": "ForsythiaJo"
+        },
+        {
+          "file": "File:haviv_portrait_copy.jpg",
+          "rev": 436697337,
+          "ts": "2011-06-28T16:27:17Z",
+          "user": "Adaniszewski"
+        },
+        {
+          "file": "File:haviv portrait copy.jpg",
+          "rev": 436696279,
+          "ts": "2011-06-28T16:20:18Z",
+          "user": "Adaniszewski"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Tyler Shultz",
+      "label": "Tyler Shultz",
+      "qid": "Q92950041",
+      "topRev": 1365175873,
+      "more": false,
+      "lead": "File:Tyler Shultz at the International Journalism Festival 2024 in Perugia, Italy, photo 4.jpg",
+      "timeline": [
+        {
+          "file": "File:Tyler Shultz at the International Journalism Festival 2024 in Perugia, Italy, photo 4.jpg",
+          "rev": 1365175873,
+          "ts": "2026-07-20T19:27:57Z",
+          "user": "GentleHillRacer"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Vivian Schiller",
+      "label": "Vivian Schiller",
+      "qid": "Q7937768",
+      "topRev": 1364956527,
+      "more": true,
+      "lead": "File:Vivian Schiller at the International Journalism Festival 2024 in Perugia, Italy (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Vivian Schiller at the International Journalism Festival 2024 in Perugia, Italy (cropped).jpg",
+          "rev": 1364956527,
+          "ts": "2026-07-19T13:56:53Z",
+          "user": "Chris the speller"
+        },
+        {
+          "file": "File:Vivian Schiller - International Journalism Festival 2015.JPG",
+          "rev": 1245924417,
+          "ts": "2024-09-15T22:08:55Z",
+          "user": "GreenC bot"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Hoest",
+      "label": "Ørjan Stedjeberg",
+      "qid": "Q12011856",
+      "topRev": 1368494555,
+      "more": false,
+      "lead": "File:Hoest-Taake.jpg",
+      "timeline": [
+        {
+          "file": "File:Hoest-Taake.jpg",
+          "rev": 1368494555,
+          "ts": "2026-08-09T10:30:40Z",
+          "user": "Isvind"
+        },
+        {
+          "file": "File:Taake Metal Méan Fest 220809 16 (cropped).jpg",
+          "rev": 1285491959,
+          "ts": "2025-04-14T01:02:33Z",
+          "user": "FMSky"
         }
       ]
     },
@@ -45570,6 +48576,52 @@
           "rev": 1066575289,
           "ts": "2022-01-19T01:51:23Z",
           "user": "67.171.36.119"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Mela Lee",
+      "label": "Mela Lee",
+      "qid": "Q750146",
+      "topRev": 1371034505,
+      "more": false,
+      "lead": "File:Mela Lee (53611956534).jpg",
+      "timeline": [
+        {
+          "file": "File:Mela Lee (53611956534).jpg",
+          "rev": 1371034505,
+          "ts": "2026-08-24T05:51:07Z",
+          "user": "Ser Amantio di Nicolao"
+        },
+        {
+          "file": "File:Mela Lee (27269558848).jpg",
+          "rev": 1214176839,
+          "ts": "2024-03-17T10:48:37Z",
+          "user": "180.195.90.188"
+        },
+        {
+          "file": "File:http://sart.tistory.com/2858?category=444542.jpg",
+          "rev": 1133450695,
+          "ts": "2023-01-13T21:38:21Z",
+          "user": "Forsomana"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Troy Baker",
+      "label": "Troy Baker",
+      "qid": "Q1147551",
+      "topRev": 1371510778,
+      "more": true,
+      "lead": "File:Troy Baker Q&A (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Troy Baker Q&A (cropped).jpg",
+          "rev": 1371510778,
+          "ts": "2026-08-26T22:08:28Z",
+          "user": "GreenC bot"
         }
       ]
     },
@@ -45896,6 +48948,545 @@
     },
     {
       "lang": "en",
+      "article": "Adriana Ozores",
+      "label": "Adriana Ozores",
+      "qid": "Q375152",
+      "topRev": 1360013627,
+      "more": false,
+      "lead": "File:Festival de Málaga 2024 - Adriana Ozores.jpg",
+      "timeline": [
+        {
+          "file": "File:Festival de Málaga 2024 - Adriana Ozores.jpg",
+          "rev": 1360013627,
+          "ts": "2026-06-18T18:10:25Z",
+          "user": "Asqueladd"
+        },
+        {
+          "file": "File:Adriana Ozores.jpg",
+          "rev": 1270397282,
+          "ts": "2025-01-19T09:51:16Z",
+          "user": "Asqueladd"
+        },
+        {
+          "file": "File:replace this image female.svg",
+          "rev": 274804411,
+          "ts": "2009-03-04T00:09:19Z",
+          "user": "NWill"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Andrea Jaurrieta",
+      "label": "Andrea Jaurrieta",
+      "qid": "Q95688728",
+      "topRev": 1325694888,
+      "more": false,
+      "lead": "File:Festival de Málaga 2024 - Andrea Jaurrieta.jpg",
+      "timeline": [
+        {
+          "file": "File:Festival de Málaga 2024 - Andrea Jaurrieta.jpg",
+          "rev": 1325694888,
+          "ts": "2025-12-04T16:48:14Z",
+          "user": "Semampunya"
+        },
+        {
+          "file": "File:Premios Goya 2019 - Andrea Jaurrieta.jpg",
+          "rev": 1224450662,
+          "ts": "2024-05-18T13:59:30Z",
+          "user": "Family27390"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "André Lamoglia",
+      "label": "André Lamoglia",
+      "qid": "Q63345076",
+      "topRev": 1328609901,
+      "more": false,
+      "lead": "File:Festival de Málaga 2024 - André Lamoglia.jpg",
+      "timeline": [
+        {
+          "file": "File:Festival de Málaga 2024 - André Lamoglia.jpg",
+          "rev": 1328609901,
+          "ts": "2025-12-20T21:13:09Z",
+          "user": "Zyxw"
+        },
+        {
+          "file": "File:Crédito João Roberto Fontes.jpg",
+          "rev": 1211456100,
+          "ts": "2024-03-02T17:27:51Z",
+          "user": "AcostaS3222"
+        }
+      ]
+    },
+    {
+      "lang": "ca",
+      "article": "Carlos Fuentes Guillén",
+      "label": "Carlos Fuentes",
+      "qid": "Q5750388",
+      "topRev": 37619184,
+      "more": false,
+      "lead": "File:Festival de Málaga 2024 - Carlos Fuentes (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Festival de Málaga 2024 - Carlos Fuentes (cropped).jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "El Langui",
+      "label": "El Langui",
+      "qid": "Q5822281",
+      "topRev": 1343779143,
+      "more": false,
+      "lead": "File:Festival de Málaga 2024 - El Langui.jpg",
+      "timeline": [
+        {
+          "file": "File:Festival de Málaga 2024 - El Langui.jpg",
+          "rev": 1343779143,
+          "ts": "2026-03-16T09:25:17Z",
+          "user": "~2026-12111-56"
+        },
+        {
+          "file": "File:Premios Goya_2018 - El Langui.jpg",
+          "rev": 1242671296,
+          "ts": "2024-08-28T02:31:08Z",
+          "user": "Ernsanchez00"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Gabriel G. Mourreau",
+      "label": "Gabriel Guevara",
+      "qid": "Q116733032",
+      "topRev": 1358463773,
+      "more": true,
+      "lead": "File:Festival de Málaga 2024 - Gabriel Guevara.jpg",
+      "timeline": [
+        {
+          "file": "File:Festival de Málaga 2024 - Gabriel Guevara.jpg",
+          "rev": 1358463773,
+          "ts": "2026-06-08T21:15:56Z",
+          "user": "Asqueladd"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Goya Toledo",
+      "label": "Goya Toledo",
+      "qid": "Q544144",
+      "topRev": 1340818420,
+      "more": false,
+      "lead": "File:Festival de Málaga 2024 - Goya Toledo.jpg",
+      "timeline": [
+        {
+          "file": "File:Festival de Málaga 2024 - Goya Toledo.jpg",
+          "rev": 1340818420,
+          "ts": "2026-02-27T22:04:14Z",
+          "user": "InternetArchiveBot"
+        },
+        {
+          "file": "File:Premios Goya 2018 - Goya Toledo.jpg",
+          "rev": 1247395519,
+          "ts": "2024-09-24T03:17:11Z",
+          "user": "Worldbruce"
+        },
+        {
+          "file": "File:Goya Toledo - 01.jpg",
+          "rev": 987191301,
+          "ts": "2020-11-05T14:15:59Z",
+          "user": "AnomieBOT"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Irene Ferreiro",
+      "label": "Irene Ferreiro",
+      "qid": "Q76823156",
+      "topRev": 1308645022,
+      "more": false,
+      "lead": "File:Festival de Málaga 2024 - Irene Ferreiro (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Festival de Málaga 2024 - Irene Ferreiro (cropped).jpg",
+          "rev": 1308645022,
+          "ts": "2025-08-30T18:11:46Z",
+          "user": "Phantom Oficiall"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Javier Pereira (actor)",
+      "label": "Javier Pereira",
+      "qid": "Q3163165",
+      "topRev": 1319749922,
+      "more": false,
+      "lead": "File:Festival de Málaga 2024 - Javier Pereira.jpg",
+      "timeline": [
+        {
+          "file": "File:Festival de Málaga 2024 - Javier Pereira.jpg",
+          "rev": 1319749922,
+          "ts": "2025-10-31T17:04:13Z",
+          "user": "WikiOriginal-9"
+        },
+        {
+          "file": "File:Javier Pereira en los Premios Goya 2017.jpg",
+          "rev": 1267554524,
+          "ts": "2025-01-05T17:20:45Z",
+          "user": "Asqueladd"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Jaydy Michel",
+      "label": "Jaydy Michel",
+      "qid": "Q4355146",
+      "topRev": 1356571533,
+      "more": false,
+      "lead": "File:Festival de Málaga 2024 - Jaydy Michel.jpg",
+      "timeline": [
+        {
+          "file": "File:Festival de Málaga 2024 - Jaydy Michel.jpg",
+          "rev": 1356571533,
+          "ts": "2026-05-28T16:05:07Z",
+          "user": "Dirubii Olchoglu"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Joaquín Furriel",
+      "label": "Joaquín Furriel",
+      "qid": "Q5931963",
+      "topRev": 1368575712,
+      "more": false,
+      "lead": "File:Festival de Málaga 2024 - Joaquín Furriel.jpg",
+      "timeline": [
+        {
+          "file": "File:Festival de Málaga 2024 - Joaquín Furriel.jpg",
+          "rev": 1368575712,
+          "ts": "2026-08-09T22:19:59Z",
+          "user": "~2026-43922-12"
+        },
+        {
+          "file": "File:Joaquin Furriel.JPG",
+          "rev": 1239616614,
+          "ts": "2024-08-10T12:45:07Z",
+          "user": "WOSlinker"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "José Corbacho",
+      "label": "José Corbacho",
+      "qid": "Q580414",
+      "topRev": 1264367046,
+      "more": false,
+      "lead": "File:Festival de Málaga 2024 - José Corbacho.jpg",
+      "timeline": [
+        {
+          "file": "File:Festival de Málaga 2024 - José Corbacho.jpg",
+          "rev": 1264367046,
+          "ts": "2024-12-21T19:15:35Z",
+          "user": "Asqueladd"
+        },
+        {
+          "file": "File:Premios Goya 2018 - José Corbacho y Mónica Mira (cropped).jpg",
+          "rev": 1251910608,
+          "ts": "2024-10-18T19:43:02Z",
+          "user": "BattyBot"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "José Pastor (actor)",
+      "label": "José Pastor",
+      "qid": "Q113773556",
+      "topRev": 1368748526,
+      "more": false,
+      "lead": "File:Festival de Málaga 2024 - José Pastor.jpg",
+      "timeline": [
+        {
+          "file": "File:Festival de Málaga 2024 - José Pastor.jpg",
+          "rev": 1368748526,
+          "ts": "2026-08-10T21:56:45Z",
+          "user": "Claudiaschiffer7"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Julián López (comedian)",
+      "label": "Julián López",
+      "qid": "Q6457544",
+      "topRev": 1346923821,
+      "more": false,
+      "lead": "File:Festival de Málaga 2024 - Julián López.jpg",
+      "timeline": [
+        {
+          "file": "File:Festival de Málaga 2024 - Julián López.jpg",
+          "rev": 1346923821,
+          "ts": "2026-04-03T17:55:13Z",
+          "user": "Asqueladd"
+        },
+        {
+          "file": "File:Premios Goya 2019 - Julian López.jpg",
+          "rev": 1248414951,
+          "ts": "2024-09-29T11:17:58Z",
+          "user": "Asqueladd"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Kerem Bürsin",
+      "label": "Kerem Bürsin",
+      "qid": "Q17045869",
+      "topRev": 1333535562,
+      "more": false,
+      "lead": "File:Festival de Málaga 2024 - Kerem Bürsin (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Festival de Málaga 2024 - Kerem Bürsin (cropped).jpg",
+          "rev": 1333535562,
+          "ts": "2026-01-18T10:36:20Z",
+          "user": "WOSlinker"
+        },
+        {
+          "file": "File:Kerem Bürsin.png",
+          "rev": 1184970871,
+          "ts": "2023-11-13T19:23:16Z",
+          "user": "Killarnee"
+        },
+        {
+          "file": "File:Kerem bursin photos main.jpg",
+          "rev": 1093204934,
+          "ts": "2022-06-15T05:49:48Z",
+          "user": "MB"
+        }
+      ]
+    },
+    {
+      "lang": "es",
+      "article": "Lola Amores",
+      "label": "Lola Amores",
+      "qid": "Q126210175",
+      "topRev": 174070295,
+      "more": false,
+      "lead": "File:Festival de Málaga 2024 - Lola Amores (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Festival de Málaga 2024 - Lola Amores (cropped).jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "ca",
+      "article": "Lola Lolita",
+      "label": "Lola Lolita",
+      "qid": "Q116459985",
+      "topRev": 37870688,
+      "more": false,
+      "lead": "File:Festival de Málaga 2024 - Lola Lolita.jpg",
+      "timeline": [
+        {
+          "file": "File:Festival de Málaga 2024 - Lola Lolita.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "es",
+      "article": "Loreto Sesma",
+      "label": "Loreto Sesma",
+      "qid": "Q52005790",
+      "topRev": 173591533,
+      "more": false,
+      "lead": "File:Festival de Málaga 2024 - Loreto Sesma (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Festival de Málaga 2024 - Loreto Sesma (cropped).jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Maggie Civantos",
+      "label": "Maggie Civantos",
+      "qid": "Q5989751",
+      "topRev": 1369428880,
+      "more": false,
+      "lead": "File:Festival de Málaga 2024 - Maggie Civantos.jpg",
+      "timeline": [
+        {
+          "file": "File:Festival de Málaga 2024 - Maggie Civantos.jpg",
+          "rev": 1369428880,
+          "ts": "2026-08-14T22:50:20Z",
+          "user": "Asqueladd"
+        },
+        {
+          "file": "File:Maggie Civantos.jpg",
+          "rev": 1251907453,
+          "ts": "2024-10-18T19:22:05Z",
+          "user": "BattyBot"
+        },
+        {
+          "file": "File:christian.jpg",
+          "rev": 920646473,
+          "ts": "2019-10-11T01:29:10Z",
+          "user": "152.32.102.188"
+        }
+      ]
+    },
+    {
+      "lang": "es",
+      "article": "Mireya Bravo",
+      "label": "Mireya Bravo",
+      "qid": "Q114180782",
+      "topRev": 168427552,
+      "more": false,
+      "lead": "File:Festival de Málaga 2024 - Mireya Bravo (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Festival de Málaga 2024 - Mireya Bravo (cropped).jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Nancho Novo",
+      "label": "Nancho Novo",
+      "qid": "Q2839885",
+      "topRev": 1306381532,
+      "more": false,
+      "lead": "File:Festival de Málaga 2024 - Nancho Novo.jpg",
+      "timeline": [
+        {
+          "file": "File:Festival de Málaga 2024 - Nancho Novo.jpg",
+          "rev": 1306381532,
+          "ts": "2025-08-17T12:25:49Z",
+          "user": "Asqueladd"
+        },
+        {
+          "file": "File:replace this image male.svg",
+          "rev": 422881819,
+          "ts": "2011-04-07T16:40:01Z",
+          "user": "Xqbot"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Samantha Hudson",
+      "label": "Samantha Hudson",
+      "qid": "Q105622678",
+      "topRev": 1371065689,
+      "more": false,
+      "lead": "File:Festival de Málaga 2024 - Samantha Hudson.jpg",
+      "timeline": [
+        {
+          "file": "File:Festival de Málaga 2024 - Samantha Hudson.jpg",
+          "rev": 1371065689,
+          "ts": "2026-08-24T11:11:26Z",
+          "user": "Jevansen"
+        },
+        {
+          "file": "File:Samantha Hudson, XIV Premis Gaudí (2022) (cropped).jpg",
+          "rev": 1279150232,
+          "ts": "2025-03-06T21:00:50Z",
+          "user": "2A0A:EF40:1176:D301:7D77:D4ED:7359:6EA5"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Stéphanie Magnin",
+      "label": "Stéphanie Magnin",
+      "qid": "Q122853138",
+      "topRev": 1366577712,
+      "more": false,
+      "lead": "File:Festival de Málaga 2024 - Stéphanie Magnin (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Festival de Málaga 2024 - Stéphanie Magnin (cropped).jpg",
+          "rev": 1366577712,
+          "ts": "2026-07-28T21:08:55Z",
+          "user": "Asqueladd"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Unax Ugalde",
+      "label": "Unax Ugalde",
+      "qid": "Q1335031",
+      "topRev": 1366695277,
+      "more": false,
+      "lead": "File:Festival de Málaga 2024 - Unax Ugalde (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Festival de Málaga 2024 - Unax Ugalde (cropped).jpg",
+          "rev": 1366695277,
+          "ts": "2026-07-29T16:09:01Z",
+          "user": "GEORGEB1989"
+        },
+        {
+          "file": "File:Premios Goya 2018 - Unax Ugalde.jpg",
+          "rev": 1337328535,
+          "ts": "2026-02-08T20:28:01Z",
+          "user": "Asqueladd"
+        },
+        {
+          "file": "File:Unax Ugalde Premios Forqué 2011.jpg",
+          "rev": 792445417,
+          "ts": "2017-07-26T15:26:49Z",
+          "user": "Narky Blert"
+        }
+      ]
+    },
+    {
+      "lang": "ca",
+      "article": "Álex Montoya",
+      "label": "Álex Montoya",
+      "qid": "Q96242043",
+      "topRev": 37769774,
+      "more": false,
+      "lead": "File:Festival de Málaga 2024 - Álex Montoya.jpg",
+      "timeline": [
+        {
+          "file": "File:Festival de Málaga 2024 - Álex Montoya.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "en",
       "article": "Lilly Singh",
       "label": "Lilly Singh",
       "qid": "Q17403226",
@@ -46090,6 +49681,75 @@
       ]
     },
     {
+      "lang": "ca",
+      "article": "Canco Rodríguez",
+      "label": "Canco Rodríguez",
+      "qid": "Q5747266",
+      "topRev": 37653237,
+      "more": false,
+      "lead": "File:Festival de Málaga 2024 - Canco Rodríguez (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Festival de Málaga 2024 - Canco Rodríguez (cropped).jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Jaime Lorente",
+      "label": "Jaime Lorente",
+      "qid": "Q55739219",
+      "topRev": 1369510413,
+      "more": false,
+      "lead": "File:Festival de Málaga 2024 - Jaime Lorente (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Festival de Málaga 2024 - Jaime Lorente (cropped).jpg",
+          "rev": 1369510413,
+          "ts": "2026-08-15T12:30:35Z",
+          "user": "Asqueladd"
+        },
+        {
+          "file": "File:Premios Goya 2020 - Jaime Lorente (cropped).jpg",
+          "rev": 1242703175,
+          "ts": "2024-08-28T07:46:01Z",
+          "user": "2600:6C5A:147F:59F6:9961:F7F5:2DEA:B5C5"
+        },
+        {
+          "file": "File:Jaime-lorente-2022.jpg",
+          "rev": 1126236086,
+          "ts": "2022-12-08T07:19:55Z",
+          "user": "Anomalocaris"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Pol Granch",
+      "label": "Pol Granch",
+      "qid": "Q66565986",
+      "topRev": 1358152392,
+      "more": false,
+      "lead": "File:Festival de Málaga 2024 - Pol Granch.jpg",
+      "timeline": [
+        {
+          "file": "File:Festival de Málaga 2024 - Pol Granch.jpg",
+          "rev": 1358152392,
+          "ts": "2026-06-06T22:41:19Z",
+          "user": "ChrysGalley"
+        },
+        {
+          "file": "File:Pol Granch a l'espectacles Los40 Summer Live.jpg",
+          "rev": 1214616254,
+          "ts": "2024-03-20T01:45:57Z",
+          "user": "AlexExpensive"
+        }
+      ]
+    },
+    {
       "lang": "en",
       "article": "Yiying Lu",
       "label": "Yiying Lu",
@@ -46109,6 +49769,828 @@
           "rev": 1254761967,
           "ts": "2024-11-01T15:17:47Z",
           "user": "Citation bot"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Megan McConnell",
+      "label": "Megan McConnell",
+      "qid": "Q119547480",
+      "topRev": 1353840268,
+      "more": false,
+      "lead": "File:Megan McConnell, Duquesne Dukes 1 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Megan McConnell, Duquesne Dukes 1 (cropped).jpg",
+          "rev": 1353840268,
+          "ts": "2026-05-12T18:06:47Z",
+          "user": "Jagfan71"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Ana Fernández García",
+      "label": "Ana Fernández García",
+      "qid": "Q8198031",
+      "topRev": 1356852211,
+      "more": false,
+      "lead": "File:Festival de Málaga 2024 - Ana Fernández García.jpg",
+      "timeline": [
+        {
+          "file": "File:Festival de Málaga 2024 - Ana Fernández García.jpg",
+          "rev": 1356852211,
+          "ts": "2026-05-30T06:05:25Z",
+          "user": "SchlurcherBot"
+        },
+        {
+          "file": "File:Ana Fernández. (21620629816) (cropped).jpg",
+          "rev": 1229959868,
+          "ts": "2024-06-19T18:17:54Z",
+          "user": "Dr. Vicodine"
+        },
+        {
+          "file": "File:Ana_Fernández.jpg",
+          "rev": 744819739,
+          "ts": "2016-10-17T17:07:44Z",
+          "user": "John of Reading"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Belinda Washington",
+      "label": "Belinda Washington",
+      "qid": "Q8245799",
+      "topRev": 1363454445,
+      "more": false,
+      "lead": "File:Festival de Málaga 2024 - Belinda Washington.jpg",
+      "timeline": [
+        {
+          "file": "File:Festival de Málaga 2024 - Belinda Washington.jpg",
+          "rev": 1363454445,
+          "ts": "2026-07-10T07:48:08Z",
+          "user": "Dodszi gera"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Belén Rueda",
+      "label": "Belén Rueda",
+      "qid": "Q237021",
+      "topRev": 1359243890,
+      "more": false,
+      "lead": "File:Festival de Málaga 2024 - Belén Rueda.jpg",
+      "timeline": [
+        {
+          "file": "File:Festival de Málaga 2024 - Belén Rueda.jpg",
+          "rev": 1359243890,
+          "ts": "2026-06-14T02:09:27Z",
+          "user": "AllTheUsernamesAreInUse"
+        },
+        {
+          "file": "File:Goyas 2024 - Belén Rueda.jpg",
+          "rev": 1253372118,
+          "ts": "2024-10-25T16:58:15Z",
+          "user": "Asqueladd"
+        },
+        {
+          "file": "File:Premios Goya 2018 - Belén Rueda.jpg",
+          "rev": 1251904938,
+          "ts": "2024-10-18T19:02:29Z",
+          "user": "BattyBot"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Paula Usero",
+      "label": "Paula Usero",
+      "qid": "Q66789296",
+      "topRev": 1349319629,
+      "more": false,
+      "lead": "File:Festival de Málaga 2024 - Paula Usero.jpg",
+      "timeline": [
+        {
+          "file": "File:Festival de Málaga 2024 - Paula Usero.jpg",
+          "rev": 1349319629,
+          "ts": "2026-04-16T19:51:15Z",
+          "user": "Truthanado"
+        },
+        {
+          "file": "File:Festival de Málaga 2020 - Paula Usero (Cropped).jpg",
+          "rev": 1242201616,
+          "ts": "2024-08-25T14:58:38Z",
+          "user": "Ernsanchez00"
+        },
+        {
+          "file": "File:Paula Usero.jpg",
+          "rev": 1019365227,
+          "ts": "2021-04-22T22:45:26Z",
+          "user": "PearBOT II"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Abril Zamora",
+      "label": "Abril Zamora",
+      "qid": "Q56682600",
+      "topRev": 1361850987,
+      "more": false,
+      "lead": "File:Festival de Málaga 2024 - Abril Zamora.jpg",
+      "timeline": [
+        {
+          "file": "File:Festival de Málaga 2024 - Abril Zamora.jpg",
+          "rev": 1361850987,
+          "ts": "2026-06-30T13:14:25Z",
+          "user": "~2026-36859-79"
+        },
+        {
+          "file": "File:Abril Zamora, XIV Premis Gaudí (2022).jpg",
+          "rev": 1247445806,
+          "ts": "2024-09-24T09:22:58Z",
+          "user": "JJMC89 bot III"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Boré Buika",
+      "label": "Boré Buika",
+      "qid": "Q17364212",
+      "topRev": 1366590304,
+      "more": false,
+      "lead": "File:Festival de Málaga 2024 - Boré Buika (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Festival de Málaga 2024 - Boré Buika (cropped).jpg",
+          "rev": 1366590304,
+          "ts": "2026-07-28T23:06:21Z",
+          "user": "Alexanderino"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Julieta Zylberberg",
+      "label": "Julieta Zylberberg",
+      "qid": "Q6457187",
+      "topRev": 1366267400,
+      "more": false,
+      "lead": "File:Festival de Málaga 2024 - Julieta Zylberberg.jpg",
+      "timeline": [
+        {
+          "file": "File:Festival de Málaga 2024 - Julieta Zylberberg.jpg",
+          "rev": 1366267400,
+          "ts": "2026-07-27T02:41:28Z",
+          "user": "Hasekidms"
+        },
+        {
+          "file": "File:Julieta Zylberberg 2 (cropped).jpg",
+          "rev": 1239616426,
+          "ts": "2024-08-10T12:43:22Z",
+          "user": "WOSlinker"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Pilar López de Ayala",
+      "label": "Pilar López de Ayala",
+      "qid": "Q608974",
+      "topRev": 1295574575,
+      "more": false,
+      "lead": "File:Festival de Málaga 2024 - Pilar López de Ayala (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Festival de Málaga 2024 - Pilar López de Ayala (cropped).jpg",
+          "rev": 1295574575,
+          "ts": "2025-06-14T16:06:48Z",
+          "user": "Mellamelina"
+        },
+        {
+          "file": "File:Pilar López de Ayala.jpg",
+          "rev": 1096428673,
+          "ts": "2022-07-04T12:04:45Z",
+          "user": "Aderiqueza"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Silma López",
+      "label": "Silma López",
+      "qid": "Q89885068",
+      "topRev": 1359521992,
+      "more": false,
+      "lead": "File:Festival de Málaga 2024 - Silma López (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Festival de Málaga 2024 - Silma López (cropped).jpg",
+          "rev": 1359521992,
+          "ts": "2026-06-15T19:20:59Z",
+          "user": "AllTheUsernamesAreInUse"
+        },
+        {
+          "file": "File:Silma López.jpg",
+          "rev": 1222217213,
+          "ts": "2024-05-04T17:01:19Z",
+          "user": "Asqueladd"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Verónica Echegui",
+      "label": "Verónica Echegui",
+      "qid": "Q456850",
+      "topRev": 1363213155,
+      "more": false,
+      "lead": "File:Festival de Málaga 2024 - Verónica Echegui (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Festival de Málaga 2024 - Verónica Echegui (cropped).jpg",
+          "rev": 1363213155,
+          "ts": "2026-07-08T19:27:55Z",
+          "user": "Asqueladd"
+        },
+        {
+          "file": "File:Verónica Echegui.jpg",
+          "rev": 1307753888,
+          "ts": "2025-08-25T14:05:50Z",
+          "user": "Asqueladd"
+        },
+        {
+          "file": "File:Festival de Málaga 2024 - Verónica Echegui.jpg",
+          "rev": 1283339065,
+          "ts": "2025-03-31T22:09:37Z",
+          "user": "Asqueladd"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Àlex Brendemühl",
+      "label": "Àlex Brendemühl",
+      "qid": "Q106816",
+      "topRev": 1356886969,
+      "more": false,
+      "lead": "File:Festival de Málaga 2024 - Àlex Brendemühl.jpg",
+      "timeline": [
+        {
+          "file": "File:Festival de Málaga 2024 - Àlex Brendemühl.jpg",
+          "rev": 1356886969,
+          "ts": "2026-05-30T12:50:31Z",
+          "user": "PrimeBOT"
+        },
+        {
+          "file": "File:Goyas 2024 - Alex Brendemühll.jpg",
+          "rev": 1249022132,
+          "ts": "2024-10-02T19:23:08Z",
+          "user": "Asqueladd"
+        },
+        {
+          "file": "File:Àlex Brendemühl, XIII Premis Gaudí (2021).jpg",
+          "rev": 1234649320,
+          "ts": "2024-07-15T12:37:48Z",
+          "user": "FarSouthNavy"
+        }
+      ]
+    },
+    {
+      "lang": "es",
+      "article": "Claudio Portalo Bueno",
+      "label": "Claudio Portalo Bueno",
+      "qid": "Q118590906",
+      "topRev": 174375136,
+      "more": false,
+      "lead": "File:Festival de Málaga 2024 - Claudio Portalo (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Festival de Málaga 2024 - Claudio Portalo (cropped).jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Olivia Molina (actress)",
+      "label": "Olivia Molina",
+      "qid": "Q1750747",
+      "topRev": 1357084063,
+      "more": false,
+      "lead": "File:Festival de Málaga 2024 - Olivia Molina.jpg",
+      "timeline": [
+        {
+          "file": "File:Festival de Málaga 2024 - Olivia Molina.jpg",
+          "rev": 1357084063,
+          "ts": "2026-05-31T17:37:27Z",
+          "user": "PrimeBOT"
+        },
+        {
+          "file": "File:Olivia Molina in 2017.jpg",
+          "rev": 1238171688,
+          "ts": "2024-08-02T13:48:11Z",
+          "user": "WOSlinker"
+        },
+        {
+          "file": "File:Olivia Molina 2017.jpg",
+          "rev": 1014892638,
+          "ts": "2021-03-29T17:08:14Z",
+          "user": "Asqueladd"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Celia Rico Clavellino",
+      "label": "Celia Rico Clavellino",
+      "qid": "Q65203648",
+      "topRev": 1340564847,
+      "more": false,
+      "lead": "File:Festival de Málaga 2024 - Celia Rico.jpg",
+      "timeline": [
+        {
+          "file": "File:Festival de Málaga 2024 - Celia Rico.jpg",
+          "rev": 1340564847,
+          "ts": "2026-02-26T11:09:10Z",
+          "user": "InternetArchiveBot"
+        },
+        {
+          "file": "File:Premios Goya 2019 - Celia Rico.jpg",
+          "rev": 1252203384,
+          "ts": "2024-10-20T08:44:29Z",
+          "user": "Asqueladd"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Darío Grandinetti",
+      "label": "Darío Grandinetti",
+      "qid": "Q285022",
+      "topRev": 1340012427,
+      "more": false,
+      "lead": "File:Festival de Málaga 2024 - Darío Grandinetti.jpg",
+      "timeline": [
+        {
+          "file": "File:Festival de Málaga 2024 - Darío Grandinetti.jpg",
+          "rev": 1340012427,
+          "ts": "2026-02-23T13:01:12Z",
+          "user": "~2026-11053-19"
+        },
+        {
+          "file": "File:Darío Grandinetti (cropped 2).jpg",
+          "rev": 1264662976,
+          "ts": "2024-12-22T21:34:58Z",
+          "user": "DANTELECHAT"
+        },
+        {
+          "file": "File:replace this image male.svg",
+          "rev": 278535736,
+          "ts": "2009-03-20T14:23:21Z",
+          "user": "201.234.133.62"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Elisa Hipólito",
+      "label": "Elisa Hipólito",
+      "qid": "Q120671835",
+      "topRev": 1265810655,
+      "more": false,
+      "lead": "File:Festival de Málaga 2024 - Elisa Hipólito.jpg",
+      "timeline": [
+        {
+          "file": "File:Festival de Málaga 2024 - Elisa Hipólito.jpg",
+          "rev": 1265810655,
+          "ts": "2024-12-28T19:44:55Z",
+          "user": "Asqueladd"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Patricia López Arnaiz",
+      "label": "Patricia López Arnaiz",
+      "qid": "Q47460321",
+      "topRev": 1360014583,
+      "more": false,
+      "lead": "File:Festival de Málaga 2024 - Patricia López Arnáiz.jpg",
+      "timeline": [
+        {
+          "file": "File:Festival de Málaga 2024 - Patricia López Arnáiz.jpg",
+          "rev": 1360014583,
+          "ts": "2026-06-18T18:16:52Z",
+          "user": "Asqueladd"
+        },
+        {
+          "file": "File:Patricia lopez arnaiz 2017001.jpg",
+          "rev": 1265720673,
+          "ts": "2024-12-28T09:02:16Z",
+          "user": "Asqueladd"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Pol López",
+      "label": "Pol López",
+      "qid": "Q116438654",
+      "topRev": 1362186248,
+      "more": false,
+      "lead": "File:Festival de Málaga 2024 - Pol López.jpg",
+      "timeline": [
+        {
+          "file": "File:Festival de Málaga 2024 - Pol López.jpg",
+          "rev": 1362186248,
+          "ts": "2026-07-02T11:37:31Z",
+          "user": "BlorborosOuroboros"
+        }
+      ]
+    },
+    {
+      "lang": "es",
+      "article": "Almagro San Miguel",
+      "label": "Almagro San Miguel",
+      "qid": "Q121493652",
+      "topRev": 169513432,
+      "more": false,
+      "lead": "File:Festival de Málaga 2024 - Almagro San Miguel.jpg",
+      "timeline": [
+        {
+          "file": "File:Festival de Málaga 2024 - Almagro San Miguel.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Beatriz Arjona",
+      "label": "Beatriz Arjona",
+      "qid": "Q125418022",
+      "topRev": 1335656771,
+      "more": false,
+      "lead": "File:Festival de Málaga 2024 - Beatriz Arjona (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Festival de Málaga 2024 - Beatriz Arjona (cropped).jpg",
+          "rev": 1335656771,
+          "ts": "2026-01-30T12:39:58Z",
+          "user": "Cornmazes"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Benito Zambrano",
+      "label": "Benito Zambrano",
+      "qid": "Q817359",
+      "topRev": 1270706982,
+      "more": false,
+      "lead": "File:Festival de Málaga 2024 - Benito Zambrano.jpg",
+      "timeline": [
+        {
+          "file": "File:Festival de Málaga 2024 - Benito Zambrano.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Isak Férriz",
+      "label": "Isak Ferriz",
+      "qid": "Q5921023",
+      "topRev": 1343961476,
+      "more": false,
+      "lead": "File:Festival de Málaga 2024 - Isak Ferriz.jpg",
+      "timeline": [
+        {
+          "file": "File:Festival de Málaga 2024 - Isak Ferriz.jpg",
+          "rev": 1343961476,
+          "ts": "2026-03-17T12:44:47Z",
+          "user": "BboyfromB"
+        },
+        {
+          "file": "File:Isak Férriz (2004).jpg",
+          "rev": 1265986351,
+          "ts": "2024-12-29T15:23:37Z",
+          "user": "Asqueladd"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Julián Villagrán",
+      "label": "Julián Villagrán",
+      "qid": "Q5956256",
+      "topRev": 1370492338,
+      "more": false,
+      "lead": "File:Festival de Málaga 2024 - Julián Villagrán (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Festival de Málaga 2024 - Julián Villagrán (cropped).jpg",
+          "rev": 1370492338,
+          "ts": "2026-08-21T12:15:55Z",
+          "user": "ELTISAFE1"
+        },
+        {
+          "file": "File:Julián Villagrán.jpg",
+          "rev": 1261952411,
+          "ts": "2024-12-08T21:23:38Z",
+          "user": "Asqueladd"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Óscar Ladoire",
+      "label": "Óscar Ladoire",
+      "qid": "Q6174843",
+      "topRev": 1301802463,
+      "more": false,
+      "lead": "File:Festival de Málaga 2024 - Oscar Ladoire (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Festival de Málaga 2024 - Oscar Ladoire (cropped).jpg",
+          "rev": 1301802463,
+          "ts": "2025-07-21T19:50:05Z",
+          "user": "Folkezoft"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Peter Vives",
+      "label": "Peter Vives",
+      "qid": "Q7177502",
+      "topRev": 1357092994,
+      "more": false,
+      "lead": "File:Festival de Málaga 2024 - Peter Vives.jpg",
+      "timeline": [
+        {
+          "file": "File:Festival de Málaga 2024 - Peter Vives.jpg",
+          "rev": 1357092994,
+          "ts": "2026-05-31T18:25:57Z",
+          "user": "PrimeBOT"
+        },
+        {
+          "file": "File:Peter Vives (2019).jpg",
+          "rev": 1242673100,
+          "ts": "2024-08-28T02:48:03Z",
+          "user": "Ernsanchez00"
+        },
+        {
+          "file": "File:Peter Vives.jpg",
+          "rev": 592258678,
+          "ts": "2014-01-25T01:15:30Z",
+          "user": "Emguaita21"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Rubén Cortada",
+      "label": "Rubén Cortada",
+      "qid": "Q16298520",
+      "topRev": 1341251649,
+      "more": false,
+      "lead": "File:Festival de Málaga 2024 - Ruben Cortada.jpg",
+      "timeline": [
+        {
+          "file": "File:Festival de Málaga 2024 - Ruben Cortada.jpg",
+          "rev": 1341251649,
+          "ts": "2026-03-02T04:53:01Z",
+          "user": "Zackmann08"
+        },
+        {
+          "file": "File:Ruben Cortada (cropped).jpg",
+          "rev": 1268651942,
+          "ts": "2025-01-10T21:21:20Z",
+          "user": "Darth Stabro"
+        },
+        {
+          "file": "File:Rubén Cortada.jpg",
+          "rev": 695441924,
+          "ts": "2015-12-16T02:40:00Z",
+          "user": "Nottedeluce"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Agustina Palma",
+      "label": "Agustina Palma",
+      "qid": "Q5660467",
+      "topRev": 1371049733,
+      "more": false,
+      "lead": "File:Festival de Málaga 2024 - Agustina Palma.jpg",
+      "timeline": [
+        {
+          "file": "File:Festival de Málaga 2024 - Agustina Palma.jpg",
+          "rev": 1371049733,
+          "ts": "2026-08-24T08:15:38Z",
+          "user": "Jevansen"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Almudena Cid",
+      "label": "Almudena Cid",
+      "qid": "Q2469606",
+      "topRev": 1370684578,
+      "more": false,
+      "lead": "File:Festival de Málaga 2024 - Almudena Cid (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Festival de Málaga 2024 - Almudena Cid (cropped).jpg",
+          "rev": 1370684578,
+          "ts": "2026-08-22T14:33:47Z",
+          "user": "Zyxw"
+        },
+        {
+          "file": "File:Almudena Cid 2008 Beijing 01b.PNG",
+          "rev": 1263511247,
+          "ts": "2024-12-17T02:16:57Z",
+          "user": "Ser Amantio di Nicolao"
+        },
+        {
+          "file": "File:Almudena Cid 2007 Patras 02.PNG",
+          "rev": 665375532,
+          "ts": "2015-06-03T20:37:36Z",
+          "user": "Billy brown"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Carlos Bardem",
+      "label": "Carlos Bardem",
+      "qid": "Q330014",
+      "topRev": 1371688876,
+      "more": false,
+      "lead": "File:Festival de Málaga 2024 - Carlos Bardem.jpg",
+      "timeline": [
+        {
+          "file": "File:Festival de Málaga 2024 - Carlos Bardem.jpg",
+          "rev": 1371688876,
+          "ts": "2026-08-27T22:09:34Z",
+          "user": "Asqueladd"
+        },
+        {
+          "file": "File:Carlos Bardem en la 36ª Semana de Cine Español de Carabanchel.jpg",
+          "rev": 1258993544,
+          "ts": "2024-11-22T20:08:31Z",
+          "user": "GEORGEB1989"
+        },
+        {
+          "file": "File:Carlos Bardem.jpg",
+          "rev": 817098248,
+          "ts": "2017-12-26T04:01:16Z",
+          "user": "Hitcher vs. Candyman"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Fele Martínez",
+      "label": "Fele Martínez",
+      "qid": "Q950998",
+      "topRev": 1336339566,
+      "more": false,
+      "lead": "File:Festival de Málaga 2024 - Fele Martínez.jpg",
+      "timeline": [
+        {
+          "file": "File:Festival de Málaga 2024 - Fele Martínez.jpg",
+          "rev": 1336339566,
+          "ts": "2026-02-03T05:59:04Z",
+          "user": "GreenC bot"
+        },
+        {
+          "file": "File:Fele Martínez at Premios Goya 2017 (cropped).jpg",
+          "rev": 1253665057,
+          "ts": "2024-10-27T06:34:04Z",
+          "user": "Idoghor Melody"
+        },
+        {
+          "file": "File:FELE MARTINEZ.JPG",
+          "rev": 824208470,
+          "ts": "2018-02-05T23:45:40Z",
+          "user": "Cait.123"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Iván Sánchez",
+      "label": "Iván Sánchez",
+      "qid": "Q5923562",
+      "topRev": 1356527976,
+      "more": false,
+      "lead": "File:Festival de Málaga 2024 - Iván Sánchez.jpg",
+      "timeline": [
+        {
+          "file": "File:Festival de Málaga 2024 - Iván Sánchez.jpg",
+          "rev": 1356527976,
+          "ts": "2026-05-28T09:02:55Z",
+          "user": "PrimeBOT"
+        },
+        {
+          "file": "File:Iván Sánchez en Dulce Osuna.jpg",
+          "rev": 1250163898,
+          "ts": "2024-10-08T20:46:42Z",
+          "user": "Telenovelafan215"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Lola Herrera",
+      "label": "Lola Herrera",
+      "qid": "Q2706496",
+      "topRev": 1361641950,
+      "more": false,
+      "lead": "File:Festival de Málaga 2024 - Lola Herrera 03.jpg",
+      "timeline": [
+        {
+          "file": "File:Festival de Málaga 2024 - Lola Herrera 03.jpg",
+          "rev": 1361641950,
+          "ts": "2026-06-29T06:07:31Z",
+          "user": "Cyfal"
+        },
+        {
+          "file": "File:Lola_Herrera 48 Voces en Puerto del Rosario.jpg",
+          "rev": 1243459795,
+          "ts": "2024-09-01T16:03:45Z",
+          "user": "Ernsanchez00"
+        },
+        {
+          "file": "File:Lola_Herrera_48_Voces_en_Puerto_del_Rosario.jpg",
+          "rev": 1180248057,
+          "ts": "2023-10-15T12:08:19Z",
+          "user": "Ferclopedio"
+        }
+      ]
+    },
+    {
+      "lang": "ca",
+      "article": "Marta Belenguer",
+      "label": "Marta Belenguer",
+      "qid": "Q6001872",
+      "topRev": 37611303,
+      "more": false,
+      "lead": "File:Festival de Málaga 2024 - Marta Belenguer.jpg",
+      "timeline": [
+        {
+          "file": "File:Festival de Málaga 2024 - Marta Belenguer.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "sv",
+      "article": "Pepe Barroso",
+      "label": "Pepe Barroso",
+      "qid": "Q121365418",
+      "topRev": 59018983,
+      "more": false,
+      "lead": "File:Festival de Málaga 2024 - Pepe Barroso Cropped.jpg",
+      "timeline": [
+        {
+          "file": "File:Festival de Málaga 2024 - Pepe Barroso Cropped.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Raúl Tejón",
+      "label": "Raúl Tejón",
+      "qid": "Q6101484",
+      "topRev": 1354466917,
+      "more": false,
+      "lead": "File:Festival de Málaga 2024 - Raul Tejón.jpg",
+      "timeline": [
+        {
+          "file": "File:Festival de Málaga 2024 - Raul Tejón.jpg",
+          "rev": 1354466917,
+          "ts": "2026-05-16T16:26:22Z",
+          "user": "7amithorn"
         }
       ]
     },
@@ -48981,6 +53463,168 @@
           "rev": 1348145402,
           "ts": "2026-04-10T23:59:02Z",
           "user": "Fakez76"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Richard Robson (chemist)",
+      "label": "Richard Robson",
+      "qid": "Q23073819",
+      "topRev": 1357473964,
+      "more": false,
+      "lead": "File:Richard Robson 2025 Nobel laureates in chemistry at Stockholm University (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Richard Robson 2025 Nobel laureates in chemistry at Stockholm University (cropped).jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        },
+        {
+          "file": "File:Richard_Robson_2025_Nobel_laureates_in_chemistry_at_Stockholm_University_(cropped).jpg",
+          "rev": 1357473964,
+          "ts": "2026-06-02T21:35:09Z",
+          "user": "PrimeBOT"
+        },
+        {
+          "file": "File:Richard_Robson,_2025_Nobel_laurate_in_chemistry.jpg",
+          "rev": 1332204859,
+          "ts": "2026-01-10T14:22:19Z",
+          "user": "Smasongarrison"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Daniel DeSanto",
+      "label": "Daniel DeSanto",
+      "qid": "Q3013925",
+      "topRev": 1369048087,
+      "more": false,
+      "lead": "File:Daniel DeSanto Cinequest 2026 02.jpg",
+      "timeline": [
+        {
+          "file": "File:Daniel DeSanto Cinequest 2026 02.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        },
+        {
+          "file": "File:Daniel_DeSanto_Cinequest_2026_02.jpg",
+          "rev": 1369048087,
+          "ts": "2026-08-12T15:31:52Z",
+          "user": "Waxworker"
+        },
+        {
+          "file": "File:Daniel DeSanto (cropped).jpg",
+          "rev": 1329532139,
+          "ts": "2025-12-26T16:29:25Z",
+          "user": "Magitroopa"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Knut Aalefjær",
+      "label": "Knut Aalefjær",
+      "qid": "Q6423846",
+      "topRev": 1353501085,
+      "more": false,
+      "lead": "File:Knut Aalefjær.jpg",
+      "timeline": [
+        {
+          "file": "File:Knut Aalefjær.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        },
+        {
+          "file": "File:Knut_Aalefjær.jpg",
+          "rev": 1353501085,
+          "ts": "2026-05-10T17:05:14Z",
+          "user": "Tom.Reding"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Geoff Arbourne",
+      "label": "Geoff Arbourne",
+      "qid": "Q81560336",
+      "topRev": 1357116040,
+      "more": false,
+      "lead": "File:Geoff Arbourne at 2024 Cannes Film Festival for To a Land Unknown (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Geoff Arbourne at 2024 Cannes Film Festival for To a Land Unknown (cropped).jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        },
+        {
+          "file": "File:Geoff_Arbourne_at_2024_Cannes_Film_Festival_for_To_a_Land_Unknown_(cropped).jpg",
+          "rev": 1357116040,
+          "ts": "2026-05-31T21:02:49Z",
+          "user": "GreenC bot"
+        },
+        {
+          "file": "File:Geoff Arbourne.jpg",
+          "rev": 1293809994,
+          "ts": "2025-06-03T20:27:23Z",
+          "user": "Geoff Arbourne"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Nadah El Shazly",
+      "label": "Nadah El Shazly",
+      "qid": "Q116742240",
+      "topRev": 1366609912,
+      "more": false,
+      "lead": "File:Nadah El Shazly at 2024 Cannes Film Festival for To a Land Unknown (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Nadah El Shazly at 2024 Cannes Film Festival for To a Land Unknown (cropped).jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        },
+        {
+          "file": "File:Nadah_El_Shazly_at_2024_Cannes_Film_Festival_for_To_a_Land_Unknown_(cropped).jpg",
+          "rev": 1366609912,
+          "ts": "2026-07-29T01:49:39Z",
+          "user": "Ser Amantio di Nicolao"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Kristoffer Lo",
+      "label": "Kristoffer Lo",
+      "qid": "Q20640684",
+      "topRev": 1341056610,
+      "more": false,
+      "lead": "File:Kristoffer Lo.jpg",
+      "timeline": [
+        {
+          "file": "File:Kristoffer Lo.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        },
+        {
+          "file": "File:Kristoffer_Lo.jpg",
+          "rev": 1341056610,
+          "ts": "2026-03-01T04:54:35Z",
+          "user": "Jevansen"
+        },
+        {
+          "file": "File:kristoffer-lo_DSC09299.jpg",
+          "rev": 1298589562,
+          "ts": "2025-07-03T12:03:01Z",
+          "user": "InternetArchiveBot"
         }
       ]
     }
