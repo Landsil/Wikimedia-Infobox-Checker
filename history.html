@@ -24,12 +24,21 @@
   </div>
   <form id="f">
     <div><label>Article link, file name, file link, or category</label>
-      <input id="q" value="File:Sharon Horgan at SXSW London 2026 1 (cropped).jpg"></div>
+      <input id="q" value="https://en.wikipedia.org/wiki/Dolly_Parton"></div>
+    <div class="depth-field"><label>Images to show</label>
+      <input id="count" type="number" min="1" max="10" value="3"></div>
     <div class="depth-field"><label>Subcategory depth</label>
       <input id="depth" type="number" min="0" value="1"></div>
     <button id="go" type="submit">Show history</button>
     <button id="copy_url" type="button" class="secondary">Copy static URL</button>
   </form>
+  <div class="filters">
+    <div class="filter-item">
+      <button type="button" id="hide_orig" class="toggle" aria-pressed="false">Hide crop originals</button>
+      <span class="filter-note">Show only the (possibly cropped) version that was in the
+        infobox — hide the source photo and any other crops of it.</span>
+    </div>
+  </div>
 </header>
 <main>
   <div id="status"></div>
@@ -62,10 +71,14 @@
     </ul>
     <h3>Notes</h3>
     <ul>
+      <li><strong>Images to show</strong> sets how many photos back to display
+        (current + previous), 1–10; default 3.</li>
       <li>Crop variants of the same photo are treated as one; for a single
-        subject, each photo's other crops are listed beneath it.</li>
+        subject, each photo's other crops are listed beneath it.
+        <strong>Hide crop originals</strong> collapses that away, leaving only
+        the exact (possibly cropped) version that was in the infobox.</li>
       <li><strong>Copy static URL</strong> builds a shareable link that prefills
-        the box and runs automatically.</li>
+        the form and runs automatically.</li>
       <li>All data comes from read-only calls to the public Wikimedia APIs.</li>
     </ul>
   </div>
@@ -89,7 +102,6 @@ const REV_PAGE = 50;            // revisions fetched per API page (rvlimit)
 const SINGLE_REV_LIMIT = 1000;  // revisions walked on the first single article/file pass
 const SINGLE_REV_EXTEND = 1000; // extra revisions per "Search another N revisions" click
 const CAT_REV_LIMIT = 200;      // max revisions walked per person in category mode
-const PREVIOUS = 2;             // previous photos shown (current + PREVIOUS)
 const CAT_CHUNK = 20;           // people scanned per "Scan more people" (one history walk each)
 const CAT_ARTICLE_CAP = 3000;   // safety cap on articles enumerated from a category tree
 const MAX_RETRIES = 6;
@@ -108,6 +120,9 @@ const link = (url, text) =>
   url ? `<a href="${esc(url)}" target="_blank" rel="noopener">${esc(text)}</a>` : esc(text);
 const row = (k, v) =>
   `<div class="row"><span class="k">${k}</span><span class="v">${v || "&mdash;"}</span></div>`;
+const pressed = id => $(id).getAttribute("aria-pressed") === "true";
+// How many photos to show / collect (current + previous). Default 3, capped 1..10.
+const imgCount = () => Math.min(10, Math.max(1, parseInt($("count").value, 10) || 3));
 function chunked(a, n = BATCH) { const o = []; for (let i = 0; i < a.length; i += n) o.push(a.slice(i, i + n)); return o; }
 function stripHtml(v) {
   if (!v) return "";
@@ -338,19 +353,20 @@ async function enumerateArticles(lang, category, depth) {
 }
 
 // Category walk state: the remaining article queue plus running tallies.
-const cat = { lang: "en", queue: [], scanned: 0, changed: 0, truncated: false };
+const cat = { lang: "en", queue: [], scanned: 0, changed: 0, truncated: false, count: 3 };
 
 // Process the next CAT_CHUNK articles: keep only people whose infobox photo
 // actually changed (>=2 distinct photos), and fetch details for the shown photos.
 async function scanCatChunk() {
   const batch = cat.queue.splice(0, CAT_CHUNK);
+  const want = Math.max(2, cat.count);   // need >=2 to detect a change, even if showing 1
   const people = [];
   for (const article of batch) {
     cat.scanned++;
     let res;
-    try { res = await buildTimeline(cat.lang, article, CAT_REV_LIMIT, PREVIOUS + 1); } catch (_) { continue; }
+    try { res = await buildTimeline(cat.lang, article, CAT_REV_LIMIT, want); } catch (_) { continue; }
     if (res.timeline.length < 2) continue;   // "photo actually changed"
-    people.push({ article, shown: res.timeline.slice(0, PREVIOUS + 1), more: res.more });
+    people.push({ article, shown: res.timeline.slice(0, cat.count), more: res.more });
   }
   await attachInfo(people);
   cat.changed += people.length;
@@ -383,8 +399,8 @@ async function deepSearch(id, article) {
   const btn = el.querySelector(".deep-btn");
   if (btn) { btn.disabled = true; btn.textContent = "Searching…"; }
   try {
-    const res = await buildTimeline(cat.lang, article, SINGLE_REV_LIMIT, PREVIOUS + 1);
-    const p = { article, shown: res.timeline.slice(0, PREVIOUS + 1), more: res.more, deepDone: true };
+    const res = await buildTimeline(cat.lang, article, SINGLE_REV_LIMIT, Math.max(2, cat.count));
+    const p = { article, shown: res.timeline.slice(0, cat.count), more: res.more, deepDone: true };
     await attachInfo([p]);
     el.outerHTML = renderPersonBlock(id, p);
   } catch (err) {
@@ -394,8 +410,10 @@ async function deepSearch(id, article) {
 
 // ---- render ----
 const HEADS = ["Current infobox photo", "Previous", "Before that"];
+const headLabel = i => HEADS[i] || `Earlier (#${i})`;
 function famBlock(fam) {
-  if (!fam.length) return "";
+  // "Hide crop originals" suppresses the source photo / other crops entirely.
+  if (pressed("hide_orig") || !fam.length) return "";
   return `<div class="tl-fam-title">Crop family (${fam.length})</div>`
     + fam.map(f => `<div class="cand-photo"><img src="${esc(f.thumb)}" alt="" loading="lazy">`
         + `<div class="cand-cap">${link(f.descriptionurl, f.title)}`
@@ -413,7 +431,7 @@ function tlCard(entry, i, newer) {
     : row("Was replaced", esc(dateOnly(newer.ts)) + " by " + esc(newer.user)
         + ` <a class="mini" href="https://${esc(LANG)}.wikipedia.org/w/index.php?diff=${esc(newer.rev)}" target="_blank" rel="noopener">diff</a>`);
   return `<div class="tl-card${i === 0 ? " current" : ""}">
-    <div class="tl-head">${esc(HEADS[i] || "Earlier")}</div>
+    <div class="tl-head">${esc(headLabel(i))}</div>
     ${photo}
     <div class="meta left" style="text-align:left">
       ${row("File", link(info ? info.descriptionurl : "", entry.file))}${author}
@@ -458,6 +476,7 @@ async function scanAndRender() {
 }
 async function runCategory(inp) {
   cat.lang = inp.lang; cat.queue = []; cat.scanned = 0; cat.changed = 0; cat.truncated = false;
+  cat.count = imgCount();
   LANG = inp.lang;
   $("status").className = ""; $("status").textContent = `Enumerating articles in ${inp.title}…`;
   const articles = await enumerateArticles(inp.lang, inp.title, Math.max(0, parseInt($("depth").value, 10) || 0));
@@ -493,7 +512,8 @@ async function run() {
     LANG = lang;
 
     status.textContent = "Reading the article's revision history…";
-    const res = await buildTimeline(lang, article, SINGLE_REV_LIMIT, PREVIOUS + 1, null, { allowFallback: true });
+    const count = imgCount();
+    const res = await buildTimeline(lang, article, SINGLE_REV_LIMIT, count, null, { allowFallback: true });
     if (!res.timeline.length) { showError(`No infobox photo found in ${article}'s recent history.`); return; }
 
     const subjHtml = label
@@ -503,7 +523,7 @@ async function run() {
     $("subject").innerHTML = subjHtml;
 
     single = { lang, article, warnMsg, timeline: res.timeline, more: res.more,
-               cont: res.cont, scanned: res.read, fullContent: res.usedFull };
+               cont: res.cont, scanned: res.read, fullContent: res.usedFull, count };
     await finishSingle();
   } catch (err) {
     showError(/rate-limiting/i.test(err.message)
@@ -519,14 +539,20 @@ let single = null;
 async function finishSingle() {
   const s = single;
   $("status").className = ""; $("status").textContent = "Fetching photo details…";
-  s.shown = s.timeline.slice(0, PREVIOUS + 1);
+  s.shown = s.timeline.slice(0, s.count);
   const info = await fetchFilesImageinfo(s.shown.map(e => e.file));
   for (const e of s.shown) e.info = info[e.file] || null;
-  for (const e of s.shown) e.fam = await cropFamily(e.file, e.file);   // crops of each shown photo
+  await ensureFam();   // crops of each shown photo, unless originals are hidden
   renderSingle();
   $("status").className = "";
   $("status").textContent = `${s.shown.length} infobox photo(s) shown; checked ${s.scanned} revision(s)`
     + (s.more ? " — more history exists." : ".");
+}
+// Fetch each shown photo's crop family on demand — skipped while originals are
+// hidden, then filled in if the filter is turned back off.
+async function ensureFam() {
+  const s = single; if (!s || !s.shown || pressed("hide_orig")) return;
+  for (const e of s.shown) if (e.fam === undefined) e.fam = await cropFamily(e.file, e.file);
 }
 function renderSingle() {
   const s = single;
@@ -543,7 +569,7 @@ async function extendSingle() {
   const btn = $("results").querySelector(".extend-btn");
   if (btn) { btn.disabled = true; btn.textContent = "Searching…"; }
   try {
-    const res = await buildTimeline(s.lang, s.article, SINGLE_REV_EXTEND, PREVIOUS + 1,
+    const res = await buildTimeline(s.lang, s.article, SINGLE_REV_EXTEND, s.count,
       { timeline: s.timeline, cont: s.cont }, { fullContent: s.fullContent });
     s.timeline = res.timeline; s.more = res.more; s.cont = res.cont; s.scanned += res.read;
     await finishSingle();
@@ -557,6 +583,12 @@ $("results").addEventListener("click", e => {
   const deep = e.target.closest(".deep-btn");
   if (deep) { deepSearch(deep.getAttribute("data-id"), deep.getAttribute("data-article")); return; }
   if (e.target.closest(".extend-btn")) extendSingle();
+});
+// Hide-originals filter: re-render in place (fetch crop families only if shown).
+$("hide_orig").addEventListener("click", async () => {
+  const now = !pressed("hide_orig");
+  $("hide_orig").setAttribute("aria-pressed", now ? "true" : "false");
+  if (single && single.shown) { if (!now) await ensureFam(); renderSingle(); }
 });
 
 // ---- shareable static URL: remembers the query (+ depth) and auto-runs ----
@@ -573,7 +605,9 @@ async function copyText(text) {
 function staticUrl() {
   const q = new URLSearchParams();
   q.set("q", $("q").value.trim());
+  q.set("count", String(imgCount()));
   q.set("depth", String(parseInt($("depth").value, 10) || 0));
+  if (pressed("hide_orig")) q.set("hideorig", "1");
   q.set("search", "1");
   return `${location.origin}${location.pathname}?${q.toString()}`;
 }
@@ -587,7 +621,9 @@ $("copy_url").addEventListener("click", async () => {
 function applyUrlParams() {
   const p = new URLSearchParams(location.search);
   if (p.get("q")) $("q").value = p.get("q");
+  if (/^\d+$/.test(p.get("count") || "")) $("count").value = String(Math.min(10, Math.max(1, +p.get("count"))));
   if (/^\d+$/.test(p.get("depth") || "")) $("depth").value = p.get("depth");
+  if (p.get("hideorig") === "1") $("hide_orig").setAttribute("aria-pressed", "true");
   return p.get("search") === "1";
 }
 
