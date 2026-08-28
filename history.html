@@ -54,6 +54,7 @@
       <input type="number" id="chunk_size" min="1" max="5000" value="100"></label>
   </div>
   <div id="recheck" hidden>
+    <button type="button" id="refresh_btn" class="secondary" hidden>Check for updates</button>
     <button type="button" id="recheck_btn" class="secondary">Re-check all files (find newly-depicted / newly-used)</button>
   </div>
   <div id="results"></div>
@@ -487,7 +488,7 @@ async function filesAddedSince(category, depth, since) {
 // Category walk state: remaining file queue, running tallies, dedup of people,
 // and the accumulated live people (rendered sorted by initial-photo date).
 const cat = { queue: [], scanned: 0, truncated: false, count: 3, done: new Set(),
-              addedThrough: "", people: [], uncapped: false };
+              addedThrough: "", people: [], uncapped: false, pendingDeferred: false };
 
 // Resolve a list of files to the live people whose current infobox photo is one
 // of them (crop-aware), and build each person's history. Shared by the chunk
@@ -671,13 +672,22 @@ function updateCatStatus() {
   s.textContent = `Scanned ${cat.scanned} file(s); ${cat.people.length} currently live in an infobox.`
     + (remaining ? ` ${remaining} file(s) left — Save now to resume later.` : " Done.")
     + (cat.truncated ? ` (Capped at ${CAT_FILE_CAP} files — use “Slow un-capped scan” for the whole category.)` : "");
-  $("loadmore").hidden = remaining === 0;
+  $("loadmore").hidden = remaining === 0 && !cat.pendingDeferred;
   if (cat.scanned > 0 || cat.people.length) { showSave(); showRecheck(); }
 }
 async function scanAndRender() {
   const go = $("go"), more = $("loadmore_btn"), save = $("save_gh"), recheck = $("recheck_btn");
   go.disabled = true; more.disabled = true; save.disabled = true; recheck.disabled = true;   // no save/recheck mid-chunk
   try {
+    // Resuming a huge saved scan: the pending list was too big to store, so rebuild
+    // it now (re-enumerate and skip what was already scanned) before continuing.
+    if (!cat.queue.length && cat.pendingDeferred) {
+      $("status").className = ""; $("status").textContent = "Rebuilding the file list to resume…";
+      const cap = cat.uncapped ? Infinity : CAT_FILE_CAP;
+      const { files } = await enumerateFiles(currentInput.title, Math.max(0, parseInt($("depth").value, 10) || 0), cap);
+      cat.queue = files.slice(cat.scanned || 0);
+      cat.pendingDeferred = false;
+    }
     $("status").className = ""; $("status").textContent = "Checking depicts and current infobox photos…";
     const people = await scanCatChunk(msg => { $("status").className = ""; $("status").textContent = msg; });
     if (people.length) { cat.people.push(...people); renderCatPeople(); }
@@ -694,6 +704,7 @@ async function scanAndRender() {
 function resetCat(inp) {
   cat.queue = []; cat.scanned = 0; cat.truncated = false;
   cat.count = imgCount(); cat.done = new Set(); cat.addedThrough = ""; cat.people = []; cat.uncapped = false;
+  cat.pendingDeferred = false;
 }
 async function runCategory(inp, opts) {
   opts = opts || {};
@@ -717,7 +728,7 @@ async function run() {
   const status = $("status"), go = $("go");
   status.className = ""; status.textContent = "Resolving…";
   $("subject").innerHTML = ""; $("results").innerHTML = ""; $("loadmore").hidden = true;
-  hideSave(); hideRecheck(); hideBadge(); single = null; shownPeople = {}; personSeq = 0; go.disabled = true;
+  hideSave(); hideRecheck(); hideRefresh(); hideBadge(); single = null; shownPeople = {}; personSeq = 0; go.disabled = true;
   try {
     const inp = parseInput($("q").value);
     if (!inp) { showError("Enter an article link, a file name, a file link, or a category."); return; }
@@ -927,6 +938,61 @@ function showSave() { const b = $("save_gh"); if (b) b.hidden = false; }
 function hideSave() { const b = $("save_gh"); if (b) b.hidden = true; }
 function showRecheck() { $("recheck").hidden = false; }
 function hideRecheck() { $("recheck").hidden = true; }
+function showRefresh() { $("recheck").hidden = false; $("refresh_btn").hidden = false; }
+function hideRefresh() { $("refresh_btn").hidden = true; }
+
+// Manual "Check for updates" for a loaded saved record (kept out of the instant
+// load so pasting a static URL just shows the saved records and nothing more).
+async function refreshLoaded() {
+  const btn = $("refresh_btn"), orig = btn.textContent;
+  btn.disabled = true; btn.textContent = "Checking…";
+  try {
+    if (currentInput && currentInput.type === "category") await refreshCategory();
+    else await refreshSingle();
+  } catch (err) {
+    showError(/rate-limiting/i.test(err.message)
+      ? "Wikimedia is rate-limiting us right now. Wait a moment and try again." : "Error: " + err.message);
+  } finally { btn.disabled = false; btn.textContent = orig; }
+}
+async function refreshSingle() {
+  const s = single; if (!s) return;
+  $("status").className = ""; $("status").textContent = "Checking for changes…";
+  const cur = await currentTopRev(s.lang, s.article);
+  if (cur && s.topRev && cur !== s.topRev) {
+    const res = await buildTimeline(s.lang, s.article, SINGLE_REV_LIMIT, s.count, null, { allowFallback: true });
+    if (res.timeline.length) Object.assign(s, { timeline: res.timeline, more: res.more,
+      cont: res.cont, fullContent: res.usedFull, scanned: res.read, topRev: res.topRev });
+  }
+  await finishSingle();
+}
+async function refreshCategory() {
+  // Refresh stored people whose article changed since save.
+  $("status").className = ""; $("status").textContent = "Checking stored people for updates…";
+  const byLang = {};
+  for (const p of cat.people) (byLang[p.lang] = byLang[p.lang] || []).push(p);
+  for (const [lang, ps] of Object.entries(byLang)) {
+    const last = await lastRevIds(lang, ps.map(p => p.article));
+    for (const p of ps) {
+      if (!last[p.article] || last[p.article] === p.topRev) continue;
+      let res; try { res = await buildTimeline(p.lang, p.article, CAT_REV_LIMIT, cat.count); } catch (_) { continue; }
+      if (!res.timeline.length) continue;
+      p.topRev = res.topRev; p.more = res.more; p.shown = res.timeline.slice(0, cat.count);
+      await attachInfo([p]);
+      if (p._id && $(p._id)) $(p._id).outerHTML = renderPersonBlock(p._id, p);
+    }
+  }
+  // Add people from files added to the category after the saved watermark.
+  const { files, addedThrough } = await filesAddedSince(currentInput.title,
+    Math.max(0, parseInt($("depth").value, 10) || 0), cat.addedThrough || "");
+  const before = cat.people.length;
+  if (files.length) {
+    const fresh = await processFiles(files, msg => { $("status").className = ""; $("status").textContent = "New photos — " + msg; });
+    if (fresh.length) { cat.people.push(...fresh); renderCatPeople(); }
+  }
+  if (addedThrough && addedThrough > cat.addedThrough) cat.addedThrough = addedThrough;
+  updateCatStatus();
+  $("status").textContent += cat.people.length > before ? ` (+${cat.people.length - before} new)` : " No changes.";
+}
 
 // Re-check all files: re-enumerate the whole category and re-run depicts +
 // liveness across every file, keeping the people already found (they're skipped
@@ -980,16 +1046,8 @@ async function hydrateSingle(data, inp) {
     more: data.more, cont: data.cont, fullContent: data.fullContent, scanned: data.scanned || 0,
     count: imgCount(), topRev: data.topRev };
   setModeBadge("cache", (data.asOf || "").slice(0, 10));
-  $("status").className = ""; $("status").textContent = "Loaded saved record; checking for changes…";
-  try {
-    const cur = await currentTopRev(data.lang, data.article);
-    if (cur && data.topRev && cur !== data.topRev) {   // article changed since save → recompute
-      const res = await buildTimeline(data.lang, data.article, SINGLE_REV_LIMIT, single.count, null, { allowFallback: true });
-      if (res.timeline.length) Object.assign(single, { timeline: res.timeline, more: res.more,
-        cont: res.cont, fullContent: res.usedFull, scanned: res.read, topRev: res.topRev });
-    }
-  } catch (_) {}
-  await finishSingle();
+  await finishSingle();               // instant render from the saved record — no auto-refresh
+  showRefresh();                      // "Check for updates" is manual
 }
 async function hydrateCategory(data, inp) {
   resetCat(inp);
@@ -1002,45 +1060,18 @@ async function hydrateCategory(data, inp) {
     qid: p.qid, topRev: p.topRev, more: p.more,
     shown: p.timeline.map(e => ({ ...e, key: cropParent(e.file) || e.file })) }));
   for (const p of cat.people) cat.done.add(p.lang + ":" + p.article);
+  // Restore the backlog: stored list when present; if it was omitted (too large),
+  // defer re-enumeration until the user resumes so the load stays instant.
+  if (Array.isArray(data.pending)) cat.queue = data.pending.slice();
+  else if (data.pending === null) cat.pendingDeferred = true;   // rebuild on "Scan more files"
   $("subject").innerHTML = `<p class="lead"><strong>${esc(inp.title)}</strong> — saved record from `
-    + `${esc((data.asOf || "").slice(0, 10))} (${cat.people.length} live); checking for changes…</p>`;
+    + `${esc((data.asOf || "").slice(0, 10))} (${cat.people.length} live`
+    + `${cat.queue.length || cat.pendingDeferred ? ", scan unfinished" : ""}).</p>`;
   setModeBadge("cache", (data.asOf || "").slice(0, 10));
   await attachInfo(cat.people);
-  renderCatPeople();
-  // Refresh stored people whose article changed since save.
-  $("status").className = ""; $("status").textContent = "Checking stored people for updates…";
-  const byLang = {};
-  for (const p of cat.people) (byLang[p.lang] = byLang[p.lang] || []).push(p);
-  for (const [lang, ps] of Object.entries(byLang)) {
-    const last = await lastRevIds(lang, ps.map(p => p.article));
-    for (const p of ps) {
-      if (!last[p.article] || last[p.article] === p.topRev) continue;
-      let res; try { res = await buildTimeline(p.lang, p.article, CAT_REV_LIMIT, cat.count); } catch (_) { continue; }
-      if (!res.timeline.length) continue;
-      p.topRev = res.topRev; p.more = res.more; p.shown = res.timeline.slice(0, cat.count);
-      await attachInfo([p]);
-      if (p._id && $(p._id)) $(p._id).outerHTML = renderPersonBlock(p._id, p);
-    }
-  }
-  // Add people from files added to the category after the saved watermark.
-  $("status").className = ""; $("status").textContent = "Checking for new photos…";
-  const { files, addedThrough } = await filesAddedSince(inp.title, Math.max(0, parseInt($("depth").value, 10) || 0), cat.addedThrough || "");
-  const before = cat.people.length;
-  if (files.length) {
-    const fresh = await processFiles(files, msg => { $("status").className = ""; $("status").textContent = "New photos — " + msg; });
-    if (fresh.length) { cat.people.push(...fresh); renderCatPeople(); }
-  }
-  if (addedThrough && addedThrough > cat.addedThrough) cat.addedThrough = addedThrough;
-  // Restore the backlog for an unfinished scan: use the stored list when present,
-  // else (omitted because it was too large) re-enumerate and skip what was scanned.
-  if (Array.isArray(data.pending)) cat.queue = data.pending.slice();
-  else if (data.pending === null) {
-    $("status").className = ""; $("status").textContent = "Rebuilding the file list to resume…";
-    const cap = cat.uncapped ? Infinity : CAT_FILE_CAP;
-    const { files } = await enumerateFiles(inp.title, Math.max(0, parseInt($("depth").value, 10) || 0), cap);
-    cat.queue = files.slice(cat.scanned || 0);
-  }   // undefined (older complete record) -> no backlog
-  updateCatStatus();   // reflects live count, remaining queue (Scan more files), and enables Save
+  renderCatPeople();                 // instant render from the saved record — no auto-refresh
+  updateCatStatus();
+  showRefresh();                     // "Check for updates" / "Re-check all" are manual
 }
 
 $("save_gh").addEventListener("click", saveToGitHub);
@@ -1054,7 +1085,7 @@ $("uncapped_scan").addEventListener("click", async () => {
     return;
   }
   $("status").className = ""; $("subject").innerHTML = ""; $("results").innerHTML = "";
-  $("loadmore").hidden = true; hideSave(); hideRecheck(); single = null; shownPeople = {}; personSeq = 0;
+  $("loadmore").hidden = true; hideSave(); hideRecheck(); hideRefresh(); single = null; shownPeople = {}; personSeq = 0;
   currentInput = inp; $("go").disabled = true;
   try { await runCategory(inp, { uncapped: true }); }
   catch (err) {
@@ -1064,6 +1095,7 @@ $("uncapped_scan").addEventListener("click", async () => {
 });
 $("loadmore_btn").addEventListener("click", () => scanAndRender());
 $("recheck_btn").addEventListener("click", () => recheckAll());
+$("refresh_btn").addEventListener("click", () => refreshLoaded());
 $("results").addEventListener("click", e => {
   const deep = e.target.closest(".deep-btn");
   if (deep) { deepSearch(deep.getAttribute("data-id")); return; }
