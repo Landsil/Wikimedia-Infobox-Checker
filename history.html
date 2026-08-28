@@ -47,7 +47,11 @@
 <main>
   <div id="status"></div>
   <div id="subject"></div>
-  <div id="loadmore" hidden><button type="button" id="loadmore_btn">Scan more files</button></div>
+  <div id="loadmore" hidden>
+    <button type="button" id="loadmore_btn">Scan more files</button>
+    <label class="age-filter">files per click
+      <input type="number" id="chunk_size" min="1" max="5000" value="100"></label>
+  </div>
   <div id="results"></div>
 </main>
 
@@ -206,12 +210,16 @@ async function fetchFilesImageinfo(base, titles) {
   for (const batch of chunked(titles)) {
     for await (const query of mwQuery(base, { titles: batch.join("|"), prop: "imageinfo",
         iiprop: "timestamp|url|extmetadata|size", iiurlwidth: String(THUMB_WIDTH) })) {
+      // Non-English wikis rename the File namespace (fr "Fichier:", de "Datei:", …);
+      // map the returned title back to the requested one so the lookup key matches.
+      const alias = {};
+      for (const n of query.normalized || []) alias[n.to] = n.from;
       for (const page of Object.values(query.pages || {})) {
         const info = (page.imageinfo || [])[0]; if (!info) continue;
         const ext = info.extmetadata || {};
         const author = parseAuthor((ext.Artist || {}).value);
         const w = info.width || null, h = info.height || null;
-        result[page.title] = {
+        result[alias[page.title] || page.title] = {
           title: page.title, descriptionurl: info.descriptionurl || "",
           thumb: info.thumburl || info.url || "",
           taken: stripHtml((ext.DateTimeOriginal || {}).value) || info.timestamp || "",
@@ -461,7 +469,7 @@ async function filesAddedSince(category, depth, since) {
 // Category walk state: remaining file queue, running tallies, dedup of people,
 // and the accumulated live people (rendered sorted by initial-photo date).
 const cat = { queue: [], scanned: 0, truncated: false, count: 3, done: new Set(),
-              addedThrough: "", people: [] };
+              addedThrough: "", people: [], uncapped: false };
 
 // Resolve a list of files to the live people whose current infobox photo is one
 // of them (crop-aware), and build each person's history. Shared by the chunk
@@ -499,9 +507,11 @@ async function processFiles(fileList) {
   await attachInfo(people);
   return people;
 }
-// Process the next CAT_CHUNK files from the queue.
+// How many files a "Scan more files" click processes (user-adjustable, 1..5000).
+const chunkSize = () => Math.min(5000, Math.max(1, parseInt($("chunk_size").value, 10) || CAT_CHUNK));
+// Process the next chunk of files from the queue.
 async function scanCatChunk() {
-  const batch = cat.queue.splice(0, CAT_CHUNK);
+  const batch = cat.queue.splice(0, chunkSize());
   cat.scanned += batch.length;
   return processFiles(batch);
 }
@@ -618,7 +628,7 @@ function updateCatStatus() {
     + (remaining ? ` ${remaining} file(s) left — Save now to resume later.` : " Done.")
     + (cat.truncated ? ` (Capped at ${CAT_FILE_CAP} files — use “Slow un-capped scan” for the whole category.)` : "");
   $("loadmore").hidden = remaining === 0;
-  if (cat.people.length) showSave();   // any results (even partial) can be saved
+  if (cat.scanned > 0) showSave();   // any progress is worth saving (resume later), even with 0 live yet
 }
 async function scanAndRender() {
   const go = $("go"), more = $("loadmore_btn"), save = $("save_gh");
@@ -639,11 +649,12 @@ async function scanAndRender() {
 }
 function resetCat(inp) {
   cat.queue = []; cat.scanned = 0; cat.truncated = false;
-  cat.count = imgCount(); cat.done = new Set(); cat.addedThrough = ""; cat.people = [];
+  cat.count = imgCount(); cat.done = new Set(); cat.addedThrough = ""; cat.people = []; cat.uncapped = false;
 }
 async function runCategory(inp, opts) {
   opts = opts || {};
   resetCat(inp);
+  cat.uncapped = !!opts.uncapped;
   const cap = opts.uncapped ? Infinity : CAT_FILE_CAP;
   $("status").className = "";
   $("status").textContent = `Listing files in ${inp.title}…` + (opts.uncapped ? " (un-capped — this may take a while)" : "");
@@ -765,6 +776,9 @@ async function extendSingle() {
 //     category: files added after the saved watermark + changed people).
 // ===================================================================
 const ALGO_VERSION = 3;                 // bump when extraction/crop/timeline logic changes
+const PENDING_STORE_MAX = 8000;         // store the pending queue inline only up to this many files
+                                        // (GitHub's Contents API rejects files over ~1 MB); above it,
+                                        // resume re-enumerates and skips the already-scanned count.
 const GH = { owner: "Landsil", repo: "Wikimedia-Infobox-Checker", branch: "main", dir: "data/history" };
 const TOKEN_KEY = "ibx_gh_token";
 let currentInput = null;                // parsed input of the current search
@@ -825,9 +839,13 @@ function buildPayload() {
     asOf: new Date().toISOString(), input: currentInput };
   if (currentInput.type === "category") {
     // `pending`/`done`/`scanned` let a big category be saved mid-scan and resumed
-    // in a later session; `pending` is empty once the whole category is scanned.
+    // in a later session. A huge pending list would exceed GitHub's file-size
+    // limit, so above PENDING_STORE_MAX we store `pending: null` and resume by
+    // re-enumerating and skipping `scanned` files. `pending: []` means complete.
+    const storePending = cat.queue.length <= PENDING_STORE_MAX;
     return { ...base, type: "category", count: cat.count, addedThrough: cat.addedThrough || "",
-      scanned: cat.scanned, pending: cat.queue.slice(), done: [...cat.done],
+      uncapped: cat.uncapped, scanned: cat.scanned,
+      pending: storePending ? cat.queue.slice() : null, done: [...cat.done],
       people: cat.people.map(p => ({ lang: p.lang, article: p.article,
         label: p.label || null, qid: p.qid || null, topRev: p.topRev || null, more: !!p.more,
         timeline: timelineToJson(p.shown) })) };
@@ -904,14 +922,14 @@ async function hydrateCategory(data, inp) {
   cat.count = data.count || imgCount();
   cat.addedThrough = data.addedThrough || "";
   cat.scanned = data.scanned || (data.people || []).length;
-  cat.queue = (data.pending || []).slice();                 // resume an unfinished scan
+  cat.uncapped = !!data.uncapped;
   for (const k of (data.done || [])) cat.done.add(k);
   cat.people = (data.people || []).map(p => ({ lang: p.lang, article: p.article, label: p.label,
     qid: p.qid, topRev: p.topRev, more: p.more,
     shown: p.timeline.map(e => ({ ...e, key: cropParent(e.file) || e.file })) }));
   for (const p of cat.people) cat.done.add(p.lang + ":" + p.article);
   $("subject").innerHTML = `<p class="lead"><strong>${esc(inp.title)}</strong> — saved record from `
-    + `${esc((data.asOf || "").slice(0, 10))} (${cat.people.length} live${cat.queue.length ? `, ${cat.queue.length} file(s) not yet scanned` : ""}); checking for changes…</p>`;
+    + `${esc((data.asOf || "").slice(0, 10))} (${cat.people.length} live); checking for changes…</p>`;
   await attachInfo(cat.people);
   renderCatPeople();
   // Refresh stored people whose article changed since save.
@@ -938,6 +956,15 @@ async function hydrateCategory(data, inp) {
     if (fresh.length) { cat.people.push(...fresh); renderCatPeople(); }
   }
   if (addedThrough && addedThrough > cat.addedThrough) cat.addedThrough = addedThrough;
+  // Restore the backlog for an unfinished scan: use the stored list when present,
+  // else (omitted because it was too large) re-enumerate and skip what was scanned.
+  if (Array.isArray(data.pending)) cat.queue = data.pending.slice();
+  else if (data.pending === null) {
+    $("status").className = ""; $("status").textContent = "Rebuilding the file list to resume…";
+    const cap = cat.uncapped ? Infinity : CAT_FILE_CAP;
+    const { files } = await enumerateFiles(inp.title, Math.max(0, parseInt($("depth").value, 10) || 0), cap);
+    cat.queue = files.slice(cat.scanned || 0);
+  }   // undefined (older complete record) -> no backlog
   updateCatStatus();   // reflects live count, remaining queue (Scan more files), and enables Save
 }
 
