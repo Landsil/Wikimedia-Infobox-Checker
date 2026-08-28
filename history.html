@@ -388,10 +388,14 @@ async function scanCatChunk() {
     if (cat.done.has(key)) continue;                         // person already shown
     let lead;
     try { lead = await currentLead(r.lang, r.article); } catch (_) { continue; }
-    if (!sameOrCrop(file, lead)) continue;                   // this photo isn't their current infobox photo
+    if (!sameOrCrop(file, lead)) continue;                   // cheap gate: lead image isn't this photo
     cat.done.add(key);
     let res;
     try { res = await buildTimeline(r.lang, r.article, CAT_REV_LIMIT, cat.count); } catch (_) { continue; }
+    // Require a real infobox |image= history whose current entry is this photo.
+    // Some articles show the photo only as a plain lead thumbnail (no infobox);
+    // pageimages still reports it, but there's nothing to show — skip those.
+    if (!res.timeline.length || !sameOrCrop(file, res.timeline[0].file)) continue;
     people.push({ lang: r.lang, article: r.article, label: r.label, qid: r.qid,
                   shown: res.timeline.slice(0, cat.count), more: res.more });
   }
