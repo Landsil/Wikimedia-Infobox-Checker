@@ -164,6 +164,19 @@ const CROP_SUFFIX = /^(?<base>.+?)\s*\((?:[^)]*crop[^)]*)\)(?<ext>\.\w+)$/i;
 const cropParent = t => { const m = CROP_SUFFIX.exec(t || ""); return m ? m.groups.base + m.groups.ext : null; };
 const sameOrCrop = (a, b) => !!a && !!b && (a === b || cropParent(a) === b || cropParent(b) === a);
 
+// The authoritative CURRENT infobox photo is pageimages (`lead`), not the newest
+// wikitext |image= — those diverge when the image is set via Wikidata (P18) with
+// no local |image=, leaving a stale (often deleted) wikitext value. So when the
+// lead isn't the newest wikitext entry, put the lead first (as current) and keep
+// the wikitext entries as the previous photos. The synthetic current has no rev/
+// ts/user (the switch happened outside wikitext). Idempotent (safe to re-run).
+function mergeCurrent(timeline, lead) {
+  if (!lead) return timeline;
+  if (timeline.length && sameOrCrop(lead, timeline[0].file)) return timeline;
+  const prev = timeline.filter(e => !sameOrCrop(e.file, lead));
+  return [{ file: lead, key: cropParent(lead) || lead, rev: null, ts: null, user: null }, ...prev];
+}
+
 function sanitizeHref(href) {
   href = stripHtml(href).trim();
   if (href.startsWith("//")) return "https:" + href;
@@ -508,23 +521,25 @@ async function processFiles(fileList, onProgress) {
   for (const [lang, set] of Object.entries(byLang)) leads[lang] = await currentLeads(lang, [...set]);
   const live = [], seen = new Set();
   for (const c of candidates) {
-    if (!sameOrCrop(c.file, (leads[c.lang] || {})[c.article])) continue;
+    const lead = (leads[c.lang] || {})[c.article];
+    if (!sameOrCrop(c.file, lead)) continue;      // this photo is the person's current infobox photo
     const key = c.lang + ":" + c.article;
     if (seen.has(key)) continue; seen.add(key);
-    live.push(c);
+    live.push({ ...c, lead });
   }
-  // 3. Walk history only for the live people (require a real infobox |image=
-  //    whose current entry is this photo; plain lead thumbnails have no history).
+  // 3. Walk history for each live person; the CURRENT photo is the pageimages
+  //    lead, the wikitext walk supplies the previous photos.
   const people = [];
   let i = 0;
   for (const c of live) {
     if (onProgress) onProgress(`Building history ${++i}/${live.length}: ${c.label || c.article}`);
     cat.done.add(c.lang + ":" + c.article);
     let res;
-    try { res = await buildTimeline(c.lang, c.article, CAT_REV_LIMIT, cat.count); } catch (_) { continue; }
-    if (!res.timeline.length || !sameOrCrop(c.file, res.timeline[0].file)) continue;
-    people.push({ lang: c.lang, article: c.article, label: c.label, qid: c.qid,
-                  topRev: res.topRev, shown: res.timeline.slice(0, cat.count), more: res.more });
+    try { res = await buildTimeline(c.lang, c.article, CAT_REV_LIMIT, cat.count); } catch (_) { res = { timeline: [], more: false, topRev: null }; }
+    const merged = mergeCurrent(res.timeline, c.lead);
+    if (!merged.length) continue;
+    people.push({ lang: c.lang, article: c.article, label: c.label, qid: c.qid, lead: c.lead,
+                  topRev: res.topRev, shown: merged.slice(0, cat.count), more: res.more });
   }
   await attachInfo(people);
   return people;
@@ -595,7 +610,7 @@ async function deepSearch(id) {
   if (btn) { btn.disabled = true; btn.textContent = "Searching…"; }
   try {
     const res = await buildTimeline(p.lang, p.article, SINGLE_REV_LIMIT, cat.count);
-    p.shown = res.timeline.slice(0, cat.count); p.more = res.more; p.deepDone = true;
+    p.shown = mergeCurrent(res.timeline, p.lead).slice(0, cat.count); p.more = res.more; p.deepDone = true;
     await attachInfo([p]);
     el.outerHTML = renderPersonBlock(id, p);
   } catch (err) {
@@ -621,10 +636,18 @@ function tlCard(entry, i, newer) {
     : `<div class="photo"><div class="none">photo not readable</div></div>`;
   const author = info && info.author
     ? `<div class="author">by ${info.author_url ? link(info.author_url, info.author) : esc(info.author)}</div>` : "";
-  const usedInfo = i === 0
-    ? row("In use since", esc(dateOnly(entry.ts)) + " (by " + esc(entry.user) + ")")
-    : row("Was replaced", esc(dateOnly(newer.ts)) + " by " + esc(newer.user)
-        + ` <a class="mini" href="https://${esc(LANG)}.wikipedia.org/w/index.php?diff=${esc(newer.rev)}" target="_blank" rel="noopener">diff</a>`);
+  let usedInfo;
+  if (i === 0) {
+    usedInfo = entry.ts
+      ? row("In use since", esc(dateOnly(entry.ts)) + " (by " + esc(entry.user) + ")")
+      : row("Status", "Current infobox photo");   // set via Wikidata / not tracked in wikitext
+  } else {
+    const diff = newer.rev
+      ? ` <a class="mini" href="https://${esc(LANG)}.wikipedia.org/w/index.php?diff=${esc(newer.rev)}" target="_blank" rel="noopener">diff</a>` : "";
+    usedInfo = newer.ts
+      ? row("Was replaced", esc(dateOnly(newer.ts)) + " by " + esc(newer.user) + diff)
+      : row("Was replaced", "before the current photo");
+  }
   return `<div class="tl-card${i === 0 ? " current" : ""}">
     <div class="tl-head">${esc(headLabel(i))}</div>
     ${photo}
@@ -741,24 +764,25 @@ async function run() {
 
     if (inp.type === "category") { await runCategory(inp); return; }
 
-    let lang, article, label = null, qid = null, warnMsg = "";
+    let lang, article, label = null, qid = null, warnMsg = "", lead = null;
     if (inp.type === "file") {
       const r = await resolveSubjectFromFile(inp.title);
       if (r.error) { showError(r.error); return; }
       ({ lang, article, label, qid } = r);
-      const lead = await currentLead(lang, article);
+      lead = await currentLead(lang, article);
       if (!lead) warnMsg = `${label} currently has no infobox photo — showing the history that exists.`;
       else if (!sameOrCrop(inp.title, lead))
         warnMsg = `“${inp.title}” isn't ${label}'s current infobox photo (that's ${lead}). Showing ${label}'s history below.`;
     } else {
       lang = inp.lang; article = inp.title;
+      lead = await currentLead(lang, article);
     }
     LANG = lang;
 
     status.textContent = "Reading the article's revision history…";
     const count = imgCount();
     const res = await buildTimeline(lang, article, SINGLE_REV_LIMIT, count, null, { allowFallback: true });
-    if (!res.timeline.length) { showError(`No infobox photo found in ${article}'s recent history.`); return; }
+    if (!res.timeline.length && !lead) { showError(`No infobox photo found in ${article}'s recent history.`); return; }
 
     const subjHtml = label
       ? `<p class="lead"><strong>${link(wpArticleUrl(lang, article), label)}</strong>`
@@ -766,7 +790,7 @@ async function run() {
       : `<p class="lead"><strong>${link(wpArticleUrl(lang, article), article)}</strong></p>`;
     $("subject").innerHTML = subjHtml;
 
-    single = { lang, article, label, qid, warnMsg, timeline: res.timeline, more: res.more,
+    single = { lang, article, label, qid, warnMsg, lead, timeline: res.timeline, more: res.more,
                cont: res.cont, scanned: res.read, fullContent: res.usedFull, count, topRev: res.topRev };
     setModeBadge("live");
     await finishSingle();
@@ -784,7 +808,7 @@ let single = null;
 async function finishSingle() {
   const s = single;
   $("status").className = ""; $("status").textContent = "Fetching photo details…";
-  s.shown = s.timeline.slice(0, s.count);
+  s.shown = mergeCurrent(s.timeline, s.lead).slice(0, s.count);
   const info = await fetchFilesImageinfo(wpApi(s.lang), s.shown.map(e => e.file));
   for (const e of s.shown) e.info = info[e.file] || null;
   await ensureFam();   // crops of each shown photo, unless originals are hidden
@@ -905,13 +929,13 @@ function buildPayload() {
       pending: storePending ? cat.queue.slice() : null, done: [...cat.done],
       people: cat.people.map(p => ({ lang: p.lang, article: p.article,
         label: p.label || null, qid: p.qid || null, topRev: p.topRev || null, more: !!p.more,
-        timeline: timelineToJson(p.shown) })) };
+        lead: p.lead || null, timeline: timelineToJson(p.shown) })) };
   }
   const s = single;
   return { ...base, type: "single", count: s.count, lang: s.lang, article: s.article,
     label: s.label || null, qid: s.qid || null, topRev: s.topRev || null, more: !!s.more,
     cont: s.cont || null, fullContent: !!s.fullContent, scanned: s.scanned || 0,
-    timeline: timelineToJson(s.timeline) };
+    lead: s.lead || null, timeline: timelineToJson(s.timeline) };
 }
 async function saveToGitHub() {
   if (!currentInput) return;
@@ -957,6 +981,7 @@ async function refreshLoaded() {
 async function refreshSingle() {
   const s = single; if (!s) return;
   $("status").className = ""; $("status").textContent = "Checking for changes…";
+  s.lead = await currentLead(s.lang, s.article);   // the current photo itself may have changed
   const cur = await currentTopRev(s.lang, s.article);
   if (cur && s.topRev && cur !== s.topRev) {
     const res = await buildTimeline(s.lang, s.article, SINGLE_REV_LIMIT, s.count, null, { allowFallback: true });
@@ -975,8 +1000,10 @@ async function refreshCategory() {
     for (const p of ps) {
       if (!last[p.article] || last[p.article] === p.topRev) continue;
       let res; try { res = await buildTimeline(p.lang, p.article, CAT_REV_LIMIT, cat.count); } catch (_) { continue; }
-      if (!res.timeline.length) continue;
-      p.topRev = res.topRev; p.more = res.more; p.shown = res.timeline.slice(0, cat.count);
+      p.lead = await currentLead(p.lang, p.article);   // current photo may have changed
+      const merged = mergeCurrent(res.timeline, p.lead);
+      if (!merged.length) continue;
+      p.topRev = res.topRev; p.more = res.more; p.shown = merged.slice(0, cat.count);
       await attachInfo([p]);
       if (p._id && $(p._id)) $(p._id).outerHTML = renderPersonBlock(p._id, p);
     }
@@ -1042,6 +1069,7 @@ async function hydrateSingle(data, inp) {
       + (data.qid ? ` · ${link("https://www.wikidata.org/wiki/" + data.qid, data.qid)}` : "") + `</p>`
     : `<p class="lead"><strong>${link(wpArticleUrl(data.lang, data.article), data.article)}</strong></p>`;
   single = { lang: data.lang, article: data.article, label: data.label, qid: data.qid, warnMsg: "",
+    lead: data.lead || null,
     timeline: data.timeline.map(e => ({ ...e, key: cropParent(e.file) || e.file })),
     more: data.more, cont: data.cont, fullContent: data.fullContent, scanned: data.scanned || 0,
     count: imgCount(), topRev: data.topRev };
@@ -1057,7 +1085,7 @@ async function hydrateCategory(data, inp) {
   cat.uncapped = !!data.uncapped;
   for (const k of (data.done || [])) cat.done.add(k);
   cat.people = (data.people || []).map(p => ({ lang: p.lang, article: p.article, label: p.label,
-    qid: p.qid, topRev: p.topRev, more: p.more,
+    qid: p.qid, topRev: p.topRev, more: p.more, lead: p.lead || null,
     shown: p.timeline.map(e => ({ ...e, key: cropParent(e.file) || e.file })) }));
   for (const p of cat.people) cat.done.add(p.lang + ":" + p.article);
   // Restore the backlog: stored list when present; if it was omitted (too large),
