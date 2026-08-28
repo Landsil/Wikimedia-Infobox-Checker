@@ -178,8 +178,8 @@ const NON_WIKIPEDIA_WIKIS = new Set([
 // Small helpers
 // =========================================================================
 const $ = id => document.getElementById(id);
-const esc = s => (s == null ? "" : String(s)).replace(/[&<>"]/g,
-  c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const esc = s => (s == null ? "" : String(s)).replace(/[&<>"']/g,
+  c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 function chunked(arr, size = BATCH) {
@@ -188,12 +188,13 @@ function chunked(arr, size = BATCH) {
   return out;
 }
 
-// Reduce an extmetadata HTML fragment to readable plain text.
+// Reduce an extmetadata HTML fragment to readable plain text. Parse in an inert
+// document (DOMParser) so no resource loads or event handlers can fire from
+// world-editable Commons data — unlike assigning to a live element's innerHTML.
 function stripHtml(value) {
   if (!value) return "";
-  const el = document.createElement("div");
-  el.innerHTML = String(value).replace(/<[^>]+>/g, " ");
-  return (el.textContent || "").replace(/\s+/g, " ").trim();
+  const doc = new DOMParser().parseFromString(String(value), "text/html");
+  return (doc.body.textContent || "").replace(/\s+/g, " ").trim();
 }
 
 // Accept any category spelling (spaces, underscores, "+", "%20", optional
@@ -225,9 +226,15 @@ function inRange(ts, start, end) {
 // API layer (fetch + &origin=* for CORS, retry/backoff on real rate limiting)
 // =========================================================================
 
+const FETCH_TIMEOUT_MS = 20000;   // abort a hung connection so one stall can't freeze the run
+
 function retryDelayMs(resp, attempt) {
   const ra = resp.headers.get("Retry-After");
-  if (ra && /^\d+$/.test(ra)) return parseFloat(ra) * 1000;
+  if (ra) {
+    if (/^\d+$/.test(ra)) return parseFloat(ra) * 1000;           // delta-seconds
+    const when = Date.parse(ra);                                  // or an HTTP-date
+    if (!isNaN(when)) return Math.max(0, when - Date.now());
+  }
   return BACKOFF_BASE * 2 ** attempt * 1000;
 }
 
@@ -250,22 +257,25 @@ async function apiGet(base, params) {
 
   for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
     let resp;
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), FETCH_TIMEOUT_MS);
     try {
-      resp = await fetch(url, { credentials: "omit" });
-    } catch (err) {                                // network/CORS failure
+      resp = await fetch(url, { credentials: "omit", signal: ctrl.signal });
+    } catch (err) {                                // network/CORS failure or timeout
       if (attempt < MAX_RETRIES - 1) { await sleep(BACKOFF_BASE * 2 ** attempt * 1000); continue; }
       throw err;
-    }
+    } finally { clearTimeout(timer); }
     let data = null;
     try { data = JSON.parse(await resp.text()); } catch (_) { data = null; }
 
-    if (resp.status === 429 || resp.status === 503) {
+    // Retry rate-limiting and transient upstream 5xx (500/502/504), not just 503.
+    if ([429, 500, 502, 503, 504].includes(resp.status)) {
       if (attempt < MAX_RETRIES - 1) { await sleep(retryDelayMs(resp, attempt)); continue; }
-      throw new Error(`MediaWiki still rate-limiting after ${MAX_RETRIES} attempts (${base}); `
-        + "aborting rather than returning partial results.");
+      throw new Error(`MediaWiki unavailable (HTTP ${resp.status}) after ${MAX_RETRIES} attempts (${base}).`);
     }
     if (!resp.ok) throw new Error(`HTTP ${resp.status} from ${base}`);
     if (data === null) throw new Error(`Non-JSON response from ${base}`);
+    if (data.error) throw new Error(`Wikimedia API error: ${data.error.code}${data.error.info ? " — " + data.error.info : ""}`);
     return data;
   }
 }
@@ -378,21 +388,27 @@ async function fetchArticleLeadImages(articles) {
   const lead = new Map();
   for (const [site, titleSet] of Object.entries(bySite)) {
     const api = wikipediaApiUrl(site);
-    for (const batch of chunked([...titleSet].sort())) {
-      const params = {
-        titles: batch.join("|"), prop: "pageimages",
-        piprop: "name", pilicense: "any", redirects: "1",
-      };
-      const alias = {};   // map normalized/redirected title back to requested
-      for await (const query of mwQuery(api, params)) {
-        for (const e of query.normalized || []) alias[e.to] = e.from;
-        for (const e of query.redirects || []) alias[e.to] = alias[e.from] || e.from;
-        for (const page of Object.values(query.pages || {})) {
-          const requested = alias[page.title] || page.title;
-          const name = page.pageimage;   // uses underscores; Commons uses spaces
-          lead.set(`${site}\n${requested}`, name ? "File:" + name.replace(/_/g, " ") : null);
+    try {
+      for (const batch of chunked([...titleSet].sort())) {
+        const params = {
+          titles: batch.join("|"), prop: "pageimages",
+          piprop: "name", pilicense: "any", redirects: "1",
+        };
+        const alias = {};   // map normalized/redirected title back to requested
+        for await (const query of mwQuery(api, params)) {
+          for (const e of query.normalized || []) alias[e.to] = e.from;
+          for (const e of query.redirects || []) alias[e.to] = alias[e.from] || e.from;
+          for (const page of Object.values(query.pages || {})) {
+            const requested = alias[page.title] || page.title;
+            const name = page.pageimage;   // uses underscores; Commons uses spaces
+            lead.set(`${site}\n${requested}`, name ? "File:" + name.replace(/_/g, " ") : null);
+          }
         }
       }
+    } catch (err) {
+      // One wiki being down shouldn't discard the whole multi-step search; skip
+      // it (its articles just have an unknown lead image) and carry on.
+      console.warn(`Infobox Finder: skipping ${site} (${err && err.message})`);
     }
   }
   return lead;

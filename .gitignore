@@ -8,3 +8,6 @@ venv/
 
 # macOS
 .DS_Store
+
+# Local code-review notes (never publish)
+CODE_REVIEW.md

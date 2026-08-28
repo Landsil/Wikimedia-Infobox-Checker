@@ -128,10 +128,11 @@ function chunked(arr, size = BATCH) {
   return out;
 }
 function stripHtml(v) {
+  // Inert parse (no resource loads / event handlers) — safe for world-editable
+  // Commons extmetadata, unlike assigning it to a live innerHTML.
   if (!v) return "";
-  const el = document.createElement("div");
-  el.innerHTML = String(v).replace(/<[^>]+>/g, " ");
-  return (el.textContent || "").replace(/\s+/g, " ").trim();
+  const doc = new DOMParser().parseFromString(String(v), "text/html");
+  return (doc.body.textContent || "").replace(/\s+/g, " ").trim();
 }
 const dateOnly = v => {
   const s = (v == null ? "" : String(v)).trim();
@@ -174,12 +175,16 @@ async function apiGet(base, params) {
     }
     let data = null;
     try { data = JSON.parse(await resp.text()); } catch (_) {}
-    if (resp.status === 429 || resp.status === 503) {
+    // Retry rate-limiting AND transient upstream 5xx (500/502/504), not just 503.
+    if ([429, 500, 502, 503, 504].includes(resp.status)) {
       if (attempt < MAX_RETRIES - 1) { await sleep(retryDelayMs(resp, attempt)); continue; }
-      throw new Error(`Wikimedia rate-limiting after ${MAX_RETRIES} attempts (${base}).`);
+      throw new Error(`Wikimedia unavailable (HTTP ${resp.status}) after ${MAX_RETRIES} attempts (${base}).`);
     }
     if (!resp.ok) throw new Error(`HTTP ${resp.status} from ${base}`);
     if (data === null) throw new Error(`Non-JSON response from ${base}`);
+    // A 200 can still carry a MediaWiki error (e.g. bad category) — surface it
+    // instead of letting mwQuery see no `query` and silently report 0 results.
+    if (data.error) throw new Error(`Wikimedia API error: ${data.error.code}${data.error.info ? " — " + data.error.info : ""}`);
     return data;
   }
 }
@@ -202,13 +207,15 @@ async function fetchFilesImageinfo(titles) {
     const params = { titles: batch.join("|"), prop: "imageinfo",
       iiprop: "timestamp|url|extmetadata|size", iiurlwidth: String(THUMB_WIDTH) };
     for await (const query of mwQuery(COMMONS_API, params)) {
+      const alias = {};                                     // API-normalized title -> requested title
+      for (const n of query.normalized || []) alias[n.to] = n.from;
       for (const page of Object.values(query.pages || {})) {
         const info = (page.imageinfo || [])[0];
         if (!info) continue;
         const ext = info.extmetadata || {};
         const taken = stripHtml((ext.DateTimeOriginal || {}).value) || info.timestamp || "";
         const w = info.width || null, h = info.height || null;
-        result[page.title] = {
+        result[alias[page.title] || page.title] = {
           title: page.title, descriptionurl: info.descriptionurl || "",
           thumb: info.thumburl || info.url || "", taken, timestamp: info.timestamp || "",
           width: w, height: h,
@@ -229,8 +236,8 @@ const wikipediaArticleUrl = title =>
 // Resumable BFS. `state` holds the frontier + seen sets so it can continue.
 function newWalk(category, depth) {
   if (!/^category:/i.test(category)) category = "Category:" + category;
-  return { frontier: [[category, 0]], seenCats: new Set(), maxDepth: depth,
-           truncated: false, done: false };
+  return { frontier: [[category, 0]], seenCats: new Set(), seenArticles: new Set(),
+           maxDepth: depth, truncated: false, done: false };
 }
 // Advance the walk until `maxNew` fresh article titles are found or it's done.
 async function collectMore(walk, maxNew, onProgress) {
@@ -246,7 +253,8 @@ async function collectMore(walk, maxNew, onProgress) {
         if (m.type === "subcat") {
           if (d < walk.maxDepth) walk.frontier.push([m.title, d + 1]);
           else walk.truncated = true;
-        } else if (m.ns === 0) {
+        } else if (m.ns === 0 && !walk.seenArticles.has(m.title)) {
+          walk.seenArticles.add(m.title);   // dedup across Load-more chunks (an article in two subcats)
           found.push(m.title);
         }
       }
@@ -284,8 +292,12 @@ async function fetchArticlePhotoState(titles, onProgress) {
   return out;
 }
 
+// Skip deprecated and novalue/somevalue claims so a bad/placeholder statement
+// doesn't win over the real one.
+const usableClaim = st => st && st.rank !== "deprecated" && st.mainsnak && st.mainsnak.snaktype === "value";
 function firstP18(claims) {
   for (const st of (claims.P18 || [])) {
+    if (!usableClaim(st)) continue;
     try { const fn = st.mainsnak.datavalue.value; if (fn) return fn; } catch (_) {}
   }
   return null;
@@ -294,6 +306,7 @@ function firstP18(claims) {
 // 11=day). Coarser (decade/century) or missing -> null = "age unknown".
 function birthYearFromClaims(claims) {
   for (const st of (claims.P569 || [])) {
+    if (!usableClaim(st)) continue;
     try {
       const v = st.mainsnak.datavalue.value;
       if (v.precision >= 9) {
@@ -566,8 +579,17 @@ function applyUrlParams() {
 // what makes a cell like =IMAGE("url") survive the round-trip into Sheets.
 const csvCell = v => '"' + (v == null ? "" : String(v)).replace(/"/g, '""') + '"';
 const csvRow = cells => cells.map(csvCell).join(",");
-const csvImg = url => url ? `=IMAGE("${url}")` : "";
-const csvLink = (url, label) => url ? `=HYPERLINK("${url}","${(label || url)}")` : "";
+// Escape a value for use INSIDE a formula string literal ("…"): double its
+// quotes so an attacker-controlled filename/label can't close the string and
+// append its own =IMAGE()/=HYPERLINK() call (CSV-quoting is reversed on import,
+// so it can't neutralize this — the escaping must happen at the formula layer).
+const q2 = s => String(s == null ? "" : s).replace(/"/g, '""');
+const csvImg = url => url ? `=IMAGE("${q2(url)}")` : "";
+const csvLink = (url, label) => url ? `=HYPERLINK("${q2(url)}","${q2(label || url)}")` : "";
+// Neutralise formula-injection in DATA cells (raw export): a leading =,+,-,@ or
+// control char makes Excel/Sheets treat the cell as a formula; prefix a quote.
+const csvGuard = v => { const s = v == null ? "" : String(v); return /^[=+\-@\t\r]/.test(s) ? "'" + s : s; };
+const csvRowData = cells => cells.map(v => csvCell(csvGuard(v))).join(",");
 const commonsDepictSearch = qid =>
   "https://commons.wikimedia.org/w/index.php?title=Special:Search&fulltext=1&ns6=1"
   + "&search=" + encodeURIComponent("haswbstatement:P180=" + qid);
@@ -597,7 +619,7 @@ function buildRawCsv(gaps) {
     g.depictChecked ? (g.depictFiles || []).length : "",
     (g.depictFiles || []).map(f => f.title).join("; "),
   ]);
-  return [csvRow(header), ...rows.map(csvRow)].join("\r\n");
+  return [csvRow(header), ...rows.map(csvRowData)].join("\r\n");
 }
 
 function buildSheetsCsv(gaps) {

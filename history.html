@@ -129,10 +129,11 @@ const pressed = id => $(id).getAttribute("aria-pressed") === "true";
 const imgCount = () => Math.min(10, Math.max(1, parseInt($("count").value, 10) || 3));
 function chunked(a, n = BATCH) { const o = []; for (let i = 0; i < a.length; i += n) o.push(a.slice(i, i + n)); return o; }
 function stripHtml(v) {
+  // Parse in an inert document: no resource loads, no event handlers fire — safe
+  // for world-editable Commons extmetadata (unlike assigning to a live innerHTML).
   if (!v) return "";
-  const el = document.createElement("div");
-  el.innerHTML = String(v).replace(/<[^>]+>/g, " ");
-  return (el.textContent || "").replace(/\s+/g, " ").trim();
+  const doc = new DOMParser().parseFromString(String(v), "text/html");
+  return (doc.body.textContent || "").replace(/\s+/g, " ").trim();
 }
 const dateOnly = v => { const m = /^(\d{4}-\d{2}-\d{2})/.exec((v == null ? "" : String(v)).trim()); return m ? m[1] : (v || ""); };
 const resolution = o => (o && o.megapixels != null && o.width && o.height) ? `${o.megapixels} MP (${o.width}×${o.height})` : "";
@@ -173,12 +174,13 @@ async function apiGet(base, params) {
     try { resp = await fetch(url, { credentials: "omit" }); }
     catch (err) { if (attempt < MAX_RETRIES - 1) { await sleep(BACKOFF_BASE * 2 ** attempt * 1000); continue; } throw err; }
     let data = null; try { data = JSON.parse(await resp.text()); } catch (_) {}
-    if (resp.status === 429 || resp.status === 503) {
+    if ([429, 500, 502, 503, 504].includes(resp.status)) {   // rate-limit or transient 5xx
       if (attempt < MAX_RETRIES - 1) { await sleep(retryDelayMs(resp, attempt)); continue; }
-      throw new Error(`Wikimedia rate-limiting after ${MAX_RETRIES} attempts.`);
+      throw new Error(`Wikimedia unavailable (HTTP ${resp.status}) after ${MAX_RETRIES} attempts.`);
     }
     if (!resp.ok) throw new Error(`HTTP ${resp.status} from ${base}`);
     if (data === null) throw new Error(`Non-JSON response from ${base}`);
+    if (data.error) throw new Error(`Wikimedia API error: ${data.error.code}${data.error.info ? " — " + data.error.info : ""}`);
     return data;
   }
 }
@@ -508,7 +510,7 @@ async function attachInfo(people) {
 }
 
 let personSeq = 0;              // stable ids so a single row can be re-rendered in place
-const shownPeople = {};         // id -> person (for the deeper-search re-render)
+let shownPeople = {};           // id -> person (for the deeper-search re-render); reset each run()
 function renderPerson(p) { const id = "pb-" + personSeq++; p._id = id; shownPeople[id] = p; return renderPersonBlock(id, p); }
 function renderPersonBlock(id, p) {
   LANG = p.lang;                // diff links in tlCard() read this; set per person
@@ -629,7 +631,7 @@ async function run() {
   const status = $("status"), go = $("go");
   status.className = ""; status.textContent = "Resolving…";
   $("subject").innerHTML = ""; $("results").innerHTML = ""; $("loadmore").hidden = true;
-  hideSave(); single = null; go.disabled = true;
+  hideSave(); single = null; shownPeople = {}; personSeq = 0; go.disabled = true;
   try {
     const inp = parseInput($("q").value);
     if (!inp) { showError("Enter an article link, a file name, a file link, or a category."); return; }
@@ -755,13 +757,19 @@ async function loadCache(inp) {
     if (!r.ok) return null;
     const data = await r.json();
     if (!data || data.algoVersion !== ALGO_VERSION || data.identity !== cacheIdentity(inp)) return null;
+    // Guard the wiki code (flows into `https://<lang>.wikipedia.org/…` unencoded).
+    const okLang = l => /^[a-z-]{2,}$/.test(l || "");
+    if (data.type === "single") { if (!okLang(data.lang)) return null; }
+    else if ((data.people || []).some(p => !okLang(p.lang))) return null;
     return data;
   } catch (_) { return null; }
 }
 
 // --- GitHub write (fine-grained PAT in localStorage) ---
-function ghToken() { return localStorage.getItem(TOKEN_KEY) || ""; }
-function setGhToken(t) { if (t) localStorage.setItem(TOKEN_KEY, t); else localStorage.removeItem(TOKEN_KEY); }
+// sessionStorage (not localStorage): the write-capable PAT lives only for this
+// tab session and never persists to disk, limiting the exposure window.
+function ghToken() { return sessionStorage.getItem(TOKEN_KEY) || ""; }
+function setGhToken(t) { if (t) sessionStorage.setItem(TOKEN_KEY, t); else sessionStorage.removeItem(TOKEN_KEY); }
 function b64utf8(s) { return btoa(unescape(encodeURIComponent(s))); }
 async function ghApi(method, path, body) {
   const r = await fetch(`https://api.github.com${path}`, {
