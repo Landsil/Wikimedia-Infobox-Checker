@@ -2,7 +2,7 @@
   "schema": 1,
   "algoVersion": 3,
   "identity": "category|Category:WikiPortraits uploads",
-  "asOf": "2026-08-28T17:52:37.163Z",
+  "asOf": "2026-08-28T18:53:13.479Z",
   "input": {
     "type": "category",
     "title": "Category:WikiPortraits uploads"
@@ -11,7 +11,7 @@
   "count": 3,
   "addedThrough": "2026-08-28T14:26:31Z",
   "uncapped": true,
-  "scanned": 14200,
+  "scanned": 19200,
   "pending": null,
   "done": [
     "fr:Laurène Marx",
@@ -1516,7 +1516,215 @@
     "en:Carina Lau",
     "en:Chen Haoyu",
     "en:Derek Yee",
-    "en:Gitanjali Rao"
+    "en:Gitanjali Rao",
+    "en:Isabella Leong",
+    "en:Jiang Mengjie",
+    "en:Jinjett Wattanasin",
+    "en:Jo Kuk",
+    "en:João Salaviza",
+    "en:Li Xueqin (comedian)",
+    "en:Louis Godbout",
+    "en:Ma Sichun",
+    "en:Manoj Pramanik",
+    "en:Miya Muqi",
+    "en:Nattawut Poonpiriya",
+    "zh:倪虹洁",
+    "en:Nick Cheuk",
+    "en:Norris Wong",
+    "es:Patricia Ayala Ruiz",
+    "en:Patrick Shih",
+    "en:Rakeen Saad",
+    "en:Sean Lau",
+    "en:Stephen Fung",
+    "en:Tontawan Tantivejakul",
+    "zh:王維明 (台灣)",
+    "en:Leo Wu",
+    "en:Yassine El Idrissi",
+    "ro:Fang Yin",
+    "en:Zhang Songwen",
+    "en:Zheng Yunlong",
+    "en:Nina Gantz",
+    "en:Cecilia Zoppelletto",
+    "en:Jean-Michel Kibushi Ndjate Wooto",
+    "en:Keith Shiri",
+    "en:Andrew Dosunmu",
+    "en:Zoe Ramushu",
+    "ar:أسماء جلال",
+    "ar:محمد كريم (ممثل)",
+    "en:Nelly Karim",
+    "en:Seo Su-bin",
+    "en:Shahad Ameen",
+    "en:Alba Ribas",
+    "de:Alexander Horwath",
+    "en:Andrius Blaževičius",
+    "es:Beli Martínez",
+    "ca:Carla Nieto i Geli",
+    "en:Carla Quílez",
+    "ca:Carlos F. Heredero",
+    "en:Carolina Yuste",
+    "en:Diego San José",
+    "en:Elena Trapé",
+    "es:Esperanza Fernández Vargas",
+    "en:Federico Veiroj",
+    "de:Isabelle Stoffel",
+    "en:Javier Cámara",
+    "ar:جان بيار داردين",
+    "en:Jesús Julio Carnero",
+    "en:José Luis Cienfuegos",
+    "de:Julian Radlmaier",
+    "pt:Leonor Noivo",
+    "ca:Llum Barrera San Juan",
+    "en:Luis Callejo",
+    "ca:María Ruido",
+    "en:Max Walker-Silverman",
+    "en:Mia Hansen-Løve",
+    "en:Nata Moreno",
+    "de:Pedro Pinho",
+    "ca:Pere Vilà Barceló",
+    "en:Rafael Cobos",
+    "ca:Ana Serret Ituarte",
+    "en:Zoe Stein",
+    "en:Álvaro Cervantes",
+    "en:Ángela Cervantes",
+    "en:Boyd Morrison",
+    "en:Christine Swanson",
+    "en:Dana Nachman",
+    "en:Doug Siebum",
+    "de:Johnny Rey Diaz",
+    "en:Kevin Hines",
+    "en:Loretta Devine",
+    "de:Meyer Levinson-Blount",
+    "en:Sarah Shourd",
+    "en:Saurav Mohapatra",
+    "fr:Abbesi Akhamie",
+    "fr:Eva Guéhi",
+    "nl:Anna Franziska Jäger",
+    "nl:Aster Nzeyimana",
+    "nl:Brecht De Groot",
+    "nl:Cecilia Verheyden",
+    "nl:Daphne Agten",
+    "nl:Fatma Taspinar",
+    "nl:Felix Heremans",
+    "nl:Frederik Daem",
+    "nl:Geert Meyfroidt",
+    "en:Huub Stapel",
+    "nl:Ikram Aoulad",
+    "nl:Ini Massez",
+    "nl:Isabelle Van Hecke",
+    "en:Jessica Reynolds",
+    "fr:Karin Junger",
+    "nl:Karl Vannieuwkerke",
+    "nl:Kat Steppe",
+    "de:Liesa van der Aa",
+    "en:Lou Goossens",
+    "nl:Lucie Plasschaert",
+    "nl:Lynn Van Royen",
+    "nl:Marjan De Schutter",
+    "fr:Marta Bergman",
+    "nl:Miss Angel",
+    "nl:Mona Mina Leon",
+    "nl:Pedro Elias",
+    "nl:Peter Seynaeve",
+    "fr:Sandra Bekkari",
+    "nl:Serine Ayari",
+    "en:Stienette Bosklopper",
+    "nl:Thomas Van Goethem",
+    "fr:Vanja d'Alcantara",
+    "nl:Xavier Taveirne",
+    "nl:Zion Luts",
+    "fr:Zwangere Guy",
+    "en:Jane Fonda",
+    "nl:Cesar Majorana",
+    "fr:David Verbeek",
+    "en:Doğukan Ergin",
+    "en:Jenna Thiam",
+    "es:João Nicolau",
+    "nl:Pete Wu",
+    "nl:Ymke Wieringa",
+    "en:Josh Sapan",
+    "en:Adam Aron",
+    "en:Alison Klayman",
+    "en:Amy Gutierrez",
+    "en:Ben Proudfoot",
+    "en:Beth Aala",
+    "en:Carolina Cavalli",
+    "en:Daniel Ho",
+    "en:Greta Lee",
+    "en:Kent Jones (critic)",
+    "en:Nancy Stephens",
+    "en:Ned Segal",
+    "en:NEZZA",
+    "en:Rick Rosenthal",
+    "en:Robin Frohardt",
+    "en:Simon Cheffins",
+    "en:Todd Traina",
+    "en:Elliot Page",
+    "en:Benedikt Erlingsson",
+    "en:Chase Infiniti",
+    "fr:David Mora (acteur)",
+    "en:François-Xavier Demaison (actor)",
+    "fr:Laurence Herszberg",
+    "en:Mackenzie Crook",
+    "en:Manon Bresch",
+    "en:Steven Moffat",
+    "en:David Margolick",
+    "en:Robert Richardson (cinematographer)",
+    "en:Fred Benenson",
+    "en:Martin Donovan",
+    "en:Michael Cohen (lawyer)",
+    "de:Alexa Goodall",
+    "de:Alice Douard",
+    "en:Anders Thomas Jensen",
+    "en:Colin Farrell",
+    "en:Zoë Pastelle",
+    "en:Aiysha Hart",
+    "de:Angelo Boffa",
+    "de:Annina Hunziker",
+    "en:Anthony Mackie",
+    "es:Araloyin Oshunremi",
+    "en:Bartosz Bielenia",
+    "en:Bertrand Piccard",
+    "en:Carla Juri",
+    "en:David Michôd",
+    "en:Haifaa al-Mansour",
+    "en:Harry Lighton",
+    "en:Hildur Guðnadóttir",
+    "de:Luisa Wolf",
+    "en:Marco Odermatt",
+    "en:Matthias Schweighöfer",
+    "en:Max Simonischek",
+    "en:Motaz Malhees",
+    "en:Nabil Elouahabi",
+    "en:Namir Abdel Messeeh",
+    "en:Nathalie Richard",
+    "de:Neele Vollmar",
+    "en:Nia DaCosta",
+    "en:Odessa Rae",
+    "de:Lara Wolf (Schauspielerin)",
+    "de:Christian Jungen",
+    "en:Philippa Lowthorpe",
+    "en:Russell Crowe",
+    "en:Sharlto Copley",
+    "de:Sven Schelker",
+    "en:Vincent Munier",
+    "en:Emily Edenshaw",
+    "no:Linus Johnsen",
+    "no:Terje Bartholsen",
+    "de:Vegard Bjørsmo",
+    "en:Robert Mirabal",
+    "en:Brandy Zadrozny",
+    "en:Davey Alba",
+    "en:Jacob Mchangama",
+    "en:Jay Graber",
+    "en:Jeff Horwitz",
+    "en:Jim Brady (journalist)",
+    "en:Andrés Cantor",
+    "en:John Quiñones",
+    "en:Alan Weisman",
+    "en:Kevin Sampsell",
+    "en:Omar El Akkad",
+    "de:Alexis E. Fajardo",
+    "en:Elisa Stone Leahy"
   ],
   "people": [
     {
@@ -4924,6 +5132,35 @@
     },
     {
       "lang": "en",
+      "article": "John Quiñones",
+      "label": "John Quiñones",
+      "qid": "Q3182326",
+      "topRev": 1368858736,
+      "more": false,
+      "lead": "File:NOLA NAHJ 2026 Conference - John Quiñones 1.jpg",
+      "timeline": [
+        {
+          "file": "File:NOLA NAHJ 2026 Conference - John Quiñones 1.jpg",
+          "rev": 1368858736,
+          "ts": "2026-08-11T13:25:26Z",
+          "user": "Babin Mew"
+        },
+        {
+          "file": "File:John Quiñones.png",
+          "rev": 1356174598,
+          "ts": "2026-05-26T03:44:15Z",
+          "user": "~2026-23084-17"
+        },
+        {
+          "file": "File:John Quiñones.jpg",
+          "rev": 1340037524,
+          "ts": "2026-02-23T16:29:17Z",
+          "user": "Jolielover"
+        }
+      ]
+    },
+    {
+      "lang": "en",
       "article": "Zlatan Ibrahimović",
       "label": "Zlatan Ibrahimović",
       "qid": "Q46896",
@@ -5067,6 +5304,40 @@
     },
     {
       "lang": "en",
+      "article": "Doug Siebum",
+      "label": "Doug Siebum",
+      "qid": "Q16980900",
+      "topRev": 1368001470,
+      "more": false,
+      "lead": "File:Doug Siebum BraveMaker 2026 03.jpg",
+      "timeline": [
+        {
+          "file": "File:Doug Siebum BraveMaker 2026 03.jpg",
+          "rev": 1368001470,
+          "ts": "2026-08-06T13:08:35Z",
+          "user": "SchlurcherBot"
+        }
+      ]
+    },
+    {
+      "lang": "de",
+      "article": "Johnny Rey Diaz",
+      "label": "Johnny Rey Diaz",
+      "qid": "Q100730468",
+      "topRev": 269991048,
+      "more": false,
+      "lead": "File:Johnny Rey Diaz BraveMaker 2026 01 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Johnny Rey Diaz BraveMaker 2026 01 (cropped).jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "en",
       "article": "Charlie Hall (actor, born 1997)",
       "label": "Charlie Hall",
       "qid": "Q107546161",
@@ -5125,6 +5396,149 @@
           "rev": 1363446290,
           "ts": "2026-07-10T06:05:54Z",
           "user": "PaulLim11"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Boyd Morrison",
+      "label": "Boyd Morrison",
+      "qid": "Q23418600",
+      "topRev": 1371370026,
+      "more": false,
+      "lead": "File:Boyd Morrison BraveMaker 2026 03 (cropped v2).jpg",
+      "timeline": [
+        {
+          "file": "File:Boyd Morrison BraveMaker 2026 03 (cropped v2).jpg",
+          "rev": 1371370026,
+          "ts": "2026-08-26T03:12:44Z",
+          "user": "ZackBot"
+        },
+        {
+          "file": "File:Boyd_Morrison.jpg",
+          "rev": 723877315,
+          "ts": "2016-06-05T20:56:32Z",
+          "user": "Kaobear"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Christine Swanson",
+      "label": "Christine Swanson",
+      "qid": "Q114495919",
+      "topRev": 1366079963,
+      "more": false,
+      "lead": "File:Christine Swanson BraveMaker 2026 03.jpg",
+      "timeline": [
+        {
+          "file": "File:Christine Swanson BraveMaker 2026 03.jpg",
+          "rev": 1366079963,
+          "ts": "2026-07-26T04:04:16Z",
+          "user": "Jessekornblum"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Dana Nachman",
+      "label": "Dana Nachman",
+      "qid": "Q21063492",
+      "topRev": 1371206619,
+      "more": false,
+      "lead": "File:Dana Nachman BraveMaker 2026 02.jpg",
+      "timeline": [
+        {
+          "file": "File:Dana Nachman BraveMaker 2026 02.jpg",
+          "rev": 1371206619,
+          "ts": "2026-08-25T05:06:18Z",
+          "user": "ErinConte"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Loretta Devine",
+      "label": "Loretta Devine",
+      "qid": "Q257271",
+      "topRev": 1370347440,
+      "more": true,
+      "lead": "File:Loretta Devine BraveMaker 2026 01.jpg",
+      "timeline": [
+        {
+          "file": "File:Loretta Devine BraveMaker 2026 01.jpg",
+          "rev": 1370347440,
+          "ts": "2026-08-20T16:24:54Z",
+          "user": "~2026-45550-16"
+        },
+        {
+          "file": "File:LorettaDevineDec10.jpg",
+          "rev": 1357848134,
+          "ts": "2026-06-05T01:19:56Z",
+          "user": "~2026-33154-01"
+        }
+      ]
+    },
+    {
+      "lang": "de",
+      "article": "Meyer Levinson-Blount",
+      "label": "Q137924691",
+      "qid": "Q137924691",
+      "topRev": 269217718,
+      "more": false,
+      "lead": "File:Meyer Levinson-Blount BraveMaker 2026 03.jpg",
+      "timeline": [
+        {
+          "file": "File:Meyer Levinson-Blount BraveMaker 2026 03.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Sarah Shourd",
+      "label": "Sarah Shourd",
+      "qid": "Q84746630",
+      "topRev": 1371391189,
+      "more": false,
+      "lead": "File:Sarah Shourd BraveMaker 2026 02 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Sarah Shourd BraveMaker 2026 02 (cropped).jpg",
+          "rev": 1371391189,
+          "ts": "2026-08-26T05:04:23Z",
+          "user": "Jevansen"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Saurav Mohapatra",
+      "label": "Saurav Mohapatra",
+      "qid": "Q7427543",
+      "topRev": 1371558894,
+      "more": false,
+      "lead": "File:Saurav Mohapatra BraveMaker 2026 02.jpg",
+      "timeline": [
+        {
+          "file": "File:Saurav Mohapatra BraveMaker 2026 02.jpg",
+          "rev": 1371558894,
+          "ts": "2026-08-27T03:21:00Z",
+          "user": "ZackBot"
+        },
+        {
+          "file": "File:Saurav.png",
+          "rev": 1348093867,
+          "ts": "2026-04-10T17:08:06Z",
+          "user": "Bearcat"
+        },
+        {
+          "file": "File:Saurav Mohapatra.jpg",
+          "rev": 1163520577,
+          "ts": "2023-07-05T10:58:52Z",
+          "user": "Citation bot"
         }
       ]
     },
@@ -5198,6 +5612,35 @@
       ]
     },
     {
+      "lang": "en",
+      "article": "Kevin Hines",
+      "label": "Kevin Hines",
+      "qid": "Q60735041",
+      "topRev": 1363324398,
+      "more": false,
+      "lead": "File:Kevin Hines BraveMaker 2026 04.jpg",
+      "timeline": [
+        {
+          "file": "File:Kevin Hines BraveMaker 2026 04.jpg",
+          "rev": 1363324398,
+          "ts": "2026-07-09T14:02:39Z",
+          "user": "Jessekornblum"
+        },
+        {
+          "file": "File:Kevin Hines Speaking 2023 (3x4 cropped).jpg",
+          "rev": 1335763749,
+          "ts": "2026-01-31T02:23:05Z",
+          "user": "InternetArchiveBot"
+        },
+        {
+          "file": "File:Suicide Prevention (35184251885).jpg",
+          "rev": 1261080085,
+          "ts": "2024-12-04T03:43:16Z",
+          "user": "Wabbuh"
+        }
+      ]
+    },
+    {
       "lang": "de",
       "article": "Nataša Ilić",
       "label": "Nataša Ilić",
@@ -5211,6 +5654,29 @@
           "rev": null,
           "ts": null,
           "user": null
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Robert Richardson (cinematographer)",
+      "label": "Robert Richardson",
+      "qid": "Q364017",
+      "topRev": 1369640105,
+      "more": true,
+      "lead": "File:60th Karlovy Vary International Film Festival, Robert Richardson (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:60th Karlovy Vary International Film Festival, Robert Richardson (cropped).jpg",
+          "rev": 1369640105,
+          "ts": "2026-08-16T05:45:43Z",
+          "user": "Fantasticuy"
+        },
+        {
+          "file": "File:Robert Richardson 2019 by Glenn Francis.jpg",
+          "rev": 1361211093,
+          "ts": "2026-06-26T12:10:49Z",
+          "user": "Woodenduster"
         }
       ]
     },
@@ -5915,6 +6381,35 @@
     },
     {
       "lang": "en",
+      "article": "Elliot Page",
+      "label": "Elliot Page",
+      "qid": "Q173399",
+      "topRev": 1371770997,
+      "more": false,
+      "lead": "File:Elliot Page 2026.jpg",
+      "timeline": [
+        {
+          "file": "File:Elliot Page 2026.jpg",
+          "rev": 1371770997,
+          "ts": "2026-08-28T10:18:17Z",
+          "user": "Davey2010"
+        },
+        {
+          "file": "File:2023 National Book Festival (53122454007) (cropped).jpg",
+          "rev": 1361138836,
+          "ts": "2026-06-25T22:25:43Z",
+          "user": "Xcliff06"
+        },
+        {
+          "file": "File:Elliot Page 8126099 (cropped).jpg",
+          "rev": 1284200339,
+          "ts": "2025-04-06T05:03:06Z",
+          "user": "RoxySaunders"
+        }
+      ]
+    },
+    {
+      "lang": "en",
       "article": "Emira D'Spain",
       "label": "Emira D'Spain",
       "qid": "Q118371933",
@@ -6175,6 +6670,450 @@
     },
     {
       "lang": "en",
+      "article": "Isabella Leong",
+      "label": "Isabella Leong",
+      "qid": "Q254180",
+      "topRev": 1365721350,
+      "more": false,
+      "lead": "File:Isabella Leong at 2026 Shanghai International Film Festival 01 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Isabella Leong at 2026 Shanghai International Film Festival 01 (cropped).jpg",
+          "rev": 1365721350,
+          "ts": "2026-07-24T01:52:49Z",
+          "user": "Phraowin"
+        },
+        {
+          "file": "File:Isabellaleong2007.png",
+          "rev": 1360762798,
+          "ts": "2026-06-23T12:46:23Z",
+          "user": "B.J"
+        },
+        {
+          "file": "File:Isabella Leong when act.jpg",
+          "rev": 510360427,
+          "ts": "2012-09-02T00:55:11Z",
+          "user": "Fahrizal Dillah"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Jiang Mengjie",
+      "label": "Jiang Mengjie",
+      "qid": "Q9336483",
+      "topRev": 1361706693,
+      "more": false,
+      "lead": "File:Jiang Mengjie at 2026 Shanghai International Film Festival 01 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Jiang Mengjie at 2026 Shanghai International Film Festival 01 (cropped).jpg",
+          "rev": 1361706693,
+          "ts": "2026-06-29T16:19:48Z",
+          "user": "Shwangtianyuan"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Jinjett Wattanasin",
+      "label": "Jinjett Wattanasin",
+      "qid": "Q56759130",
+      "topRev": 1371385148,
+      "more": false,
+      "lead": "File:Jinjett Wattanasin at 2026 Shanghai International Film Festival 01 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Jinjett Wattanasin at 2026 Shanghai International Film Festival 01 (cropped).jpg",
+          "rev": 1371385148,
+          "ts": "2026-08-26T04:20:41Z",
+          "user": "วรุฒ หิ่มสาใจ"
+        },
+        {
+          "file": "File:Jinjett Wattanasin (cropped).png",
+          "rev": 1360268740,
+          "ts": "2026-06-20T09:54:36Z",
+          "user": "Tomarzig"
+        },
+        {
+          "file": "File:Jaonaay.jpg",
+          "rev": 1152980691,
+          "ts": "2023-05-03T14:17:34Z",
+          "user": "Yourlocalamy"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Jo Kuk",
+      "label": "Jo Kuk",
+      "qid": "Q6125633",
+      "topRev": 1369027166,
+      "more": false,
+      "lead": "File:Jo Kuk at the 2026 Shanghai International Film Festival.jpg",
+      "timeline": [
+        {
+          "file": "File:Jo Kuk at the 2026 Shanghai International Film Festival.jpg",
+          "rev": 1369027166,
+          "ts": "2026-08-12T12:30:14Z",
+          "user": "Svaintheus"
+        },
+        {
+          "file": "File:Jo koo.jpg",
+          "rev": 1366102107,
+          "ts": "2026-07-26T07:37:58Z",
+          "user": "Sumanuil"
+        },
+        {
+          "file": "File:Jo Kuk at 2026 Shanghai International Film Festival 01 (cropped).jpg",
+          "rev": 1363152436,
+          "ts": "2026-07-08T11:03:50Z",
+          "user": "~2026-30593-07"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Li Xueqin (comedian)",
+      "label": "Li Xueqin",
+      "qid": "Q105717911",
+      "topRev": 1361623530,
+      "more": false,
+      "lead": "File:Li Xueqin at 2026 Shanghai International Film Festival 01 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Li Xueqin at 2026 Shanghai International Film Festival 01 (cropped).jpg",
+          "rev": 1361623530,
+          "ts": "2026-06-29T03:04:46Z",
+          "user": "Runawaymo"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Ma Sichun",
+      "label": "Ma Sichun",
+      "qid": "Q18669348",
+      "topRev": 1364558683,
+      "more": false,
+      "lead": "File:Ma Sichun at 2026 Shanghai International Film Festival 01 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Ma Sichun at 2026 Shanghai International Film Festival 01 (cropped).jpg",
+          "rev": 1364558683,
+          "ts": "2026-07-17T05:30:11Z",
+          "user": "Phraowin"
+        },
+        {
+          "file": "File:Ma Sichun in Mr. Fighting press conference 2019.png",
+          "rev": 1357521989,
+          "ts": "2026-06-03T03:18:26Z",
+          "user": "Wheezythewave"
+        },
+        {
+          "file": "File:Ma_Sichun_2017.png",
+          "rev": 1077400381,
+          "ts": "2022-03-16T03:27:40Z",
+          "user": "Waxworker"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Manoj Pramanik",
+      "label": "Manoj Pramanik",
+      "qid": "Q104829934",
+      "topRev": 1370644865,
+      "more": false,
+      "lead": "File:Manoj Pramanik at 2026 Shanghai International Film Festival 01 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Manoj Pramanik at 2026 Shanghai International Film Festival 01 (cropped).jpg",
+          "rev": 1370644865,
+          "ts": "2026-08-22T07:10:13Z",
+          "user": "UzbukUdash"
+        },
+        {
+          "file": "File:Manojkumarpramanik.jpg",
+          "rev": 1357923243,
+          "ts": "2026-06-05T14:03:17Z",
+          "user": "UzbukUdash"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Miya Muqi",
+      "label": "Mu Qimiya",
+      "qid": "Q9300697",
+      "topRev": 1369476054,
+      "more": false,
+      "lead": "File:Miya Muqi and at 2026 Shanghai International Film Festival 01 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Miya Muqi and at 2026 Shanghai International Film Festival 01 (cropped).jpg",
+          "rev": 1369476054,
+          "ts": "2026-08-15T05:50:16Z",
+          "user": "Phraowin"
+        },
+        {
+          "file": "File:Cannes 2018 19 (cropped).jpg",
+          "rev": 1356704103,
+          "ts": "2026-05-29T09:07:13Z",
+          "user": "~2026-32007-71"
+        },
+        {
+          "file": "File:Miya Muqi.jpg",
+          "rev": 823146562,
+          "ts": "2018-01-30T14:51:51Z",
+          "user": "Onel5969"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Nattawut Poonpiriya",
+      "label": "Nattawut Poonpiriya",
+      "qid": "Q31352543",
+      "topRev": 1361450137,
+      "more": false,
+      "lead": "File:Nattawut Poonpiriya 2026 Shanghai International Film Festival 01 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Nattawut Poonpiriya 2026 Shanghai International Film Festival 01 (cropped).jpg",
+          "rev": 1361450137,
+          "ts": "2026-06-28T00:10:35Z",
+          "user": "Runawaymo"
+        },
+        {
+          "file": "File:Nattawut Poonpiriya from Taiwan Bad Genius promotional clip cropped.jpg",
+          "rev": 1346166301,
+          "ts": "2026-03-30T08:52:46Z",
+          "user": "Phoebus 28"
+        }
+      ]
+    },
+    {
+      "lang": "es",
+      "article": "Patricia Ayala Ruiz",
+      "label": "Patricia Ayala Ruiz",
+      "qid": "Q89414294",
+      "topRev": 174051057,
+      "more": false,
+      "lead": "File:Patricia Ayala Ruiz at 2026 Shanghai International Film Festival Closing Ceremony 01 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Patricia Ayala Ruiz at 2026 Shanghai International Film Festival Closing Ceremony 01 (cropped).jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Patrick Shih",
+      "label": "Patrick Shi",
+      "qid": "Q51884835",
+      "topRev": 1361240160,
+      "more": false,
+      "lead": "File:Patrick Shih at 2026 Shanghai International Film Festival 01 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Patrick Shih at 2026 Shanghai International Film Festival 01 (cropped).jpg",
+          "rev": 1361240160,
+          "ts": "2026-06-26T16:43:56Z",
+          "user": "Runawaymo"
+        },
+        {
+          "file": "File:2020 ELLE RUN WITH STYLE 風格路跑－施柏宇.png",
+          "rev": 1343568779,
+          "ts": "2026-03-15T03:37:59Z",
+          "user": "Ser Amantio di Nicolao"
+        },
+        {
+          "file": "File:施柏宇-HIStory2粉絲見面會.jpg",
+          "rev": 1270375435,
+          "ts": "2025-01-19T06:39:23Z",
+          "user": "Jay-Wiki"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Rakeen Saad",
+      "label": "Rakeen Saad",
+      "qid": "Q42331353",
+      "topRev": 1361276617,
+      "more": false,
+      "lead": "File:Rakeen Saad at 2026 Shanghai International Film Festival 02.jpg",
+      "timeline": [
+        {
+          "file": "File:Rakeen Saad at 2026 Shanghai International Film Festival 02.jpg",
+          "rev": 1361276617,
+          "ts": "2026-06-26T21:42:50Z",
+          "user": "~2026-35976-24"
+        },
+        {
+          "file": "File:rakeen saad 2021 1.jpg",
+          "rev": 1356876243,
+          "ts": "2026-05-30T11:10:09Z",
+          "user": "PrimeBOT"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Sean Lau",
+      "label": "Sean Lau",
+      "qid": "Q707329",
+      "topRev": 1370297169,
+      "more": false,
+      "lead": "File:Sean Lau at the 2026 Shanghai International Film Festival.jpg",
+      "timeline": [
+        {
+          "file": "File:Sean Lau at the 2026 Shanghai International Film Festival.jpg",
+          "rev": 1370297169,
+          "ts": "2026-08-20T07:49:22Z",
+          "user": "Phraowin"
+        },
+        {
+          "file": "File:Papacastinterview (Sean Lau).png",
+          "rev": 1368141847,
+          "ts": "2026-08-07T07:03:57Z",
+          "user": "Phraowin"
+        },
+        {
+          "file": "File:Sean_Lau_Ching_Wan.jpg",
+          "rev": 1299891246,
+          "ts": "2025-07-11T01:27:18Z",
+          "user": "Wheezythewave"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Tontawan Tantivejakul",
+      "label": "Tontawan Tantivejakul",
+      "qid": "Q105258216",
+      "topRev": 1369817366,
+      "more": false,
+      "lead": "File:Tontawan Tantivejakul at 2026 Shanghai International Film Festival 01 (cropped3).jpg",
+      "timeline": [
+        {
+          "file": "File:Tontawan Tantivejakul at 2026 Shanghai International Film Festival 01 (cropped3).jpg",
+          "rev": 1369817366,
+          "ts": "2026-08-17T10:19:23Z",
+          "user": "Girlypop Magnemite"
+        },
+        {
+          "file": "File:Jinjett Wattanasin, Tontawan Tantivejakul at 2026 Shanghai International Film Festival 01 (cropped).jpg",
+          "rev": 1361452236,
+          "ts": "2026-06-28T00:30:22Z",
+          "user": "Runawaymo"
+        },
+        {
+          "file": "File:Tontawan Tantivejakul at GMMTV's 2024 Up&Above Part 2 event, 23 April 2024 02.png",
+          "rev": 1360144184,
+          "ts": "2026-06-19T14:38:10Z",
+          "user": "~2026-35823-73"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Leo Wu",
+      "label": "Leo Wu",
+      "qid": "Q18652089",
+      "topRev": 1364741932,
+      "more": false,
+      "lead": "File:WU Lei at 2026 Shanghai International Film Festival Closing Ceremony Red Carpet 02 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:WU Lei at 2026 Shanghai International Film Festival Closing Ceremony Red Carpet 02 (cropped).jpg",
+          "rev": 1364741932,
+          "ts": "2026-07-18T07:06:57Z",
+          "user": "Phraowin"
+        },
+        {
+          "file": "File:WU Lei at 2026 Shanghai International Film Festival 01 (cropped).jpg",
+          "rev": 1359284856,
+          "ts": "2026-06-14T10:35:37Z",
+          "user": "Runawaymo"
+        },
+        {
+          "file": "File:Wu Lei being interviewed in December 2015 for C China.png",
+          "rev": 1359283034,
+          "ts": "2026-06-14T10:11:09Z",
+          "user": "Beansforsnack"
+        }
+      ]
+    },
+    {
+      "lang": "ro",
+      "article": "Fang Yin",
+      "label": "Fang Yin",
+      "qid": "Q53147662",
+      "topRev": 17545420,
+      "more": false,
+      "lead": "File:Yin Fang at 2026 Shanghai International Film Festival 01 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Yin Fang at 2026 Shanghai International Film Festival 01 (cropped).jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Zhang Songwen",
+      "label": "Zhang Songwen",
+      "qid": "Q76852425",
+      "topRev": 1368955100,
+      "more": false,
+      "lead": "File:Zhang Songwen at 2026 Shanghai International Film Festival (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Zhang Songwen at 2026 Shanghai International Film Festival (cropped).jpg",
+          "rev": 1368955100,
+          "ts": "2026-08-12T01:56:31Z",
+          "user": "Phraowin"
+        },
+        {
+          "file": "File:Zhang songwen.jpg",
+          "rev": 1137936257,
+          "ts": "2023-02-07T04:23:59Z",
+          "user": "GriefCrow"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Zheng Yunlong",
+      "label": "Zheng Yunlong",
+      "qid": "Q61774632",
+      "topRev": 1370626480,
+      "more": true,
+      "lead": "File:Zheng Yunlong at 2026 Shanghai International Film Festival 01 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Zheng Yunlong at 2026 Shanghai International Film Festival 01 (cropped).jpg",
+          "rev": 1370626480,
+          "ts": "2026-08-22T04:18:58Z",
+          "user": "AnomieBOT"
+        },
+        {
+          "file": "File:ZhengYunLong2019.jpg",
+          "rev": 1359087135,
+          "ts": "2026-06-13T00:35:21Z",
+          "user": "Impression of Glass"
+        }
+      ]
+    },
+    {
+      "lang": "en",
       "article": "Alex Freeman",
       "label": "Alex Freeman",
       "qid": "Q111604014",
@@ -6227,6 +7166,74 @@
     },
     {
       "lang": "en",
+      "article": "David Margolick",
+      "label": "David Margolick",
+      "qid": "Q5237123",
+      "topRev": 1360242360,
+      "more": false,
+      "lead": "File:David Margolick Paley Center 2026 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:David Margolick Paley Center 2026 (cropped).jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Louis Godbout",
+      "label": "Louis Godbout",
+      "qid": "Q55722364",
+      "topRev": 1361111612,
+      "more": false,
+      "lead": "File:Louis Godbout at 2026 Shanghai International Film Festival 01 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Louis Godbout at 2026 Shanghai International Film Festival 01 (cropped).jpg",
+          "rev": 1361111612,
+          "ts": "2026-06-25T18:22:22Z",
+          "user": "Runawaymo"
+        }
+      ]
+    },
+    {
+      "lang": "zh",
+      "article": "王維明 (台灣)",
+      "label": "Wang Weiming",
+      "qid": "Q47674538",
+      "topRev": 93300507,
+      "more": false,
+      "lead": "File:Wang Weiming at 2026 Shanghai International Film Festival 01.jpg",
+      "timeline": [
+        {
+          "file": "File:Wang Weiming at 2026 Shanghai International Film Festival 01.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Yassine El Idrissi",
+      "label": "Yassine El Idrissi",
+      "qid": "Q140356666",
+      "topRev": 1364245778,
+      "more": false,
+      "lead": "File:Yassine El Idrissi at 2026 Shanghai International Film Festival 01.jpg",
+      "timeline": [
+        {
+          "file": "File:Yassine El Idrissi at 2026 Shanghai International Film Festival 01.jpg",
+          "rev": 1364245778,
+          "ts": "2026-07-15T11:48:58Z",
+          "user": "The joy of all things"
+        }
+      ]
+    },
+    {
+      "lang": "en",
       "article": "Derek Yee",
       "label": "Derek Yee",
       "qid": "Q960141",
@@ -6245,6 +7252,167 @@
           "rev": 1336530851,
           "ts": "2026-02-04T08:47:58Z",
           "user": "SchlurcherBot"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Nick Cheuk",
+      "label": "Nick Cheuk",
+      "qid": "Q47665302",
+      "topRev": 1369622616,
+      "more": false,
+      "lead": "File:Nick Cheuk at 2026 Shanghai International Film Festival 01.jpg",
+      "timeline": [
+        {
+          "file": "File:Nick Cheuk at 2026 Shanghai International Film Festival 01.jpg",
+          "rev": 1369622616,
+          "ts": "2026-08-16T02:56:45Z",
+          "user": "Phraowin"
+        },
+        {
+          "file": "File:Nickcheuk.png",
+          "rev": 1357072051,
+          "ts": "2026-05-31T16:10:24Z",
+          "user": "PrimeBOT"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Norris Wong",
+      "label": "Norris Wong",
+      "qid": "Q11176743",
+      "topRev": 1361107545,
+      "more": false,
+      "lead": "File:Norris Wong at 2026 Shanghai International Film Festival 01.jpg",
+      "timeline": [
+        {
+          "file": "File:Norris Wong at 2026 Shanghai International Film Festival 01.jpg",
+          "rev": 1361107545,
+          "ts": "2026-06-25T17:48:23Z",
+          "user": "Runawaymo"
+        },
+        {
+          "file": "File:Norris Wong 2024-03-02.jpg",
+          "rev": 1354916169,
+          "ts": "2026-05-18T23:25:02Z",
+          "user": "PrimeBOT"
+        },
+        {
+          "file": "File:Norriswong01.jpg",
+          "rev": 1244018575,
+          "ts": "2024-09-04T16:16:12Z",
+          "user": "Chuckycc"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Stephen Fung",
+      "label": "Stephen Fung",
+      "qid": "Q996607",
+      "topRev": 1365740273,
+      "more": false,
+      "lead": "File:Stephen Fung at 2026 Shanghai International Film Festival 01 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Stephen Fung at 2026 Shanghai International Film Festival 01 (cropped).jpg",
+          "rev": 1365740273,
+          "ts": "2026-07-24T04:30:14Z",
+          "user": "Phraowin"
+        },
+        {
+          "file": "File:STEPHEN_FUNG_(馮德倫)_−_2023.10.18_−_P1.jpg",
+          "rev": 1357581590,
+          "ts": "2026-06-03T13:39:55Z",
+          "user": "~2026-33017-22"
+        },
+        {
+          "file": "File:Stephen Fung at Toronto Film Festival 2012 (1).jpg",
+          "rev": 1305815790,
+          "ts": "2025-08-14T07:17:41Z",
+          "user": "Kuragehime000"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "João Salaviza",
+      "label": "João Salaviza",
+      "qid": "Q1703064",
+      "topRev": 1370897389,
+      "more": false,
+      "lead": "File:João Salaviza at the 2026 Shanghai International Film Festival (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:João Salaviza at the 2026 Shanghai International Film Festival (cropped).jpg",
+          "rev": 1370897389,
+          "ts": "2026-08-23T16:52:39Z",
+          "user": "Martineden83"
+        }
+      ]
+    },
+    {
+      "lang": "zh",
+      "article": "倪虹洁",
+      "label": "Ni Hongjie",
+      "qid": "Q9016996",
+      "topRev": 93858102,
+      "more": false,
+      "lead": "File:NI Hongjie at the 2026 Shanghai International Film Festival 01 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:NI Hongjie at the 2026 Shanghai International Film Festival 01 (cropped).jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Jane Fonda",
+      "label": "Jane Fonda",
+      "qid": "Q41142",
+      "topRev": 1371795113,
+      "more": false,
+      "lead": "File:Jane Fonda gaslit-65.jpg",
+      "timeline": [
+        {
+          "file": "File:Jane Fonda gaslit-65.jpg",
+          "rev": 1371795113,
+          "ts": "2026-08-28T13:55:56Z",
+          "user": "Randy Kryn"
+        },
+        {
+          "file": "File:Jane Fonda 1963.jpg",
+          "rev": 1365724489,
+          "ts": "2026-07-24T02:14:08Z",
+          "user": "Frnw26"
+        },
+        {
+          "file": "File:Jane Fonda gaslit-65.jpg",
+          "rev": 1365633881,
+          "ts": "2026-07-23T15:07:50Z",
+          "user": "SuperHamster"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Adam Aron",
+      "label": "Adam Aron",
+      "qid": "Q18205237",
+      "topRev": 1364826742,
+      "more": true,
+      "lead": "File:Adam Aron momi-2.jpg",
+      "timeline": [
+        {
+          "file": "File:Adam Aron momi-2.jpg",
+          "rev": 1364826742,
+          "ts": "2026-07-18T19:07:06Z",
+          "user": "Tinton5"
         }
       ]
     },
@@ -9815,6 +10983,236 @@
     },
     {
       "lang": "en",
+      "article": "Alison Klayman",
+      "label": "Alison Klayman",
+      "qid": "Q2647222",
+      "topRev": 1352414382,
+      "more": false,
+      "lead": "File:Alison Klayman SFFILM 2026 02.jpg",
+      "timeline": [
+        {
+          "file": "File:Alison Klayman SFFILM 2026 02.jpg",
+          "rev": 1352414382,
+          "ts": "2026-05-04T01:55:38Z",
+          "user": "Jessekornblum"
+        },
+        {
+          "file": "File:Alison Klayman Peabody Awards.jpg",
+          "rev": 1286088410,
+          "ts": "2025-04-17T17:29:22Z",
+          "user": "Bearcat"
+        },
+        {
+          "file": "File:NMD19 - The Brink - Alison Klayman (cropped).jpg",
+          "rev": 1088788198,
+          "ts": "2022-05-20T03:50:13Z",
+          "user": "Filetime"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Ben Proudfoot",
+      "label": "Ben Proudfoot",
+      "qid": "Q27038217",
+      "topRev": 1352416988,
+      "more": false,
+      "lead": "File:Ben Proudfoot SFFILM 2026.jpg",
+      "timeline": [
+        {
+          "file": "File:Ben Proudfoot SFFILM 2026.jpg",
+          "rev": 1352416988,
+          "ts": "2026-05-04T02:10:47Z",
+          "user": "Jessekornblum"
+        },
+        {
+          "file": "File:Ben Proudfoot with Camera.jpg",
+          "rev": 1107963000,
+          "ts": "2022-09-01T19:36:57Z",
+          "user": "PoetishBookwormus"
+        },
+        {
+          "file": "File:BenProdufootOscars2022.png",
+          "rev": 1080025860,
+          "ts": "2022-03-29T22:32:20Z",
+          "user": "WikiCleanerBot"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Beth Aala",
+      "label": "Beth Aala",
+      "qid": "Q19967903",
+      "topRev": 1352417654,
+      "more": false,
+      "lead": "File:Beth Aala SFFILM 2026 02.jpg",
+      "timeline": [
+        {
+          "file": "File:Beth Aala SFFILM 2026 02.jpg",
+          "rev": 1352417654,
+          "ts": "2026-05-04T02:15:54Z",
+          "user": "Jessekornblum"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Carolina Cavalli",
+      "label": "Carolina Cavalli",
+      "qid": "Q118645718",
+      "topRev": 1368687471,
+      "more": false,
+      "lead": "File:Carolina Cavalli Benedetta Porcaroli SFFILM May 2026 01 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Carolina Cavalli Benedetta Porcaroli SFFILM May 2026 01 (cropped).jpg",
+          "rev": 1368687471,
+          "ts": "2026-08-10T14:30:58Z",
+          "user": "Jessekornblum"
+        },
+        {
+          "file": "File:Carolina Cavalli at BFI, 2025.jpg",
+          "rev": 1361505013,
+          "ts": "2026-06-28T10:02:55Z",
+          "user": "~2026-37223-21"
+        },
+        {
+          "file": "File:Carolina Cavalli BFI Photocall 2025.jpg",
+          "rev": 1344165579,
+          "ts": "2026-03-18T19:12:30Z",
+          "user": "~2026-17153-84"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Daniel Ho",
+      "label": "Daniel Ho",
+      "qid": "Q5217493",
+      "topRev": 1368970544,
+      "more": false,
+      "lead": "File:Daniel Ho SFFILM 2026 01.jpg",
+      "timeline": [
+        {
+          "file": "File:Daniel Ho SFFILM 2026 01.jpg",
+          "rev": 1368970544,
+          "ts": "2026-08-12T03:42:53Z",
+          "user": "Peaceray"
+        },
+        {
+          "file": "File:Daniel Ho 2015.jpg",
+          "rev": 1340456110,
+          "ts": "2026-02-25T20:57:46Z",
+          "user": "~2026-11690-41"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Nancy Stephens",
+      "label": "Nancy Stephens",
+      "qid": "Q6963012",
+      "topRev": 1367082349,
+      "more": false,
+      "lead": "File:Nancy Stephens SFFILM May 2026 02 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Nancy Stephens SFFILM May 2026 02 (cropped).jpg",
+          "rev": 1367082349,
+          "ts": "2026-07-31T21:48:15Z",
+          "user": "BenjaminKZ"
+        },
+        {
+          "file": "File:Nancy Stephens (2015) crop.jpg",
+          "rev": 1328841345,
+          "ts": "2025-12-22T02:57:46Z",
+          "user": "Zinnober9"
+        },
+        {
+          "file": "File:Nancy Stephens North Pole.jpg",
+          "rev": 1107493151,
+          "ts": "2022-08-30T07:57:41Z",
+          "user": "Jak86"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "NEZZA",
+      "label": "NEZZA",
+      "qid": "Q134996844",
+      "topRev": 1368395822,
+      "more": false,
+      "lead": "File:Nezza SFFILM May 2026 02.jpg",
+      "timeline": [
+        {
+          "file": "File:Nezza SFFILM May 2026 02.jpg",
+          "rev": 1368395822,
+          "ts": "2026-08-08T20:41:18Z",
+          "user": "Lovelano"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Rick Rosenthal",
+      "label": "Rick Rosenthal",
+      "qid": "Q1384404",
+      "topRev": 1352918720,
+      "more": false,
+      "lead": "File:Rick Rosenthal SFFILM May 2026 02 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Rick Rosenthal SFFILM May 2026 02 (cropped).jpg",
+          "rev": 1352918720,
+          "ts": "2026-05-07T01:19:49Z",
+          "user": "Jessekornblum"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Robin Frohardt",
+      "label": "Robin Frohardt",
+      "qid": "Q100307878",
+      "topRev": 1371391008,
+      "more": false,
+      "lead": "File:Robin Frohardt SFFILM May 2026 01 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Robin Frohardt SFFILM May 2026 01 (cropped).jpg",
+          "rev": 1371391008,
+          "ts": "2026-08-26T05:03:17Z",
+          "user": "Jevansen"
+        },
+        {
+          "file": "File:Rectangle example.svg",
+          "rev": 979933454,
+          "ts": "2020-09-23T16:29:28Z",
+          "user": "Izzyolavarria"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Simon Cheffins",
+      "label": "Q7518444",
+      "qid": "Q7518444",
+      "topRev": 1352918239,
+      "more": false,
+      "lead": "File:Simon Cheffins SFFILM May 2026 02 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Simon Cheffins SFFILM May 2026 02 (cropped).jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "en",
       "article": "Lukita Maxwell",
       "label": "Lukita Maxwell",
       "qid": "Q115896334",
@@ -10099,6 +11497,109 @@
           "rev": 1341853917,
           "ts": "2026-03-05T13:11:32Z",
           "user": "Blakegripling ph"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Amy Gutierrez",
+      "label": "Amy Gutierrez",
+      "qid": "Q4749220",
+      "topRev": 1364875345,
+      "more": false,
+      "lead": "File:Amy Gutierrez SFFILM 2026 02.jpg",
+      "timeline": [
+        {
+          "file": "File:Amy Gutierrez SFFILM 2026 02.jpg",
+          "rev": 1364875345,
+          "ts": "2026-07-19T01:17:09Z",
+          "user": "Bringingthewood"
+        },
+        {
+          "file": "File:Amy Gutiérrez.jpg",
+          "rev": 1031244647,
+          "ts": "2021-06-30T15:01:55Z",
+          "user": "Liverpoolpics"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Greta Lee",
+      "label": "Greta Lee",
+      "qid": "Q19517962",
+      "topRev": 1370802040,
+      "more": false,
+      "lead": "File:Greta Lee SFFILM 2026 02 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Greta Lee SFFILM 2026 02 (cropped).jpg",
+          "rev": 1370802040,
+          "ts": "2026-08-23T04:24:02Z",
+          "user": "Wikipedialuva"
+        },
+        {
+          "file": "File:Greta Lee by Gage Skidmore.jpg",
+          "rev": 1351535640,
+          "ts": "2026-04-28T16:04:01Z",
+          "user": "KingArti"
+        },
+        {
+          "file": "File:Greta Lee A House of Dynamite-27 (cropped).jpg",
+          "rev": 1316312486,
+          "ts": "2025-10-11T18:38:05Z",
+          "user": "Teblick"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Kent Jones (critic)",
+      "label": "Kent Jones",
+      "qid": "Q63258127",
+      "topRev": 1368934114,
+      "more": false,
+      "lead": "File:Kent Jones SFFILM 2026.jpg",
+      "timeline": [
+        {
+          "file": "File:Kent Jones SFFILM 2026.jpg",
+          "rev": 1368934114,
+          "ts": "2026-08-11T23:16:01Z",
+          "user": "Martineden83"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Ned Segal",
+      "label": "Ned Segal",
+      "qid": "Q98202368",
+      "topRev": 1351124936,
+      "more": false,
+      "lead": "File:Ned Segal SFFILM 2026.jpg",
+      "timeline": [
+        {
+          "file": "File:Ned Segal SFFILM 2026.jpg",
+          "rev": 1351124936,
+          "ts": "2026-04-26T02:04:57Z",
+          "user": "Jessekornblum"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Todd Traina",
+      "label": "Todd Traina",
+      "qid": "Q7812683",
+      "topRev": 1351205753,
+      "more": false,
+      "lead": "File:Todd Traina SFFILM 2026 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Todd Traina SFFILM 2026 (cropped).jpg",
+          "rev": 1351205753,
+          "ts": "2026-04-26T16:11:17Z",
+          "user": "Mosbatho"
         }
       ]
     },
@@ -11044,6 +12545,116 @@
     },
     {
       "lang": "en",
+      "article": "Josh Sapan",
+      "label": "Josh Sapan",
+      "qid": "Q16150260",
+      "topRev": 1370044801,
+      "more": false,
+      "lead": "File:Josh Sapan Momi.jpg",
+      "timeline": [
+        {
+          "file": "File:Josh Sapan Momi.jpg",
+          "rev": 1370044801,
+          "ts": "2026-08-18T20:33:53Z",
+          "user": "Ganesha811"
+        },
+        {
+          "file": "File:Josh Sapan, 2010.jpg",
+          "rev": 1345771089,
+          "ts": "2026-03-28T02:21:10Z",
+          "user": "VWF bot"
+        },
+        {
+          "file": "File:Josh Sapan Headshot.jpg",
+          "rev": 1294810522,
+          "ts": "2025-06-09T22:57:18Z",
+          "user": "AnomieBOT"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Manon Bresch",
+      "label": "Manon Bresch",
+      "qid": "Q26761757",
+      "topRev": 1358945397,
+      "more": false,
+      "lead": "File:Manon Bresch at Series Mania 2026 for Privilèges (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Manon Bresch at Series Mania 2026 for Privilèges (cropped).jpg",
+          "rev": 1358945397,
+          "ts": "2026-06-12T00:43:46Z",
+          "user": "Wracking"
+        },
+        {
+          "file": "File:Manon Bresch.jpg",
+          "rev": 1340959729,
+          "ts": "2026-02-28T19:04:53Z",
+          "user": "Ser Amantio di Nicolao"
+        }
+      ]
+    },
+    {
+      "lang": "fr",
+      "article": "David Mora (acteur)",
+      "label": "David Mora",
+      "qid": "Q3018476",
+      "topRev": 237859256,
+      "more": false,
+      "lead": "File:David Mora at Series Mania 2026.jpg",
+      "timeline": [
+        {
+          "file": "File:David Mora at Series Mania 2026.jpg",
+          "rev": 237859256,
+          "ts": "2026-07-16T07:50:24Z",
+          "user": "~2026-33738-63"
+        },
+        {
+          "file": "File:David Mora 2015.jpg",
+          "rev": 235586875,
+          "ts": "2026-04-26T10:41:25Z",
+          "user": "Parisii1976"
+        },
+        {
+          "file": "File:David Mora.jpg",
+          "rev": 127584469,
+          "ts": "2016-07-04T16:59:03Z",
+          "user": "193.250.141.144"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "François-Xavier Demaison (actor)",
+      "label": "François-Xavier Demaison",
+      "qid": "Q1450857",
+      "topRev": 1363984960,
+      "more": false,
+      "lead": "File:François-Xavier Demaison at Series Mania 2026.jpg",
+      "timeline": [
+        {
+          "file": "File:François-Xavier Demaison at Series Mania 2026.jpg",
+          "rev": 1363984960,
+          "ts": "2026-07-13T19:15:39Z",
+          "user": "Afrowriter"
+        },
+        {
+          "file": "File:François-Xavier Demaison Césars 2017.jpg",
+          "rev": 1362530158,
+          "ts": "2026-07-04T15:57:19Z",
+          "user": "MMF03"
+        },
+        {
+          "file": "File:François-Xavier Demaison 2013.jpg",
+          "rev": 740461855,
+          "ts": "2016-09-21T06:09:41Z",
+          "user": "Yobot"
+        }
+      ]
+    },
+    {
+      "lang": "en",
       "article": "Lynn-Holly Johnson",
       "label": "Lynn-Holly Johnson",
       "qid": "Q292543",
@@ -11073,6 +12684,52 @@
     },
     {
       "lang": "en",
+      "article": "Mackenzie Crook",
+      "label": "Mackenzie Crook",
+      "qid": "Q447614",
+      "topRev": 1366343770,
+      "more": true,
+      "lead": "File:Mackenzie Crook at Series Mania 2026 for Small Prophets.jpg",
+      "timeline": [
+        {
+          "file": "File:Mackenzie Crook at Series Mania 2026 for Small Prophets.jpg",
+          "rev": 1366343770,
+          "ts": "2026-07-27T13:40:35Z",
+          "user": "Edward of York"
+        },
+        {
+          "file": "File:Mackenzie Crook.JPG",
+          "rev": 1358127445,
+          "ts": "2026-06-06T19:13:33Z",
+          "user": "~2026-33692-78"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Steven Moffat",
+      "label": "Steven Moffat",
+      "qid": "Q461003",
+      "topRev": 1368049730,
+      "more": true,
+      "lead": "File:Steven Moffat at Series mania 2026 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Steven Moffat at Series mania 2026 (cropped).jpg",
+          "rev": 1368049730,
+          "ts": "2026-08-06T18:44:34Z",
+          "user": "Great Zongo"
+        },
+        {
+          "file": "File:Steven Moffat by Gage Skidmore 2.jpg",
+          "rev": 1356609466,
+          "ts": "2026-05-28T20:20:03Z",
+          "user": "Rocksymusic"
+        }
+      ]
+    },
+    {
+      "lang": "en",
       "article": "Shahid Parvez",
       "label": "Shahid Parvez",
       "qid": "Q7461703",
@@ -11097,6 +12754,52 @@
           "rev": 1342006916,
           "ts": "2026-03-06T12:32:37Z",
           "user": "Ekabhishek"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Chase Infiniti",
+      "label": "Chase Infiniti",
+      "qid": "Q125156936",
+      "topRev": 1371281079,
+      "more": false,
+      "lead": "File:Chase Infiniti for The Testaments at Serie mania 2026 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Chase Infiniti for The Testaments at Serie mania 2026 (cropped).jpg",
+          "rev": 1371281079,
+          "ts": "2026-08-25T16:40:25Z",
+          "user": "Nightscream"
+        },
+        {
+          "file": "File:https://pbs.twimg.com/media/G4XdViCWYAA19HJ.jpg",
+          "rev": 1364072035,
+          "ts": "2026-07-14T08:46:47Z",
+          "user": "~2026-39723-81"
+        },
+        {
+          "file": "File:Chase Infiniti for The Testaments at Serie mania 2026 (cropped).jpg",
+          "rev": 1363977216,
+          "ts": "2026-07-13T18:07:19Z",
+          "user": "Rusted AutoParts"
+        }
+      ]
+    },
+    {
+      "lang": "fr",
+      "article": "Laurence Herszberg",
+      "label": "Laurence Herszberg",
+      "qid": "Q19629925",
+      "topRev": 236919628,
+      "more": false,
+      "lead": "File:Laurence Herszberg, director at Serie mania 2026.jpg",
+      "timeline": [
+        {
+          "file": "File:Laurence Herszberg, director at Serie mania 2026.jpg",
+          "rev": 236919628,
+          "ts": "2026-06-09T20:20:56Z",
+          "user": "TwoWings"
         }
       ]
     },
@@ -11218,6 +12921,23 @@
           "rev": 1361900337,
           "ts": "2026-06-30T19:21:44Z",
           "user": "PrimeBOT"
+        }
+      ]
+    },
+    {
+      "lang": "nl",
+      "article": "Frederik Daem",
+      "label": "Frederik Willem Daem",
+      "qid": "Q27903940",
+      "topRev": 71825937,
+      "more": false,
+      "lead": "File:Frederik Daem (2026).png",
+      "timeline": [
+        {
+          "file": "File:Frederik Daem (2026).png",
+          "rev": null,
+          "ts": null,
+          "user": null
         }
       ]
     },
@@ -13767,6 +15487,296 @@
       ]
     },
     {
+      "lang": "nl",
+      "article": "Aster Nzeyimana",
+      "label": "Aster Nzeyimana",
+      "qid": "Q22002046",
+      "topRev": 70419675,
+      "more": false,
+      "lead": "File:Aster Nzeyimana (2026).png",
+      "timeline": [
+        {
+          "file": "File:Aster Nzeyimana (2026).png",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "nl",
+      "article": "Daphne Agten",
+      "label": "Daphne Agten",
+      "qid": "Q131308202",
+      "topRev": 71791796,
+      "more": false,
+      "lead": "File:Daphne Agten (2026).png",
+      "timeline": [
+        {
+          "file": "File:Daphne Agten (2026).png",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "nl",
+      "article": "Fatma Taspinar",
+      "label": "Fatma Taspinar",
+      "qid": "Q60055671",
+      "topRev": 71407085,
+      "more": false,
+      "lead": "File:Fatma Taspinar (2026).png",
+      "timeline": [
+        {
+          "file": "File:Fatma Taspinar (2026).png",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "nl",
+      "article": "Felix Heremans",
+      "label": "Felix Heremans",
+      "qid": "Q136646896",
+      "topRev": 70948280,
+      "more": false,
+      "lead": "File:Felix Heremans (2026).png",
+      "timeline": [
+        {
+          "file": "File:Felix Heremans (2026).png",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "nl",
+      "article": "Geert Meyfroidt",
+      "label": "Geert Meyfroidt",
+      "qid": "Q64148983",
+      "topRev": 71407613,
+      "more": false,
+      "lead": "File:Geert Meyfroidt (2026).png",
+      "timeline": [
+        {
+          "file": "File:Geert Meyfroidt (2026).png",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "de",
+      "article": "Liesa van der Aa",
+      "label": "Liesa Van der Aa",
+      "qid": "Q2467138",
+      "topRev": 268671422,
+      "more": false,
+      "lead": "File:Liesa Van der Aa (2026).png",
+      "timeline": [
+        {
+          "file": "File:Liesa Van der Aa (2026).png",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Lou Goossens",
+      "label": "Lou Goossens",
+      "qid": "Q131374983",
+      "topRev": 1366503429,
+      "more": false,
+      "lead": "File:Lou Goossens (2026) B.png",
+      "timeline": [
+        {
+          "file": "File:Lou Goossens (2026) B.png",
+          "rev": 1366503429,
+          "ts": "2026-07-28T11:24:08Z",
+          "user": "B.J"
+        },
+        {
+          "file": "File:Young Hearts (2024) (cropped).png",
+          "rev": 1351538936,
+          "ts": "2026-04-28T16:29:51Z",
+          "user": "NatanielS"
+        },
+        {
+          "file": "File:LouGoossens.png",
+          "rev": 1351365159,
+          "ts": "2026-04-27T13:54:57Z",
+          "user": "MarbleComet"
+        }
+      ]
+    },
+    {
+      "lang": "nl",
+      "article": "Marjan De Schutter",
+      "label": "Marjan De Schutter",
+      "qid": "Q52486439",
+      "topRev": 71743513,
+      "more": false,
+      "lead": "File:Marjan De Schutter (2026).png",
+      "timeline": [
+        {
+          "file": "File:Marjan De Schutter (2026).png",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "nl",
+      "article": "Mona Mina Leon",
+      "label": "Mona Mina Leon",
+      "qid": "Q117049034",
+      "topRev": 71570963,
+      "more": false,
+      "lead": "File:Mona Mina Leon (2026).png",
+      "timeline": [
+        {
+          "file": "File:Mona Mina Leon (2026).png",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "nl",
+      "article": "Pedro Elias",
+      "label": "Pedro Elias",
+      "qid": "Q26155230",
+      "topRev": 71285584,
+      "more": false,
+      "lead": "File:Pedro Elias (2026) A.png",
+      "timeline": [
+        {
+          "file": "File:Pedro Elias (2026) A.png",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "nl",
+      "article": "Peter Seynaeve",
+      "label": "Peter Seynaeve",
+      "qid": "Q52188945",
+      "topRev": 69857950,
+      "more": false,
+      "lead": "File:Peter Seynaeve (2026).png",
+      "timeline": [
+        {
+          "file": "File:Peter Seynaeve (2026).png",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "fr",
+      "article": "Sandra Bekkari",
+      "label": "Sandra Bekkari",
+      "qid": "Q53703359",
+      "topRev": 229014331,
+      "more": false,
+      "lead": "File:Sandra Bekkari (2026) B.png",
+      "timeline": [
+        {
+          "file": "File:Sandra Bekkari (2026) B.png",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "nl",
+      "article": "Thomas Van Goethem",
+      "label": "Thomas Van Goethem",
+      "qid": "Q14489480",
+      "topRev": 71821470,
+      "more": false,
+      "lead": "File:Thomas Van Goethem (2026).png",
+      "timeline": [
+        {
+          "file": "File:Thomas Van Goethem (2026).png",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "nl",
+      "article": "Xavier Taveirne",
+      "label": "Xavier Taveirne",
+      "qid": "Q2619827",
+      "topRev": 71734860,
+      "more": false,
+      "lead": "File:Xavier Taveirne (2026).png",
+      "timeline": [
+        {
+          "file": "File:Xavier Taveirne (2026).png",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "nl",
+      "article": "Zion Luts",
+      "label": "Zion Luts",
+      "qid": "Q118612633",
+      "topRev": 71339208,
+      "more": false,
+      "lead": "File:Zion Luts (2026).png",
+      "timeline": [
+        {
+          "file": "File:Zion Luts (2026).png",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "fr",
+      "article": "Zwangere Guy",
+      "label": "Zwangere Guy",
+      "qid": "Q30524684",
+      "topRev": 236393698,
+      "more": false,
+      "lead": "File:Zwangere Guy (2026).png",
+      "timeline": [
+        {
+          "file": "File:Zwangere Guy (2026).png",
+          "rev": 236393698,
+          "ts": "2026-05-21T02:28:11Z",
+          "user": "Hh3101"
+        },
+        {
+          "file": "File:Zwangere guy-1590406109.jpg",
+          "rev": 236190552,
+          "ts": "2026-05-14T03:02:08Z",
+          "user": "Bot de pluie"
+        }
+      ]
+    },
+    {
       "lang": "en",
       "article": "Brent Bailey",
       "label": "Brent Bailey",
@@ -13809,6 +15819,74 @@
           "rev": 905115243,
           "ts": "2019-07-06T23:15:04Z",
           "user": "Gjs238"
+        }
+      ]
+    },
+    {
+      "lang": "nl",
+      "article": "Brecht De Groot",
+      "label": "Brecht De Groot",
+      "qid": "Q67174003",
+      "topRev": 71534909,
+      "more": false,
+      "lead": "File:Brecht De Groot (2026).png",
+      "timeline": [
+        {
+          "file": "File:Brecht De Groot (2026).png",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "nl",
+      "article": "Lucie Plasschaert",
+      "label": "Lucie Plasschaert",
+      "qid": "Q136659030",
+      "topRev": 71536992,
+      "more": false,
+      "lead": "File:Lucie Plasschaert (2026).png",
+      "timeline": [
+        {
+          "file": "File:Lucie Plasschaert (2026).png",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "nl",
+      "article": "Lynn Van Royen",
+      "label": "Lynn Van Royen",
+      "qid": "Q2114025",
+      "topRev": 71313522,
+      "more": false,
+      "lead": "File:Lynn Van Royen (2026).png",
+      "timeline": [
+        {
+          "file": "File:Lynn Van Royen (2026).png",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "fr",
+      "article": "Marta Bergman",
+      "label": "Marta Bergman",
+      "qid": "Q107136277",
+      "topRev": 235519830,
+      "more": false,
+      "lead": "File:Marta Bergman (2026).png",
+      "timeline": [
+        {
+          "file": "File:Marta Bergman (2026).png",
+          "rev": null,
+          "ts": null,
+          "user": null
         }
       ]
     },
@@ -13916,6 +15994,74 @@
       ]
     },
     {
+      "lang": "nl",
+      "article": "Ikram Aoulad",
+      "label": "Ikram Aoulad",
+      "qid": "Q28872352",
+      "topRev": 70830774,
+      "more": false,
+      "lead": "File:Ikram Aoulad (2026).png",
+      "timeline": [
+        {
+          "file": "File:Ikram Aoulad (2026).png",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "nl",
+      "article": "Miss Angel",
+      "label": "Q136667050",
+      "qid": "Q136667050",
+      "topRev": 71645434,
+      "more": false,
+      "lead": "File:Miss Angel (2026) B.png",
+      "timeline": [
+        {
+          "file": "File:Miss Angel (2026) B.png",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "nl",
+      "article": "Serine Ayari",
+      "label": "Serine Ayari",
+      "qid": "Q108827679",
+      "topRev": 71492033,
+      "more": false,
+      "lead": "File:Serine Ayari (2026).png",
+      "timeline": [
+        {
+          "file": "File:Serine Ayari (2026).png",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "fr",
+      "article": "Vanja d'Alcantara",
+      "label": "Vanja d'Alcantara",
+      "qid": "Q65116729",
+      "topRev": 238518812,
+      "more": false,
+      "lead": "File:Vanja d'Alcantara (2026).png",
+      "timeline": [
+        {
+          "file": "File:Vanja d'Alcantara (2026).png",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
       "lang": "en",
       "article": "Aidan Zamiri",
       "label": "Aidan Zamiri",
@@ -13939,6 +16085,109 @@
       ]
     },
     {
+      "lang": "nl",
+      "article": "Anna Franziska Jäger",
+      "label": "Anna Franziska Jager",
+      "qid": "Q52634911",
+      "topRev": 71765587,
+      "more": false,
+      "lead": "File:Anna Franziska Jäger (2026).png",
+      "timeline": [
+        {
+          "file": "File:Anna Franziska Jäger (2026).png",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "nl",
+      "article": "Cecilia Verheyden",
+      "label": "Cecilia Verheyden",
+      "qid": "Q2545501",
+      "topRev": 70717548,
+      "more": false,
+      "lead": "File:Cecilia Verheyden (2026) B.png",
+      "timeline": [
+        {
+          "file": "File:Cecilia Verheyden (2026) B.png",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Huub Stapel",
+      "label": "Huub Stapel",
+      "qid": "Q1396031",
+      "topRev": 1363801840,
+      "more": false,
+      "lead": "File:Huub Stapel (2026).png",
+      "timeline": [
+        {
+          "file": "File:Huub Stapel (2026).png",
+          "rev": 1363801840,
+          "ts": "2026-07-12T14:49:59Z",
+          "user": "Deltorooo"
+        },
+        {
+          "file": "File:Huub Stapel 2015.jpg",
+          "rev": 1345581596,
+          "ts": "2026-03-26T22:11:42Z",
+          "user": "Simeon"
+        },
+        {
+          "file": "File:Huub Stapel cropped.jpg",
+          "rev": 1137036491,
+          "ts": "2023-02-02T12:55:56Z",
+          "user": "2003:C6:9F14:5465:21AA:E439:E3E5:2401"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Jessica Reynolds",
+      "label": "Jessica Reynolds",
+      "qid": "Q116847765",
+      "topRev": 1368975263,
+      "more": false,
+      "lead": "File:Jessica Reynolds (2026) C.png",
+      "timeline": [
+        {
+          "file": "File:Jessica Reynolds (2026) C.png",
+          "rev": 1368975263,
+          "ts": "2026-08-12T04:24:27Z",
+          "user": "KidsAndTheirGadgets"
+        },
+        {
+          "file": "File:Jessica Reynolds (2026) B.png",
+          "rev": 1342496645,
+          "ts": "2026-03-09T07:32:03Z",
+          "user": "Allstar100"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Stienette Bosklopper",
+      "label": "Stienette Bosklopper",
+      "qid": "Q58767003",
+      "topRev": 1338344602,
+      "more": false,
+      "lead": "File:Stienette Bosklopper (2026).png",
+      "timeline": [
+        {
+          "file": "File:Stienette Bosklopper (2026).png",
+          "rev": 1338344602,
+          "ts": "2026-02-14T16:44:37Z",
+          "user": "Joost Pauwels"
+        }
+      ]
+    },
+    {
       "lang": "en",
       "article": "David Dastmalchian",
       "label": "David Dastmalchian",
@@ -13958,6 +16207,23 @@
           "rev": 1335553490,
           "ts": "2026-01-29T21:24:52Z",
           "user": "JJMC89 bot III"
+        }
+      ]
+    },
+    {
+      "lang": "fr",
+      "article": "Karin Junger",
+      "label": "Karin Junger",
+      "qid": "Q58902882",
+      "topRev": 233238363,
+      "more": false,
+      "lead": "File:Karin Junger (2026).png",
+      "timeline": [
+        {
+          "file": "File:Karin Junger (2026).png",
+          "rev": 233238363,
+          "ts": "2026-02-12T11:54:35Z",
+          "user": "Joost Pauwels"
         }
       ]
     },
@@ -14089,6 +16355,74 @@
       ]
     },
     {
+      "lang": "nl",
+      "article": "Ini Massez",
+      "label": "Ini Massez",
+      "qid": "Q4773982",
+      "topRev": 71313457,
+      "more": false,
+      "lead": "File:Ini Massez (2026).png",
+      "timeline": [
+        {
+          "file": "File:Ini Massez (2026).png",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "nl",
+      "article": "Isabelle Van Hecke",
+      "label": "Isabelle Van Hecke",
+      "qid": "Q2361411",
+      "topRev": 71553715,
+      "more": false,
+      "lead": "File:Isabelle Van Hecke (2026).png",
+      "timeline": [
+        {
+          "file": "File:Isabelle Van Hecke (2026).png",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "nl",
+      "article": "Karl Vannieuwkerke",
+      "label": "Karl Vannieuwkerke",
+      "qid": "Q683638",
+      "topRev": 71487641,
+      "more": false,
+      "lead": "File:Karl Vannieuwkerke (2026).png",
+      "timeline": [
+        {
+          "file": "File:Karl Vannieuwkerke (2026).png",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "nl",
+      "article": "Kat Steppe",
+      "label": "Kat Steppe",
+      "qid": "Q52159069",
+      "topRev": 70192582,
+      "more": false,
+      "lead": "File:Kat Steppe (2026).png",
+      "timeline": [
+        {
+          "file": "File:Kat Steppe (2026).png",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
       "lang": "en",
       "article": "Caleb Landry Jones",
       "label": "Caleb Landry Jones",
@@ -14154,6 +16488,125 @@
           "rev": 1034028447,
           "ts": "2021-07-17T10:21:18Z",
           "user": "2804:14D:7E27:8235:9C7C:232F:8B8B:E68D"
+        }
+      ]
+    },
+    {
+      "lang": "nl",
+      "article": "Cesar Majorana",
+      "label": "Cesar Majorana",
+      "qid": "Q97679893",
+      "topRev": 70831558,
+      "more": false,
+      "lead": "File:Cesar Majorana (2026).png",
+      "timeline": [
+        {
+          "file": "File:Cesar Majorana (2026).png",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "fr",
+      "article": "David Verbeek",
+      "label": "David Verbeek",
+      "qid": "Q19267592",
+      "topRev": 236581072,
+      "more": false,
+      "lead": "File:David Verbeek (2026).png",
+      "timeline": [
+        {
+          "file": "File:David Verbeek (2026).png",
+          "rev": 236581072,
+          "ts": "2026-05-28T09:38:13Z",
+          "user": "Matpib"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Doğukan Ergin",
+      "label": "Doğukan Ergin",
+      "qid": "Q122451915",
+      "topRev": 1343184378,
+      "more": false,
+      "lead": "File:Doğukan Ergin (2026).png",
+      "timeline": [
+        {
+          "file": "File:Doğukan Ergin (2026).png",
+          "rev": 1343184378,
+          "ts": "2026-03-12T20:07:39Z",
+          "user": "CommanderShepardX"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Jenna Thiam",
+      "label": "Jenna Thiam",
+      "qid": "Q15069947",
+      "topRev": 1362467789,
+      "more": false,
+      "lead": "File:Jenna Thiam (2026).png",
+      "timeline": [
+        {
+          "file": "File:Jenna Thiam (2026).png",
+          "rev": 1362467789,
+          "ts": "2026-07-04T03:28:02Z",
+          "user": "Jjiose1991a"
+        }
+      ]
+    },
+    {
+      "lang": "es",
+      "article": "João Nicolau",
+      "label": "João Nicolau",
+      "qid": "Q10311936",
+      "topRev": 156686400,
+      "more": false,
+      "lead": "File:João Nicolau (2026).png",
+      "timeline": [
+        {
+          "file": "File:João Nicolau (2026).png",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "nl",
+      "article": "Pete Wu",
+      "label": "Pete Wu",
+      "qid": "Q127291146",
+      "topRev": 71606184,
+      "more": false,
+      "lead": "File:Pete Wu (2026).png",
+      "timeline": [
+        {
+          "file": "File:Pete Wu (2026).png",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "nl",
+      "article": "Ymke Wieringa",
+      "label": "Ymke Wieringa",
+      "qid": "Q1918085",
+      "topRev": 66253522,
+      "more": false,
+      "lead": "File:Ymke Wieringa (2026).png",
+      "timeline": [
+        {
+          "file": "File:Ymke Wieringa (2026).png",
+          "rev": null,
+          "ts": null,
+          "user": null
         }
       ]
     },
@@ -18020,6 +20473,40 @@
       ]
     },
     {
+      "lang": "fr",
+      "article": "Abbesi Akhamie",
+      "label": "Abbesi Akhamie",
+      "qid": "Q138665896",
+      "topRev": 237913012,
+      "more": false,
+      "lead": "File:Abbesi Akhamie au FIFF 2026 à Cotonou.jpg",
+      "timeline": [
+        {
+          "file": "File:Abbesi Akhamie au FIFF 2026 à Cotonou.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "fr",
+      "article": "Eva Guéhi",
+      "label": "Eva Guéhi",
+      "qid": "Q131344491",
+      "topRev": 238313287,
+      "more": false,
+      "lead": "File:Eva Guéhi au FIFF2026 de Cotonou.jpg",
+      "timeline": [
+        {
+          "file": "File:Eva Guéhi au FIFF2026 de Cotonou.jpg",
+          "rev": 238313287,
+          "ts": "2026-08-02T18:59:34Z",
+          "user": "~2026-42560-85"
+        }
+      ]
+    },
+    {
       "lang": "en",
       "article": "Kate Winslet",
       "label": "Kate Winslet",
@@ -19330,6 +21817,676 @@
     },
     {
       "lang": "en",
+      "article": "Alba Ribas",
+      "label": "Alba Ribas Benaiges",
+      "qid": "Q5662447",
+      "topRev": 1322165218,
+      "more": false,
+      "lead": "File:Seminci 2025 - Alba Ribas-3 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Seminci 2025 - Alba Ribas-3 (cropped).jpg",
+          "rev": 1322165218,
+          "ts": "2025-11-14T17:59:10Z",
+          "user": "Asqueladd"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Federico Veiroj",
+      "label": "Federico Veiroj",
+      "qid": "Q19960535",
+      "topRev": 1322722013,
+      "more": false,
+      "lead": "File:Seminci 2025 - Federico Veiroj-2 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Seminci 2025 - Federico Veiroj-2 (cropped).jpg",
+          "rev": 1322722013,
+          "ts": "2025-11-17T20:09:19Z",
+          "user": "Pedro J Pacheco"
+        },
+        {
+          "file": "File:Federico Veiroj at MIFF.jpg",
+          "rev": 1256816499,
+          "ts": "2024-11-11T18:37:00Z",
+          "user": "Losipov"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Jesús Julio Carnero",
+      "label": "Jesús Julio Carnero",
+      "qid": "Q6452315",
+      "topRev": 1348005740,
+      "more": false,
+      "lead": "File:Seminci 2025 - Jesús Julio Carnero (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Seminci 2025 - Jesús Julio Carnero (cropped).jpg",
+          "rev": 1348005740,
+          "ts": "2026-04-10T03:11:05Z",
+          "user": "Zackmann08"
+        },
+        {
+          "file": "File:Jesús Julio Carnero 2014 - Exposición 50 Aniversario Seminario Diocesano de Valladolid by Ángel Cantero (cropped).jpg",
+          "rev": 1267199992,
+          "ts": "2025-01-04T01:58:17Z",
+          "user": "Jevansen"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "José Luis Cienfuegos",
+      "label": "Q137189211",
+      "qid": "Q137189211",
+      "topRev": 1346413677,
+      "more": false,
+      "lead": "File:Seminci 2025 - Jose Luis Cienfuegos.jpg",
+      "timeline": [
+        {
+          "file": "File:Seminci 2025 - Jose Luis Cienfuegos.jpg",
+          "rev": 1346413677,
+          "ts": "2026-03-31T18:12:00Z",
+          "user": "Asqueladd"
+        }
+      ]
+    },
+    {
+      "lang": "ca",
+      "article": "Llum Barrera San Juan",
+      "label": "Llum Barrera",
+      "qid": "Q11689356",
+      "topRev": 37653016,
+      "more": false,
+      "lead": "File:Seminci 2025 - Llum Barrera-1 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Seminci 2025 - Llum Barrera-1 (cropped).jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Nata Moreno",
+      "label": "Nata Moreno",
+      "qid": "Q107610872",
+      "topRev": 1358399130,
+      "more": false,
+      "lead": "File:Seminci 2025 - Nata Moreno-2 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Seminci 2025 - Nata Moreno-2 (cropped).jpg",
+          "rev": 1358399130,
+          "ts": "2026-06-08T12:42:20Z",
+          "user": "Filmy Politician"
+        },
+        {
+          "file": "File:Premios Goya 2020 - Foto de grupo de premiados (cropped).jpg",
+          "rev": 1270923304,
+          "ts": "2025-01-21T21:57:57Z",
+          "user": "2603:8000:DAF0:7E20:FAB4:C3D7:3945:34F5"
+        }
+      ]
+    },
+    {
+      "lang": "de",
+      "article": "Pedro Pinho",
+      "label": "Pedro Pinho",
+      "qid": "Q87919187",
+      "topRev": 267967093,
+      "more": false,
+      "lead": "File:Seminci 2025 - Pedro Pinho-1 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Seminci 2025 - Pedro Pinho-1 (cropped).jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Álvaro Cervantes",
+      "label": "Álvaro Cervantes",
+      "qid": "Q3698926",
+      "topRev": 1353967841,
+      "more": false,
+      "lead": "File:Seminci 2025 - Álvaro Cervantes (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Seminci 2025 - Álvaro Cervantes (cropped).jpg",
+          "rev": 1353967841,
+          "ts": "2026-05-13T13:34:07Z",
+          "user": "JoeNMLC"
+        },
+        {
+          "file": "File:Premios Goya 2018 - Álvaro Cervantes.jpg",
+          "rev": 1320584202,
+          "ts": "2025-11-05T16:34:50Z",
+          "user": "Asqueladd"
+        },
+        {
+          "file": "File:Premios_Goya_2018_-_Álvaro_Cervantes.jpg",
+          "rev": 1103954477,
+          "ts": "2022-08-11T18:47:16Z",
+          "user": "Asqueladd"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Ángela Cervantes",
+      "label": "Ángela Cervantes Sorribas",
+      "qid": "Q110264016",
+      "topRev": 1359885309,
+      "more": false,
+      "lead": "File:Seminci 2025 - Ángela Cervantes-2 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Seminci 2025 - Ángela Cervantes-2 (cropped).jpg",
+          "rev": 1359885309,
+          "ts": "2026-06-17T21:02:41Z",
+          "user": "Asqueladd"
+        },
+        {
+          "file": "File:Malaga Film Festival 2025 - Ángela Cervantes.jpg",
+          "rev": 1320583771,
+          "ts": "2025-11-05T16:31:35Z",
+          "user": "Asqueladd"
+        },
+        {
+          "file": "File:Goyas 2023 - Sin identificar 010.jpg",
+          "rev": 1310822037,
+          "ts": "2025-09-11T19:58:34Z",
+          "user": "Asqueladd"
+        }
+      ]
+    },
+    {
+      "lang": "de",
+      "article": "Alexander Horwath",
+      "label": "Alexander Horwath",
+      "qid": "Q2642298",
+      "topRev": 261790715,
+      "more": false,
+      "lead": "File:Seminci 2025 - Alexander Horwath-2 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Seminci 2025 - Alexander Horwath-2 (cropped).jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "ca",
+      "article": "Carla Nieto i Geli",
+      "label": "Carla Nieto",
+      "qid": "Q5749367",
+      "topRev": 37617762,
+      "more": false,
+      "lead": "File:Seminci 2025 - Carla Nieto-5 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Seminci 2025 - Carla Nieto-5 (cropped).jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Carla Quílez",
+      "label": "Carla Quílez",
+      "qid": "Q114145869",
+      "topRev": 1358765459,
+      "more": false,
+      "lead": "File:Seminci 2025 - Carla Quílez-4 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Seminci 2025 - Carla Quílez-4 (cropped).jpg",
+          "rev": 1358765459,
+          "ts": "2026-06-10T20:23:03Z",
+          "user": "Asqueladd"
+        },
+        {
+          "file": "File:Goyas 2023 - Carla Quilez (1).jpg",
+          "rev": 1313018097,
+          "ts": "2025-09-23T21:28:39Z",
+          "user": "Asqueladd"
+        },
+        {
+          "file": "File:Goyas 2023 - Carla Quilez.jpg",
+          "rev": 1265821567,
+          "ts": "2024-12-28T21:01:49Z",
+          "user": "Ira Leviton"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Diego San José",
+      "label": "Diego San José",
+      "qid": "Q8559871",
+      "topRev": 1337329220,
+      "more": false,
+      "lead": "File:Seminci 2025 - Diego San José-2.jpg",
+      "timeline": [
+        {
+          "file": "File:Seminci 2025 - Diego San José-2.jpg",
+          "rev": 1337329220,
+          "ts": "2026-02-08T20:32:44Z",
+          "user": "Asqueladd"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Elena Trapé",
+      "label": "Elena Trapé",
+      "qid": "Q5829245",
+      "topRev": 1331554162,
+      "more": false,
+      "lead": "File:Seminci 2025 - Elena Trapé-3 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Seminci 2025 - Elena Trapé-3 (cropped).jpg",
+          "rev": 1331554162,
+          "ts": "2026-01-06T22:53:52Z",
+          "user": "Asqueladd"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Javier Cámara",
+      "label": "Javier Cámara",
+      "qid": "Q537931",
+      "topRev": 1363215724,
+      "more": false,
+      "lead": "File:Seminci 2025 - Javier Cámara-3 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Seminci 2025 - Javier Cámara-3 (cropped).jpg",
+          "rev": 1363215724,
+          "ts": "2026-07-08T19:48:26Z",
+          "user": "Asqueladd"
+        },
+        {
+          "file": "File:Javier Cámara, XIII Premis Gaudí (2021).jpg",
+          "rev": 1320588411,
+          "ts": "2025-11-05T17:09:23Z",
+          "user": "Asqueladd"
+        },
+        {
+          "file": "File:Javier Camara at 2017 MIFF.jpg",
+          "rev": 1008582073,
+          "ts": "2021-02-24T01:32:44Z",
+          "user": "Filmgoer"
+        }
+      ]
+    },
+    {
+      "lang": "ca",
+      "article": "María Ruido",
+      "label": "María Ruido",
+      "qid": "Q12393051",
+      "topRev": 37842452,
+      "more": false,
+      "lead": "File:Seminci 2025 - María Ruido-2.jpg",
+      "timeline": [
+        {
+          "file": "File:Seminci 2025 - María Ruido-2.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Mia Hansen-Løve",
+      "label": "Mia Hansen-Løve",
+      "qid": "Q3307854",
+      "topRev": 1369189715,
+      "more": false,
+      "lead": "File:Seminci 2025 - Mia Hansen-Løve-4 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Seminci 2025 - Mia Hansen-Løve-4 (cropped).jpg",
+          "rev": 1369189715,
+          "ts": "2026-08-13T11:37:13Z",
+          "user": "SchlurcherBot"
+        },
+        {
+          "file": "File:Mia Hansen-Løve.JPG",
+          "rev": 1319119646,
+          "ts": "2025-10-27T22:34:55Z",
+          "user": "RosePickfair"
+        },
+        {
+          "file": "File:Miahansenlove.jpg",
+          "rev": 869037625,
+          "ts": "2018-11-16T00:43:51Z",
+          "user": "Rachelabrahams"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Andrius Blaževičius",
+      "label": "Andrius Blaževičius",
+      "qid": "Q27791052",
+      "topRev": 1338747156,
+      "more": false,
+      "lead": "File:Seminci 2025 - Andrius Blaževičius (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Seminci 2025 - Andrius Blaževičius (cropped).jpg",
+          "rev": 1338747156,
+          "ts": "2026-02-17T00:15:13Z",
+          "user": "OpalYosutebito"
+        },
+        {
+          "file": "File:Andrius Blazevicius director.jpg",
+          "rev": 1259199410,
+          "ts": "2024-11-23T22:28:05Z",
+          "user": "Paul2520"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Carolina Yuste",
+      "label": "Carolina Yuste",
+      "qid": "Q61467027",
+      "topRev": 1363641224,
+      "more": false,
+      "lead": "File:Seminci 2025 - Carolina Yuste-4 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Seminci 2025 - Carolina Yuste-4 (cropped).jpg",
+          "rev": 1363641224,
+          "ts": "2026-07-11T12:05:16Z",
+          "user": "Asqueladd"
+        },
+        {
+          "file": "File:Goyas 2024 - Carolina Yuste.jpg",
+          "rev": 1320588819,
+          "ts": "2025-11-05T17:12:26Z",
+          "user": "Asqueladd"
+        },
+        {
+          "file": "File:Festival de Málaga 2020 - Carolina Yuste-3 (cropped).jpg",
+          "rev": 1256011167,
+          "ts": "2024-11-07T19:44:28Z",
+          "user": "Asqueladd"
+        }
+      ]
+    },
+    {
+      "lang": "es",
+      "article": "Esperanza Fernández Vargas",
+      "label": "Esperanza Fernández",
+      "qid": "Q23413569",
+      "topRev": 174698083,
+      "more": false,
+      "lead": "File:Seminci 2025 - Esperanza Fernández-2 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Seminci 2025 - Esperanza Fernández-2 (cropped).jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "ca",
+      "article": "Carlos F. Heredero",
+      "label": "Carlos F. Heredero",
+      "qid": "Q87401297",
+      "topRev": 35306808,
+      "more": false,
+      "lead": "File:Seminci 2025 - Carlos F. Heredero-1.jpg",
+      "timeline": [
+        {
+          "file": "File:Seminci 2025 - Carlos F. Heredero-1.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Luis Callejo",
+      "label": "Luis Callejo",
+      "qid": "Q9024968",
+      "topRev": 1356618777,
+      "more": false,
+      "lead": "File:Seminci 2025 - Luis Callejo-1 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Seminci 2025 - Luis Callejo-1 (cropped).jpg",
+          "rev": 1356618777,
+          "ts": "2026-05-28T21:21:14Z",
+          "user": "PrimeBOT"
+        },
+        {
+          "file": "File:Seminci 2025 - Luis Callejo-2 (cropped).jpg",
+          "rev": 1321419245,
+          "ts": "2025-11-10T12:19:32Z",
+          "user": "Asqueladd"
+        },
+        {
+          "file": "File:Festival de Málaga 2024 - Luis Callejo.jpg",
+          "rev": 1293965205,
+          "ts": "2025-06-04T19:08:57Z",
+          "user": "WikiOriginal-9"
+        }
+      ]
+    },
+    {
+      "lang": "ca",
+      "article": "Pere Vilà Barceló",
+      "label": "Pere Vilà Barceló",
+      "qid": "Q16947475",
+      "topRev": 37854353,
+      "more": false,
+      "lead": "File:Seminci 2025 - Pere Vilà Barceló-1 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Seminci 2025 - Pere Vilà Barceló-1 (cropped).jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Zoe Stein",
+      "label": "Zoe Stein",
+      "qid": "Q119633488",
+      "topRev": 1359241747,
+      "more": false,
+      "lead": "File:Seminci 2025 - Zoe Stein (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Seminci 2025 - Zoe Stein (cropped).jpg",
+          "rev": 1359241747,
+          "ts": "2026-06-14T01:49:22Z",
+          "user": "Asqueladd"
+        },
+        {
+          "file": "File:Goyas 2023 - Zoe Stein.jpg",
+          "rev": 1316280696,
+          "ts": "2025-10-11T14:22:59Z",
+          "user": "Asqueladd"
+        }
+      ]
+    },
+    {
+      "lang": "es",
+      "article": "Beli Martínez",
+      "label": "Beli Martínez",
+      "qid": "Q130194969",
+      "topRev": 171715127,
+      "more": false,
+      "lead": "File:Seminci 2025 - Beli Martínez.jpg",
+      "timeline": [
+        {
+          "file": "File:Seminci 2025 - Beli Martínez.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "de",
+      "article": "Isabelle Stoffel",
+      "label": "Isabelle Stoffel",
+      "qid": "Q1673650",
+      "topRev": 263163161,
+      "more": false,
+      "lead": "File:Seminci 2025 - Isabelle Stoffel-2 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Seminci 2025 - Isabelle Stoffel-2 (cropped).jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "ar",
+      "article": "جان بيار داردين",
+      "label": "Jean-Pierre Dardenne",
+      "qid": "Q13455488",
+      "topRev": 75053610,
+      "more": false,
+      "lead": "File:Seminci 2025 - Jean-Pierre Dardenne.jpg",
+      "timeline": [
+        {
+          "file": "File:Seminci 2025 - Jean-Pierre Dardenne.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "de",
+      "article": "Julian Radlmaier",
+      "label": "Julian Radlmaier",
+      "qid": "Q28142536",
+      "topRev": 264102049,
+      "more": false,
+      "lead": "File:Seminci 2025 - Julian Radlmaier-2 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Seminci 2025 - Julian Radlmaier-2 (cropped).jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        },
+        {
+          "file": "File:Julian Radlmaier at the 78th Locarno film festival.jpg",
+          "rev": 259331171,
+          "ts": "2025-08-30T22:41:24Z",
+          "user": "InternetArchiveBot"
+        }
+      ]
+    },
+    {
+      "lang": "pt",
+      "article": "Leonor Noivo",
+      "label": "Leonor Noivo",
+      "qid": "Q105724906",
+      "topRev": 72858097,
+      "more": false,
+      "lead": "File:Seminci 2025 - Leonor Noivo-2 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Seminci 2025 - Leonor Noivo-2 (cropped).jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Max Walker-Silverman",
+      "label": "Max Walker-Silverman",
+      "qid": "Q110818237",
+      "topRev": 1363975435,
+      "more": false,
+      "lead": "File:Seminci 2025 - Max Walker-Silverman-2 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Seminci 2025 - Max Walker-Silverman-2 (cropped).jpg",
+          "rev": 1363975435,
+          "ts": "2026-07-13T17:51:03Z",
+          "user": "~2026-32542-29"
+        }
+      ]
+    },
+    {
+      "lang": "ca",
+      "article": "Ana Serret Ituarte",
+      "label": "Ana Serret Ituarte",
+      "qid": "Q55831300",
+      "topRev": 36047440,
+      "more": false,
+      "lead": "File:Seminci 2025 - Seminci 2025 - Ana Serret-1.jpg",
+      "timeline": [
+        {
+          "file": "File:Seminci 2025 - Seminci 2025 - Ana Serret-1.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Rafael Cobos",
+      "label": "Rafael Cobos López",
+      "qid": "Q47286177",
+      "topRev": 1320603930,
+      "more": false,
+      "lead": "File:Seminci 2025 - Rafael Cobos-2 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Seminci 2025 - Rafael Cobos-2 (cropped).jpg",
+          "rev": 1320603930,
+          "ts": "2025-11-05T19:08:26Z",
+          "user": "Asqueladd"
+        },
+        {
+          "file": "File:(Rafael Cobos) 26167801919 3389c867a0 o la peste 2 Festival San Sebastian (cropped).jpg",
+          "rev": 1319042917,
+          "ts": "2025-10-27T13:21:59Z",
+          "user": "2A02:9130:8CB1:F789:9912:2027:F33C:54EE"
+        }
+      ]
+    },
+    {
+      "lang": "en",
       "article": "Amanda Seales",
       "label": "Amanda Seales",
       "qid": "Q27796903",
@@ -19938,6 +23095,190 @@
       ]
     },
     {
+      "lang": "de",
+      "article": "Annina Hunziker",
+      "label": "Annina Hunziker",
+      "qid": "Q114146892",
+      "topRev": 261651012,
+      "more": false,
+      "lead": "File:Annina Hunziker on the Green Carpet at the 2025 Zurich Film Festival 05.jpg",
+      "timeline": [
+        {
+          "file": "File:Annina Hunziker on the Green Carpet at the 2025 Zurich Film Festival 05.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Hildur Guðnadóttir",
+      "label": "Hildur Guðnadóttir",
+      "qid": "Q433734",
+      "topRev": 1363963400,
+      "more": false,
+      "lead": "File:Hildur Gudnadottir on the Green Carpet at the 2025 Zurich Film Festival 01.jpg",
+      "timeline": [
+        {
+          "file": "File:Hildur Gudnadottir on the Green Carpet at the 2025 Zurich Film Festival 01.jpg",
+          "rev": 1363963400,
+          "ts": "2026-07-13T16:09:27Z",
+          "user": "Adz0611"
+        },
+        {
+          "file": "File:MKr26481 Hildur Guðnadóttir (Tár, Berlinale 2023).jpg",
+          "rev": 1314159028,
+          "ts": "2025-09-30T01:18:25Z",
+          "user": "2001:448A:20E0:4C08:AD04:6B4:E96D:CE1A"
+        },
+        {
+          "file": "File:Hildur Guðnadóttir (cropped).jpg",
+          "rev": 1283935497,
+          "ts": "2025-04-04T15:41:39Z",
+          "user": "KingArti"
+        }
+      ]
+    },
+    {
+      "lang": "de",
+      "article": "Luisa Wolf",
+      "label": "Luisa Wolf",
+      "qid": "Q124365458",
+      "topRev": 269255238,
+      "more": false,
+      "lead": "File:Luisa Wolf on the Green Carpet at the 2025 Zurich Film Festival 07.jpg",
+      "timeline": [
+        {
+          "file": "File:Luisa Wolf on the Green Carpet at the 2025 Zurich Film Festival 07.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Marco Odermatt",
+      "label": "Marco Odermatt",
+      "qid": "Q23707652",
+      "topRev": 1365708932,
+      "more": true,
+      "lead": "File:Marco Odermatt on the Green Carpet at the 2025 Zurich Film Festival 04.jpg",
+      "timeline": [
+        {
+          "file": "File:Marco Odermatt on the Green Carpet at the 2025 Zurich Film Festival 04.jpg",
+          "rev": 1365708932,
+          "ts": "2026-07-24T00:23:26Z",
+          "user": "PrimeBOT"
+        },
+        {
+          "file": "File:Marco Odermatt with the Small Crystal Globe 2023 Men's Giant Slalom (8) (cropped).jpg",
+          "rev": 1282580374,
+          "ts": "2025-03-27T08:38:25Z",
+          "user": "GuiPaq"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Nathalie Richard",
+      "label": "Nathalie Richard",
+      "qid": "Q3336667",
+      "topRev": 1369682978,
+      "more": false,
+      "lead": "File:Nathalie Richard on the Green Carpet at the 2025 Zurich Film Festival 02.jpg",
+      "timeline": [
+        {
+          "file": "File:Nathalie Richard on the Green Carpet at the 2025 Zurich Film Festival 02.jpg",
+          "rev": 1369682978,
+          "ts": "2026-08-16T13:47:52Z",
+          "user": "Bigjoooo"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Nia DaCosta",
+      "label": "Nia DaCosta",
+      "qid": "Q61995088",
+      "topRev": 1370328817,
+      "more": false,
+      "lead": "File:Nia DaCosta on the Green Carpet at the 2025 Zurich Film Festival 11.jpg",
+      "timeline": [
+        {
+          "file": "File:Nia DaCosta on the Green Carpet at the 2025 Zurich Film Festival 11.jpg",
+          "rev": 1370328817,
+          "ts": "2026-08-20T14:01:48Z",
+          "user": "~2026-45613-94"
+        },
+        {
+          "file": "File:Nia DaCosta on the Green Carpet at the 2025 Zurich Film Festival 03.jpg",
+          "rev": 1318649650,
+          "ts": "2025-10-25T05:08:09Z",
+          "user": "XylonZaire"
+        },
+        {
+          "file": "File:Nia DaCosta.png",
+          "rev": 1314464156,
+          "ts": "2025-10-01T15:10:03Z",
+          "user": "Rickyurs"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Carla Juri",
+      "label": "Carla Juri",
+      "qid": "Q14906908",
+      "topRev": 1357449446,
+      "more": false,
+      "lead": "File:Carla Juri on the Green Carpet at the 2025 Zurich Film Festival 04.jpg",
+      "timeline": [
+        {
+          "file": "File:Carla Juri on the Green Carpet at the 2025 Zurich Film Festival 04.jpg",
+          "rev": 1357449446,
+          "ts": "2026-06-02T18:48:59Z",
+          "user": "Wikizurichuser"
+        },
+        {
+          "file": "File:Carla_Juri_at_the_2025_Locarno_Film_Festival_02.jpg",
+          "rev": 1356907767,
+          "ts": "2026-05-30T15:35:51Z",
+          "user": "PrimeBOT"
+        },
+        {
+          "file": "File:Carla Juri, Laura Birn (2) (cropped - Juri).jpg",
+          "rev": 1300960531,
+          "ts": "2025-07-17T10:00:25Z",
+          "user": "Rickyurs"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Vincent Munier",
+      "label": "Vincent Munier",
+      "qid": "Q1998036",
+      "topRev": 1365249105,
+      "more": false,
+      "lead": "File:Vincent Munier on the Green Carpet at the 2025 Zurich Film Festival 11.jpg",
+      "timeline": [
+        {
+          "file": "File:Vincent Munier on the Green Carpet at the 2025 Zurich Film Festival 11.jpg",
+          "rev": 1365249105,
+          "ts": "2026-07-21T05:26:49Z",
+          "user": "Jevansen"
+        },
+        {
+          "file": "File:Festival international de géographie 2014 - Vincent Munier.jpg",
+          "rev": 1312853807,
+          "ts": "2025-09-23T00:17:21Z",
+          "user": "LordTort"
+        }
+      ]
+    },
+    {
       "lang": "en",
       "article": "Adam Sandler",
       "label": "Adam Sandler",
@@ -19997,6 +23338,109 @@
     },
     {
       "lang": "en",
+      "article": "Harry Lighton",
+      "label": "Harry Lighton",
+      "qid": "Q76055111",
+      "topRev": 1367133177,
+      "more": false,
+      "lead": "File:Harry Lighton on the Green Carpet at the 2025 Zurich Film Festival 05.jpg",
+      "timeline": [
+        {
+          "file": "File:Harry Lighton on the Green Carpet at the 2025 Zurich Film Festival 05.jpg",
+          "rev": 1367133177,
+          "ts": "2026-08-01T04:59:37Z",
+          "user": "Kire1975"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Motaz Malhees",
+      "label": "Motaz Malhees",
+      "qid": "Q133459403",
+      "topRev": 1365226041,
+      "more": false,
+      "lead": "File:Motaz Malhees on the Green Carpet at the 2025 Zurich Film Festival 01.jpg",
+      "timeline": [
+        {
+          "file": "File:Motaz Malhees on the Green Carpet at the 2025 Zurich Film Festival 01.jpg",
+          "rev": 1365226041,
+          "ts": "2026-07-21T02:27:00Z",
+          "user": "Starklinson"
+        }
+      ]
+    },
+    {
+      "lang": "de",
+      "article": "Neele Vollmar",
+      "label": "Neele Vollmar",
+      "qid": "Q1974092",
+      "topRev": 268612443,
+      "more": false,
+      "lead": "File:Neele Leana Vollmar on the Green Carpet at the 2025 Zurich Film Festival 04.jpg",
+      "timeline": [
+        {
+          "file": "File:Neele Leana Vollmar on the Green Carpet at the 2025 Zurich Film Festival 04.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Odessa Rae",
+      "label": "Odessa Rae",
+      "qid": "Q98755011",
+      "topRev": 1365681450,
+      "more": false,
+      "lead": "File:Odessa Rae on the Green Carpet at the 2025 Zurich Film Festival 01.jpg",
+      "timeline": [
+        {
+          "file": "File:Odessa Rae on the Green Carpet at the 2025 Zurich Film Festival 01.jpg",
+          "rev": 1365681450,
+          "ts": "2026-07-23T21:01:15Z",
+          "user": "Cinemacriterion"
+        },
+        {
+          "file": "File:Odessa-Rae.jpg",
+          "rev": 1309741707,
+          "ts": "2025-09-05T19:54:23Z",
+          "user": "203.30.15.195"
+        },
+        {
+          "file": "File:Odessa Rae.jpg",
+          "rev": 1273559044,
+          "ts": "2025-02-02T22:52:56Z",
+          "user": "2A02:3100:B32F:A000:F034:1CF3:AD15:D257"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Philippa Lowthorpe",
+      "label": "Philippa Lowthorpe",
+      "qid": "Q16873294",
+      "topRev": 1360813915,
+      "more": false,
+      "lead": "File:Philippa Lowthorpe on the Green Carpet at the 2025 Zurich Film Festival 01.jpg",
+      "timeline": [
+        {
+          "file": "File:Philippa Lowthorpe on the Green Carpet at the 2025 Zurich Film Festival 01.jpg",
+          "rev": 1360813915,
+          "ts": "2026-06-23T19:42:09Z",
+          "user": "LaffyTaffer"
+        },
+        {
+          "file": "File:Philippa Lowthorpe, Aug 18, 2016.jpg",
+          "rev": 1311720650,
+          "ts": "2025-09-16T15:22:46Z",
+          "user": "GreenC bot"
+        }
+      ]
+    },
+    {
+      "lang": "en",
       "article": "Kim Tae-yong",
       "label": "Kim Tae-yong",
       "qid": "Q11704505",
@@ -20044,6 +23488,231 @@
           "rev": 1351245097,
           "ts": "2026-04-26T21:00:13Z",
           "user": "1995hoo"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Aiysha Hart",
+      "label": "Aiysha Hart",
+      "qid": "Q16225381",
+      "topRev": 1371139809,
+      "more": false,
+      "lead": "File:Aiysha Hart on the Green Carpet at the 2025 Zurich Film Festival 01.jpg",
+      "timeline": [
+        {
+          "file": "File:Aiysha Hart on the Green Carpet at the 2025 Zurich Film Festival 01.jpg",
+          "rev": 1371139809,
+          "ts": "2026-08-24T20:54:26Z",
+          "user": "Ponyo"
+        },
+        {
+          "file": "File:Aiysha Hart on the Green Carpet at the 2025 Zurich Film Festival.jpg",
+          "rev": 1344953759,
+          "ts": "2026-03-23T13:59:59Z",
+          "user": "LionmerterTHE"
+        },
+        {
+          "file": "File:Aiysha Hart on the Green Carpet at the 2025 Zurich Film Festival 02.jpg",
+          "rev": 1322014696,
+          "ts": "2025-11-13T23:00:16Z",
+          "user": "KingArti"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Anthony Mackie",
+      "label": "Anthony Mackie",
+      "qid": "Q511554",
+      "topRev": 1371438460,
+      "more": false,
+      "lead": "File:Anthony Mackie on the Green Carpet at the 2025 Zurich Film Festival 03 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Anthony Mackie on the Green Carpet at the 2025 Zurich Film Festival 03 (cropped).jpg",
+          "rev": 1371438460,
+          "ts": "2026-08-26T12:44:14Z",
+          "user": "Frost"
+        },
+        {
+          "file": "File:Anthony Mackie on the Green Carpet at the 2025 Zurich Film Festival 01.jpg",
+          "rev": 1371438418,
+          "ts": "2026-08-26T12:43:51Z",
+          "user": "~2026-46550-19"
+        },
+        {
+          "file": "File:Anthony Mackie on the Green Carpet at the 2025 Zurich Film Festival 03 (cropped).jpg",
+          "rev": 1370725931,
+          "ts": "2026-08-22T19:35:24Z",
+          "user": "Untamed1910"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Bartosz Bielenia",
+      "label": "Bartosz Bielenia",
+      "qid": "Q30902542",
+      "topRev": 1356900404,
+      "more": false,
+      "lead": "File:Bartosz Bielenia on the Green Carpet at the 2025 Zurich Film Festival 03.jpg",
+      "timeline": [
+        {
+          "file": "File:Bartosz Bielenia on the Green Carpet at the 2025 Zurich Film Festival 03.jpg",
+          "rev": 1356900404,
+          "ts": "2026-05-30T14:43:30Z",
+          "user": "PrimeBOT"
+        },
+        {
+          "file": "File:Bartosz Bielenia.JPG",
+          "rev": 1314042858,
+          "ts": "2025-09-29T12:04:47Z",
+          "user": "Mellamelina"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "David Michôd",
+      "label": "David Michôd",
+      "qid": "Q3018459",
+      "topRev": 1363946293,
+      "more": false,
+      "lead": "File:David Michôd on the Green Carpet at the 2025 Zurich Film Festival 05.jpg",
+      "timeline": [
+        {
+          "file": "File:David Michôd on the Green Carpet at the 2025 Zurich Film Festival 05.jpg",
+          "rev": 1363946293,
+          "ts": "2026-07-13T13:43:45Z",
+          "user": "Laterthanyouthink"
+        },
+        {
+          "file": "File:David Michôd (cropped) 2.jpg",
+          "rev": 1313366793,
+          "ts": "2025-09-25T20:35:46Z",
+          "user": "InternetArchiveBot"
+        },
+        {
+          "file": "File:David Michôd & Mirrah Foulkes 2012 (1).jpg",
+          "rev": 897809672,
+          "ts": "2019-05-19T14:45:54Z",
+          "user": "George D. Jake"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Haifaa al-Mansour",
+      "label": "Haifaa al-Mansour",
+      "qid": "Q386131",
+      "topRev": 1360322646,
+      "more": true,
+      "lead": "File:Haifaa Al-Mansour on the Green Carpet at the 2025 Zurich Film Festival 01.jpg",
+      "timeline": [
+        {
+          "file": "File:Haifaa Al-Mansour on the Green Carpet at the 2025 Zurich Film Festival 01.jpg",
+          "rev": 1360322646,
+          "ts": "2026-06-20T19:07:39Z",
+          "user": "GünniX"
+        },
+        {
+          "file": "File:HaifaaAlMansour.JPG",
+          "rev": 1313281704,
+          "ts": "2025-09-25T08:51:17Z",
+          "user": "Asrefaei"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Max Simonischek",
+      "label": "Max Simonischek",
+      "qid": "Q1913471",
+      "topRev": 1340235727,
+      "more": false,
+      "lead": "File:Max Simonischek on the Green Carpet at the 2025 Zurich Film Festival.jpg",
+      "timeline": [
+        {
+          "file": "File:Max Simonischek on the Green Carpet at the 2025 Zurich Film Festival.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Nabil Elouahabi",
+      "label": "Nabil Elouahabi",
+      "qid": "Q15498512",
+      "topRev": 1367399147,
+      "more": false,
+      "lead": "File:Nabil Elouahabi on the Green Carpet at the 2025 Zurich Film Festival 02.jpg",
+      "timeline": [
+        {
+          "file": "File:Nabil Elouahabi on the Green Carpet at the 2025 Zurich Film Festival 02.jpg",
+          "rev": 1367399147,
+          "ts": "2026-08-02T21:37:20Z",
+          "user": "~2026-33234-38"
+        },
+        {
+          "file": "File:Nabil Elouahabi 2021.png",
+          "rev": 1299771654,
+          "ts": "2025-07-10T08:21:46Z",
+          "user": "Asrefaei"
+        },
+        {
+          "file": "File:Tariq Larousi EE.jpg",
+          "rev": 586124627,
+          "ts": "2013-12-15T01:34:03Z",
+          "user": "BrownHairedGirl"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Sharlto Copley",
+      "label": "Sharlto Copley",
+      "qid": "Q512353",
+      "topRev": 1368874928,
+      "more": false,
+      "lead": "File:Sharlto Copley on the Green Carpet at the 2025 Zurich Film Festival 01.jpg",
+      "timeline": [
+        {
+          "file": "File:Sharlto Copley on the Green Carpet at the 2025 Zurich Film Festival 01.jpg",
+          "rev": 1368874928,
+          "ts": "2026-08-11T15:44:05Z",
+          "user": "CutlassBot"
+        },
+        {
+          "file": "File:Sharlto Copley by Gage Skidmore.jpg",
+          "rev": 1313903404,
+          "ts": "2025-09-28T18:43:09Z",
+          "user": "TheMovieGuy"
+        },
+        {
+          "file": "File:SharltoCopleyCCJuly09.jpg",
+          "rev": 1218084377,
+          "ts": "2024-04-09T16:33:33Z",
+          "user": "184.74.42.186"
+        }
+      ]
+    },
+    {
+      "lang": "de",
+      "article": "Sven Schelker",
+      "label": "Sven Schelker",
+      "qid": "Q18132205",
+      "topRev": 268341734,
+      "more": false,
+      "lead": "File:Sven Schelker on the Green Carpet at the 2025 Zurich Film Festival.jpg",
+      "timeline": [
+        {
+          "file": "File:Sven Schelker on the Green Carpet at the 2025 Zurich Film Festival.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
         }
       ]
     },
@@ -20360,6 +24029,225 @@
       ]
     },
     {
+      "lang": "de",
+      "article": "Alexa Goodall",
+      "label": "Alexa Goodall",
+      "qid": "Q135490467",
+      "topRev": 266359915,
+      "more": false,
+      "lead": "File:2025 Alexa Goodall (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:2025 Alexa Goodall (cropped).jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "de",
+      "article": "Alice Douard",
+      "label": "Alice Douard",
+      "qid": "Q21097713",
+      "topRev": 262256585,
+      "more": false,
+      "lead": "File:2025 Alice Douard - 2 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:2025 Alice Douard - 2 (cropped).jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Anders Thomas Jensen",
+      "label": "Anders Thomas Jensen",
+      "qid": "Q491314",
+      "topRev": 1369998883,
+      "more": false,
+      "lead": "File:2025 Anders Thomas Jensen (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:2025 Anders Thomas Jensen (cropped).jpg",
+          "rev": 1369998883,
+          "ts": "2026-08-18T14:17:23Z",
+          "user": "AnomieBOT"
+        },
+        {
+          "file": "File:Anders Thomas Jensen on the Green Carpet at the 2025 Zurich Film Festival 02.jpg",
+          "rev": 1313852136,
+          "ts": "2025-09-28T12:48:31Z",
+          "user": "Quejaytee"
+        },
+        {
+          "file": "File:Anders Thomas Jensen (cropped).jpg",
+          "rev": 1312685227,
+          "ts": "2025-09-22T02:10:44Z",
+          "user": "FMSky"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Colin Farrell",
+      "label": "Colin Farrell",
+      "qid": "Q172035",
+      "topRev": 1369593307,
+      "more": false,
+      "lead": "File:2025 Colin Farrell - 2 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:2025 Colin Farrell - 2 (cropped).jpg",
+          "rev": 1369593307,
+          "ts": "2026-08-15T23:20:00Z",
+          "user": "Jeffrey34555"
+        },
+        {
+          "file": "File:Colin Farrell on the Green Carpet at the 2025 Zurich Film Festival 07 (cropped).jpg",
+          "rev": 1313923399,
+          "ts": "2025-09-28T20:50:05Z",
+          "user": "Escape Orbit"
+        },
+        {
+          "file": "File:Colin Farrell on the Green Carpet at the 2025 Zurich Film Festival 15.jpg",
+          "rev": 1313849187,
+          "ts": "2025-09-28T12:29:10Z",
+          "user": "Quejaytee"
+        }
+      ]
+    },
+    {
+      "lang": "es",
+      "article": "Araloyin Oshunremi",
+      "label": "Araloyin Oshunremi",
+      "qid": "Q111889944",
+      "topRev": 174930078,
+      "more": false,
+      "lead": "File:Araloyin Oshunremi on the Green Carpet at the 2025 Zurich Film Festival 01.jpg",
+      "timeline": [
+        {
+          "file": "File:Araloyin Oshunremi on the Green Carpet at the 2025 Zurich Film Festival 01.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Namir Abdel Messeeh",
+      "label": "Namir Abdel Messeeh",
+      "qid": "Q3335470",
+      "topRev": 1367477647,
+      "more": false,
+      "lead": "File:Namir Abdel Messeeh on the Green Carpet at the 2025 Zurich Film Festival 03.jpg",
+      "timeline": [
+        {
+          "file": "File:Namir Abdel Messeeh on the Green Carpet at the 2025 Zurich Film Festival 03.jpg",
+          "rev": 1367477647,
+          "ts": "2026-08-03T09:00:29Z",
+          "user": "BilabialTrill"
+        },
+        {
+          "file": "File:Namir Abdel Messeeh on the Green Carpet at the 2025 Zurich Film Festival 02.jpg",
+          "rev": 1313859528,
+          "ts": "2025-09-28T13:40:12Z",
+          "user": "Staticshakedown"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Russell Crowe",
+      "label": "Russell Crowe",
+      "qid": "Q129817",
+      "topRev": 1370101420,
+      "more": false,
+      "lead": "File:Russell Crowe on the Green Carpet at the 2025 Zurich Film Festival 06 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Russell Crowe on the Green Carpet at the 2025 Zurich Film Festival 06 (cropped).jpg",
+          "rev": 1370101420,
+          "ts": "2026-08-19T03:13:21Z",
+          "user": "~2026-45421-62"
+        },
+        {
+          "file": "File:Russell Crowe on the Green Carpet at the 2025 Zurich Film Festival 05.jpg",
+          "rev": 1313657849,
+          "ts": "2025-09-27T12:32:16Z",
+          "user": "Quejaytee"
+        },
+        {
+          "file": "File:Russell Crowe (33994246374).jpg",
+          "rev": 1313475524,
+          "ts": "2025-09-26T12:53:27Z",
+          "user": "ToBeFree"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Bertrand Piccard",
+      "label": "Bertrand Piccard",
+      "qid": "Q366255",
+      "topRev": 1371533083,
+      "more": false,
+      "lead": "File:Bertrand Piccard on the Green Carpet at the 2025 Zurich Film Festival 01.jpg",
+      "timeline": [
+        {
+          "file": "File:Bertrand Piccard on the Green Carpet at the 2025 Zurich Film Festival 01.jpg",
+          "rev": 1371533083,
+          "ts": "2026-08-27T00:56:24Z",
+          "user": "Kgrad"
+        },
+        {
+          "file": "File:Bertrand Piccard 2015.jpg",
+          "rev": 1312697117,
+          "ts": "2025-09-22T03:41:59Z",
+          "user": "GreenC bot"
+        },
+        {
+          "file": "File:Bertrand_Piccard_L1001928_20x30_P.jpg",
+          "rev": 1117947286,
+          "ts": "2022-10-24T11:21:10Z",
+          "user": "2001:4BC9:A43:3759:44B2:43E7:73C5:48CB"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Matthias Schweighöfer",
+      "label": "Matthias Schweighöfer",
+      "qid": "Q64645",
+      "topRev": 1366497320,
+      "more": false,
+      "lead": "File:Matthias Schweighöfer on the Green Carpet at the 2025 Zurich Film Festival 11.jpg",
+      "timeline": [
+        {
+          "file": "File:Matthias Schweighöfer on the Green Carpet at the 2025 Zurich Film Festival 11.jpg",
+          "rev": 1366497320,
+          "ts": "2026-07-28T10:09:07Z",
+          "user": "Waxworker"
+        },
+        {
+          "file": "File:MJK 68833 Matthias Schweighöfer (Bayern-Empfang, Berlinale 2020).jpg",
+          "rev": 1307308182,
+          "ts": "2025-08-22T21:45:56Z",
+          "user": "JJMC89 bot III"
+        },
+        {
+          "file": "File:MJK 33812 Matthias Schweighöfer (Medienboard-Party 2019) cropped.jpg",
+          "rev": 1147823902,
+          "ts": "2023-04-02T12:10:17Z",
+          "user": "Sheep8144402"
+        }
+      ]
+    },
+    {
       "lang": "en",
       "article": "Andrew Forrest",
       "label": "Andrew Forrest",
@@ -20425,6 +24313,74 @@
           "rev": 1305692753,
           "ts": "2025-08-13T14:56:52Z",
           "user": "108.200.225.157"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Zoë Pastelle",
+      "label": "Zoë Pastelle Holthuizen",
+      "qid": "Q72282785",
+      "topRev": 1346445685,
+      "more": false,
+      "lead": "File:2025 Zoë Pastelle (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:2025 Zoë Pastelle (cropped).jpg",
+          "rev": 1346445685,
+          "ts": "2026-03-31T21:42:03Z",
+          "user": "JJMC89 bot III"
+        }
+      ]
+    },
+    {
+      "lang": "de",
+      "article": "Angelo Boffa",
+      "label": "Angelo Boffa",
+      "qid": "Q126948173",
+      "topRev": 262290107,
+      "more": false,
+      "lead": "File:Angelo Boffa opening Night on the Green Carpet at the 2025 Zurich Film Festival 02.jpg",
+      "timeline": [
+        {
+          "file": "File:Angelo Boffa opening Night on the Green Carpet at the 2025 Zurich Film Festival 02.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "de",
+      "article": "Lara Wolf (Schauspielerin)",
+      "label": "Lara Wolf",
+      "qid": "Q125490423",
+      "topRev": 262793760,
+      "more": false,
+      "lead": "File:Opening night guests at the 2025 Zurich Film Festival 11.jpg",
+      "timeline": [
+        {
+          "file": "File:Opening night guests at the 2025 Zurich Film Festival 11.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "de",
+      "article": "Christian Jungen",
+      "label": "Christian Jungen",
+      "qid": "Q18132158",
+      "topRev": 268571173,
+      "more": false,
+      "lead": "File:Opening night guests at the 2025 Zurich Film Festival 32.jpg",
+      "timeline": [
+        {
+          "file": "File:Opening night guests at the 2025 Zurich Film Festival 32.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
         }
       ]
     },
@@ -23155,6 +27111,35 @@
     },
     {
       "lang": "en",
+      "article": "Robert Mirabal",
+      "label": "Robert Mirabal",
+      "qid": "Q7347713",
+      "topRev": 1362465465,
+      "more": false,
+      "lead": "File:Patricia Michaels Runway for SWAIA Gala 2025 - Robert Mirabal 2.jpg",
+      "timeline": [
+        {
+          "file": "File:Patricia Michaels Runway for SWAIA Gala 2025 - Robert Mirabal 2.jpg",
+          "rev": 1362465465,
+          "ts": "2026-07-04T02:54:48Z",
+          "user": "~2026-37846-32"
+        },
+        {
+          "file": "File:Robert Mirabal.jpg",
+          "rev": 1334792409,
+          "ts": "2026-01-25T18:08:16Z",
+          "user": "Tassedethe"
+        },
+        {
+          "file": "File:Replace this image male.svg",
+          "rev": 438963390,
+          "ts": "2011-07-11T19:45:41Z",
+          "user": "174.28.195.68"
+        }
+      ]
+    },
+    {
+      "lang": "en",
       "article": "David Boreanaz",
       "label": "David Boreanaz",
       "qid": "Q206364",
@@ -23616,6 +27601,23 @@
       ]
     },
     {
+      "lang": "en",
+      "article": "Emily Edenshaw",
+      "label": "Emily Edenshaw",
+      "qid": "Q135559068",
+      "topRev": 1365651397,
+      "more": false,
+      "lead": "File:Emily Edenshaw at Alaskan Native Heritage Center Garden Party 2025 08 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Emily Edenshaw at Alaskan Native Heritage Center Garden Party 2025 08 (cropped).jpg",
+          "rev": 1365651397,
+          "ts": "2026-07-23T17:19:40Z",
+          "user": "Chris the speller"
+        }
+      ]
+    },
+    {
       "lang": "de",
       "article": "Sebastian Wolf (Politiker)",
       "label": "Sebastian Wolf",
@@ -23922,6 +27924,40 @@
       ]
     },
     {
+      "lang": "no",
+      "article": "Linus Johnsen",
+      "label": "Linus Johnsen",
+      "qid": "Q136728670",
+      "topRev": 25670877,
+      "more": false,
+      "lead": "File:Linus Johnsen at 2025 Márkomeannu 8.jpg",
+      "timeline": [
+        {
+          "file": "File:Linus Johnsen at 2025 Márkomeannu 8.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "no",
+      "article": "Terje Bartholsen",
+      "label": "Terje Bartholsen",
+      "qid": "Q70376813",
+      "topRev": 24633492,
+      "more": false,
+      "lead": "File:Terje Bartholsen at 2025 Márkomeannu 4.jpg",
+      "timeline": [
+        {
+          "file": "File:Terje Bartholsen at 2025 Márkomeannu 4.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
       "lang": "en",
       "article": "Samuele Di Benedetto",
       "label": "Samuele Di Benedetto",
@@ -24120,6 +28156,52 @@
           "rev": 1322052484,
           "ts": "2025-11-14T03:11:59Z",
           "user": "Я сошла с ума"
+        }
+      ]
+    },
+    {
+      "lang": "de",
+      "article": "Vegard Bjørsmo",
+      "label": "Vegard Bjørsmo",
+      "qid": "Q108905221",
+      "topRev": 264360105,
+      "more": false,
+      "lead": "File:Vegard Bjørsmo at 2025 Riddu Riđđu (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Vegard Bjørsmo at 2025 Riddu Riđđu (cropped).jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Andrés Cantor",
+      "label": "Andrés Cantor",
+      "qid": "Q4760163",
+      "topRev": 1369011835,
+      "more": false,
+      "lead": "File:Andres Cantor.jpg",
+      "timeline": [
+        {
+          "file": "File:Andres Cantor.jpg",
+          "rev": 1369011835,
+          "ts": "2026-08-12T09:55:10Z",
+          "user": "CutlassBot"
+        },
+        {
+          "file": "File:https://resizing.flixster.com/XMGArlPtSpRWbeDAo2_Y9URRE_g=/218x280/v2/https://flxt.tmsimg.com/assets/959627_v9_ba.jpg",
+          "rev": 1128439346,
+          "ts": "2022-12-20T03:54:22Z",
+          "user": "2603:6011:2FF0:8140:C5E1:9B04:631E:24EC"
+        },
+        {
+          "file": "File:https://remezcla.com/wp-content/uploads/2018/06/GettyImages-531812356.jpg",
+          "rev": 1128439074,
+          "ts": "2022-12-20T03:51:32Z",
+          "user": "2603:6011:2FF0:8140:C5E1:9B04:631E:24EC"
         }
       ]
     },
@@ -24764,6 +28846,40 @@
           "rev": 1294233843,
           "ts": "2025-06-06T13:13:14Z",
           "user": "2001:8003:6202:4501:7C3D:B6C3:C537:C871"
+        }
+      ]
+    },
+    {
+      "lang": "de",
+      "article": "Alexis E. Fajardo",
+      "label": "Alexis E. Fajardo",
+      "qid": "Q124733446",
+      "topRev": 256638681,
+      "more": false,
+      "lead": "File:Alexis E. Fajardo at Bay Area Book Festival 2025 (cropped).png",
+      "timeline": [
+        {
+          "file": "File:Alexis E. Fajardo at Bay Area Book Festival 2025 (cropped).png",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Elisa Stone Leahy",
+      "label": "Elisa Stone Leahy",
+      "qid": "Q134700105",
+      "topRev": 1366471395,
+      "more": false,
+      "lead": "File:Elisa Stone Leahy at Bay Area Book Festival 2025 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Elisa Stone Leahy at Bay Area Book Festival 2025 (cropped).jpg",
+          "rev": 1366471395,
+          "ts": "2026-07-28T05:39:52Z",
+          "user": "Ser Amantio di Nicolao"
         }
       ]
     },
@@ -25498,6 +29614,103 @@
     },
     {
       "lang": "en",
+      "article": "Cecilia Zoppelletto",
+      "label": "Cecilia Zoppelletto",
+      "qid": "Q26908207",
+      "topRev": 1350839120,
+      "more": false,
+      "lead": "File:Cecilia Zoppelletto at the 2025 New York African Film Festival (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Cecilia Zoppelletto at the 2025 New York African Film Festival (cropped).jpg",
+          "rev": 1350839120,
+          "ts": "2026-04-24T10:00:53Z",
+          "user": "~2026-25087-92"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Jean-Michel Kibushi Ndjate Wooto",
+      "label": "Jean-Michel Kibushi Ndjate Wooto",
+      "qid": "Q99975897",
+      "topRev": 1342160918,
+      "more": false,
+      "lead": "File:Jean Michel Kibushi at the 2025 New York African Film Festival.jpg",
+      "timeline": [
+        {
+          "file": "File:Jean Michel Kibushi at the 2025 New York African Film Festival.jpg",
+          "rev": 1342160918,
+          "ts": "2026-03-07T11:03:02Z",
+          "user": "Ser Amantio di Nicolao"
+        },
+        {
+          "file": "File:Jean-Michel Kibushi.jpg",
+          "rev": 1266603536,
+          "ts": "2025-01-01T10:52:05Z",
+          "user": "DaSupremo"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Keith Shiri",
+      "label": "Keith Shiri",
+      "qid": "Q24572513",
+      "topRev": 1343026233,
+      "more": false,
+      "lead": "File:Keith Shiri at the 2025 New York African Film Festival.jpg",
+      "timeline": [
+        {
+          "file": "File:Keith Shiri at the 2025 New York African Film Festival.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Andrew Dosunmu",
+      "label": "Andrew Dosunmu",
+      "qid": "Q4756825",
+      "topRev": 1313192288,
+      "more": false,
+      "lead": "File:Mahen Bonetti Andrew Dosunmu at the 2025 New York African Film Festival 2 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Mahen Bonetti Andrew Dosunmu at the 2025 New York African Film Festival 2 (cropped).jpg",
+          "rev": 1313192288,
+          "ts": "2025-09-24T20:47:22Z",
+          "user": "El Banhara"
+        },
+        {
+          "file": "File:Andrew Dosunmu Restless City Portraits 2011.jpg",
+          "rev": 465955829,
+          "ts": "2011-12-15T05:59:59Z",
+          "user": "68.82.224.90"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Zoe Ramushu",
+      "label": "Zoe Ramushu",
+      "qid": "Q115492547",
+      "topRev": 1360100559,
+      "more": false,
+      "lead": "File:Zoe Ramushu at the 2025 New York African Film Festival 2.jpg",
+      "timeline": [
+        {
+          "file": "File:Zoe Ramushu at the 2025 New York African Film Festival 2.jpg",
+          "rev": 1360100559,
+          "ts": "2026-06-19T06:30:54Z",
+          "user": "Kloowee"
+        }
+      ]
+    },
+    {
+      "lang": "en",
       "article": "Anna Delvey",
       "label": "Anna Sorokin",
       "qid": "Q55080956",
@@ -25683,6 +29896,40 @@
     },
     {
       "lang": "en",
+      "article": "Alan Weisman",
+      "label": "Alan Weisman",
+      "qid": "Q720561",
+      "topRev": 1358836526,
+      "more": false,
+      "lead": "File:Alan Weisman at Powell's Books.jpg",
+      "timeline": [
+        {
+          "file": "File:Alan Weisman at Powell's Books.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Kevin Sampsell",
+      "label": "Kevin Sampsell",
+      "qid": "Q6397422",
+      "topRev": 1361256943,
+      "more": false,
+      "lead": "File:Kevin Sampsell at Powell's Books.jpg",
+      "timeline": [
+        {
+          "file": "File:Kevin Sampsell at Powell's Books.jpg",
+          "rev": 1361256943,
+          "ts": "2026-06-26T19:01:17Z",
+          "user": "Maltazarian"
+        }
+      ]
+    },
+    {
+      "lang": "en",
       "article": "Krysten Ritter",
       "label": "Krysten Ritter",
       "qid": "Q258793",
@@ -25782,6 +30029,29 @@
           "rev": 1278275371,
           "ts": "2025-03-01T14:13:22Z",
           "user": "Cielquiparle"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Omar El Akkad",
+      "label": "Omar El Akkad",
+      "qid": "Q29453380",
+      "topRev": 1371470764,
+      "more": false,
+      "lead": "File:Omar El Akkad at Powell's Books - brightened.jpg",
+      "timeline": [
+        {
+          "file": "File:Omar El Akkad at Powell's Books - brightened.jpg",
+          "rev": 1371470764,
+          "ts": "2026-08-26T16:59:52Z",
+          "user": "Kaihsu"
+        },
+        {
+          "file": "File:Omar El Akkad at Powell's Books.jpg",
+          "rev": 1350552108,
+          "ts": "2026-04-22T15:44:20Z",
+          "user": "Reenem"
         }
       ]
     },
@@ -26629,6 +30899,132 @@
           "rev": 1366535873,
           "ts": "2026-07-28T15:46:13Z",
           "user": "Staryu"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Brandy Zadrozny",
+      "label": "Brandy Zadrozny",
+      "qid": "Q100711721",
+      "topRev": 1359644565,
+      "more": false,
+      "lead": "File:Brandy Zadrozny at the 2025 Knight Media Forum 3.jpg",
+      "timeline": [
+        {
+          "file": "File:Brandy Zadrozny at the 2025 Knight Media Forum 3.jpg",
+          "rev": 1359644565,
+          "ts": "2026-06-16T11:34:29Z",
+          "user": "John of Reading"
+        },
+        {
+          "file": "File:Brandy Zadrozny @ SXSW 2019 (47300355122).jpg",
+          "rev": 1300012955,
+          "ts": "2025-07-11T19:52:37Z",
+          "user": "8.20.65.4"
+        },
+        {
+          "file": "File:ZadroznyPortrait.jpg",
+          "rev": 1222473041,
+          "ts": "2024-05-06T04:24:03Z",
+          "user": "Ser Amantio di Nicolao"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Davey Alba",
+      "label": "Davey Alba",
+      "qid": "Q98422437",
+      "topRev": 1345006594,
+      "more": false,
+      "lead": "File:Davey Alba at the 2025 Knight Media Forum 1.jpg",
+      "timeline": [
+        {
+          "file": "File:Davey Alba at the 2025 Knight Media Forum 1.jpg",
+          "rev": 1345006594,
+          "ts": "2026-03-23T20:06:20Z",
+          "user": "LionmerterTHE"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Jay Graber",
+      "label": "Jay Graber",
+      "qid": "Q117997886",
+      "topRev": 1358003067,
+      "more": false,
+      "lead": "File:Jay Graber at the 2025 Knight Media Forum 6 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Jay Graber at the 2025 Knight Media Forum 6 (cropped).jpg",
+          "rev": 1358003067,
+          "ts": "2026-06-05T23:55:36Z",
+          "user": "~2026-33491-59"
+        },
+        {
+          "file": "File:Jay Graber 2024 (cropped).jpg",
+          "rev": 1342591157,
+          "ts": "2026-03-09T20:04:01Z",
+          "user": "Funcrunch"
+        },
+        {
+          "file": "File:Jay_Graber_2024_(cropped).jpg",
+          "rev": 1278610841,
+          "ts": "2025-03-03T14:14:10Z",
+          "user": "Left Central"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Jeff Horwitz",
+      "label": "Jeff Horwitz",
+      "qid": "Q109212407",
+      "topRev": 1371568455,
+      "more": false,
+      "lead": "File:Jeff Horwitz at the 2025 Knight Media Forum 3 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Jeff Horwitz at the 2025 Knight Media Forum 3 (cropped).jpg",
+          "rev": 1371568455,
+          "ts": "2026-08-27T04:24:12Z",
+          "user": "Funcrunch"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Jim Brady (journalist)",
+      "label": "Jim Brady",
+      "qid": "Q132861144",
+      "topRev": 1280615558,
+      "more": false,
+      "lead": "File:Jim Brady at the 2025 Knight Media Forum (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Jim Brady at the 2025 Knight Media Forum (cropped).jpg",
+          "rev": 1280615558,
+          "ts": "2025-03-15T15:07:52Z",
+          "user": "Bamyers99"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Jacob Mchangama",
+      "label": "Jacob Mchangama",
+      "qid": "Q12318873",
+      "topRev": 1332906627,
+      "more": false,
+      "lead": "File:Jacob Mchangama at the 2025 Knight Media Forum 1.jpg",
+      "timeline": [
+        {
+          "file": "File:Jacob Mchangama at the 2025 Knight Media Forum 1.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
         }
       ]
     },
@@ -28797,6 +33193,69 @@
           "file": "File:Sandra Bullock in July 2013.jpg",
           "rev": 1307869016,
           "ts": "2025-08-26T03:48:09Z",
+          "user": "GreenC bot"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Fred Benenson",
+      "label": "Fred Benenson",
+      "qid": "Q57268302",
+      "topRev": 1361899265,
+      "more": false,
+      "lead": "File:Fred Benenson at \"The Apprentice\" in NYC (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Fred Benenson at \"The Apprentice\" in NYC (cropped).jpg",
+          "rev": 1361899265,
+          "ts": "2026-06-30T19:15:06Z",
+          "user": "Jermaima"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Martin Donovan",
+      "label": "Martin Donovan",
+      "qid": "Q726130",
+      "topRev": 1365318541,
+      "more": true,
+      "lead": "File:Martin Donovan in 2024 (1).jpg",
+      "timeline": [
+        {
+          "file": "File:Martin Donovan in 2024 (1).jpg",
+          "rev": 1365318541,
+          "ts": "2026-07-21T17:30:31Z",
+          "user": "~2026-40669-80"
+        },
+        {
+          "file": "File:Martin Donovan.jpg",
+          "rev": 1261915241,
+          "ts": "2024-12-08T17:09:47Z",
+          "user": "EROY"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Michael Cohen (lawyer)",
+      "label": "Michael Cohen",
+      "qid": "Q22277395",
+      "topRev": 1371690311,
+      "more": true,
+      "lead": "File:Michael Cohen at \"The Apprentice\" in NYC 03 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Michael Cohen at \"The Apprentice\" in NYC 03 (cropped).jpg",
+          "rev": 1371690311,
+          "ts": "2026-08-27T22:22:51Z",
+          "user": "Jesse Viviano"
+        },
+        {
+          "file": "File:Michael Cohen in 2019.png",
+          "rev": 1240034918,
+          "ts": "2024-08-13T04:18:53Z",
           "user": "GreenC bot"
         }
       ]
@@ -33232,6 +37691,23 @@
     },
     {
       "lang": "en",
+      "article": "Nina Gantz",
+      "label": "Nina Gantz",
+      "qid": "Q22912482",
+      "topRev": 1362355376,
+      "more": false,
+      "lead": "File:SXSW 2024 Film Awards - Nina Gantz.jpg",
+      "timeline": [
+        {
+          "file": "File:SXSW 2024 Film Awards - Nina Gantz.jpg",
+          "rev": 1362355376,
+          "ts": "2026-07-03T11:46:22Z",
+          "user": "Swanny18"
+        }
+      ]
+    },
+    {
+      "lang": "en",
       "article": "Dominique Moceanu",
       "label": "Dominique Moceanu",
       "qid": "Q436128",
@@ -35967,6 +40443,126 @@
           "rev": 1354260933,
           "ts": "2026-05-15T08:53:04Z",
           "user": "GhostInTheMachine"
+        }
+      ]
+    },
+    {
+      "lang": "ar",
+      "article": "أسماء جلال",
+      "label": "Asmaa Galal",
+      "qid": "Q94128305",
+      "topRev": 74058809,
+      "more": false,
+      "lead": "File:Asmaa Galal at the 2025 Red Sea Film Festival 20251206 (1).jpg",
+      "timeline": [
+        {
+          "file": "File:Asmaa Galal at the 2025 Red Sea Film Festival 20251206 (1).jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "ar",
+      "article": "محمد كريم (ممثل)",
+      "label": "Mohamed Karim",
+      "qid": "Q12240936",
+      "topRev": 72052044,
+      "more": false,
+      "lead": "File:Mohamed Karim at the 2025 Red Sea Film Festival 20251206 (1).jpg",
+      "timeline": [
+        {
+          "file": "File:Mohamed Karim at the 2025 Red Sea Film Festival 20251206 (1).jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Nelly Karim",
+      "label": "Nelly Karim",
+      "qid": "Q1438531",
+      "topRev": 1369907373,
+      "more": false,
+      "lead": "File:Nelly Karim at the 2025 Red Sea Film Festival 20251210 (2).jpg",
+      "timeline": [
+        {
+          "file": "File:Nelly Karim at the 2025 Red Sea Film Festival 20251210 (2).jpg",
+          "rev": 1369907373,
+          "ts": "2026-08-17T23:07:16Z",
+          "user": "Goodymaraj"
+        },
+        {
+          "file": "File:Nelly Karim at the 2025 Red Sea Film Festival 20251210 (1).jpg",
+          "rev": 1356854324,
+          "ts": "2026-05-30T06:26:29Z",
+          "user": "~2026-32259-33"
+        },
+        {
+          "file": "File:Nelly Karim (cropped).jpg",
+          "rev": 1355592554,
+          "ts": "2026-05-22T19:40:51Z",
+          "user": "LavenderDemo"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Seo Su-bin",
+      "label": "Seo Su-bin",
+      "qid": "Q136657650",
+      "topRev": 1371222467,
+      "more": false,
+      "lead": "File:Seo Su-bin at the 2025 Red Sea Film Festival 20251206 (2) (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Seo Su-bin at the 2025 Red Sea Film Festival 20251206 (2) (cropped).jpg",
+          "rev": 1371222467,
+          "ts": "2026-08-25T07:30:12Z",
+          "user": "Phraowin"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Shahad Ameen",
+      "label": "Shahad Ameen",
+      "qid": "Q81556307",
+      "topRev": 1368460816,
+      "more": false,
+      "lead": "File:Shahad Ameen at the 2025 Red Sea Film Festival 20251206 (1).jpg",
+      "timeline": [
+        {
+          "file": "File:Shahad Ameen at the 2025 Red Sea Film Festival 20251206 (1).jpg",
+          "rev": 1368460816,
+          "ts": "2026-08-09T04:45:55Z",
+          "user": "Charlesdarling"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Benedikt Erlingsson",
+      "label": "Benedikt Erlingsson",
+      "qid": "Q15635899",
+      "topRev": 1360404067,
+      "more": false,
+      "lead": "File:Benedikt ERLINGSSON at Serie mania 2026.jpg",
+      "timeline": [
+        {
+          "file": "File:Benedikt ERLINGSSON at Serie mania 2026.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        },
+        {
+          "file": "File:Benedikt_ERLINGSSON_at_Serie_mania_2026.jpg",
+          "rev": 1360404067,
+          "ts": "2026-06-21T07:58:09Z",
+          "user": "Bigeourg"
         }
       ]
     }
