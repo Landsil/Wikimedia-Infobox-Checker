@@ -2,7 +2,7 @@
   "schema": 1,
   "algoVersion": 3,
   "identity": "category|Category:WikiPortraits uploads",
-  "asOf": "2026-08-28T15:32:15.617Z",
+  "asOf": "2026-08-28T15:37:38.970Z",
   "input": {
     "type": "category",
     "title": "Category:WikiPortraits uploads"
@@ -11,8 +11,2112 @@
   "count": 3,
   "addedThrough": "2026-08-28T14:26:31Z",
   "uncapped": true,
-  "scanned": 200,
+  "scanned": 1200,
   "pending": null,
-  "done": [],
-  "people": []
+  "done": [
+    "fr:Laurène Marx",
+    "en:Mathilde Larrère",
+    "fr:Raphaëlle Bacqué",
+    "en:Myriam Nicole",
+    "en:Matt Graham (skier)",
+    "en:Marine Cabirou",
+    "en:Adrien Boichis",
+    "en:Olivia Giaccio",
+    "en:Elizabeth Lemley",
+    "en:Jaelin Kauf",
+    "en:Andreas Kolb",
+    "en:Alexis McGill Johnson",
+    "en:Alycia Pirmohamed",
+    "en:Amanda Seales",
+    "de:Andreas Henning",
+    "en:Andrew Dismukes",
+    "uk:Тульєва Анна Вікторівна",
+    "en:Anna Delvey",
+    "en:Ato Essandoh",
+    "en:Ben Stiller",
+    "en:Ben Willbond",
+    "en:Bernie Wagenblast",
+    "en:Beth Ostrosky Stern",
+    "en:Bill Toner",
+    "en:Brad Lander",
+    "en:Brooke Averick",
+    "en:Carín León",
+    "en:Casey Neistat",
+    "en:Casey Wilson",
+    "en:Charlie Cox",
+    "en:Charlie Pellett",
+    "en:Cheyenne Jackson",
+    "en:Chloe Troast",
+    "no:Christer Falck",
+    "en:Cleo Abram",
+    "en:Colin Baker",
+    "en:Colm Tóibín",
+    "en:Aaron Chen",
+    "en:Ben Marshall (comedian)",
+    "es:Jorge Jiménez (dibujante)",
+    "en:Daniyal Mueenuddin",
+    "en:David Cronenberg",
+    "en:David Cross",
+    "en:David F. Ross",
+    "en:David Ushery",
+    "en:Deborah Ann Woll",
+    "en:Derek Blasberg",
+    "en:Keith Powers (politician)",
+    "en:Dougie MacLean",
+    "en:Ece Temelkuran",
+    "en:Edward Lee (chef)",
+    "en:Elif Shafak",
+    "en:Emily Gallagher",
+    "en:Emira D'Spain",
+    "en:Emma Peschel",
+    "en:Evan Olson (rower)",
+    "en:Filip Gravenfors",
+    "en:Frances Ruffelle",
+    "en:Fred Armisen",
+    "en:Johana Gustawsson",
+    "en:Hannah Lavery",
+    "en:Harald Stanghelle",
+    "en:Hunter Tootoo",
+    "en:India de Beaufort",
+    "en:Inspectah Deck",
+    "en:Iván Argote",
+    "en:Jacek Dukaj",
+    "en:Jada Yuan",
+    "en:James McAvoy",
+    "en:Cheryl Phillips (journalist)",
+    "en:Jean-Luc Van Den Heede",
+    "en:Jennifer Wong",
+    "en:Jody Avirgan",
+    "en:Joey Batey",
+    "en:John Amagoalik",
+    "en:John Barrowman",
+    "en:John Densmore",
+    "en:Jonah Feingold",
+    "en:Judy Tenuta",
+    "en:Jumaane Williams",
+    "en:Kate Winslet",
+    "en:Kellie Carter Jackson",
+    "en:Kenneth Cole (designer)",
+    "en:Kylie Cantrall",
+    "en:Lana Condor",
+    "en:Leah Hunt-Hendrix",
+    "en:Liamani",
+    "en:Luigi Brugnaro",
+    "en:Luke Evans",
+    "en:Lukita Maxwell",
+    "en:Lyse Doucet",
+    "en:Marta Belcher",
+    "en:Martha S. Jones",
+    "en:María Valverde",
+    "en:Matt Haig",
+    "en:Matt Mahan",
+    "en:Matthew Granade",
+    "en:Max Joseph",
+    "en:Michael Govan",
+    "en:Kristen Gonzalez",
+    "en:Nira Burstein",
+    "en:Patrick Gibson (actor)",
+    "en:Paul L. Nguyen",
+    "en:Peter Davison"
+  ],
+  "people": [
+    {
+      "lang": "en",
+      "article": "Colm Tóibín",
+      "label": "Colm Tóibín",
+      "qid": "Q470758",
+      "topRev": 1371801043,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Colm Tóibín at Ed Book Fest 26 07.jpg",
+          "rev": 1371801043,
+          "ts": "2026-08-28T14:42:39Z",
+          "user": "JaceMerlyn"
+        },
+        {
+          "file": "File:Colm Tóibín at Ed Book Fest 26 03.jpg",
+          "rev": 1371799367,
+          "ts": "2026-08-28T14:28:23Z",
+          "user": "JaceMerlyn"
+        },
+        {
+          "file": "File:Colm toibin 2006.jpg",
+          "rev": 1371376410,
+          "ts": "2026-08-26T03:32:32Z",
+          "user": "ZackBot"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Daniyal Mueenuddin",
+      "label": "Daniyal Mueenuddin",
+      "qid": "Q5219891",
+      "topRev": 1371782564,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Daniyal Mueenuddin at Ed Book Fest 26 02.jpg",
+          "rev": 1371782564,
+          "ts": "2026-08-28T12:10:08Z",
+          "user": "JaceMerlyn"
+        },
+        {
+          "file": "File:Daniyal Mueenuddin 20 May 2009.jpg",
+          "rev": 1371737245,
+          "ts": "2026-08-28T04:22:09Z",
+          "user": "GreenC bot"
+        },
+        {
+          "file": "File:Chad Ramzan.jpg",
+          "rev": 980767596,
+          "ts": "2020-09-28T09:53:07Z",
+          "user": "Innocentch38"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Elif Shafak",
+      "label": "Elif Şafak",
+      "qid": "Q270739",
+      "topRev": 1371782347,
+      "more": true,
+      "timeline": [
+        {
+          "file": "File:Elif Şafak at Ed Book Fest 26 01.jpg",
+          "rev": 1371782347,
+          "ts": "2026-08-28T12:08:26Z",
+          "user": "JaceMerlyn"
+        },
+        {
+          "file": "File:Elif Shafak photo.jpg",
+          "rev": 1371547817,
+          "ts": "2026-08-27T02:19:09Z",
+          "user": "ZackBot"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Alycia Pirmohamed",
+      "label": "Alycia Pirmohamed",
+      "qid": "Q106833429",
+      "topRev": 1371645854,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Alycia Pirmohamed at Ed Book Fest 26 03.jpg",
+          "rev": 1371645854,
+          "ts": "2026-08-27T16:32:55Z",
+          "user": "JaceMerlyn"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Ece Temelkuran",
+      "label": "Ece Temelkuran",
+      "qid": "Q6093684",
+      "topRev": 1371645677,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Ece Temelkuran at Ed Book Fest 26 05.jpg",
+          "rev": 1371645677,
+          "ts": "2026-08-27T16:31:40Z",
+          "user": "JaceMerlyn"
+        },
+        {
+          "file": "File:Ece Temelkuran profile.jpg",
+          "rev": 1350543901,
+          "ts": "2026-04-22T14:46:07Z",
+          "user": "ClumsyOwlet"
+        },
+        {
+          "file": "File:Re publica 18 - Day 1 (41131568424) (cropped).jpg",
+          "rev": 1177854368,
+          "ts": "2023-09-30T01:00:14Z",
+          "user": "XTheBedrockX"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Hannah Lavery",
+      "label": "Hannah Lavery",
+      "qid": "Q105121802",
+      "topRev": 1371780855,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Hannah Lavery at Ed Book Fest 26 03.jpg",
+          "rev": 1371780855,
+          "ts": "2026-08-28T11:55:14Z",
+          "user": "Jevansen"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Jacek Dukaj",
+      "label": "Jacek Dukaj",
+      "qid": "Q1067346",
+      "topRev": 1371728292,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Jacek Dukaj at Ed Book Fest 26 02.jpg",
+          "rev": 1371728292,
+          "ts": "2026-08-28T03:15:16Z",
+          "user": "ZackBot"
+        },
+        {
+          "file": "File:Jacek Dukaj1.jpg",
+          "rev": 1365797159,
+          "ts": "2026-07-24T13:12:04Z",
+          "user": "Franek Vetulani"
+        },
+        {
+          "file": "File:Jacek Dukaj by Anna Zemanek 2009.jpg",
+          "rev": 1208822862,
+          "ts": "2024-02-19T02:26:57Z",
+          "user": "Piotrus"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Jennifer Wong",
+      "label": "Jennifer Wong",
+      "qid": "Q16211348",
+      "topRev": 1371634519,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Jennifer Wong at Ed Book Fest 26 03.jpg",
+          "rev": 1371634519,
+          "ts": "2026-08-27T14:58:54Z",
+          "user": "JaceMerlyn"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Lyse Doucet",
+      "label": "Lyse Doucet",
+      "qid": "Q2614699",
+      "topRev": 1371614589,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Lyse Doucet at Ed Book Fest 26 02.jpg",
+          "rev": 1371614589,
+          "ts": "2026-08-27T11:53:19Z",
+          "user": "JaceMerlyn"
+        },
+        {
+          "file": "File:Lyse Doucet MSC 2017 (cropped).jpg",
+          "rev": 1370093500,
+          "ts": "2026-08-19T02:17:15Z",
+          "user": "Bearsca"
+        },
+        {
+          "file": "File:Lyse Doucet \"Syria The World's War\" BBC2.jpg",
+          "rev": 1117515103,
+          "ts": "2022-10-22T04:11:30Z",
+          "user": "InternetArchiveBot"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Matt Haig",
+      "label": "Matt Haig",
+      "qid": "Q926682",
+      "topRev": 1371664592,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Matt Haig at Ed Book Fest 26 01.jpg",
+          "rev": 1371664592,
+          "ts": "2026-08-27T18:57:11Z",
+          "user": "JaceMerlyn"
+        },
+        {
+          "file": "File:Matt Haig at the 2024 Edinburgh International Book Festival (cropped).jpg",
+          "rev": 1371370521,
+          "ts": "2026-08-26T03:14:22Z",
+          "user": "ZackBot"
+        },
+        {
+          "file": "File:Matt Haig.jpeg",
+          "rev": 1258898951,
+          "ts": "2024-11-22T06:58:41Z",
+          "user": "JJMC89 bot III"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Charlie Cox",
+      "label": "Charlie Cox",
+      "qid": "Q454231",
+      "topRev": 1369831213,
+      "more": true,
+      "timeline": [
+        {
+          "file": "File:Charlie Cox at MCM Brum 26 04.jpg",
+          "rev": 1369831213,
+          "ts": "2026-08-17T12:51:44Z",
+          "user": "~2026-44865-60"
+        },
+        {
+          "file": "File:Charlie Cox by Gage Skidmore 2.jpg",
+          "rev": 1363295739,
+          "ts": "2026-07-09T08:15:32Z",
+          "user": "CalCoWSpiBudSu"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Deborah Ann Woll",
+      "label": "Deborah Ann Woll",
+      "qid": "Q232990",
+      "topRev": 1369078568,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Deborah Ann Woll at MCM Brum 26 02.jpg",
+          "rev": 1369078568,
+          "ts": "2026-08-12T19:40:27Z",
+          "user": "Thedarkknightli"
+        },
+        {
+          "file": "File:Deborah Ann Woll Photo Op GalaxyCon Raleigh 2024.jpg",
+          "rev": 1368433811,
+          "ts": "2026-08-09T01:02:05Z",
+          "user": "Sariel Xilo"
+        },
+        {
+          "file": "File:Deborah Ann Woll by Gage Skidmore 2.jpg",
+          "rev": 1238095912,
+          "ts": "2024-08-02T03:10:58Z",
+          "user": "GreenC bot"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Patrick Gibson (actor)",
+      "label": "Patrick Gibson",
+      "qid": "Q28003087",
+      "topRev": 1368733600,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Patrick Gibson at MCM Brum 2026 01.jpg",
+          "rev": 1368733600,
+          "ts": "2026-08-10T20:01:33Z",
+          "user": "JaceMerlyn"
+        },
+        {
+          "file": "File:Patrick Gibson by Gage Skidmore.jpg",
+          "rev": 1367358356,
+          "ts": "2026-08-02T16:34:15Z",
+          "user": "HawkMaestro"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Emma Peschel",
+      "label": "Emma Peschel",
+      "qid": "Q139763624",
+      "topRev": 1364148600,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:EmmaPeschel.jpg",
+          "rev": 1364148600,
+          "ts": "2026-07-14T20:20:35Z",
+          "user": "Colleen Sturtevant"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Frances Ruffelle",
+      "label": "Frances Ruffelle",
+      "qid": "Q466934",
+      "topRev": 1370058360,
+      "more": true,
+      "timeline": [
+        {
+          "file": "File:Frances Ruffelle.jpg",
+          "rev": 1370058360,
+          "ts": "2026-08-18T22:17:16Z",
+          "user": "Discospinster"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Kylie Cantrall",
+      "label": "Kylie Cantrall",
+      "qid": "Q87459724",
+      "topRev": 1371032928,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Kylie Cantrall 3 (cropped).jpg",
+          "rev": 1371032928,
+          "ts": "2026-08-24T05:42:48Z",
+          "user": "Ser Amantio di Nicolao"
+        },
+        {
+          "file": "File:Kylie Cantrall 03 (cropped).jpg",
+          "rev": 1363672679,
+          "ts": "2026-07-11T16:30:59Z",
+          "user": "Daaniyal69"
+        },
+        {
+          "file": "File:Kylie Cantrall Grammys.jpg",
+          "rev": 1363112374,
+          "ts": "2026-07-08T03:05:43Z",
+          "user": "EfficientOrganizer"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Liamani",
+      "label": "Q56949407",
+      "qid": "Q56949407",
+      "topRev": 1371356591,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Liamani Segura.jpg",
+          "rev": 1371356591,
+          "ts": "2026-08-26T02:09:52Z",
+          "user": "Willondon"
+        },
+        {
+          "file": "File:Liamani Segura 2022.jpg",
+          "rev": 1233226976,
+          "ts": "2024-07-07T23:43:07Z",
+          "user": "AJaxley"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Luke Evans",
+      "label": "Luke Evans",
+      "qid": "Q722001",
+      "topRev": 1371560936,
+      "more": true,
+      "timeline": [
+        {
+          "file": "File:Luke and Lala Evans.jpg",
+          "rev": 1371560936,
+          "ts": "2026-08-27T03:33:33Z",
+          "user": "Pac Veten"
+        },
+        {
+          "file": "File:Luke Evans in 2018 (cropped 4).jpg",
+          "rev": 1358952005,
+          "ts": "2026-06-12T01:49:13Z",
+          "user": "Hiplibrarianship"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Emira D'Spain",
+      "label": "Emira D'Spain",
+      "qid": "Q118371933",
+      "topRev": 1369042829,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Emira D'Spain (cropped).jpg",
+          "rev": 1369042829,
+          "ts": "2026-08-12T14:46:54Z",
+          "user": "Willthacheerleader18"
+        },
+        {
+          "file": "File:Emira D'Spain in a 2023 interview.png",
+          "rev": 1360414395,
+          "ts": "2026-06-21T10:17:14Z",
+          "user": "DoNothingEveryday"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Carín León",
+      "label": "Carín León",
+      "qid": "Q97014977",
+      "topRev": 1368627860,
+      "more": true,
+      "timeline": [
+        {
+          "file": "File:Carin León.jpg",
+          "rev": 1368627860,
+          "ts": "2026-08-10T04:30:38Z",
+          "user": "Uricarrillo94"
+        },
+        {
+          "file": "File:Carin_Leon_2021.png",
+          "rev": 1353161980,
+          "ts": "2026-05-08T15:14:30Z",
+          "user": "~2026-17784-47"
+        }
+      ]
+    },
+    {
+      "lang": "fr",
+      "article": "Raphaëlle Bacqué",
+      "label": "Raphaëlle Bacqué",
+      "qid": "Q3419553",
+      "topRev": 238219347,
+      "more": true,
+      "timeline": [
+        {
+          "file": "File:Raphaëlle Bacqué.jpg",
+          "rev": 238219347,
+          "ts": "2026-07-30T08:47:20Z",
+          "user": "Limfjord*"
+        },
+        {
+          "file": "File:Salon du livre de Paris 2011 - Raphaëlle Bacqué - 001.jpg",
+          "rev": 235714593,
+          "ts": "2026-04-29T21:58:38Z",
+          "user": "Bot de pluie"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Brooke Averick",
+      "label": "Brooke Averick",
+      "qid": "Q138323609",
+      "topRev": 1360541154,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:BrookeAverick-1.jpg",
+          "rev": 1360541154,
+          "ts": "2026-06-22T03:41:12Z",
+          "user": "DevilsBrodeur1989"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Beth Ostrosky Stern",
+      "label": "Beth Ostrosky Stern",
+      "qid": "Q4897608",
+      "topRev": 1365956941,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Beth Stern.jpg",
+          "rev": 1365956941,
+          "ts": "2026-07-25T11:51:24Z",
+          "user": "CutlassBot"
+        },
+        {
+          "file": "File:Beth Stern 2014.jpg",
+          "rev": 1336702722,
+          "ts": "2026-02-05T06:33:34Z",
+          "user": "Tbhotch"
+        },
+        {
+          "file": "File:Beth Ostrosky Stern.jpg",
+          "rev": 551228376,
+          "ts": "2013-04-20T03:13:26Z",
+          "user": "Guat6"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Casey Wilson",
+      "label": "Casey Wilson",
+      "qid": "Q466016",
+      "topRev": 1354965900,
+      "more": true,
+      "timeline": [
+        {
+          "file": "File:CaseyRoseWilson.jpg",
+          "rev": 1354965900,
+          "ts": "2026-05-19T05:45:15Z",
+          "user": "Zackmann08"
+        },
+        {
+          "file": "File:Casey Wilson.jpg",
+          "rev": 1351906470,
+          "ts": "2026-04-30T21:25:24Z",
+          "user": "JJMC89 bot III"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Mathilde Larrère",
+      "label": "Mathilde Larrère",
+      "qid": "Q29554096",
+      "topRev": 1358988213,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Mathilde Larrère lors de l'émission La Dernière - 01 (cropped).jpg",
+          "rev": 1358988213,
+          "ts": "2026-06-12T09:20:46Z",
+          "user": "John of Reading"
+        },
+        {
+          "file": "File:Mathilde Larrere 01.jpg",
+          "rev": 1342651873,
+          "ts": "2026-03-10T02:11:16Z",
+          "user": "Zackmann08"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Lukita Maxwell",
+      "label": "Lukita Maxwell",
+      "qid": "Q115896334",
+      "topRev": 1368907699,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Lukita Maxwell.jpg",
+          "rev": 1368907699,
+          "ts": "2026-08-11T19:50:59Z",
+          "user": "Cinemacriterion"
+        },
+        {
+          "file": "File:Maxwell in 2024.jpg",
+          "rev": 1351210186,
+          "ts": "2026-04-26T16:47:04Z",
+          "user": "Acroterion"
+        },
+        {
+          "file": "File:Lukita maxwell 2021 2.jpg",
+          "rev": 1311141642,
+          "ts": "2025-09-13T17:23:41Z",
+          "user": "FlightTime"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Lana Condor",
+      "label": "Lana Condor",
+      "qid": "Q24250404",
+      "topRev": 1371778983,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Lana Condor at 2026 APEX Gala in NYC 03 (cropped).jpg",
+          "rev": 1371778983,
+          "ts": "2026-08-28T11:36:59Z",
+          "user": "The Media Expert"
+        },
+        {
+          "file": "File:To All the Boys - P.S. I Still Love You interview in Brazil 13.jpg",
+          "rev": 1347264268,
+          "ts": "2026-04-05T18:04:16Z",
+          "user": "Charliefish"
+        },
+        {
+          "file": "File:Lana Condor 2015 (2).jpg",
+          "rev": 1283302152,
+          "ts": "2025-03-31T17:26:15Z",
+          "user": "Yoshiman6464"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Matt Mahan",
+      "label": "Matt Mahan",
+      "qid": "Q107299118",
+      "topRev": 1367239746,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Matt Mahan Farmer's Market 4 April 2026 (cropped).jpg",
+          "rev": 1367239746,
+          "ts": "2026-08-01T22:18:47Z",
+          "user": "~2026-42565-25"
+        },
+        {
+          "file": "File:Matt Mahan portrait.webp",
+          "rev": 1348267467,
+          "ts": "2026-04-11T18:08:11Z",
+          "user": "Sscoggan"
+        },
+        {
+          "file": "File:Matt Mahan portrait 2025.jpg",
+          "rev": 1333661462,
+          "ts": "2026-01-19T01:23:41Z",
+          "user": "Been2long"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Derek Blasberg",
+      "label": "Derek Blasberg",
+      "qid": "Q5261816",
+      "topRev": 1363083951,
+      "more": true,
+      "timeline": [
+        {
+          "file": "File:Derek C Blasberg.jpg",
+          "rev": 1363083951,
+          "ts": "2026-07-07T23:09:26Z",
+          "user": "Natg 19"
+        },
+        {
+          "file": "File:Derek Blasberg writer December 2012.jpg",
+          "rev": 1344515277,
+          "ts": "2026-03-20T22:45:20Z",
+          "user": "FrimaireFroid"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Brad Lander",
+      "label": "Brad Lander",
+      "qid": "Q15109509",
+      "topRev": 1371610103,
+      "more": true,
+      "timeline": [
+        {
+          "file": "File:Brad Lander.jpg",
+          "rev": 1371610103,
+          "ts": "2026-08-27T11:04:38Z",
+          "user": "T sunrise"
+        },
+        {
+          "file": "File:Brad Lander 2023.jpg",
+          "rev": 1340855394,
+          "ts": "2026-02-28T02:55:45Z",
+          "user": "GreenC bot"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Matt Graham (skier)",
+      "label": "Matt Graham",
+      "qid": "Q16236168",
+      "topRev": 1365173960,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:08561920WVmogulsWC16JAN26.jpg",
+          "rev": 1365173960,
+          "ts": "2026-07-20T19:12:39Z",
+          "user": "Ira Leviton"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Olivia Giaccio",
+      "label": "Olivia Giaccio",
+      "qid": "Q29078094",
+      "topRev": 1346514767,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:16085257WVmogulsWC16JAN26.jpg",
+          "rev": 1346514767,
+          "ts": "2026-04-01T07:43:12Z",
+          "user": "Stevencocoboy"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Elizabeth Lemley",
+      "label": "Elizabeth Lemley",
+      "qid": "Q115676809",
+      "topRev": 1361854877,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:16090091WVmogulsWC16JAN26.jpg",
+          "rev": 1361854877,
+          "ts": "2026-06-30T13:47:23Z",
+          "user": "SmartyPants22"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Jaelin Kauf",
+      "label": "Jaelin Kauf",
+      "qid": "Q28124008",
+      "topRev": 1361597697,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:16240986WVmogulsWC16JAN26.jpg",
+          "rev": 1361597697,
+          "ts": "2026-06-28T23:29:42Z",
+          "user": "Crestfalling"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Filip Gravenfors",
+      "label": "Filip Gravenfors",
+      "qid": "Q115676510",
+      "topRev": 1361474711,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Filip Gravenfors (cropped).jpg",
+          "rev": 1361474711,
+          "ts": "2026-06-28T04:08:59Z",
+          "user": "Crestfalling"
+        },
+        {
+          "file": "File:15562510WVmogulsWC16JAN26.jpg",
+          "rev": 1335418666,
+          "ts": "2026-01-29T03:10:29Z",
+          "user": "Stephen LaBonte"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Bernie Wagenblast",
+      "label": "Bernie Wagenblast",
+      "qid": "Q4894507",
+      "topRev": 1369227907,
+      "more": true,
+      "timeline": [
+        {
+          "file": "File:BernieWagenblast-byPhilipRomano.jpg",
+          "rev": 1369227907,
+          "ts": "2026-08-13T17:27:09Z",
+          "user": "Sammi Brie"
+        },
+        {
+          "file": "File:BernieWagenblast.png",
+          "rev": 1327100138,
+          "ts": "2025-12-12T16:31:16Z",
+          "user": "Willthacheerleader18"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Charlie Pellett",
+      "label": "Charlie Pellett",
+      "qid": "Q120491306",
+      "topRev": 1361781536,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:CharliePellett-byPhilipRomano.jpg",
+          "rev": 1361781536,
+          "ts": "2026-06-30T01:34:08Z",
+          "user": "~2026-37340-00"
+        },
+        {
+          "file": "File:Charile_Pellet.webp",
+          "rev": 1245407616,
+          "ts": "2024-09-12T20:54:13Z",
+          "user": "ThereisnMoe"
+        },
+        {
+          "file": "File:Charlie-Pellett6134-1024x683.jpg",
+          "rev": 1245263917,
+          "ts": "2024-09-12T00:04:15Z",
+          "user": "2601:197:800:5050:A6B7:A7DD:F79F:5597"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Kate Winslet",
+      "label": "Kate Winslet",
+      "qid": "Q202765",
+      "topRev": 1371716902,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:KateWinslet (cropped).jpg",
+          "rev": 1371716902,
+          "ts": "2026-08-28T01:50:01Z",
+          "user": "Smasongarrison"
+        },
+        {
+          "file": "File:Kate Winslet 2024 The Regime premiere 01 (cropped2).png",
+          "rev": 1332437353,
+          "ts": "2026-01-11T21:56:09Z",
+          "user": "Fancypeach390"
+        },
+        {
+          "file": "File:Kate Winslet at the 2017 Toronto International Film Festival (cropped).jpg",
+          "rev": 1311687170,
+          "ts": "2025-09-16T11:50:57Z",
+          "user": "GreenC bot"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Colin Baker",
+      "label": "Colin Baker",
+      "qid": "Q440963",
+      "topRev": 1371369437,
+      "more": true,
+      "timeline": [
+        {
+          "file": "File:Colin Baker at MCM Birmingham 2025 01.jpg",
+          "rev": 1371369437,
+          "ts": "2026-08-26T03:10:45Z",
+          "user": "SkywalkerEccleston"
+        },
+        {
+          "file": "File:Colin Baker (cropped).jpg",
+          "rev": 1364491776,
+          "ts": "2026-07-16T21:55:24Z",
+          "user": "Zmbro"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Peter Davison",
+      "label": "Peter Davison",
+      "qid": "Q358427",
+      "topRev": 1370839936,
+      "more": true,
+      "timeline": [
+        {
+          "file": "File:Peter Davison at MCM BIrmingham 2025 01.jpg",
+          "rev": 1370839936,
+          "ts": "2026-08-23T10:05:45Z",
+          "user": "SkywalkerEccleston"
+        },
+        {
+          "file": "File:Peter Davison 2016.jpg",
+          "rev": 1364821402,
+          "ts": "2026-07-18T18:23:37Z",
+          "user": "Bender the Bot"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Michael Govan",
+      "label": "Michael Govan",
+      "qid": "Q16729395",
+      "topRev": 1368575342,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Michael Govan at Art Basel Miami Beach 2025 original 02 (cropped).jpg",
+          "rev": 1368575342,
+          "ts": "2026-08-09T22:16:47Z",
+          "user": "~2026-43850-83"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "James McAvoy",
+      "label": "James McAvoy",
+      "qid": "Q193659",
+      "topRev": 1366194976,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:James Mcavoy MCM Birmingham ‘27.jpg",
+          "rev": 1366194976,
+          "ts": "2026-07-26T20:37:03Z",
+          "user": "Cg2p0B0u8m"
+        },
+        {
+          "file": "File:James McAvoy by Gage Skidmore 2.jpg",
+          "rev": 1364713437,
+          "ts": "2026-07-18T02:39:39Z",
+          "user": "GreenC bot"
+        },
+        {
+          "file": "File:James McAvoy 2015.jpg",
+          "rev": 1231546273,
+          "ts": "2024-06-28T22:05:30Z",
+          "user": "2806:10A6:5:BDF6:ECEF:DF7D:223E:3EB5"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Cheyenne Jackson",
+      "label": "Cheyenne Jackson",
+      "qid": "Q935217",
+      "topRev": 1371036737,
+      "more": true,
+      "timeline": [
+        {
+          "file": "File:Cheyenne Jackson 2025 (cropped).jpg",
+          "rev": 1371036737,
+          "ts": "2026-08-24T06:07:16Z",
+          "user": "Jevansen"
+        },
+        {
+          "file": "File:CheyenneJacksonKSimone.jpg",
+          "rev": 1317864656,
+          "ts": "2025-10-20T13:53:06Z",
+          "user": "Blueflash4"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "María Valverde",
+      "label": "María Valverde",
+      "qid": "Q242281",
+      "topRev": 1363281667,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:María Valverde 2025.jpg",
+          "rev": 1363281667,
+          "ts": "2026-07-09T05:28:05Z",
+          "user": "Garethheathcote"
+        },
+        {
+          "file": "File:María Valverde - Seminci 2012 (1).jpg",
+          "rev": 1316886086,
+          "ts": "2025-10-15T01:45:57Z",
+          "user": "Tassedethe"
+        },
+        {
+          "file": "File:María Valverde - Seminci 2012 (2).jpg",
+          "rev": 808991784,
+          "ts": "2017-11-06T13:54:22Z",
+          "user": "Davey2010"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Amanda Seales",
+      "label": "Amanda Seales",
+      "qid": "Q27796903",
+      "topRev": 1365314029,
+      "more": true,
+      "timeline": [
+        {
+          "file": "File:Amanda Seales at a teach-in in Washington DC - 2025.jpg",
+          "rev": 1365314029,
+          "ts": "2026-07-21T16:53:04Z",
+          "user": "GreenC bot"
+        },
+        {
+          "file": "File:Amanda Seales on Adweek.jpg",
+          "rev": 1317773292,
+          "ts": "2025-10-19T23:33:42Z",
+          "user": "Smasongarrison"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Jody Avirgan",
+      "label": "Jody Avirgan",
+      "qid": "Q130053358",
+      "topRev": 1354924037,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Jody Avirgan at a teach-in in Washington DC - 2025.jpg",
+          "rev": 1354924037,
+          "ts": "2026-05-19T00:29:19Z",
+          "user": "GreenC bot"
+        },
+        {
+          "file": "File:Jody Avirgan in 2015.jpg",
+          "rev": 1261513036,
+          "ts": "2024-12-06T14:25:32Z",
+          "user": "Aadirulez8"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Kellie Carter Jackson",
+      "label": "Kellie Carter Jackson",
+      "qid": "Q120133425",
+      "topRev": 1344072045,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Kellie Carter Jackson at a teach-in in Washington DC - 2025.jpg",
+          "rev": 1344072045,
+          "ts": "2026-03-18T03:34:15Z",
+          "user": "Smasongarrison"
+        },
+        {
+          "file": "File:Kellie Headshot.jpg",
+          "rev": 1249027239,
+          "ts": "2024-10-02T19:55:20Z",
+          "user": "Vegantics"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Martha S. Jones",
+      "label": "Martha S. Jones",
+      "qid": "Q94660669",
+      "topRev": 1353343236,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Martha S. Jones at a teach-in in Washington DC.jpg",
+          "rev": 1353343236,
+          "ts": "2026-05-09T18:26:23Z",
+          "user": "BoneAppleTee"
+        },
+        {
+          "file": "File:Martha S. Jones 1018519.jpg",
+          "rev": 1306797229,
+          "ts": "2025-08-19T19:14:55Z",
+          "user": "Citation bot"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Joey Batey",
+      "label": "Joey Batey",
+      "qid": "Q66088243",
+      "topRev": 1367648917,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Joey Batey at Book Signing 03.jpg",
+          "rev": 1367648917,
+          "ts": "2026-08-04T09:45:21Z",
+          "user": "JaceMerlyn"
+        },
+        {
+          "file": "File:Joey Batey.png",
+          "rev": 1367145436,
+          "ts": "2026-08-01T07:45:51Z",
+          "user": "BirdBard"
+        },
+        {
+          "file": "File:Joey Batey at Book Signing 03.jpg",
+          "rev": 1367002589,
+          "ts": "2026-07-31T09:56:47Z",
+          "user": "JaceMerlyn"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Nira Burstein",
+      "label": "Nira Burstein",
+      "qid": "Q114407958",
+      "topRev": 1336889966,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:NiraBurstein 2025 Colleen Sturtevant.jpg",
+          "rev": 1336889966,
+          "ts": "2026-02-06T07:37:24Z",
+          "user": "Steel1943"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Adrien Boichis",
+      "label": "Adrien Boichis",
+      "qid": "Q109425787",
+      "topRev": 1371658167,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:15512168LakePlacidWCSteve100525.jpg",
+          "rev": 1371658167,
+          "ts": "2026-08-27T18:04:41Z",
+          "user": "SmartVandelay"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Jada Yuan",
+      "label": "Jada Yuan",
+      "qid": "Q114239458",
+      "topRev": 1358893551,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Jada Yuan 2025 03 (cropped).jpg",
+          "rev": 1358893551,
+          "ts": "2026-06-11T17:20:24Z",
+          "user": "Gjb0zWxOb"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Marine Cabirou",
+      "label": "Marine Cabirou",
+      "qid": "Q30099235",
+      "topRev": 1341376460,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:10342221LakePlacidWCSteve100425.jpg",
+          "rev": 1341376460,
+          "ts": "2026-03-02T22:07:01Z",
+          "user": "Villaida"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Keith Powers (politician)",
+      "label": "Keith Powers",
+      "qid": "Q48742847",
+      "topRev": 1365666154,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:District 4 Council Member Keith Powers.jpg",
+          "rev": 1365666154,
+          "ts": "2026-07-23T19:15:37Z",
+          "user": "Staryu"
+        },
+        {
+          "file": "File:57 St NQRW Station Now Accessible to All Riders (51219082594) (cropped).jpg",
+          "rev": 1309340916,
+          "ts": "2025-09-03T14:16:56Z",
+          "user": "Therequiembellishere"
+        },
+        {
+          "file": "File:Council Member Keith Powers.jpg",
+          "rev": 1278884322,
+          "ts": "2025-03-05T05:06:11Z",
+          "user": "Hesteravenue"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Myriam Nicole",
+      "label": "Myriam Nicole",
+      "qid": "Q9329386",
+      "topRev": 1336225469,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:08481283LakePlacidWCSteve100225.jpg",
+          "rev": 1336225469,
+          "ts": "2026-02-02T16:15:02Z",
+          "user": "Stephen LaBonte"
+        },
+        {
+          "file": "File:Myriam nicole world champs.jpg",
+          "rev": 1093409027,
+          "ts": "2022-06-16T12:19:16Z",
+          "user": "Crowsus"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Ato Essandoh",
+      "label": "Ato Essandoh",
+      "qid": "Q4817144",
+      "topRev": 1371633203,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Ato Essandoh.jpg",
+          "rev": 1371633203,
+          "ts": "2026-08-27T14:47:54Z",
+          "user": "~2026-33154-01"
+        },
+        {
+          "file": "File:Ato Essandoh (40194937141) (cropped).jpg",
+          "rev": 1308349357,
+          "ts": "2025-08-28T23:43:26Z",
+          "user": "174.95.53.165"
+        },
+        {
+          "file": "File:Ato Essandoah (40194937141) (cropped).jpg",
+          "rev": 1032624542,
+          "ts": "2021-07-08T16:21:52Z",
+          "user": "2600:1700:7FB0:39C0:80EA:567A:E2A3:CB7E"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "India de Beaufort",
+      "label": "India de Beaufort",
+      "qid": "Q684255",
+      "topRev": 1370503546,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:India de Beaufort.jpg",
+          "rev": 1370503546,
+          "ts": "2026-08-21T13:57:34Z",
+          "user": "Starklinson"
+        },
+        {
+          "file": "File:India De Beaufort EMERGE! 2012 New York City Fashion Week (cropped).jpg",
+          "rev": 1308807270,
+          "ts": "2025-08-31T16:09:54Z",
+          "user": "98.144.229.94"
+        },
+        {
+          "file": "File:India de Beaufort.jpg",
+          "rev": 1102617667,
+          "ts": "2022-08-06T00:42:48Z",
+          "user": "Kirby777"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Johana Gustawsson",
+      "label": "Johana Gustawsson",
+      "qid": "Q30727682",
+      "topRev": 1371738955,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Johana Gustawsson i0730 cropped.jpg",
+          "rev": 1371738955,
+          "ts": "2026-08-28T04:35:21Z",
+          "user": "ZackBot"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "David F. Ross",
+      "label": "David F. Ross",
+      "qid": "Q124710420",
+      "topRev": 1311574114,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:David F Ross i0713.jpg",
+          "rev": 1311574114,
+          "ts": "2025-09-15T20:49:07Z",
+          "user": "TimDuncan"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Casey Neistat",
+      "label": "Casey Neistat",
+      "qid": "Q5048547",
+      "topRev": 1364669725,
+      "more": true,
+      "timeline": [
+        {
+          "file": "File:Casey Neistat.jpg",
+          "rev": 1364669725,
+          "ts": "2026-07-17T21:25:21Z",
+          "user": "Twundy"
+        },
+        {
+          "file": "File:Casey Neistat @ SXSW 2017 (33229303282) (cropped).jpg",
+          "rev": 1307531528,
+          "ts": "2025-08-24T05:44:52Z",
+          "user": "2603:7083:40F0:8640:347F:AA8D:26DB:F43A"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Cleo Abram",
+      "label": "Cleo Abram",
+      "qid": "Q111680044",
+      "topRev": 1369199871,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Cleo Abram.jpg",
+          "rev": 1369199871,
+          "ts": "2026-08-13T13:02:53Z",
+          "user": "~2026-44509-55"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Jonah Feingold",
+      "label": "Jonah Feingold",
+      "qid": "Q43266712",
+      "topRev": 1369870488,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Jonah Feingold.jpg",
+          "rev": 1369870488,
+          "ts": "2026-08-17T18:19:02Z",
+          "user": "Allenmal83"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Max Joseph",
+      "label": "Max Joseph",
+      "qid": "Q20873171",
+      "topRev": 1371590337,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Max Joseph Portrait.jpg",
+          "rev": 1371590337,
+          "ts": "2026-08-27T07:22:07Z",
+          "user": "Whiterabbit6"
+        },
+        {
+          "file": "File:Maxjoseph.jpg",
+          "rev": 1221726895,
+          "ts": "2024-05-01T17:10:04Z",
+          "user": "Squiddyonwiki"
+        },
+        {
+          "file": "File:MAXJOSEPH.jpg",
+          "rev": 815299791,
+          "ts": "2017-12-14T01:06:56Z",
+          "user": "TAnthony"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Dougie MacLean",
+      "label": "Dougie MacLean",
+      "qid": "Q1251928",
+      "topRev": 1350513822,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Dougie MacLean.jpg",
+          "rev": 1350513822,
+          "ts": "2026-04-22T10:15:04Z",
+          "user": "Tom.Reding"
+        },
+        {
+          "file": "File:Dougie_MacLean_September_2011.jpg",
+          "rev": 1338121148,
+          "ts": "2026-02-13T09:23:03Z",
+          "user": "Stonecold415"
+        },
+        {
+          "file": "File:Replace this image male.svg",
+          "rev": 439948188,
+          "ts": "2011-07-17T13:54:10Z",
+          "user": "Timrollpickering"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Edward Lee (chef)",
+      "label": "Edward Lee",
+      "qid": "Q23017059",
+      "topRev": 1357004489,
+      "more": true,
+      "timeline": [
+        {
+          "file": "File:Edward Lee (cropped) (cropped).jpg",
+          "rev": 1357004489,
+          "ts": "2026-05-31T05:23:11Z",
+          "user": "StefenTower"
+        },
+        {
+          "file": "File:Edward Lee 2018.jpg",
+          "rev": 1350661792,
+          "ts": "2026-04-23T06:05:48Z",
+          "user": "Binto23"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "David Cronenberg",
+      "label": "David Cronenberg",
+      "qid": "Q55422",
+      "topRev": 1368624315,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:David Cronenberg.jpg",
+          "rev": 1368624315,
+          "ts": "2026-08-10T03:56:34Z",
+          "user": "Jon698"
+        },
+        {
+          "file": "File:David Cronenberg 2012-03-08.jpg",
+          "rev": 1300698879,
+          "ts": "2025-07-15T22:37:19Z",
+          "user": "Jon698"
+        },
+        {
+          "file": "File:David Cronenberg.jpg",
+          "rev": 1300687692,
+          "ts": "2025-07-15T21:13:00Z",
+          "user": "Fuzheado"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "John Densmore",
+      "label": "John Densmore",
+      "qid": "Q310113",
+      "topRev": 1366778133,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:John Densmore (cropped).jpg",
+          "rev": 1366778133,
+          "ts": "2026-07-30T04:11:25Z",
+          "user": "Swisscb"
+        },
+        {
+          "file": "File:John Densmore 1971.png",
+          "rev": 1300542242,
+          "ts": "2025-07-14T23:48:19Z",
+          "user": "Colleen Sturtevant"
+        },
+        {
+          "file": "File:John Densmore1968 publicity photo.jpg",
+          "rev": 1027078941,
+          "ts": "2021-06-06T00:01:49Z",
+          "user": "2804:29B8:50A8:3689:3954:8B6C:A807:2A26"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "John Barrowman",
+      "label": "John Barrowman",
+      "qid": "Q24632",
+      "topRev": 1371463571,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:John Barrowman (54673201677) (cropped).jpg",
+          "rev": 1371463571,
+          "ts": "2026-08-26T16:00:42Z",
+          "user": "A. Ellingsford"
+        },
+        {
+          "file": "File:John Barrowman (52113578845) (cropped).jpg",
+          "rev": 1311023014,
+          "ts": "2025-09-12T23:05:13Z",
+          "user": "Untamed1910"
+        },
+        {
+          "file": "File:John Barrowman by Gage Skidmore 2.jpg",
+          "rev": 1289044274,
+          "ts": "2025-05-06T04:05:52Z",
+          "user": "GreenC bot"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Bill Toner",
+      "label": "Bill Toner",
+      "qid": "Q134884249",
+      "topRev": 1321362771,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Bill Toner, Chef & Businessman, WikiPortraits 05 (cropped).jpg",
+          "rev": 1321362771,
+          "ts": "2025-11-10T03:02:41Z",
+          "user": "Sargdub"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Kenneth Cole (designer)",
+      "label": "Kenneth Cole",
+      "qid": "Q3814580",
+      "topRev": 1363933021,
+      "more": true,
+      "timeline": [
+        {
+          "file": "File:Kenneth Cole.jpg",
+          "rev": 1363933021,
+          "ts": "2026-07-13T11:28:58Z",
+          "user": "Woodensuperman"
+        },
+        {
+          "file": "File:Life Ball 2010, red carpet, Kenneth Cole.jpg",
+          "rev": 1298478712,
+          "ts": "2025-07-02T19:30:45Z",
+          "user": "Deltaspace42"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Luigi Brugnaro",
+      "label": "Luigi Brugnaro",
+      "qid": "Q17490240",
+      "topRev": 1358796943,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Luigi Brugnaro Salone Nautico Venezia 2025 02 (3x4 cropped).jpg",
+          "rev": 1358796943,
+          "ts": "2026-06-11T01:09:39Z",
+          "user": "Alienautic"
+        },
+        {
+          "file": "File:Luigi-Brugnaro (cropped).jpg",
+          "rev": 1256474469,
+          "ts": "2024-11-10T02:45:19Z",
+          "user": "GreenC bot"
+        },
+        {
+          "file": "File:Italy_Venice_Elton_John_-08b71.jpg",
+          "rev": 824484415,
+          "ts": "2018-02-07T17:05:56Z",
+          "user": "74.212.227.235"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Chloe Troast",
+      "label": "Chloe Troast",
+      "qid": "Q122944984",
+      "topRev": 1369119819,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Chloe Troast.jpg",
+          "rev": 1369119819,
+          "ts": "2026-08-13T01:27:16Z",
+          "user": "~2026-32628-77"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Ben Marshall (comedian)",
+      "label": "Ben Marshall",
+      "qid": "Q110089527",
+      "topRev": 1368222212,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Comedian Ben Marshall.jpg",
+          "rev": 1368222212,
+          "ts": "2026-08-07T19:53:44Z",
+          "user": "EclecticEnnui"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Aaron Chen",
+      "label": "Aaron Chen",
+      "qid": "Q115806032",
+      "topRev": 1367555094,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Comedian Aaron Chen.jpg",
+          "rev": 1367555094,
+          "ts": "2026-08-03T20:19:20Z",
+          "user": "Elinlucy"
+        },
+        {
+          "file": "File:Aaron Chen at the 2024 Edinburgh Festival Fringe.jpg",
+          "rev": 1292621929,
+          "ts": "2025-05-27T23:46:18Z",
+          "user": "Chive Cream Cheese"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Anna Delvey",
+      "label": "Anna Sorokin",
+      "qid": "Q55080956",
+      "topRev": 1371141390,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:AnnaDelvey-byPhilipRomano.jpg",
+          "rev": 1371141390,
+          "ts": "2026-08-24T21:04:16Z",
+          "user": "Rebel Gnome"
+        },
+        {
+          "file": "File:Delvey '25.jpg",
+          "rev": 1337466252,
+          "ts": "2026-02-09T17:12:09Z",
+          "user": "Isuxel01"
+        },
+        {
+          "file": "File:AnnaDelvey-byPhilipRomano.jpg",
+          "rev": 1336547957,
+          "ts": "2026-02-04T11:50:47Z",
+          "user": "MusikBot II"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Andrew Dismukes",
+      "label": "Andrew Dismukes",
+      "qid": "Q99454635",
+      "topRev": 1358816221,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:AndrewDismukes-Phone-byPhilipRomano.jpg",
+          "rev": 1358816221,
+          "ts": "2026-06-11T03:44:44Z",
+          "user": "Tvfunhouse"
+        },
+        {
+          "file": "File:Andrew Dismukes in 2021.jpg",
+          "rev": 1296443897,
+          "ts": "2025-06-20T01:31:53Z",
+          "user": "2600:1700:2F0C:180:748F:EB5F:333D:8429"
+        },
+        {
+          "file": "File:AndySNL.png",
+          "rev": 1060221427,
+          "ts": "2021-12-14T04:18:55Z",
+          "user": "MB"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Alexis McGill Johnson",
+      "label": "Alexis McGill Johnson",
+      "qid": "Q65790125",
+      "topRev": 1354820631,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Alexis McGill Johnson.jpg",
+          "rev": 1354820631,
+          "ts": "2026-05-18T12:18:46Z",
+          "user": "~2026-27841-97"
+        },
+        {
+          "file": "File:Alexis McGill Johnson - 2020.jpg",
+          "rev": 1279471498,
+          "ts": "2025-03-08T19:36:18Z",
+          "user": "2600:8800:1E80:157:53F7:115C:2E08:ED6A"
+        },
+        {
+          "file": "File:Hitler_portrait_crop.jpg",
+          "rev": 1015521296,
+          "ts": "2021-04-01T23:15:46Z",
+          "user": "An09onCatholic"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Paul L. Nguyen",
+      "label": "Paul L Nguyen",
+      "qid": "Q82836577",
+      "topRev": 1318740832,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Paul Nguyen (oncologist) in 2025 (cropped).jpg",
+          "rev": 1318740832,
+          "ts": "2025-10-25T18:34:21Z",
+          "user": "Chris the speller"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Matthew Granade",
+      "label": "Matthew Granade",
+      "qid": "Q132476828",
+      "topRev": 1315697811,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Matthew Granade at Harvard Business School Investment Conference 2025 2 (cropped).jpg",
+          "rev": 1315697811,
+          "ts": "2025-10-08T03:53:58Z",
+          "user": "Sargdub"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Leah Hunt-Hendrix",
+      "label": "Leah Hunt-Hendrix",
+      "qid": "Q6509204",
+      "topRev": 1360580189,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Leah Hunt-Hendrix 2024 (cropped).jpg",
+          "rev": 1360580189,
+          "ts": "2026-06-22T11:03:44Z",
+          "user": "Edwardx"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Marta Belcher",
+      "label": "Marta Belcher",
+      "qid": "Q69251699",
+      "topRev": 1365686809,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Marta Belcher 2024.jpg",
+          "rev": 1365686809,
+          "ts": "2026-07-23T21:35:40Z",
+          "user": "Hipal"
+        },
+        {
+          "file": "File:Marta_Belcher.jpg",
+          "rev": 1274816963,
+          "ts": "2025-02-09T12:15:12Z",
+          "user": "WikiCleanerBot"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Ben Willbond",
+      "label": "Ben Willbond",
+      "qid": "Q4886697",
+      "topRev": 1368904796,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Ben Willbond at MCM Birmingham 2024 01.jpg",
+          "rev": 1368904796,
+          "ts": "2026-08-11T19:24:41Z",
+          "user": "Alane2644"
+        },
+        {
+          "file": "File:Ben Willbond, September 2025.jpg",
+          "rev": 1358570817,
+          "ts": "2026-06-09T15:17:57Z",
+          "user": "Pierspanthere"
+        },
+        {
+          "file": "File:Ben Willbond (cropped).jpg",
+          "rev": 1347222599,
+          "ts": "2026-04-05T12:20:09Z",
+          "user": "Tescomealdeal1"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Inspectah Deck",
+      "label": "Inspectah Deck",
+      "qid": "Q470619",
+      "topRev": 1368140714,
+      "more": true,
+      "timeline": [
+        {
+          "file": "File:Inspectah Deck Albany 2024.jpg",
+          "rev": 1368140714,
+          "ts": "2026-08-07T06:49:25Z",
+          "user": "EditAvenger"
+        },
+        {
+          "file": "File:Inspectah Deck in Paris, 2013 (cropped).jpg",
+          "rev": 1300609657,
+          "ts": "2025-07-15T10:16:57Z",
+          "user": "Guerreroast"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Andreas Kolb",
+      "label": "Andreas Kolb",
+      "qid": "Q112760457",
+      "topRev": 1371479756,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:69490msawc05OCT24steve.jpg",
+          "rev": 1371479756,
+          "ts": "2026-08-26T18:12:54Z",
+          "user": "~2026-46431-78"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Evan Olson (rower)",
+      "label": "Evan Olson",
+      "qid": "Q128415029",
+      "topRev": 1367229094,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Evan Olson by Dan Depew 01.png",
+          "rev": 1367229094,
+          "ts": "2026-08-01T21:06:23Z",
+          "user": "Staryu"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Fred Armisen",
+      "label": "Fred Armisen",
+      "qid": "Q14535",
+      "topRev": 1371571204,
+      "more": true,
+      "timeline": [
+        {
+          "file": "File:Fred Armisen at Rock Center.jpg",
+          "rev": 1371571204,
+          "ts": "2026-08-27T04:40:57Z",
+          "user": "Vitorperrut555"
+        },
+        {
+          "file": "File:Fred Armisen at the 2015 Peabody Awards.jpg",
+          "rev": 1338395589,
+          "ts": "2026-02-14T22:52:15Z",
+          "user": "Rift"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Hunter Tootoo",
+      "label": "Hunter Tootoo",
+      "qid": "Q16195363",
+      "topRev": 1363046442,
+      "more": true,
+      "timeline": [
+        {
+          "file": "File:Hunter Tootoo speaking at Pond Inlet, NU, 2017.png",
+          "rev": 1363046442,
+          "ts": "2026-07-07T18:48:59Z",
+          "user": "HandleWithScare"
+        },
+        {
+          "file": "File:Hunter Tootoo 2015.jpg",
+          "rev": 1347303171,
+          "ts": "2026-04-05T22:36:33Z",
+          "user": "Zackmann08"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "John Amagoalik",
+      "label": "John Amagoalik",
+      "qid": "Q572030",
+      "topRev": 1363046590,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:John Amagoalik at Pond Inlet, NU, 2017.png",
+          "rev": 1363046590,
+          "ts": "2026-07-07T18:49:56Z",
+          "user": "HandleWithScare"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "David Cross",
+      "label": "David Cross",
+      "qid": "Q362332",
+      "topRev": 1370736428,
+      "more": true,
+      "timeline": [
+        {
+          "file": "File:David Cross Dan Depew WikiPortrait.jpg",
+          "rev": 1370736428,
+          "ts": "2026-08-22T20:50:33Z",
+          "user": "Cicada1010"
+        },
+        {
+          "file": "File:David Cross (32840211217) (cropped).jpg",
+          "rev": 1282862957,
+          "ts": "2025-03-29T02:13:19Z",
+          "user": "Citation bot"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Emily Gallagher",
+      "label": "Emily Gallagher",
+      "qid": "Q97589929",
+      "topRev": 1365563180,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Emily Gallagher.jpg",
+          "rev": 1365563180,
+          "ts": "2026-07-23T04:41:51Z",
+          "user": "Staryu"
+        },
+        {
+          "file": "File:Grand St Elevators Emily Gallagher (cropped).jpg",
+          "rev": 1340534662,
+          "ts": "2026-02-26T06:31:34Z",
+          "user": "Rager7"
+        },
+        {
+          "file": "File:Emily_Gallagher.jpg",
+          "rev": 1105759238,
+          "ts": "2022-08-21T17:19:08Z",
+          "user": "Stark578"
+        }
+      ]
+    }
+  ]
 }
