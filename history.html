@@ -517,21 +517,20 @@ let personSeq = 0;              // stable ids so a single row can be re-rendered
 let shownPeople = {};           // id -> person (for the deeper-search re-render); reset each run()
 function renderPerson(p) { const id = "pb-" + personSeq++; p._id = id; shownPeople[id] = p; return renderPersonBlock(id, p); }
 
-// Sort key for category people: when the INITIAL infobox photo was taken
-// (earliest capture date among the shown photos). Undated sinks to the end.
+// Sort key for category people: when the CURRENT infobox photo was taken (the
+// capture date of shown[0]). Undated sinks to the end (via -Infinity + newest-first).
 function takenTime(entry) {
   const m = /(\d{4})-(\d{2})-(\d{2})/.exec((entry && entry.info && entry.info.taken) || "");
   return m ? Date.UTC(+m[1], +m[2] - 1, +m[3]) : null;
 }
 function personSortKey(p) {
-  let best = null;
-  for (const e of p.shown || []) { const t = takenTime(e); if (t != null && (best == null || t < best)) best = t; }
-  return best == null ? Infinity : best;
+  const t = takenTime((p.shown || [])[0]);
+  return t == null ? -Infinity : t;
 }
-// Render all accumulated category people, sorted by initial-photo date (oldest
-// first). Rebuilds ids so a later deep-search re-renders the right block.
+// Render all accumulated category people, newest current photo first. Rebuilds
+// ids so a later deep-search re-renders the right block.
 function renderCatPeople() {
-  cat.people.sort((a, b) => personSortKey(a) - personSortKey(b));
+  cat.people.sort((a, b) => personSortKey(b) - personSortKey(a));
   shownPeople = {}; personSeq = 0;
   $("results").innerHTML = cat.people.map(renderPerson).join("");
 }
