@@ -2,7 +2,7 @@
   "schema": 1,
   "algoVersion": 3,
   "identity": "category|Category:WikiPortraits uploads",
-  "asOf": "2026-08-28T17:27:30.632Z",
+  "asOf": "2026-08-28T17:29:47.609Z",
   "input": {
     "type": "category",
     "title": "Category:WikiPortraits uploads"
@@ -1263,7 +1263,7 @@
       "label": "Elif Şafak",
       "qid": "Q270739",
       "topRev": 1371782347,
-      "more": true,
+      "more": false,
       "lead": null,
       "timeline": [
         {
@@ -1277,6 +1277,12 @@
           "rev": 1371547817,
           "ts": "2026-08-27T02:19:09Z",
           "user": "ZackBot"
+        },
+        {
+          "file": "File:ElifShafak Ask EbruBilun Wiki.jpg",
+          "rev": 1016701318,
+          "ts": "2021-04-08T16:35:28Z",
+          "user": "SporkBot"
         }
       ]
     },
