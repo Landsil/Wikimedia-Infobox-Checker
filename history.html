@@ -20,7 +20,10 @@
 <header>
   <div class="titlebar">
     <h1><a href="index.html" class="home-link">Wikimedia</a> › Infobox History</h1>
-    <button type="button" id="about_btn">About</button>
+    <span class="titlebar-actions" style="display:flex;gap:8px">
+      <button type="button" id="save_gh" class="secondary" hidden>Save to GitHub</button>
+      <button type="button" id="about_btn">About</button>
+    </span>
   </div>
   <form id="f">
     <div><label>Article link, file name, file link, or category</label>
@@ -340,15 +343,16 @@ async function buildTimeline(lang, article, budget, wantDistinct, resume, opts) 
   const base = { action: "query", prop: "revisions", titles: article,
     rvprop: "ids|timestamp|user|comment|content", rvslots: "main",
     rvlimit: String(REV_PAGE), rvdir: "older" };
-  const walk = async (extra, startTimeline, startCont) => {
+  const walk = async (extra, startTimeline, startCont, startTop) => {
     const timeline = startTimeline || [];
-    let read = 0;
+    let read = 0, topRev = startTop || null;
     const p = { ...base, ...extra };
     if (startCont) Object.assign(p, startCont);
     while (true) {
       const d = await apiGet(wpApi(lang), p);
       const page = Object.values((d.query || {}).pages || {})[0];
       for (const r of (page && page.revisions) || []) {
+        if (topRev == null) topRev = r.revid;   // newest revision seen = delta watermark
         read++;
         const wt = ((r.slots || {}).main || {})["*"] || "";
         const m = INFOBOX_IMG.exec(wt); if (!m) continue;
@@ -364,16 +368,16 @@ async function buildTimeline(lang, article, budget, wantDistinct, resume, opts) 
         const key = cropParent(file) || file;
         if (!timeline.length || timeline[timeline.length - 1].key !== key)
           timeline.push({ file, key, rev: r.revid, ts: r.timestamp, user: r.user });
-        if (timeline.length >= wantDistinct) return { timeline, more: false, cont: null, read };
+        if (timeline.length >= wantDistinct) return { timeline, more: false, cont: null, read, topRev };
       }
-      if (read >= budget) return { timeline, more: !!d.continue, cont: d.continue || null, read };
-      if (d.continue) Object.assign(p, d.continue); else return { timeline, more: false, cont: null, read };
+      if (read >= budget) return { timeline, more: !!d.continue, cont: d.continue || null, read, topRev };
+      if (d.continue) Object.assign(p, d.continue); else return { timeline, more: false, cont: null, read, topRev };
     }
   };
   const res = await walk(opts.fullContent ? {} : { rvsection: "0" },
-    resume ? resume.timeline : [], resume ? resume.cont : null);
+    resume ? resume.timeline : [], resume ? resume.cont : null, resume ? resume.topRev : null);
   if (!opts.fullContent && opts.allowFallback && !resume && res.timeline.length === 0)
-    return { ...(await walk({}, [], null)), usedFull: true };
+    return { ...(await walk({}, [], null, null)), usedFull: true };
   return { ...res, usedFull: !!opts.fullContent };
 }
 
@@ -396,34 +400,63 @@ async function cropFamily(fileTitle, exclude) {
 // can't run away.
 async function enumerateFiles(category, depth) {
   const files = [], seen = new Set(), visited = new Set();
+  let addedThrough = "";                                   // latest category-add timestamp seen
   let queue = [{ c: category, d: 0 }];
   while (queue.length && files.length < CAT_FILE_CAP) {
     const { c, d } = queue.shift();
     if (visited.has(c)) continue;
     visited.add(c);
     for await (const q of mwQuery(COMMONS_API, { list: "categorymembers", cmtitle: c,
-        cmtype: d < depth ? "file|subcat" : "file", cmlimit: "500" })) {
+        cmtype: d < depth ? "file|subcat" : "file", cmprop: "title|type|timestamp", cmlimit: "500" })) {
       for (const m of q.categorymembers || []) {
         if (m.ns === 14) { if (d < depth) queue.push({ c: m.title, d: d + 1 }); }
-        else if (m.ns === 6 && !seen.has(m.title)) { seen.add(m.title); files.push(m.title); }
+        else if (m.ns === 6 && !seen.has(m.title)) {
+          seen.add(m.title); files.push(m.title);
+          if (m.timestamp && m.timestamp > addedThrough) addedThrough = m.timestamp;
+        }
       }
       if (files.length >= CAT_FILE_CAP) break;
     }
   }
-  return files.slice(0, CAT_FILE_CAP);
+  return { files: files.slice(0, CAT_FILE_CAP), addedThrough };
+}
+
+// Files in a Commons category tree added strictly after `since` (ISO timestamp).
+// Walks the full tree (so pre-existing subcats that gained new files aren't
+// missed) and filters files by their category-add timestamp; the heavy per-file
+// work downstream only touches the new files.
+async function filesAddedSince(category, depth, since) {
+  const files = [], seen = new Set(), visited = new Set();
+  let addedThrough = since || "";
+  let queue = [{ c: category, d: 0 }];
+  while (queue.length && files.length < CAT_FILE_CAP) {
+    const { c, d } = queue.shift();
+    if (visited.has(c)) continue;
+    visited.add(c);
+    for await (const q of mwQuery(COMMONS_API, { list: "categorymembers", cmtitle: c,
+        cmtype: d < depth ? "file|subcat" : "file", cmprop: "title|type|timestamp", cmlimit: "500" })) {
+      for (const m of q.categorymembers || []) {
+        if (m.ns === 14) { if (d < depth) queue.push({ c: m.title, d: d + 1 }); }
+        else if (m.ns === 6 && m.timestamp > since && !seen.has(m.title)) {
+          seen.add(m.title); files.push(m.title);
+          if (m.timestamp > addedThrough) addedThrough = m.timestamp;
+        }
+      }
+      if (files.length >= CAT_FILE_CAP) break;
+    }
+  }
+  return { files, addedThrough };
 }
 
 // Category walk state: remaining file queue, running tallies, dedup of people.
-const cat = { queue: [], scanned: 0, live: 0, truncated: false, count: 3, done: new Set() };
+const cat = { queue: [], scanned: 0, live: 0, truncated: false, count: 3, done: new Set(), addedThrough: "" };
 
-// Process the next CAT_CHUNK files: for each, resolve the depicted person and
-// keep only those whose CURRENT infobox photo is that file (crop-aware), then
-// build that person's history for display.
-async function scanCatChunk() {
-  const batch = cat.queue.splice(0, CAT_CHUNK);
-  cat.scanned += batch.length;
-  // 1. Resolve every file's depicted person in batched queries (cheap for big chunks).
-  const resolved = await batchResolve(batch);
+// Resolve a list of files to the live people whose current infobox photo is one
+// of them (crop-aware), and build each person's history. Shared by the chunk
+// scan and the incremental refresh.
+async function processFiles(fileList) {
+  // 1. Resolve every file's depicted person in batched queries (cheap in bulk).
+  const resolved = await batchResolve(fileList);
   const candidates = [...resolved].map(([file, subj]) => ({ file, ...subj }))
     .filter(c => !cat.done.has(c.lang + ":" + c.article));
   // 2. Batch the current-lead lookup per wiki, then keep files that are the lead
@@ -449,11 +482,17 @@ async function scanCatChunk() {
     try { res = await buildTimeline(c.lang, c.article, CAT_REV_LIMIT, cat.count); } catch (_) { continue; }
     if (!res.timeline.length || !sameOrCrop(c.file, res.timeline[0].file)) continue;
     people.push({ lang: c.lang, article: c.article, label: c.label, qid: c.qid,
-                  shown: res.timeline.slice(0, cat.count), more: res.more });
+                  topRev: res.topRev, shown: res.timeline.slice(0, cat.count), more: res.more });
   }
   await attachInfo(people);
   cat.live += people.length;
   return people;
+}
+// Process the next CAT_CHUNK files from the queue.
+async function scanCatChunk() {
+  const batch = cat.queue.splice(0, CAT_CHUNK);
+  cat.scanned += batch.length;
+  return processFiles(batch);
 }
 
 // Fetch imageinfo for every shown photo, batched per wiki (people can be on
@@ -470,7 +509,7 @@ async function attachInfo(people) {
 
 let personSeq = 0;              // stable ids so a single row can be re-rendered in place
 const shownPeople = {};         // id -> person (for the deeper-search re-render)
-function renderPerson(p) { const id = "pb-" + personSeq++; shownPeople[id] = p; return renderPersonBlock(id, p); }
+function renderPerson(p) { const id = "pb-" + personSeq++; p._id = id; shownPeople[id] = p; return renderPersonBlock(id, p); }
 function renderPersonBlock(id, p) {
   LANG = p.lang;                // diff links in tlCard() read this; set per person
   const cards = p.shown.map((e, i) => tlCard(e, i, p.shown[i - 1])).join("");
@@ -550,6 +589,7 @@ function updateCatStatus() {
     + (remaining ? ` ${remaining} file(s) left.` : " Done.")
     + (cat.truncated ? ` (Category capped at ${CAT_FILE_CAP} files.)` : "");
   $("loadmore").hidden = remaining === 0;
+  if (remaining === 0) showSave();   // fully pulled → can save
 }
 async function scanAndRender() {
   const go = $("go"), more = $("loadmore_btn");
@@ -568,13 +608,17 @@ async function scanAndRender() {
     go.disabled = false; more.disabled = false;
   }
 }
-async function runCategory(inp) {
+function resetCat(inp) {
   cat.queue = []; cat.scanned = 0; cat.live = 0; cat.truncated = false;
-  cat.count = imgCount(); cat.done = new Set();
+  cat.count = imgCount(); cat.done = new Set(); cat.addedThrough = "";
+}
+async function runCategory(inp) {
+  resetCat(inp);
   $("status").className = ""; $("status").textContent = `Listing files in ${inp.title}…`;
-  const files = await enumerateFiles(inp.title, Math.max(0, parseInt($("depth").value, 10) || 0));
+  const { files, addedThrough } = await enumerateFiles(inp.title, Math.max(0, parseInt($("depth").value, 10) || 0));
   if (!files.length) { showError(`No files found in ${inp.title}.`); return; }
   cat.truncated = files.length >= CAT_FILE_CAP;
+  cat.addedThrough = addedThrough;
   cat.queue = files;
   $("subject").innerHTML = `<p class="lead"><strong>${esc(inp.title)}</strong> — `
     + `${files.length}${cat.truncated ? "+" : ""} file(s); showing people whose current infobox photo is from this category.</p>`;
@@ -584,10 +628,18 @@ async function runCategory(inp) {
 async function run() {
   const status = $("status"), go = $("go");
   status.className = ""; status.textContent = "Resolving…";
-  $("subject").innerHTML = ""; $("results").innerHTML = ""; $("loadmore").hidden = true; go.disabled = true;
+  $("subject").innerHTML = ""; $("results").innerHTML = ""; $("loadmore").hidden = true;
+  hideSave(); single = null; go.disabled = true;
   try {
     const inp = parseInput($("q").value);
     if (!inp) { showError("Enter an article link, a file name, a file link, or a category."); return; }
+    currentInput = inp;
+
+    // Read-through cache: if a saved record exists for this exact search, load it
+    // and only refresh what changed since it was saved.
+    const cached = await loadCache(inp);
+    if (cached) { await hydrateFromCache(cached, inp); return; }
+
     if (inp.type === "category") { await runCategory(inp); return; }
 
     let lang, article, label = null, qid = null, warnMsg = "";
@@ -615,8 +667,8 @@ async function run() {
       : `<p class="lead"><strong>${link(wpArticleUrl(lang, article), article)}</strong></p>`;
     $("subject").innerHTML = subjHtml;
 
-    single = { lang, article, warnMsg, timeline: res.timeline, more: res.more,
-               cont: res.cont, scanned: res.read, fullContent: res.usedFull, count };
+    single = { lang, article, label, qid, warnMsg, timeline: res.timeline, more: res.more,
+               cont: res.cont, scanned: res.read, fullContent: res.usedFull, count, topRev: res.topRev };
     await finishSingle();
   } catch (err) {
     showError(/rate-limiting/i.test(err.message)
@@ -640,6 +692,7 @@ async function finishSingle() {
   $("status").className = "";
   $("status").textContent = `${s.shown.length} infobox photo(s) shown; checked ${s.scanned} revision(s)`
     + (s.more ? " — more history exists." : ".");
+  showSave();
 }
 // Fetch each shown photo's crop family on demand — skipped while originals are
 // hidden, then filled in if the filter is turned back off.
@@ -670,6 +723,184 @@ async function extendSingle() {
     if (btn) { btn.disabled = false; btn.textContent = `Search another ${SINGLE_REV_EXTEND} — retry`; }
   }
 }
+// ===================================================================
+// GitHub-backed result cache
+//   - Save button commits the current results to data/history/<key>.json on
+//     `main` (needs your fine-grained PAT with Contents: write, kept in
+//     localStorage). Only someone with a write-capable token can save.
+//   - On search, a matching saved record is loaded first, then only what changed
+//     since it was saved is fetched (single: article top-revision check;
+//     category: files added after the saved watermark + changed people).
+// ===================================================================
+const ALGO_VERSION = 3;                 // bump when extraction/crop/timeline logic changes
+const GH = { owner: "Landsil", repo: "Wikimedia-Infobox-Checker", branch: "main", dir: "data/history" };
+const TOKEN_KEY = "ibx_gh_token";
+let currentInput = null;                // parsed input of the current search
+
+function hash32(s) { let h = 2166136261 >>> 0; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return (h >>> 0).toString(16); }
+function cacheIdentity(inp) {
+  return inp.type === "article" ? `article|${inp.lang}|${inp.title}`
+       : inp.type === "file"    ? `file|${inp.title}`
+       :                          `category|${inp.title}`;
+}
+function cachePath(inp) {
+  const id = cacheIdentity(inp);
+  const slug = id.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 80);
+  return `${GH.dir}/${slug}-${hash32(id)}.json`;
+}
+// Read the published static JSON (anonymous, via Pages) for this exact search.
+async function loadCache(inp) {
+  try {
+    const r = await fetch(`${cachePath(inp)}?t=${Date.now()}`, { cache: "no-store" });
+    if (!r.ok) return null;
+    const data = await r.json();
+    if (!data || data.algoVersion !== ALGO_VERSION || data.identity !== cacheIdentity(inp)) return null;
+    return data;
+  } catch (_) { return null; }
+}
+
+// --- GitHub write (fine-grained PAT in localStorage) ---
+function ghToken() { return localStorage.getItem(TOKEN_KEY) || ""; }
+function setGhToken(t) { if (t) localStorage.setItem(TOKEN_KEY, t); else localStorage.removeItem(TOKEN_KEY); }
+function b64utf8(s) { return btoa(unescape(encodeURIComponent(s))); }
+async function ghApi(method, path, body) {
+  const r = await fetch(`https://api.github.com${path}`, {
+    method,
+    headers: { Authorization: `Bearer ${ghToken()}`, Accept: "application/vnd.github+json",
+      "X-GitHub-Api-Version": "2022-11-28", ...(body ? { "Content-Type": "application/json" } : {}) },
+    body: body ? JSON.stringify(body) : undefined });
+  const t = await r.text(); let d = null; try { d = JSON.parse(t); } catch (_) {}
+  if (!r.ok) throw new Error(`GitHub ${r.status}: ${(d && d.message) || t.slice(0, 120)}`);
+  return d;
+}
+async function ghCommit(path, obj, message) {
+  let sha;
+  try { const cur = await ghApi("GET", `/repos/${GH.owner}/${GH.repo}/contents/${path}?ref=${GH.branch}`); sha = cur && cur.sha; } catch (_) {}
+  return ghApi("PUT", `/repos/${GH.owner}/${GH.repo}/contents/${path}`,
+    { message, content: b64utf8(JSON.stringify(obj, null, 2)), branch: GH.branch, ...(sha ? { sha } : {}) });
+}
+
+// --- serialise current results ---
+const timelineToJson = t => t.map(e => ({ file: e.file, rev: e.rev, ts: e.ts, user: e.user }));
+function buildPayload() {
+  const base = { schema: 1, algoVersion: ALGO_VERSION, identity: cacheIdentity(currentInput),
+    asOf: new Date().toISOString(), input: currentInput };
+  if (currentInput.type === "category") {
+    return { ...base, type: "category", count: cat.count, addedThrough: cat.addedThrough || "",
+      people: Object.values(shownPeople).map(p => ({ lang: p.lang, article: p.article,
+        label: p.label || null, qid: p.qid || null, topRev: p.topRev || null, more: !!p.more,
+        timeline: timelineToJson(p.shown) })) };
+  }
+  const s = single;
+  return { ...base, type: "single", count: s.count, lang: s.lang, article: s.article,
+    label: s.label || null, qid: s.qid || null, topRev: s.topRev || null, more: !!s.more,
+    cont: s.cont || null, fullContent: !!s.fullContent, scanned: s.scanned || 0,
+    timeline: timelineToJson(s.timeline) };
+}
+async function saveToGitHub() {
+  if (!currentInput) return;
+  if (!ghToken()) {
+    const t = (prompt("Paste a GitHub fine-grained token (Contents: write on " + GH.owner + "/" + GH.repo + "):") || "").trim();
+    if (!t) return;
+    setGhToken(t);
+  }
+  const btn = $("save_gh"), orig = btn.dataset.label || btn.textContent; btn.dataset.label = orig;
+  btn.disabled = true; btn.textContent = "Saving…";
+  try {
+    await ghCommit(cachePath(currentInput), buildPayload(), `cache: ${cacheIdentity(currentInput)}`);
+    btn.textContent = "Saved ✓ (live after Pages rebuild)";
+    setTimeout(() => { btn.textContent = orig; btn.disabled = false; }, 3000);
+  } catch (err) {
+    btn.disabled = false; btn.textContent = orig;
+    if (/GitHub 40[13]/.test(err.message)
+        && confirm(`GitHub rejected the write (${err.message}). Clear the stored token so you can paste a new one?`))
+      setGhToken("");
+    else showError("Save failed: " + err.message);
+  }
+}
+function showSave() { const b = $("save_gh"); if (b) b.hidden = false; }
+function hideSave() { const b = $("save_gh"); if (b) b.hidden = true; }
+
+// --- read-through: hydrate from a saved record, then refresh deltas ---
+async function currentTopRev(lang, article) {
+  const d = await apiGet(wpApi(lang), { action: "query", titles: article, prop: "info", redirects: "1" });
+  const p = Object.values((d.query || {}).pages || {})[0];
+  return p ? p.lastrevid : null;
+}
+async function lastRevIds(lang, articles) {
+  const out = {};
+  for (const b of chunked(articles))
+    for await (const q of mwQuery(wpApi(lang), { titles: b.join("|"), prop: "info", redirects: "1" }))
+      for (const p of Object.values(q.pages || {})) out[p.title] = p.lastrevid;
+  return out;
+}
+async function hydrateFromCache(data, inp) {
+  return data.type === "category" ? hydrateCategory(data, inp) : hydrateSingle(data, inp);
+}
+async function hydrateSingle(data, inp) {
+  LANG = data.lang;
+  $("subject").innerHTML = data.label
+    ? `<p class="lead"><strong>${link(wpArticleUrl(data.lang, data.article), data.label)}</strong>`
+      + (data.qid ? ` · ${link("https://www.wikidata.org/wiki/" + data.qid, data.qid)}` : "") + `</p>`
+    : `<p class="lead"><strong>${link(wpArticleUrl(data.lang, data.article), data.article)}</strong></p>`;
+  single = { lang: data.lang, article: data.article, label: data.label, qid: data.qid, warnMsg: "",
+    timeline: data.timeline.map(e => ({ ...e, key: cropParent(e.file) || e.file })),
+    more: data.more, cont: data.cont, fullContent: data.fullContent, scanned: data.scanned || 0,
+    count: imgCount(), topRev: data.topRev };
+  $("status").className = ""; $("status").textContent = "Loaded saved record; checking for changes…";
+  try {
+    const cur = await currentTopRev(data.lang, data.article);
+    if (cur && data.topRev && cur !== data.topRev) {   // article changed since save → recompute
+      const res = await buildTimeline(data.lang, data.article, SINGLE_REV_LIMIT, single.count, null, { allowFallback: true });
+      if (res.timeline.length) Object.assign(single, { timeline: res.timeline, more: res.more,
+        cont: res.cont, fullContent: res.usedFull, scanned: res.read, topRev: res.topRev });
+    }
+  } catch (_) {}
+  await finishSingle();
+}
+async function hydrateCategory(data, inp) {
+  resetCat(inp);
+  cat.count = data.count || imgCount();
+  cat.addedThrough = data.addedThrough || "";
+  const stored = (data.people || []).map(p => ({ lang: p.lang, article: p.article, label: p.label,
+    qid: p.qid, topRev: p.topRev, more: p.more,
+    shown: p.timeline.map(e => ({ ...e, key: cropParent(e.file) || e.file })) }));
+  for (const p of stored) cat.done.add(p.lang + ":" + p.article);
+  $("subject").innerHTML = `<p class="lead"><strong>${esc(inp.title)}</strong> — saved record from `
+    + `${esc((data.asOf || "").slice(0, 10))} (${stored.length} live); checking for changes…</p>`;
+  await attachInfo(stored);
+  cat.live = stored.length;
+  $("results").innerHTML = stored.map(renderPerson).join("");
+  // Refresh stored people whose article changed since save.
+  $("status").className = ""; $("status").textContent = "Checking stored people for updates…";
+  const byLang = {};
+  for (const p of stored) (byLang[p.lang] = byLang[p.lang] || []).push(p);
+  for (const [lang, ps] of Object.entries(byLang)) {
+    const last = await lastRevIds(lang, ps.map(p => p.article));
+    for (const p of ps) {
+      if (!last[p.article] || last[p.article] === p.topRev) continue;
+      let res; try { res = await buildTimeline(p.lang, p.article, CAT_REV_LIMIT, cat.count); } catch (_) { continue; }
+      if (!res.timeline.length) continue;
+      p.topRev = res.topRev; p.more = res.more; p.shown = res.timeline.slice(0, cat.count);
+      await attachInfo([p]);
+      if (p._id && $(p._id)) $(p._id).outerHTML = renderPersonBlock(p._id, p);
+    }
+  }
+  // Add people from files added to the category after the saved watermark.
+  $("status").className = ""; $("status").textContent = "Checking for new photos…";
+  const { files, addedThrough } = await filesAddedSince(inp.title, Math.max(0, parseInt($("depth").value, 10) || 0), cat.addedThrough || "");
+  const before = cat.live;
+  if (files.length) {
+    const fresh = await processFiles(files);
+    if (fresh.length) $("results").insertAdjacentHTML("beforeend", fresh.map(renderPerson).join(""));
+  }
+  if (addedThrough && addedThrough > cat.addedThrough) cat.addedThrough = addedThrough;
+  $("status").className = "";
+  $("status").textContent = `Saved record loaded; ${cat.live} live${cat.live > before ? ` (+${cat.live - before} new)` : ""}.`;
+  showSave();
+}
+
+$("save_gh").addEventListener("click", saveToGitHub);
 $("f").addEventListener("submit", e => { e.preventDefault(); run(); });
 $("loadmore_btn").addEventListener("click", () => scanAndRender());
 $("results").addEventListener("click", e => {
