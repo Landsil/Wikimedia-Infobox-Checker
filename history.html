@@ -117,8 +117,8 @@ const NON_WIKIPEDIA_WIKIS = new Set([
 
 // ---- helpers ----
 const $ = id => document.getElementById(id);
-const esc = s => (s == null ? "" : String(s)).replace(/[&<>"]/g,
-  c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const esc = s => (s == null ? "" : String(s)).replace(/[&<>"']/g,
+  c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const link = (url, text) =>
   url ? `<a href="${esc(url)}" target="_blank" rel="noopener">${esc(text)}</a>` : esc(text);
@@ -133,6 +133,9 @@ function stripHtml(v) {
   // for world-editable Commons extmetadata (unlike assigning to a live innerHTML).
   if (!v) return "";
   const doc = new DOMParser().parseFromString(String(v), "text/html");
+  // Insert a separator at element boundaries so adjacent nodes don't fuse
+  // ("A<br>B" / "<p>A</p><p>B</p>" -> "A B", not "AB").
+  doc.body.querySelectorAll("*").forEach(el => el.after(" "));
   return (doc.body.textContent || "").replace(/\s+/g, " ").trim();
 }
 const dateOnly = v => { const m = /^(\d{4}-\d{2}-\d{2})/.exec((v == null ? "" : String(v)).trim()); return m ? m[1] : (v || ""); };
@@ -729,7 +732,7 @@ async function extendSingle() {
 // GitHub-backed result cache
 //   - Save button commits the current results to data/history/<key>.json on
 //     `main` (needs your fine-grained PAT with Contents: write, kept in
-//     localStorage). Only someone with a write-capable token can save.
+//     sessionStorage for the tab). Only someone with a write-capable token can save.
 //   - On search, a matching saved record is loaded first, then only what changed
 //     since it was saved is fetched (single: article top-revision check;
 //     category: files added after the saved watermark + changed people).
@@ -765,7 +768,7 @@ async function loadCache(inp) {
   } catch (_) { return null; }
 }
 
-// --- GitHub write (fine-grained PAT in localStorage) ---
+// --- GitHub write (fine-grained PAT in sessionStorage) ---
 // sessionStorage (not localStorage): the write-capable PAT lives only for this
 // tab session and never persists to disk, limiting the exposure window.
 function ghToken() { return sessionStorage.getItem(TOKEN_KEY) || ""; }

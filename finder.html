@@ -194,6 +194,8 @@ function chunked(arr, size = BATCH) {
 function stripHtml(value) {
   if (!value) return "";
   const doc = new DOMParser().parseFromString(String(value), "text/html");
+  // Separator at element boundaries so "A<br>B" -> "A B", not "AB".
+  doc.body.querySelectorAll("*").forEach(el => el.after(" "));
   return (doc.body.textContent || "").replace(/\s+/g, " ").trim();
 }
 
@@ -381,6 +383,9 @@ const wikipediaApiUrl = site => `https://${wikiLang(site)}.wikipedia.org/w/api.p
 // The image an article actually displays is often set locally in wikitext and
 // diverges from Wikidata P18. pageimages returns the real lead/infobox image.
 // `articles` is an array of [site, title]; returns Map("site\ntitle" -> file).
+// Wikis skipped this search because their API was unreachable (surfaced in the
+// status line by renderResults). Reset at the start of each runSearch.
+let skippedWikis = new Set();
 async function fetchArticleLeadImages(articles) {
   const bySite = {};
   for (const [site, title] of articles) (bySite[site] = bySite[site] || new Set()).add(title);
@@ -407,7 +412,9 @@ async function fetchArticleLeadImages(articles) {
       }
     } catch (err) {
       // One wiki being down shouldn't discard the whole multi-step search; skip
-      // it (its articles just have an unknown lead image) and carry on.
+      // it (its articles just have an unknown lead image) and carry on — but
+      // record it so the user is told results may be incomplete.
+      skippedWikis.add(wikiLang(site));
       console.warn(`Infobox Finder: skipping ${site} (${err && err.message})`);
     }
   }
@@ -715,6 +722,7 @@ async function fetchPersonData(files) {
 // Orchestration — mirrors app.py run_search(), returns the same result shape.
 // =========================================================================
 async function runSearch(category, startDate, endDate, onProgress) {
+  skippedWikis = new Set();                 // fresh per search (see renderResults)
   const [start, end] = normalizeBounds(startDate, endDate);
   const now = new Date();
   const say = msg => { if (onProgress) onProgress(msg); };
@@ -1134,6 +1142,11 @@ function renderResults() {
 
   if (exclusive) { $("head").hidden = true; $("results").innerHTML = ""; }
 
+  // If any wiki was unreachable this search, warn that results may be partial.
+  const skipNote = skippedWikis.size
+    ? ` ⚠ ${skippedWikis.size} wiki(s) were unreachable and skipped (${[...skippedWikis].join(", ")}); results may be incomplete.`
+    : "";
+
   if (showCur) {
     $("nodepicts").innerHTML = "";
     $("current").innerHTML = allCurrent.length
@@ -1141,7 +1154,7 @@ function renderResults() {
         + allCurrent.map(currentPhotoRow).join("")
       : `<div class="none">No category photos are currently used as an infobox photo.</div>`;
     $("status").textContent =
-      `Showing ${allCurrent.length} category photo(s) that are an article's current infobox photo.`;
+      `Showing ${allCurrent.length} category photo(s) that are an article's current infobox photo.` + skipNote;
     return;
   }
   $("current").innerHTML = "";
@@ -1152,7 +1165,7 @@ function renderResults() {
         + allNoDepicts.map(noDepictsRow).join("")
       : `<div class="none">No photos without a depicts statement.</div>`;
     $("status").textContent =
-      `Showing ${allNoDepicts.length} unused photo(s) with no depicts statement.`;
+      `Showing ${allNoDepicts.length} unused photo(s) with no depicts statement.` + skipNote;
     return;
   }
 
@@ -1167,7 +1180,7 @@ function renderResults() {
   if (hiddenCount) msg += ` Showing ${shown.length}; ${hiddenCount} hidden by filters.`;
   if (allNoDepicts.length) msg += ` ${allNoDepicts.length} more have no depicts statement.`;
   if (allCurrent.length) msg += ` ${allCurrent.length} are already in use.`;
-  $("status").textContent = msg;
+  $("status").textContent = msg + skipNote;
 }
 
 function bindToggle(id) {

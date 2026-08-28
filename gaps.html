@@ -115,8 +115,8 @@ const BACKOFF_BASE = 1.0;
 // Small helpers
 // =========================================================================
 const $ = id => document.getElementById(id);
-const esc = s => (s == null ? "" : String(s)).replace(/[&<>"]/g,
-  c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const esc = s => (s == null ? "" : String(s)).replace(/[&<>"']/g,
+  c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const link = (url, text) =>
   url ? `<a href="${esc(url)}" target="_blank" rel="noopener">${esc(text)}</a>` : esc(text);
@@ -132,6 +132,8 @@ function stripHtml(v) {
   // Commons extmetadata, unlike assigning it to a live innerHTML.
   if (!v) return "";
   const doc = new DOMParser().parseFromString(String(v), "text/html");
+  // Separator at element boundaries so "A<br>B" -> "A B", not "AB".
+  doc.body.querySelectorAll("*").forEach(el => el.after(" "));
   return (doc.body.textContent || "").replace(/\s+/g, " ").trim();
 }
 const dateOnly = v => {
