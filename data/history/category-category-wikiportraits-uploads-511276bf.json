@@ -2,7 +2,7 @@
   "schema": 1,
   "algoVersion": 3,
   "identity": "category|Category:WikiPortraits uploads",
-  "asOf": "2026-08-28T15:37:38.970Z",
+  "asOf": "2026-08-28T15:51:03.045Z",
   "input": {
     "type": "category",
     "title": "Category:WikiPortraits uploads"
@@ -11,7 +11,7 @@
   "count": 3,
   "addedThrough": "2026-08-28T14:26:31Z",
   "uncapped": true,
-  "scanned": 1200,
+  "scanned": 3200,
   "pending": null,
   "done": [
     "fr:Laurène Marx",
@@ -117,7 +117,221 @@
     "en:Nira Burstein",
     "en:Patrick Gibson (actor)",
     "en:Paul L. Nguyen",
-    "en:Peter Davison"
+    "en:Peter Davison",
+    "en:Purbayan Chatterjee",
+    "en:Eirik Hundvin",
+    "en:Abby Stein",
+    "en:Raphaela Neihausen",
+    "en:Rich Keeble",
+    "en:Robert K. Cunningham",
+    "en:Rory Culkin",
+    "en:Ruibo Qian",
+    "fr:Saliou Touré",
+    "de:Sam Weinberg",
+    "en:Samson Kayo",
+    "en:Sarah Hicks",
+    "en:Shahid Parvez",
+    "en:Sherry Cola",
+    "en:Shuhan He",
+    "no:Svein Grønvold",
+    "en:Sylvia Wetzel",
+    "en:Taylen Biggs",
+    "en:Tim Cook",
+    "en:Tim Daly",
+    "en:Toni Choueiri",
+    "en:Tressie McMillan Cottom",
+    "en:Vanessa Sears",
+    "en:Wade Cunningham",
+    "en:Wesley Eure",
+    "en:William Cheswick",
+    "en:Zlatan Ibrahimović",
+    "en:Belinda McClory",
+    "en:Jackie Wang",
+    "en:Justin McElroy",
+    "en:Katerina Kotsonis",
+    "de:Cathy Shim",
+    "en:Kevin Woo",
+    "en:Anderson .Paak",
+    "en:Lilly Singh",
+    "en:Jaboukie Young-White",
+    "en:Vinod Khosla",
+    "en:Aaliyah Bilal",
+    "en:Fábio Assunção",
+    "en:Hridhu Haroon",
+    "en:Chhaya Kadam",
+    "ru:Роша, Натали",
+    "en:Oulaya Amamra",
+    "en:Adriana Paz",
+    "en:Ali Abbasi (director)",
+    "en:Payal Kapadia (filmmaker)",
+    "en:Andrea Arnold",
+    "en:Anele Mgudlwa",
+    "en:Anna Akana",
+    "en:Aria Mia Loberti",
+    "en:Aurora Ribero",
+    "ar:أيوب كريطع",
+    "en:Beatrice Grannò",
+    "zh:宾纳亚·斯里坎特·普拉丹",
+    "en:Brittany Luse",
+    "en:Danielle Deadwyler",
+    "en:Davi Kopenawa Yanomami",
+    "en:Deepak Rauniyar",
+    "en:Karim Aïnouz",
+    "en:Sylvia Sanchez",
+    "en:Divya Prabha",
+    "en:Dong Abay",
+    "en:Dumbfoundead",
+    "en:Durga Chew-Bose",
+    "fr:Lee Eon-hee",
+    "ig:Ebele Okobi",
+    "en:Édgar Ramírez",
+    "en:Elizabeth Lo",
+    "en:Erwan Kepoa Falé",
+    "en:Fady Joudah",
+    "en:Felix Solis",
+    "en:Francesco Gheghi",
+    "en:Freddie Wong",
+    "en:Fumani Shilubana",
+    "en:Golshifteh Farahani",
+    "en:Hala Elkoussy",
+    "en:Hana Malasan",
+    "en:Hannah Lillith Assadi",
+    "en:Hazel Orencio",
+    "en:Henry Golding",
+    "en:Hisham Matar",
+    "en:Hyun Bin",
+    "en:Jameel Jaffer",
+    "en:Jarone Lee",
+    "en:Jason De León",
+    "en:Jean-Pascal Zadi",
+    "en:Jeffrey Alexander Sterling",
+    "en:Jurnee Smollett",
+    "en:Karan Kandhari",
+    "en:Karren Karagulian",
+    "en:Kataem O'Connor",
+    "en:Kausar Mohammed",
+    "en:Kaveh Akbar",
+    "en:Ken Chen",
+    "en:Kenice Mobley",
+    "ja:宇賀那健一",
+    "en:Khadija Patel",
+    "en:Kiran Desai",
+    "en:Kiyoshi Kurosawa",
+    "en:Kris Bowers",
+    "en:Lara Ricote",
+    "en:Laverne Cox",
+    "en:Lee Dong-wook",
+    "en:Lena Khalaf Tuffaha",
+    "ja:今村怜央",
+    "en:Lily Gladstone",
+    "en:Magaajyia Silberfeld",
+    "es:Mahmood Bakri",
+    "en:Manuel Garcia-Rulfo",
+    "en:Marianne Jean-Baptiste",
+    "en:Maurice \"Mobetta\" Brown",
+    "en:Michele Austin",
+    "en:Miguel Gomes (director)",
+    "en:S. Mitra Kalita",
+    "en:Mohammad Rasoulof",
+    "en:Mondher Rayahneh",
+    "en:Nacho Vigalondo",
+    "fr:Nada Riyadh",
+    "ca:Nahikari Ipiña",
+    "en:Nahuel Pérez Biscayart",
+    "de:Nailia Harzoune",
+    "ja:夏子",
+    "en:Ncuti Gatwa",
+    "en:Nobuhiro Yamashita",
+    "en:Nykiya Adams",
+    "en:Omar Apollo",
+    "es:Patricio José (actor)",
+    "en:Percival Everett",
+    "en:Rodrigo Prieto",
+    "en:Ryan Destiny",
+    "en:Samantha Quan",
+    "en:Sawad Hussain",
+    "en:Sosie Bacon",
+    "en:Selena Gomez",
+    "en:Sevgil Musayeva",
+    "en:Sophie Duker",
+    "en:Stephanie Hsu",
+    "en:Kemba (rapper)",
+    "en:Goh Nakamura",
+    "en:Jamal Trulove",
+    "en:Bilal Hasna",
+    "en:Virgie Tovar",
+    "en:Meghan, Duchess of Sussex",
+    "en:Errin Haines",
+    "en:Taylor Russell",
+    "en:Temi Wilkey",
+    "en:Tiana Tukes",
+    "en:Timo Tjahjanto",
+    "en:Tomiwa Aladekomo",
+    "en:Vin Gupta (pulmonologist)",
+    "en:Woo Min-ho",
+    "en:Yiying Lu",
+    "en:Yousra Elbagir",
+    "en:Yuqi Kang",
+    "ja:喜矢武豊",
+    "en:Zhang Ziyi",
+    "en:Úrsula Corberó",
+    "en:Dea Kulumbegashvili",
+    "fr:Kakha Kintsurashvili",
+    "en:David Walliams",
+    "en:Stephen R. Platt",
+    "en:Leilane Neubarth",
+    "en:Bryndon Cook",
+    "en:James Acaster",
+    "en:Stuart Laws",
+    "en:Edith Bowman",
+    "en:Oli London",
+    "en:Stephanie Tavares-Rance",
+    "en:Tom Rachman",
+    "no:Benedicte Meyer Kroneberg",
+    "no:Bård Nannestad",
+    "no:Hans Herlof Grelland",
+    "en:Lars Svendsen",
+    "en:Pedro Carmona-Alvarez",
+    "nn:Sunniva Lye Axelsen",
+    "en:Synne Sun Løes",
+    "en:Vigdis Hjorth",
+    "en:Baluji Shrivastav",
+    "en:Don Airey",
+    "no:Tom Ostad",
+    "no:Vidar Berg",
+    "als:Christoph Sonntag",
+    "en:Abel Chelangat",
+    "en:Anna Kotchneva",
+    "en:Asher Hong",
+    "en:Benoît Coulanges",
+    "en:Brooke Weisbrod",
+    "en:Charleigh Bullock",
+    "en:Eddie Hall",
+    "en:Loris Vergier",
+    "en:Molly Carlson",
+    "en:Pope Leo XIV",
+    "en:Erika Donalds",
+    "en:Jonathan Keeperman",
+    "en:Kathleen Hanna",
+    "en:Aaron Paul",
+    "en:Aaron Pierre (actor)",
+    "en:Aaron Schoenke",
+    "en:Abby Ryder Fortson",
+    "en:Molly Shannon",
+    "en:Adam Brody",
+    "en:Adrianne Palicki",
+    "en:Agathe Bonitzer",
+    "en:Ahmed Best",
+    "en:Aimee Garcia",
+    "en:Alan Oppenheimer",
+    "en:Alan Ruck",
+    "en:Alanna Ubach",
+    "en:Alastair Duncan (Scottish actor)",
+    "en:Aldis Hodge",
+    "en:Alex Tarrant",
+    "en:Alexis Denisof",
+    "ar:علي الكلثمي",
+    "en:Alona Tal"
   ],
   "people": [
     {
@@ -432,6 +646,132 @@
     },
     {
       "lang": "en",
+      "article": "Rich Keeble",
+      "label": "Rich Keeble",
+      "qid": "Q7323320",
+      "topRev": 1368728931,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Rich Keeble at MCM Brum 02.jpg",
+          "rev": 1368728931,
+          "ts": "2026-08-10T19:32:23Z",
+          "user": "JaceMerlyn"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Alastair Duncan (Scottish actor)",
+      "label": "Alastair Duncan",
+      "qid": "Q4708707",
+      "topRev": 1369761543,
+      "more": true,
+      "timeline": [
+        {
+          "file": "File:Alastair Duncan at MultiCon 2026.jpg",
+          "rev": 1369761543,
+          "ts": "2026-08-17T00:33:47Z",
+          "user": "FlammableBot"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Aaron Pierre (actor)",
+      "label": "Aaron Pierre",
+      "qid": "Q106828532",
+      "topRev": 1371485259,
+      "more": true,
+      "timeline": [
+        {
+          "file": "File:Aaron Pierre at San Diego Comic Con 2026-2.jpg",
+          "rev": 1371485259,
+          "ts": "2026-08-26T18:54:33Z",
+          "user": "Shrektastic121"
+        },
+        {
+          "file": "File:'MLK X', Kelvin Harrison e Aaron Pierre «Una serie per capire la storia ancora più a fondo» (5m30s) (cropped).png",
+          "rev": 1364435147,
+          "ts": "2026-07-16T14:20:10Z",
+          "user": "Cinemacriterion"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Aimee Garcia",
+      "label": "Aimee Garcia",
+      "qid": "Q268039",
+      "topRev": 1368546998,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Aimee Garcia at San Diego Comic Con 2026.jpg",
+          "rev": 1368546998,
+          "ts": "2026-08-09T18:34:57Z",
+          "user": "Tobi999tomas"
+        },
+        {
+          "file": "File:Aimee Garcia by Gage Skidmore.jpg",
+          "rev": 1366110645,
+          "ts": "2026-07-26T09:34:06Z",
+          "user": "Cheezknight"
+        },
+        {
+          "file": "File:Aimee Khadija Garcia by Gage Skidmore.jpg",
+          "rev": 1284232288,
+          "ts": "2025-04-06T10:27:26Z",
+          "user": "Nidalobrig"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Alexis Denisof",
+      "label": "Alexis Denisof",
+      "qid": "Q366322",
+      "topRev": 1367820199,
+      "more": true,
+      "timeline": [
+        {
+          "file": "File:Alexis Denisof at San Diego Comic Con 2026.jpg",
+          "rev": 1367820199,
+          "ts": "2026-08-05T11:02:30Z",
+          "user": "~2026-42990-57"
+        },
+        {
+          "file": "File:Alexis Denisof May 2015.jpg",
+          "rev": 1364696281,
+          "ts": "2026-07-18T00:55:43Z",
+          "user": "GreenC bot"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Zlatan Ibrahimović",
+      "label": "Zlatan Ibrahimović",
+      "qid": "Q46896",
+      "topRev": 1371282908,
+      "more": true,
+      "timeline": [
+        {
+          "file": "File:Zlatan Ibrahimović nyc.jpg",
+          "rev": 1371282908,
+          "ts": "2026-08-25T16:55:22Z",
+          "user": "Pac Veten"
+        },
+        {
+          "file": "File:Zlatan Ibrahimović June 2018.jpg",
+          "rev": 1364665074,
+          "ts": "2026-07-17T20:46:01Z",
+          "user": "JoeeBruin"
+        }
+      ]
+    },
+    {
+      "lang": "en",
       "article": "Emma Peschel",
       "label": "Emma Peschel",
       "qid": "Q139763624",
@@ -509,6 +849,50 @@
           "rev": 1233226976,
           "ts": "2024-07-07T23:43:07Z",
           "user": "AJaxley"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Ahmed Best",
+      "label": "Ahmed Best",
+      "qid": "Q401182",
+      "topRev": 1370632315,
+      "more": true,
+      "timeline": [
+        {
+          "file": "File:Ahmed Best at Fan Expo Anaheim 2026-2.jpg",
+          "rev": 1370632315,
+          "ts": "2026-08-22T05:12:11Z",
+          "user": "Person man345"
+        },
+        {
+          "file": "File:10.2.10AhmedBestByLuigiNovi (cropped2).jpg",
+          "rev": 1360151205,
+          "ts": "2026-06-19T15:34:11Z",
+          "user": "Fiction Fanatic III"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Alan Oppenheimer",
+      "label": "Alan Oppenheimer",
+      "qid": "Q2350830",
+      "topRev": 1363962101,
+      "more": true,
+      "timeline": [
+        {
+          "file": "File:Alan Oppenheimer at Fan Expo Anaheim 2026.jpg",
+          "rev": 1363962101,
+          "ts": "2026-07-13T16:00:04Z",
+          "user": "TAnthony"
+        },
+        {
+          "file": "File:Alan Oppenheimer by Gage Skidmore.jpg",
+          "rev": 1359829854,
+          "ts": "2026-06-17T13:35:43Z",
+          "user": "Fambam44"
         }
       ]
     },
@@ -618,6 +1002,34 @@
     },
     {
       "lang": "en",
+      "article": "Alan Ruck",
+      "label": "Alan Ruck",
+      "qid": "Q498263",
+      "topRev": 1371264862,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Alan Ruck - Corporate Retreat - LA Premiere-1.jpg",
+          "rev": 1371264862,
+          "ts": "2026-08-25T14:47:51Z",
+          "user": "~2026-46236-86"
+        },
+        {
+          "file": "File:Alan Ruck Photo Op GalaxyCon Richmond 2025 (cropped).jpg",
+          "rev": 1349504556,
+          "ts": "2026-04-17T17:02:14Z",
+          "user": "KingArti"
+        },
+        {
+          "file": "File:Alan Ruck (40740365053) (cropped1).jpg",
+          "rev": 1283848677,
+          "ts": "2025-04-04T00:42:19Z",
+          "user": "45.5.69.226"
+        }
+      ]
+    },
+    {
+      "lang": "en",
       "article": "Beth Ostrosky Stern",
       "label": "Beth Ostrosky Stern",
       "qid": "Q4897608",
@@ -718,6 +1130,56 @@
     },
     {
       "lang": "en",
+      "article": "Sherry Cola",
+      "label": "Sherry Cola",
+      "qid": "Q70980043",
+      "topRev": 1371118205,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Sherry Cola.jpg",
+          "rev": 1371118205,
+          "ts": "2026-08-24T18:08:07Z",
+          "user": "NathanielTheBold"
+        },
+        {
+          "file": "File:Sherry Cola 2023.jpg",
+          "rev": 1337976106,
+          "ts": "2026-02-12T14:07:31Z",
+          "user": "~2026-95821-4"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Adam Brody",
+      "label": "Adam Brody",
+      "qid": "Q294372",
+      "topRev": 1364533539,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Adam Brody - Everyone Is Lying to You for Money.jpg",
+          "rev": 1364533539,
+          "ts": "2026-07-17T02:50:50Z",
+          "user": "GreenC bot"
+        },
+        {
+          "file": "File:Adam Brody TIFF 2011.jpg",
+          "rev": 1348507825,
+          "ts": "2026-04-13T02:12:49Z",
+          "user": "BlueyCedar"
+        },
+        {
+          "file": "File:Adam Brody 2009.jpg",
+          "rev": 1122907693,
+          "ts": "2022-11-20T14:48:59Z",
+          "user": "Crocodilesareforwimps"
+        }
+      ]
+    },
+    {
+      "lang": "en",
       "article": "Lana Condor",
       "label": "Lana Condor",
       "qid": "Q24250404",
@@ -796,6 +1258,198 @@
     },
     {
       "lang": "en",
+      "article": "Taylen Biggs",
+      "label": "Taylen Biggs",
+      "qid": "Q139071242",
+      "topRev": 1363919777,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Taylen Biggs.jpg",
+          "rev": 1363919777,
+          "ts": "2026-07-13T08:27:54Z",
+          "user": "Syavia2023"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Alanna Ubach",
+      "label": "Alanna Ubach",
+      "qid": "Q2830641",
+      "topRev": 1370728044,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Alanna Ubach at WonderCon 2026.jpg",
+          "rev": 1370728044,
+          "ts": "2026-08-22T19:54:13Z",
+          "user": "Soetermans"
+        },
+        {
+          "file": "File:Alanna 050413 0024.jpg",
+          "rev": 1361184019,
+          "ts": "2026-06-26T05:56:38Z",
+          "user": "Literally Satan"
+        },
+        {
+          "file": "File:A Cirno.png",
+          "rev": 1307221240,
+          "ts": "2025-08-22T09:06:50Z",
+          "user": "2802:8012:9:9301:915C:7AA6:A2FE:B850"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Shahid Parvez",
+      "label": "Shahid Parvez",
+      "qid": "Q7461703",
+      "topRev": 1371284428,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Shahid Parvez Khan i5225.png",
+          "rev": 1371284428,
+          "ts": "2026-08-25T17:07:03Z",
+          "user": "SchlurcherBot"
+        },
+        {
+          "file": "File:Shahid Parvez Khan 2026.png",
+          "rev": 1344521298,
+          "ts": "2026-03-20T23:33:57Z",
+          "user": "TimDuncan"
+        },
+        {
+          "file": "File:Shahid Parvez.jpg",
+          "rev": 1342006916,
+          "ts": "2026-03-06T12:32:37Z",
+          "user": "Ekabhishek"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Abel Chelangat",
+      "label": "Abel Chelangat",
+      "qid": "Q136399866",
+      "topRev": 1361900337,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Abel Chelangat (cropped).jpg",
+          "rev": 1361900337,
+          "ts": "2026-06-30T19:21:44Z",
+          "user": "PrimeBOT"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Tim Cook",
+      "label": "Tim Cook",
+      "qid": "Q265852",
+      "topRev": 1369428805,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Tim Cook March 2026 (cropped 2).jpg",
+          "rev": 1369428805,
+          "ts": "2026-08-14T22:49:34Z",
+          "user": "Polygnotus"
+        },
+        {
+          "file": "File:P20250806MR-0248 President Donald Trump delivers investment remarks alongside Apple CEO Tim Cook (cropped).jpg",
+          "rev": 1352703321,
+          "ts": "2026-05-05T19:43:16Z",
+          "user": "TheSilksongPikmin"
+        },
+        {
+          "file": "File:Tim Cook March 2026 (cropped).jpg",
+          "rev": 1351722635,
+          "ts": "2026-04-29T19:00:59Z",
+          "user": "Maxeto0910"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Brooke Weisbrod",
+      "label": "Brooke Weisbrod",
+      "qid": "Q17016013",
+      "topRev": 1343530105,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Brooke Weisbrod.jpg",
+          "rev": 1343530105,
+          "ts": "2026-03-14T22:15:40Z",
+          "user": "SuperHamster"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Anna Kotchneva",
+      "label": "Anna Kotchneva",
+      "qid": "Q928626",
+      "topRev": 1371303397,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Anna Kochneva-Lyukin - 2026 American Cup.jpg",
+          "rev": 1371303397,
+          "ts": "2026-08-25T19:51:27Z",
+          "user": "Mypurplelightsaber"
+        },
+        {
+          "file": "File:Anna Kotchneva-Liukin in 2019.jpg",
+          "rev": 1340165049,
+          "ts": "2026-02-24T06:59:11Z",
+          "user": "Shocksingularity"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Asher Hong",
+      "label": "Asher Hong",
+      "qid": "Q111452488",
+      "topRev": 1358916596,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Asher Hong - 2026 American Cup.jpg",
+          "rev": 1358916596,
+          "ts": "2026-06-11T20:31:21Z",
+          "user": "Nevermore27"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Charleigh Bullock",
+      "label": "Charleigh Bullock",
+      "qid": "Q135917060",
+      "topRev": 1368813025,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Charleigh Bullock - 2026 American Cup.jpg",
+          "rev": 1368813025,
+          "ts": "2026-08-11T07:00:31Z",
+          "user": "DetroitFan7"
+        },
+        {
+          "file": "File:2025 Junior World Artistic Gymnastics Championships Charleigh Bullock.jpg",
+          "rev": 1343137957,
+          "ts": "2026-03-12T13:40:32Z",
+          "user": "Mypurplelightsaber"
+        }
+      ]
+    },
+    {
+      "lang": "en",
       "article": "Brad Lander",
       "label": "Brad Lander",
       "qid": "Q15109509",
@@ -813,6 +1467,150 @@
           "rev": 1340855394,
           "ts": "2026-02-28T02:55:45Z",
           "user": "GreenC bot"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Abby Stein",
+      "label": "Abby Stein",
+      "qid": "Q24263778",
+      "topRev": 1371328683,
+      "more": true,
+      "timeline": [
+        {
+          "file": "File:Rabbi Abby Stein with Megaphone.jpg",
+          "rev": 1371328683,
+          "ts": "2026-08-25T22:54:03Z",
+          "user": "ZackBot"
+        },
+        {
+          "file": "File:Abby Stein 20191203-8712 (cropped).jpg",
+          "rev": 1340366283,
+          "ts": "2026-02-25T08:25:53Z",
+          "user": "Wisenerd"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Agathe Bonitzer",
+      "label": "Agathe Bonitzer",
+      "qid": "Q391269",
+      "topRev": 1338917983,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Agathe Bonitzer at Berlinale 2026-1.jpg",
+          "rev": 1338917983,
+          "ts": "2026-02-18T00:27:06Z",
+          "user": "Martineden83"
+        },
+        {
+          "file": "File:Agathe Bonitzer 2013.jpg",
+          "rev": 1336056334,
+          "ts": "2026-02-01T18:32:40Z",
+          "user": "Baekemm"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Aldis Hodge",
+      "label": "Aldis Hodge",
+      "qid": "Q1319798",
+      "topRev": 1369236694,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Aldis Hodge - Cross.jpg",
+          "rev": 1369236694,
+          "ts": "2026-08-13T18:35:58Z",
+          "user": "Captcha1014"
+        },
+        {
+          "file": "File:Aldis Hodge at Washington Convention Center for Congressional Black Caucus ALC54 2025 2.jpg",
+          "rev": 1333152706,
+          "ts": "2026-01-16T00:56:48Z",
+          "user": "Mxhyn16"
+        },
+        {
+          "file": "File:Aldis Hodge 2016.jpg",
+          "rev": 1307477775,
+          "ts": "2025-08-23T21:44:18Z",
+          "user": "Waxworker"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Alona Tal",
+      "label": "Alona Tal",
+      "qid": "Q263433",
+      "topRev": 1371461144,
+      "more": true,
+      "timeline": [
+        {
+          "file": "File:Alona Tal - Cross.jpg",
+          "rev": 1371461144,
+          "ts": "2026-08-26T15:46:27Z",
+          "user": "Pemilligan"
+        },
+        {
+          "file": "File:2009 CUN Award Party Alona Tal 011.JPG",
+          "rev": 1333152806,
+          "ts": "2026-01-16T00:57:38Z",
+          "user": "Mxhyn16"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Kathleen Hanna",
+      "label": "Kathleen Hanna",
+      "qid": "Q242608",
+      "topRev": 1371033945,
+      "more": true,
+      "timeline": [
+        {
+          "file": "File:Kathleen Hanna at the 2026 Sundance Film Festival for The Best Summer (01).jpg",
+          "rev": 1371033945,
+          "ts": "2026-08-24T05:48:27Z",
+          "user": "Ser Amantio di Nicolao"
+        },
+        {
+          "file": "File:Kathleen Hanna 2 December 2016 crop.png",
+          "rev": 1341277613,
+          "ts": "2026-03-02T08:05:44Z",
+          "user": "Cashums"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Abby Ryder Fortson",
+      "label": "Abby Ryder Fortson",
+      "qid": "Q20740858",
+      "topRev": 1369781682,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:AbbyRyderFortson.jpg",
+          "rev": 1369781682,
+          "ts": "2026-08-17T03:20:49Z",
+          "user": "Ser Amantio di Nicolao"
+        },
+        {
+          "file": "File:Abby Ryder Fortson.jpeg",
+          "rev": 1164523038,
+          "ts": "2023-07-09T16:30:09Z",
+          "user": "Waxworker"
+        },
+        {
+          "file": "File:https://img.wegreenkw.com/sites/3/2023/02/Abby-Ryder-Fortson.webp",
+          "rev": 1164418086,
+          "ts": "2023-07-09T05:02:14Z",
+          "user": "2603:7080:8A43:9400:CD5E:D354:F084:54B6"
         }
       ]
     },
@@ -954,6 +1752,56 @@
     },
     {
       "lang": "en",
+      "article": "Erika Donalds",
+      "label": "Erika Donalds",
+      "qid": "Q116668717",
+      "topRev": 1370111057,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:AmericaFest 2025 - Erika Donalds 08 (cropped).jpg",
+          "rev": 1370111057,
+          "ts": "2026-08-19T04:40:39Z",
+          "user": "MagicatthemovieS"
+        },
+        {
+          "file": "File:Erika Donalds.jpg",
+          "rev": 1346124253,
+          "ts": "2026-03-30T02:09:54Z",
+          "user": "AML KING"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Jonathan Keeperman",
+      "label": "Jonathan Keeperman",
+      "qid": "Q131399000",
+      "topRev": 1363377797,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:AmericaFest 2025 - Jonathan Keeperman 03 (cropped).jpg",
+          "rev": 1363377797,
+          "ts": "2026-07-09T20:45:32Z",
+          "user": "PARAKANYAA"
+        },
+        {
+          "file": "File:Lomez (cropped).jpg",
+          "rev": 1305467496,
+          "ts": "2025-08-12T06:38:49Z",
+          "user": "2603:8000:2F00:F1EC:CCCA:4E80:52C1:696A"
+        },
+        {
+          "file": "File:Milf Touch (15058182728).jpg",
+          "rev": 1288787318,
+          "ts": "2025-05-04T19:23:09Z",
+          "user": "103.179.196.215"
+        }
+      ]
+    },
+    {
+      "lang": "en",
       "article": "Kate Winslet",
       "label": "Kate Winslet",
       "qid": "Q202765",
@@ -1070,6 +1918,22 @@
     },
     {
       "lang": "en",
+      "article": "Vanessa Sears",
+      "label": "Vanessa Sears",
+      "qid": "Q127510059",
+      "topRev": 1358362219,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Vanessa Sears.jpg",
+          "rev": 1358362219,
+          "ts": "2026-06-08T05:43:07Z",
+          "user": "~2026-33802-33"
+        }
+      ]
+    },
+    {
+      "lang": "en",
       "article": "Cheyenne Jackson",
       "label": "Cheyenne Jackson",
       "qid": "Q935217",
@@ -1115,6 +1979,22 @@
           "rev": 808991784,
           "ts": "2017-11-06T13:54:22Z",
           "user": "Davey2010"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Raphaela Neihausen",
+      "label": "Raphaela Neihausen",
+      "qid": "Q28555333",
+      "topRev": 1356042999,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Raphaela Neihausen in 2025.jpg",
+          "rev": 1356042999,
+          "ts": "2026-05-25T11:59:20Z",
+          "user": "PrimeBOT"
         }
       ]
     },
@@ -1208,6 +2088,50 @@
     },
     {
       "lang": "en",
+      "article": "Tressie McMillan Cottom",
+      "label": "Tressie McMillan Cottom",
+      "qid": "Q56064322",
+      "topRev": 1336567001,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Tressie McMillan Cottom at a teach-in in Washington DC - 2025.jpg",
+          "rev": 1336567001,
+          "ts": "2026-02-04T14:28:07Z",
+          "user": "Ser Amantio di Nicolao"
+        },
+        {
+          "file": "File:Dr. Tressie McMillan Cottom.jpg",
+          "rev": 1301082120,
+          "ts": "2025-07-18T00:37:42Z",
+          "user": "Jevansen"
+        },
+        {
+          "file": "File:Tressie cottom red carpet.jpg",
+          "rev": 1135924753,
+          "ts": "2023-01-27T18:29:47Z",
+          "user": "Schazjmd"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Katerina Kotsonis",
+      "label": "Katerina Kotsonis",
+      "qid": "Q6375975",
+      "topRev": 1360563384,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Katerina Kotsonis at Queenscliffe Literary Festival 2025 (cropped).jpg",
+          "rev": 1360563384,
+          "ts": "2026-06-22T07:53:37Z",
+          "user": "InternetArchiveBot"
+        }
+      ]
+    },
+    {
+      "lang": "en",
       "article": "Joey Batey",
       "label": "Joey Batey",
       "qid": "Q66088243",
@@ -1236,6 +2160,28 @@
     },
     {
       "lang": "en",
+      "article": "Tim Daly",
+      "label": "Tim Daly",
+      "qid": "Q351479",
+      "topRev": 1367412643,
+      "more": true,
+      "timeline": [
+        {
+          "file": "File:Tim Daly 2025 Colleen Sturtevant-1 (cropped).jpg",
+          "rev": 1367412643,
+          "ts": "2026-08-02T23:33:22Z",
+          "user": "~2026-42718-74"
+        },
+        {
+          "file": "File:Tim Daly - Monte-Carlo Television Festival.jpg",
+          "rev": 1315552427,
+          "ts": "2025-10-07T08:45:28Z",
+          "user": "Not-cheesewhisk3rs"
+        }
+      ]
+    },
+    {
+      "lang": "en",
       "article": "Nira Burstein",
       "label": "Nira Burstein",
       "qid": "Q114407958",
@@ -1247,6 +2193,34 @@
           "rev": 1336889966,
           "ts": "2026-02-06T07:37:24Z",
           "user": "Steel1943"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Rory Culkin",
+      "label": "Rory Culkin",
+      "qid": "Q431038",
+      "topRev": 1363237777,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:RoryCulkin 2025 Colleen Sturtevant-1.jpg",
+          "rev": 1363237777,
+          "ts": "2026-07-08T22:44:03Z",
+          "user": "Rusted AutoParts"
+        },
+        {
+          "file": "File:Rory Culkin 2025 Colleen Sturtevant.jpg",
+          "rev": 1317629692,
+          "ts": "2025-10-19T03:49:35Z",
+          "user": "Colleen Sturtevant"
+        },
+        {
+          "file": "File:Rory Culkin in 2018 (cropped).jpg",
+          "rev": 1317405465,
+          "ts": "2025-10-17T23:18:45Z",
+          "user": "2A02:3100:5C8E:700:F8DF:1E04:CAC8:D164"
         }
       ]
     },
@@ -1350,6 +2324,22 @@
     },
     {
       "lang": "en",
+      "article": "Alex Tarrant",
+      "label": "Alex Tarrant",
+      "qid": "Q64711811",
+      "topRev": 1366400795,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Alex Tarrant - DMV.jpg",
+          "rev": 1366400795,
+          "ts": "2026-07-27T20:29:42Z",
+          "user": "Andykatib"
+        }
+      ]
+    },
+    {
+      "lang": "en",
       "article": "Ato Essandoh",
       "label": "Ato Essandoh",
       "qid": "Q4817144",
@@ -1417,6 +2407,34 @@
           "rev": 1371738955,
           "ts": "2026-08-28T04:35:21Z",
           "user": "ZackBot"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Molly Shannon",
+      "label": "Molly Shannon",
+      "qid": "Q239145",
+      "topRev": 1366229100,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Actor Molly Shannon at 2025 Toronto International Film Festival 2.jpg",
+          "rev": 1366229100,
+          "ts": "2026-07-26T23:25:27Z",
+          "user": "WikipediholicRat"
+        },
+        {
+          "file": "File:MollyShannon 2023 (cropped-J1).jpg",
+          "rev": 1328571098,
+          "ts": "2025-12-20T17:07:22Z",
+          "user": "Vincelord"
+        },
+        {
+          "file": "File:MollyShannon.jpg",
+          "rev": 1273303784,
+          "ts": "2025-02-01T18:14:54Z",
+          "user": "Soetermans"
         }
       ]
     },
@@ -1520,6 +2538,50 @@
     },
     {
       "lang": "en",
+      "article": "Justin McElroy",
+      "label": "Justin McElroy",
+      "qid": "Q50384545",
+      "topRev": 1371493732,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Justin McElroy at Dragon Con 2025.png",
+          "rev": 1371493732,
+          "ts": "2026-08-26T19:57:20Z",
+          "user": "Alex Daily"
+        },
+        {
+          "file": "File:Stick Figure of a Man in a Suit.jpg",
+          "rev": 1180393281,
+          "ts": "2023-10-16T10:28:52Z",
+          "user": "OriginalName3"
+        },
+        {
+          "file": "File:Justin McElroy.jpg",
+          "rev": 977234038,
+          "ts": "2020-09-07T18:02:59Z",
+          "user": "Andymcmillan"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Sarah Hicks",
+      "label": "Sarah Hicks",
+      "qid": "Q16729815",
+      "topRev": 1369578890,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Sarah Hicks Maryland 2025.jpg",
+          "rev": 1369578890,
+          "ts": "2026-08-15T21:15:50Z",
+          "user": "Rift"
+        }
+      ]
+    },
+    {
+      "lang": "en",
       "article": "Dougie MacLean",
       "label": "Dougie MacLean",
       "qid": "Q1251928",
@@ -1543,6 +2605,34 @@
           "rev": 439948188,
           "ts": "2011-07-17T13:54:10Z",
           "user": "Timrollpickering"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Wesley Eure",
+      "label": "Wesley Eure",
+      "qid": "Q3567381",
+      "topRev": 1357771866,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Wesley Eure (54696732652).jpg",
+          "rev": 1357771866,
+          "ts": "2026-06-04T16:06:46Z",
+          "user": "Web-julio"
+        },
+        {
+          "file": "File:Wesley Eure-001.2.jpg",
+          "rev": 1348875172,
+          "ts": "2026-04-14T18:34:52Z",
+          "user": "Npgeek73"
+        },
+        {
+          "file": "File:Wesley Eure-001.png",
+          "rev": 1348686597,
+          "ts": "2026-04-13T21:14:46Z",
+          "user": "Arjayay"
         }
       ]
     },
@@ -1654,6 +2744,34 @@
     },
     {
       "lang": "en",
+      "article": "Leilane Neubarth",
+      "label": "Leilane Neubarth",
+      "qid": "Q10317043",
+      "topRev": 1367460585,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Leilane Neubarth BRICS 2025.jpg",
+          "rev": 1367460585,
+          "ts": "2026-08-03T06:00:11Z",
+          "user": "LibStar"
+        },
+        {
+          "file": "File:2023-06-22 STJ promove o Seminário Igualdade e Justiça - a Construção da Cidadania Plural 082.jpg",
+          "rev": 1282141128,
+          "ts": "2025-03-24T16:08:36Z",
+          "user": "Phx-Racing"
+        },
+        {
+          "file": "File:Leilane neubarth inpi.jpg",
+          "rev": 1070743466,
+          "ts": "2022-02-09T01:55:25Z",
+          "user": "Gramosoliv"
+        }
+      ]
+    },
+    {
+      "lang": "en",
       "article": "Bill Toner",
       "label": "Bill Toner",
       "qid": "Q134884249",
@@ -1665,6 +2783,66 @@
           "rev": 1321362771,
           "ts": "2025-11-10T03:02:41Z",
           "user": "Sargdub"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Ruibo Qian",
+      "label": "Ruibo Qian",
+      "qid": "Q64429045",
+      "topRev": 1365657469,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Ruibo Qian at TNUC 2025 01.jpg",
+          "rev": 1365657469,
+          "ts": "2026-07-23T18:11:21Z",
+          "user": "JaceMerlyn"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "James Acaster",
+      "label": "James Acaster",
+      "qid": "Q15072714",
+      "topRev": 1371709659,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:James Acaster Union Hall 09 (cropped).jpg",
+          "rev": 1371709659,
+          "ts": "2026-08-28T00:59:57Z",
+          "user": "BD2412"
+        },
+        {
+          "file": "File:James Acaster (comedian - ComedyClub4Kids).PNG",
+          "rev": 1371276992,
+          "ts": "2026-08-25T16:12:02Z",
+          "user": "~2026-46369-78"
+        },
+        {
+          "file": "File:James Acaster Union Hall 09 (cropped).jpg",
+          "rev": 1370664435,
+          "ts": "2026-08-22T11:12:19Z",
+          "user": "Suleeabc2"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Stuart Laws",
+      "label": "Stuart Laws",
+      "qid": "Q135190653",
+      "topRev": 1363514529,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Stuart Laws Union Hall 07 (cropped).jpg",
+          "rev": 1363514529,
+          "ts": "2026-07-10T17:54:08Z",
+          "user": "Cntinaclwnsuit"
         }
       ]
     },
@@ -1774,6 +2952,50 @@
     },
     {
       "lang": "en",
+      "article": "Bryndon Cook",
+      "label": "Bryndon Cook",
+      "qid": "Q99703578",
+      "topRev": 1356965746,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Bryndon Cook at Caveat 5.25.25 (cropped).jpg",
+          "rev": 1356965746,
+          "ts": "2026-05-30T23:29:02Z",
+          "user": "Nat965"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Pope Leo XIV",
+      "label": "Leo XIV",
+      "qid": "Q6109517",
+      "topRev": 1371787771,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Pope Leo XIV 3 (3x4 cropped).png",
+          "rev": 1371787771,
+          "ts": "2026-08-28T12:54:49Z",
+          "user": "NextGenStudent"
+        },
+        {
+          "file": "File:Leo XIV (13 October 2025) (cropped slightly).jpg",
+          "rev": 1357284790,
+          "ts": "2026-06-01T20:18:44Z",
+          "user": "Cryftyft"
+        },
+        {
+          "file": "File:Pope Leo XIV 3 (3x4 cropped).png",
+          "rev": 1357197730,
+          "ts": "2026-06-01T08:26:14Z",
+          "user": "Rolluik"
+        }
+      ]
+    },
+    {
+      "lang": "en",
       "article": "Anna Delvey",
       "label": "Anna Sorokin",
       "qid": "Q55080956",
@@ -1802,6 +3024,28 @@
     },
     {
       "lang": "en",
+      "article": "Baluji Shrivastav",
+      "label": "Baluji Shrivastav",
+      "qid": "Q16193365",
+      "topRev": 1357998679,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Baluji-shrivastav-cheltenham-jazz-festival-may-2025.jpg",
+          "rev": 1357998679,
+          "ts": "2026-06-05T23:10:12Z",
+          "user": "Aspects"
+        },
+        {
+          "file": "File:MDMadisonsLight.png",
+          "rev": 557677945,
+          "ts": "2013-05-31T12:47:54Z",
+          "user": "Musicfanlondon"
+        }
+      ]
+    },
+    {
+      "lang": "en",
       "article": "Andrew Dismukes",
       "label": "Andrew Dismukes",
       "qid": "Q99454635",
@@ -1825,6 +3069,50 @@
           "rev": 1060221427,
           "ts": "2021-12-14T04:18:55Z",
           "user": "MB"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Jackie Wang",
+      "label": "Jackie Wang",
+      "qid": "Q6046166",
+      "topRev": 1366687637,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Jackie Wang at AWP 2025 02 (cropped).jpg",
+          "rev": 1366687637,
+          "ts": "2026-07-29T15:02:26Z",
+          "user": "CastIronSeasoner"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Aaron Paul",
+      "label": "Aaron Paul",
+      "qid": "Q302491",
+      "topRev": 1370239709,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Aaron Paul - AMC The Grove - Ash.jpg",
+          "rev": 1370239709,
+          "ts": "2026-08-19T23:54:51Z",
+          "user": "Raolae"
+        },
+        {
+          "file": "File:Aaron Paul SDDC 2019.jpg",
+          "rev": 1330944971,
+          "ts": "2026-01-03T14:31:49Z",
+          "user": "Alfie Robertson"
+        },
+        {
+          "file": "File:Aaron Paul - AMC The Grove - Ash.jpg",
+          "rev": 1327573066,
+          "ts": "2025-12-15T01:37:26Z",
+          "user": "General Ization"
         }
       ]
     },
@@ -1874,6 +3162,28 @@
     },
     {
       "lang": "en",
+      "article": "Toni Choueiri",
+      "label": "Toni K Choueiri",
+      "qid": "Q88414622",
+      "topRev": 1371023626,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Toni Choueiri (oncologist) in 2025.jpg",
+          "rev": 1371023626,
+          "ts": "2026-08-24T04:41:44Z",
+          "user": "Catsinacademia"
+        },
+        {
+          "file": "File:Toni-wiki.jpg",
+          "rev": 1276146917,
+          "ts": "2025-02-17T04:16:44Z",
+          "user": "OAbot"
+        }
+      ]
+    },
+    {
+      "lang": "en",
       "article": "Matthew Granade",
       "label": "Matthew Granade",
       "qid": "Q132476828",
@@ -1890,6 +3200,34 @@
     },
     {
       "lang": "en",
+      "article": "Edith Bowman",
+      "label": "Edith Bowman",
+      "qid": "Q4351984",
+      "topRev": 1367512790,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Edith Bowman (cropped).jpg",
+          "rev": 1367512790,
+          "ts": "2026-08-03T14:46:14Z",
+          "user": "Seasider53"
+        },
+        {
+          "file": "File:SparksEdgarBFI030821 (2 of 2) (51361612171) (cropped).jpg",
+          "rev": 1285276663,
+          "ts": "2025-04-12T18:51:54Z",
+          "user": "Belbury"
+        },
+        {
+          "file": "File:Bowman, Edith (flickr).jpg",
+          "rev": 1038858789,
+          "ts": "2021-08-15T06:20:00Z",
+          "user": "FMSky"
+        }
+      ]
+    },
+    {
+      "lang": "en",
       "article": "Leah Hunt-Hendrix",
       "label": "Leah Hunt-Hendrix",
       "qid": "Q6509204",
@@ -1901,6 +3239,22 @@
           "rev": 1360580189,
           "ts": "2026-06-22T11:03:44Z",
           "user": "Edwardx"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Robert K. Cunningham",
+      "label": "Robert K. Cunningham",
+      "qid": "Q108782250",
+      "topRev": 1368460394,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Robert K. Cunningham 2024.jpg",
+          "rev": 1368460394,
+          "ts": "2026-08-09T04:42:26Z",
+          "user": "Zyxw"
         }
       ]
     },
@@ -1923,6 +3277,22 @@
           "rev": 1274816963,
           "ts": "2025-02-09T12:15:12Z",
           "user": "WikiCleanerBot"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "William Cheswick",
+      "label": "William Cheswick",
+      "qid": "Q8006762",
+      "topRev": 1277367881,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:William Cheswick 2024.jpg",
+          "rev": 1277367881,
+          "ts": "2025-02-24T07:11:39Z",
+          "user": "SuperHamster"
         }
       ]
     },
@@ -1956,6 +3326,284 @@
     },
     {
       "lang": "en",
+      "article": "Tom Rachman",
+      "label": "Tom Rachman",
+      "qid": "Q472457",
+      "topRev": 1370667970,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Tom Rachman at AI & Journalism Symposium 2024 in London 01 (cropped).jpg",
+          "rev": 1370667970,
+          "ts": "2026-08-22T11:41:16Z",
+          "user": "Ser Amantio di Nicolao"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Aaliyah Bilal",
+      "label": "Aaliyah Bilal",
+      "qid": "Q123089023",
+      "topRev": 1348274801,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Aaliyah Bilal at the 2024 National Book Awards 03 (cropped).jpg",
+          "rev": 1348274801,
+          "ts": "2026-04-11T19:03:19Z",
+          "user": "Aadirulez8"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Brittany Luse",
+      "label": "Brittany Luse",
+      "qid": "Q113986992",
+      "topRev": 1352118527,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Brittany Luse, journalist, at the 2024 National Book Awards finalist reading 3 (cropped).jpg",
+          "rev": 1352118527,
+          "ts": "2026-05-02T04:28:45Z",
+          "user": "Jevansen"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Fady Joudah",
+      "label": "Fady Joudah",
+      "qid": "Q5429289",
+      "topRev": 1371556371,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Fady Joudah, poet, at the 2024 National Book Awards finalist reading 10 (cropped).jpg",
+          "rev": 1371556371,
+          "ts": "2026-08-27T03:04:25Z",
+          "user": "ZackBot"
+        },
+        {
+          "file": "File:9.13.09FadyJoudahByLuigiNovi.jpg",
+          "rev": 1258435745,
+          "ts": "2024-11-19T18:47:28Z",
+          "user": "Phibeatrice"
+        },
+        {
+          "file": "File:Replace this image male.svg",
+          "rev": 299077473,
+          "ts": "2009-06-28T07:18:57Z",
+          "user": "Rjwilmsi"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Hannah Lillith Assadi",
+      "label": "Hannah Lillith Assadi",
+      "qid": "Q124141315",
+      "topRev": 1370025004,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Hannah Assadi at the 2024 National Book Awards 02 (cropped).jpg",
+          "rev": 1370025004,
+          "ts": "2026-08-18T17:53:04Z",
+          "user": "Ach415816"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Hisham Matar",
+      "label": "Hisham Matar",
+      "qid": "Q673985",
+      "topRev": 1371706130,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Hisham Matar, author, at the 2024 National Book Awards finalist reading 2 (cropped).jpg",
+          "rev": 1371706130,
+          "ts": "2026-08-28T00:37:19Z",
+          "user": "ZackBot"
+        },
+        {
+          "file": "File:Hisham Matar.jpg",
+          "rev": 1255356982,
+          "ts": "2024-11-04T14:37:49Z",
+          "user": "Tarsaltarsier"
+        },
+        {
+          "file": "File:Hisham Matar2008 2.jpg",
+          "rev": 457037396,
+          "ts": "2011-10-23T20:33:49Z",
+          "user": "Swliv"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Jason De León",
+      "label": "Jason De León",
+      "qid": "Q93329008",
+      "topRev": 1356105544,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Jason De León, author, at the 2024 National Book Awards finalist reading 2 (cropped).jpg",
+          "rev": 1294040407,
+          "ts": "2025-06-05T05:58:46Z",
+          "user": "Summerlobster"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Kaveh Akbar",
+      "label": "Kaveh Akbar",
+      "qid": "Q28839955",
+      "topRev": 1370266874,
+      "more": true,
+      "timeline": [
+        {
+          "file": "File:Kaveh Akbar, author, at the 2024 National Book Awards finalist reading 3 (cropped).jpg",
+          "rev": 1370266874,
+          "ts": "2026-08-20T03:12:58Z",
+          "user": "Jevansen"
+        },
+        {
+          "file": "File:Kaveh Akbar (cropped).jpg",
+          "rev": 1256803736,
+          "ts": "2024-11-11T17:19:03Z",
+          "user": "Jaguarnik"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Ken Chen",
+      "label": "Ken Chen",
+      "qid": "Q6387439",
+      "topRev": 1370267252,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Ken Chen at the 2024 National Book Awards 02 (cropped).jpg",
+          "rev": 1370267252,
+          "ts": "2026-08-20T03:15:25Z",
+          "user": "Jevansen"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Kiran Desai",
+      "label": "Kiran Desai",
+      "qid": "Q228589",
+      "topRev": 1368555795,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Kiran Desai, author reading on behalf of Salman Rushdie, at the 2024 National Book Awards finalist reading 6 (cropped).jpg",
+          "rev": 1368555795,
+          "ts": "2026-08-09T19:47:50Z",
+          "user": "~2026-43672-50"
+        },
+        {
+          "file": "File:Kiran Desai 2015.jpg",
+          "rev": 1253643782,
+          "ts": "2024-10-27T03:01:49Z",
+          "user": "Themoosek"
+        },
+        {
+          "file": "File:Kiran Desai (473640173).jpg",
+          "rev": 661867458,
+          "ts": "2015-05-11T17:09:59Z",
+          "user": "74.73.228.0"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Lena Khalaf Tuffaha",
+      "label": "Lena Khalaf Tuffaha",
+      "qid": "Q95714740",
+      "topRev": 1371731037,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Lena Khalaf Tuffaha, poet, at the 2024 National Book Awards finalist reading 2 (cropped).jpg",
+          "rev": 1371731037,
+          "ts": "2026-08-28T03:34:35Z",
+          "user": "ZackBot"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Percival Everett",
+      "label": "Percival Everett",
+      "qid": "Q3375158",
+      "topRev": 1370479505,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Percival Everett, author, at the 2024 National Book Awards finalist reading 2 (cropped).jpg",
+          "rev": 1370479505,
+          "ts": "2026-08-21T09:45:47Z",
+          "user": "Wamalotpark"
+        },
+        {
+          "file": "File:Percival Everett, author, at the 2024 [[National Book Awards]] finalist reading 2 (cropped).jpg",
+          "rev": 1259104757,
+          "ts": "2024-11-23T11:16:52Z",
+          "user": "Proscribe"
+        },
+        {
+          "file": "File:Percival Everett, author, at the 2024 National Book Awards finalist reading 2 (cropped).jpg",
+          "rev": 1259102926,
+          "ts": "2024-11-23T10:57:50Z",
+          "user": "Proscribe"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Sawad Hussain",
+      "label": "Sawad Hussain",
+      "qid": "Q123928658",
+      "topRev": 1318782485,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Sawad Hussain, translator, at the 2024 National Book Awards finalist reading 3 (cropped).jpg",
+          "rev": 1318782485,
+          "ts": "2025-10-25T23:51:13Z",
+          "user": "Proscribe"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Stephanie Tavares-Rance",
+      "label": "Stephanie Tavares-Rance",
+      "qid": "Q134304755",
+      "topRev": 1342303073,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Stephanie Tavares-Rance at the 2024 Denver Film Festival 3.jpg",
+          "rev": 1342303073,
+          "ts": "2026-03-08T06:17:53Z",
+          "user": "Ser Amantio di Nicolao"
+        }
+      ]
+    },
+    {
+      "lang": "en",
       "article": "Inspectah Deck",
       "label": "Inspectah Deck",
       "qid": "Q470619",
@@ -1978,6 +3626,62 @@
     },
     {
       "lang": "en",
+      "article": "Ali Abbasi (director)",
+      "label": "Ali Abbasi",
+      "qid": "Q28842152",
+      "topRev": 1366319101,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Ali Abbasi at The Apprentice in NYC (cropped).jpg",
+          "rev": 1366319101,
+          "ts": "2026-07-27T09:31:22Z",
+          "user": "AndrewGarfieldIsTheBestSpiderMan"
+        },
+        {
+          "file": "File:Ali Abbasi, 75th Cannes Film Festival.jpg",
+          "rev": 1267074854,
+          "ts": "2025-01-03T13:48:26Z",
+          "user": "Revirvlkodlaku"
+        },
+        {
+          "file": "File:MV5BZmRiNjkxMTUtMDIwNC00NzliLTk0N2QtMjEyYmU5YTI5NzZiXkEyXkFqcGdeQXVyNjUxMjc1OTM@. V1.jpg",
+          "rev": 1136769682,
+          "ts": "2023-02-01T01:22:25Z",
+          "user": "Soheila23"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Laverne Cox",
+      "label": "Laverne Cox",
+      "qid": "Q6502596",
+      "topRev": 1371725307,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Laverne Cox at \"The Apprentice\" in NYC 01.jpg",
+          "rev": 1371725307,
+          "ts": "2026-08-28T02:50:10Z",
+          "user": "Pac Veten"
+        },
+        {
+          "file": "File:Laverne Cox by Sachyn Mital cropped.jpg",
+          "rev": 1279922868,
+          "ts": "2025-03-11T11:25:01Z",
+          "user": "Lyndaship"
+        },
+        {
+          "file": "File:Roderick Cox by Sachyn Mital cropped.jpg",
+          "rev": 1177023069,
+          "ts": "2023-09-25T13:10:54Z",
+          "user": "110.170.41.60"
+        }
+      ]
+    },
+    {
+      "lang": "en",
       "article": "Andreas Kolb",
       "label": "Andreas Kolb",
       "qid": "Q112760457",
@@ -1994,6 +3698,484 @@
     },
     {
       "lang": "en",
+      "article": "Benoît Coulanges",
+      "label": "Benoît Coulanges",
+      "qid": "Q51883461",
+      "topRev": 1295019265,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Benoît Coulanges 2024 MSA.jpg",
+          "rev": 1295019265,
+          "ts": "2025-06-11T05:49:45Z",
+          "user": "Stephen LaBonte"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Loris Vergier",
+      "label": "Loris Vergier",
+      "qid": "Q85846455",
+      "topRev": 1300843122,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Loris vergier 2024 msa.jpg",
+          "rev": 1300843122,
+          "ts": "2025-07-16T17:57:49Z",
+          "user": "178.255.168.1"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Felix Solis",
+      "label": "Felix Solis",
+      "qid": "Q26178",
+      "topRev": 1369631650,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Felix Solis at the 2024 New York Film Festival.jpg",
+          "rev": 1369631650,
+          "ts": "2026-08-16T04:22:08Z",
+          "user": "~2026-33154-01"
+        },
+        {
+          "file": "File:Felix Solis Behind The Scenes.jpg",
+          "rev": 1254785617,
+          "ts": "2024-11-01T17:42:55Z",
+          "user": "2600:1005:B012:832F:5C07:58F5:808A:E22B"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Karren Karagulian",
+      "label": "Karren Karagulian",
+      "qid": "Q131389619",
+      "topRev": 1371505223,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Karren Karagulian at the 2024 New York Film Festival.jpg",
+          "rev": 1371505223,
+          "ts": "2026-08-26T21:24:08Z",
+          "user": "CANthony0125"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Samantha Quan",
+      "label": "Samantha Quan",
+      "qid": "Q131914680",
+      "topRev": 1367507852,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Samantha Quan at the 2024 New York Film Festival.jpg",
+          "rev": 1367507852,
+          "ts": "2026-08-03T14:08:48Z",
+          "user": "Drmies"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Aurora Ribero",
+      "label": "Aurora Ribero",
+      "qid": "Q56414908",
+      "topRev": 1358046943,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Aurora Ribero at the 2024 Toronto Film Festival 5 (cropped).jpg",
+          "rev": 1358046943,
+          "ts": "2026-06-06T06:23:14Z",
+          "user": "Semampunya"
+        },
+        {
+          "file": "File:Aurora Ribero at the 2024 Toronto Film Festival 3.jpg",
+          "rev": 1251837749,
+          "ts": "2024-10-18T10:55:40Z",
+          "user": "Dwianto08"
+        },
+        {
+          "file": "File:Aurora Ribero in 2018.png",
+          "rev": 1249309528,
+          "ts": "2024-10-04T07:30:26Z",
+          "user": "Remsense"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Hana Malasan",
+      "label": "Hana Malasan",
+      "qid": "Q25469054",
+      "topRev": 1367682483,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Hana Malasan at the 2024 Toronto International Film Festival 3 (cropped).jpg",
+          "rev": 1367682483,
+          "ts": "2026-08-04T15:02:51Z",
+          "user": "Semampunya"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Timo Tjahjanto",
+      "label": "Timo Tjahjanto",
+      "qid": "Q60633865",
+      "topRev": 1354074680,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Timo Tjahjanto at the 2024 Toronto International Film Festival (cropped).jpg",
+          "rev": 1354074680,
+          "ts": "2026-05-14T04:03:17Z",
+          "user": "162 etc."
+        },
+        {
+          "file": "File:The Mo Brothers (Timo & Kimo).jpg",
+          "rev": 1127533667,
+          "ts": "2022-12-15T07:37:16Z",
+          "user": "Dwianto08"
+        },
+        {
+          "file": "File:Timo_tjahjanto_Kemdikbud.jpg",
+          "rev": 1005377226,
+          "ts": "2021-02-07T10:39:35Z",
+          "user": "CalliPatra"
+        }
+      ]
+    },
+    {
+      "lang": "fr",
+      "article": "Lee Eon-hee",
+      "label": "Lee Eon-hee",
+      "qid": "Q106285398",
+      "topRev": 224820440,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:E.oni, director of 'Love in the Big City', at the 2024 Toronto International Film Festival 3 (cropped).jpg",
+          "rev": 224820440,
+          "ts": "2025-04-14T22:34:31Z",
+          "user": "FR"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Anele Mgudlwa",
+      "label": "Anele Mdoda",
+      "qid": "Q111771772",
+      "topRev": 1369725780,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Anele Mdoda at the 2024 Toronto International Film Festival (cropped).jpg",
+          "rev": 1369725780,
+          "ts": "2026-08-16T19:22:57Z",
+          "user": "Royz-vi Tsibele"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Fumani Shilubana",
+      "label": "Fumani Shilubana",
+      "qid": "Q102156213",
+      "topRev": 1361018382,
+      "more": true,
+      "timeline": [
+        {
+          "file": "File:Fumani Shilubana at the 2024 Toronto International Film Festival (cropped).jpg",
+          "rev": 1361018382,
+          "ts": "2026-06-25T03:04:47Z",
+          "user": "Gnomingstuff"
+        },
+        {
+          "file": "File:Fumani N Shilubana in 2016.jpg",
+          "rev": 1324771711,
+          "ts": "2025-11-29T13:57:01Z",
+          "user": "HarukaAmaranth"
+        }
+      ]
+    },
+    {
+      "lang": "ja",
+      "article": "今村怜央",
+      "label": "Reo Imamura",
+      "qid": "Q17193583",
+      "topRev": 110503068,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Leo Imamura at the 2024 Toronto International Film Festival 04.jpg",
+          "rev": 110503068,
+          "ts": "2026-08-02T08:57:31Z",
+          "user": "Cocoseven"
+        }
+      ]
+    },
+    {
+      "lang": "ja",
+      "article": "喜矢武豊",
+      "label": "Yutaka Kyan",
+      "qid": "Q111112511",
+      "topRev": 110511159,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Yutaka Kyan at the 2024 Toronto International Film Festival 03.jpg",
+          "rev": 110511159,
+          "ts": "2026-08-03T03:54:02Z",
+          "user": "パルテイマー"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Golshifteh Farahani",
+      "label": "Golshifteh Farahani",
+      "qid": "Q464712",
+      "topRev": 1370107757,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Golshifteh Farahani at the 2024 Toronto International Film Festival 5 (cropped).jpg",
+          "rev": 1370107757,
+          "ts": "2026-08-19T04:06:35Z",
+          "user": "Laurenschneider210"
+        },
+        {
+          "file": "File:Golshifteh Bayzae at the 2024 Toronto International Film Festival 5 (cropped).jpg",
+          "rev": 1354957456,
+          "ts": "2026-05-19T04:37:57Z",
+          "user": "~2026-30002-49"
+        },
+        {
+          "file": "File:Golshifteh Farahani at the 2024 Toronto International Film Festival 5 (cropped).jpg",
+          "rev": 1354410906,
+          "ts": "2026-05-16T07:06:38Z",
+          "user": "Runolist"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Adriana Paz",
+      "label": "Adriana Paz",
+      "qid": "Q27449437",
+      "topRev": 1369183033,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Adriana Paz at the 2024 Toronto International Film Festival 3 (cropped).jpg",
+          "rev": 1369183033,
+          "ts": "2026-08-13T10:29:24Z",
+          "user": "Karl Wanner"
+        },
+        {
+          "file": "File:Adriana Paz at the 2024 Toronto International Film Festival (Cropped).jpg",
+          "rev": 1280781891,
+          "ts": "2025-03-16T12:31:07Z",
+          "user": "HunterKev"
+        },
+        {
+          "file": "File:Premios Goya 2018 - Adriana Paz.jpg",
+          "rev": 1226082327,
+          "ts": "2024-05-28T13:22:48Z",
+          "user": "Hektor"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Édgar Ramírez",
+      "label": "Édgar Ramírez",
+      "qid": "Q273788",
+      "topRev": 1364134387,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Edgar Ramirez at the 2024 Toronto International Film Festival 3 (cropped).jpg",
+          "rev": 1364134387,
+          "ts": "2026-07-14T18:38:45Z",
+          "user": "~2026-24112-43"
+        },
+        {
+          "file": "File:Edgar Ramirez by Gage Skidmore.jpg",
+          "rev": 1246111115,
+          "ts": "2024-09-16T23:30:39Z",
+          "user": "172.89.205.37"
+        },
+        {
+          "file": "File:Edgar Ramirez by Gage skidmark.jpg",
+          "rev": 1186875478,
+          "ts": "2023-11-26T01:34:42Z",
+          "user": "That'sHedley"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Hyun Bin",
+      "label": "Hyun Bin",
+      "qid": "Q380118",
+      "topRev": 1371771089,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Hyun Bin at the 2024 Toronto International Film Festival 2 (cropped).jpg",
+          "rev": 1371771089,
+          "ts": "2026-08-28T10:19:30Z",
+          "user": "Bloomingbyungchan"
+        },
+        {
+          "file": "File:Hyun at the 2024 Toronto International Film Festival 2 (cropped).jpg",
+          "rev": 1277365958,
+          "ts": "2025-02-24T06:46:05Z",
+          "user": "Wheezythewave"
+        },
+        {
+          "file": "File:Hyun Bin at the 2024 Toronto International Film Festival 2 (cropped).jpg",
+          "rev": 1276168590,
+          "ts": "2025-02-17T07:56:08Z",
+          "user": "Mikikooo"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Lee Dong-wook",
+      "label": "Lee Dong-wook",
+      "qid": "Q494714",
+      "topRev": 1368616255,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Lee Dong-wook at the 2024 Toronto International Film Festival (cropped).jpg",
+          "rev": 1368616255,
+          "ts": "2026-08-10T02:55:16Z",
+          "user": "EndTheWikiEditor"
+        },
+        {
+          "file": "File:Lee Dong-wook in 2016.jpg",
+          "rev": 1264784636,
+          "ts": "2024-12-23T14:15:06Z",
+          "user": "96.22.200.242"
+        },
+        {
+          "file": "File:Lee Dong-wook at the 2024 Toronto International Film Festival (cropped).jpg",
+          "rev": 1264683848,
+          "ts": "2024-12-23T00:28:17Z",
+          "user": "Paper9oll"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Selena Gomez",
+      "label": "Selena Gomez",
+      "qid": "Q83287",
+      "topRev": 1371699156,
+      "more": true,
+      "timeline": [
+        {
+          "file": "File:Selena Gomez at the 2024 Toronto International Film Festival 10 (cropped).jpg",
+          "rev": 1371699156,
+          "ts": "2026-08-27T23:46:57Z",
+          "user": "Livelikemusic"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Kris Bowers",
+      "label": "Kris Bowers",
+      "qid": "Q19668232",
+      "topRev": 1370349129,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Kris Bowers at the 2024 Toronto International Film Festival 2 (cropped).jpg",
+          "rev": 1370349129,
+          "ts": "2026-08-20T16:37:04Z",
+          "user": "FlammableBot"
+        },
+        {
+          "file": "File:Kris Bowers (and Damian Woetzel's hand) 19 Feb 2024 at The Juilliard School.jpg",
+          "rev": 1276479331,
+          "ts": "2025-02-19T02:25:32Z",
+          "user": "2601:403:C001:DF50:2C0D:2F31:88C1:8150"
+        },
+        {
+          "file": "File:Kris bowers tiff 2022 (cropped).jpg",
+          "rev": 1213483822,
+          "ts": "2024-03-13T10:04:47Z",
+          "user": "BeyPolite"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Stephanie Hsu",
+      "label": "Stephanie Hsu",
+      "qid": "Q63381497",
+      "topRev": 1366435140,
+      "more": true,
+      "timeline": [
+        {
+          "file": "File:Stephanie Hsu at the 2024 Toronto International Film Festival (cropped).jpg",
+          "rev": 1366435140,
+          "ts": "2026-07-28T01:01:54Z",
+          "user": "Kidsocarides"
+        },
+        {
+          "file": "File:Stephanie hsu 2023 3.jpg",
+          "rev": 1251162786,
+          "ts": "2024-10-14T18:58:46Z",
+          "user": "Jullan3"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Woo Min-ho",
+      "label": "Woo Min-ho",
+      "qid": "Q21710789",
+      "topRev": 1370864868,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Woo Min-ho at the 2024 Toronto International Film Festival. 02 (cropped).jpg",
+          "rev": 1370864868,
+          "ts": "2026-08-23T13:38:47Z",
+          "user": "Jevansen"
+        },
+        {
+          "file": "File:Woo Min-ho at the 2024 Toronto International Film Festival. 01.jpg",
+          "rev": 1323547200,
+          "ts": "2025-11-22T11:45:09Z",
+          "user": "Phraowin"
+        },
+        {
+          "file": "File:Woo Min-ho 021115.png",
+          "rev": 858481857,
+          "ts": "2018-09-07T14:04:06Z",
+          "user": "PatrickStar46"
+        }
+      ]
+    },
+    {
+      "lang": "en",
       "article": "Evan Olson (rower)",
       "label": "Evan Olson",
       "qid": "Q128415029",
@@ -2005,6 +4187,1896 @@
           "rev": 1367229094,
           "ts": "2026-08-01T21:06:23Z",
           "user": "Staryu"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Kevin Woo",
+      "label": "Kevin Woo",
+      "qid": "Q6397789",
+      "topRev": 1370440219,
+      "more": true,
+      "timeline": [
+        {
+          "file": "File:'K-pops!' actor Kevin Woo at the 2024 Toronto International Film Festival 4 (cropped).jpg",
+          "rev": 1370440219,
+          "ts": "2026-08-21T03:31:29Z",
+          "user": "Asilvering"
+        },
+        {
+          "file": "File:Kevin_U-Kiss_Dream_Concert_2013_Source-K-Soul_Magazine_(cropped).jpg",
+          "rev": 1243239834,
+          "ts": "2024-08-31T09:54:23Z",
+          "user": "Grapesurgeon"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Anderson .Paak",
+      "label": "Q20810369",
+      "qid": "Q20810369",
+      "topRev": 1371564680,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:'K-Pops!' director Anderson .Paak at the 2024 Toronto International Film Festival 5 (Cropped).jpg",
+          "rev": 1371564680,
+          "ts": "2026-08-27T03:58:41Z",
+          "user": "Mburrell"
+        },
+        {
+          "file": "File:'K-Pops!' director Anderson .Paak at the 2024 Toronto International Film Festival (cropped).jpg",
+          "rev": 1248490514,
+          "ts": "2024-09-29T20:16:45Z",
+          "user": "Phibeatrice"
+        },
+        {
+          "file": "File:Roskilde Festival Anderson Paak-4 (cropped).jpg",
+          "rev": 1246517845,
+          "ts": "2024-09-19T12:39:39Z",
+          "user": "JeffSpaceman"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Dumbfoundead",
+      "label": "Dumbfoundead",
+      "qid": "Q11233915",
+      "topRev": 1360498794,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Dumbfoundead at the 2024 Toronto International Film Festival 2.jpg",
+          "rev": 1360498794,
+          "ts": "2026-06-21T21:08:39Z",
+          "user": "Splashmoney15"
+        },
+        {
+          "file": "File:Dumbfoundead at the 2024 Toronto International Film Festival (cropped).jpg",
+          "rev": 1331973347,
+          "ts": "2026-01-09T05:46:27Z",
+          "user": "Dresq23"
+        },
+        {
+          "file": "File:Dumbfoundead1.jpg",
+          "rev": 1234135620,
+          "ts": "2024-07-12T19:21:10Z",
+          "user": "Laurenschneider210"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Magaajyia Silberfeld",
+      "label": "Magaajyia Silberfeld",
+      "qid": "Q61107643",
+      "topRev": 1342877321,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Magaajyia Silberfeld at the 2024 Toronto International Film Festival 2 (cropped).jpg",
+          "rev": 1342877321,
+          "ts": "2026-03-11T03:32:23Z",
+          "user": "Ahri Boy"
+        },
+        {
+          "file": "File:Magaajyia Silberfeld (cropped).jpg",
+          "rev": 1262366759,
+          "ts": "2024-12-11T00:58:29Z",
+          "user": "Nistrie"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Manuel Garcia-Rulfo",
+      "label": "Manuel Garcia-Rulfo",
+      "qid": "Q26254609",
+      "topRev": 1357046865,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Manuel Garcia-Rulfo at the 2024 Toronto International Film Festival (Cropped).jpg",
+          "rev": 1357046865,
+          "ts": "2026-05-31T12:40:04Z",
+          "user": "PrimeBOT"
+        },
+        {
+          "file": "File:Manuel Garcia-Rulfo (31836120381).jpg",
+          "rev": 1258340575,
+          "ts": "2024-11-19T04:22:19Z",
+          "user": "2806:2F0:62A0:C8C6:3DED:41CA:7023:6E56"
+        },
+        {
+          "file": "File:Manuel Garcia-Rulfo.jpg",
+          "rev": 1223396034,
+          "ts": "2024-05-11T21:30:20Z",
+          "user": "2806:2F0:41A4:CF4C:D021:5CA:2557:1397"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Maurice \"Mobetta\" Brown",
+      "label": "Maurice Brown",
+      "qid": "Q18358111",
+      "topRev": 1368964726,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Maurice \"Mobetta\" Brown at the 2024 Toronto International Film Festival 2 (cropped).jpg",
+          "rev": 1368964726,
+          "ts": "2026-08-12T03:00:32Z",
+          "user": "Zyxw"
+        },
+        {
+          "file": "File:Maurice_Mobetta_Brown.jpg",
+          "rev": 1309260379,
+          "ts": "2025-09-03T02:04:45Z",
+          "user": "47.20.188.190"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Nykiya Adams",
+      "label": "Nykiya Adams",
+      "qid": "Q132180575",
+      "topRev": 1364431704,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Nykiya Adams at the 2024 Toronto International Film Festival. 04 (cropped).jpg",
+          "rev": 1364431704,
+          "ts": "2026-07-16T13:48:22Z",
+          "user": "MapReader"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Rodrigo Prieto",
+      "label": "Rodrigo Prieto",
+      "qid": "Q1341403",
+      "topRev": 1364013394,
+      "more": true,
+      "timeline": [
+        {
+          "file": "File:Rodrigo Prieto at the 2024 Toronto International Film Festival 2 (cropped).jpg",
+          "rev": 1364013394,
+          "ts": "2026-07-13T23:45:48Z",
+          "user": "Laddyfisher"
+        },
+        {
+          "file": "File:Rodrigo Prieto in 2024.jpg",
+          "rev": 1241731855,
+          "ts": "2024-08-22T21:11:18Z",
+          "user": "177.223.207.1"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Ryan Destiny",
+      "label": "Ryan Destiny",
+      "qid": "Q28465338",
+      "topRev": 1366725243,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Ryan Destiny at the 2024 Toronto International Film Festival (cropped).jpg",
+          "rev": 1366725243,
+          "ts": "2026-07-29T20:25:56Z",
+          "user": "~2026-42357-25"
+        },
+        {
+          "file": "File:Ryan Destiny 2015.jpg",
+          "rev": 1250375606,
+          "ts": "2024-10-10T01:51:00Z",
+          "user": "2001:569:7D9E:700:FE:3288:54BD:C4CA"
+        },
+        {
+          "file": "File:ryan-destiny.jpg",
+          "rev": 1119160571,
+          "ts": "2022-10-31T01:22:15Z",
+          "user": "Aboutnick"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Sosie Bacon",
+      "label": "Sosie Bacon",
+      "qid": "Q3491343",
+      "topRev": 1369780197,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Scoot McNairy's partner at the 2024 Toronto International Film Festival. 01.jpg",
+          "rev": 1259733851,
+          "ts": "2024-11-26T19:33:38Z",
+          "user": "2603:8001:2A42:9C45:1979:6327:FB82:8A85"
+        },
+        {
+          "file": "File:Sosie Bacon in 2022.png",
+          "rev": 1254281141,
+          "ts": "2024-10-30T07:25:34Z",
+          "user": "CyannaLocke"
+        },
+        {
+          "file": "File:Sosie Bacon 2022.png",
+          "rev": 1161710475,
+          "ts": "2023-06-24T14:56:01Z",
+          "user": "James Kevin McMahon"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Beatrice Grannò",
+      "label": "Beatrice Grannò",
+      "qid": "Q89042512",
+      "topRev": 1323217590,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Beatrice Grannò at the 2024 Toronto International Film Festival (Cropped).jpg",
+          "rev": 1323217590,
+          "ts": "2025-11-20T12:15:20Z",
+          "user": "Bathsheba2003"
+        },
+        {
+          "file": "File:Beatrice Grannò on Déluge TV.jpg",
+          "rev": 1246529065,
+          "ts": "2024-09-19T14:12:07Z",
+          "user": "Mikromakon"
+        },
+        {
+          "file": "File:Beatrice Grannò.jpg",
+          "rev": 1135142616,
+          "ts": "2023-01-22T22:05:48Z",
+          "user": "Wikigirl310"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Danielle Deadwyler",
+      "label": "Danielle Deadwyler",
+      "qid": "Q23058828",
+      "topRev": 1369941168,
+      "more": true,
+      "timeline": [
+        {
+          "file": "File:Danielle Deadwyler at the 2024 Toronto International Film Festival (cropped 3).jpg",
+          "rev": 1369941168,
+          "ts": "2026-08-18T03:44:36Z",
+          "user": "Thepirateking64"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Henry Golding",
+      "label": "Henry Golding",
+      "qid": "Q39072280",
+      "topRev": 1366969716,
+      "more": true,
+      "timeline": [
+        {
+          "file": "File:Henry Golding at the 2024 Toronto International Film Festival (Cropped).jpg",
+          "rev": 1366969716,
+          "ts": "2026-07-31T03:33:21Z",
+          "user": "Mercer17"
+        },
+        {
+          "file": "File:Henry Golding (edit).jpg",
+          "rev": 1245850526,
+          "ts": "2024-09-15T14:36:16Z",
+          "user": "Thedarkknightli"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Kataem O'Connor",
+      "label": "Kataem O'Connor",
+      "qid": "Q112230667",
+      "topRev": 1363360367,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Kataem O’Connor at the 2024 Toronto International Film Festival 4.jpg",
+          "rev": 1363360367,
+          "ts": "2026-07-09T18:38:39Z",
+          "user": "Derek R Bullamore"
+        },
+        {
+          "file": "File:Elizabeth_Saunders,_Kataem_O'Connor,_and_Jennifer_Holness_at_the_2024_Toronto_International_Film_Festival.jpg",
+          "rev": 1295509032,
+          "ts": "2025-06-14T05:26:49Z",
+          "user": "Waacstats"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Marianne Jean-Baptiste",
+      "label": "Marianne Jean-Baptiste",
+      "qid": "Q430872",
+      "topRev": 1359525533,
+      "more": true,
+      "timeline": [
+        {
+          "file": "File:Marianne Jean-Baptiste and Mike Leigh at the 2024 Toronto International Film Festival (cropped).jpg",
+          "rev": 1359525533,
+          "ts": "2026-06-15T19:44:32Z",
+          "user": "NathanielTheBold"
+        },
+        {
+          "file": "File:Marianne Jean Baptiste by RealTVfilms.jpg",
+          "rev": 1250820405,
+          "ts": "2024-10-12T18:20:37Z",
+          "user": "Kire1975"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Michele Austin",
+      "label": "Michele Austin",
+      "qid": "Q6836690",
+      "topRev": 1358252698,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Michele Austin at the 2024 Toronto International Film Festival 3 (cropped) 2.jpg",
+          "rev": 1358252698,
+          "ts": "2026-06-07T15:32:54Z",
+          "user": "~2026-33154-01"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Nacho Vigalondo",
+      "label": "Nacho Vigalondo",
+      "qid": "Q2638166",
+      "topRev": 1368971838,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Nacho Vigalondo at the 2024 Toronto International Film Festival 2 (cropped).jpg",
+          "rev": 1368971838,
+          "ts": "2026-08-12T03:53:49Z",
+          "user": "AllTheUsernamesAreInUse"
+        },
+        {
+          "file": "File:Screenwriter Nacho Vigalondo at 2014 MIFF.jpg",
+          "rev": 1244153103,
+          "ts": "2024-09-05T10:49:35Z",
+          "user": "Asqueladd"
+        },
+        {
+          "file": "File:Vigalondo.jpg",
+          "rev": 743830819,
+          "ts": "2016-10-11T14:26:21Z",
+          "user": "Longlivefolkmusic"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Aria Mia Loberti",
+      "label": "Aria Mia Loberti",
+      "qid": "Q110269029",
+      "topRev": 1362617287,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Aria Mia Loberti at the 2024 Toronto International Film Festival (cropped).jpg",
+          "rev": 1362617287,
+          "ts": "2026-07-05T04:42:26Z",
+          "user": "ClueBot NG"
+        },
+        {
+          "file": "File:Aria Mia Loberti, PVD, 2017.jpg",
+          "rev": 1248379883,
+          "ts": "2024-09-29T05:47:06Z",
+          "user": "Username735"
+        },
+        {
+          "file": "File:Loberti 2021.jpg",
+          "rev": 1139195920,
+          "ts": "2023-02-13T22:09:34Z",
+          "user": "Username735"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Durga Chew-Bose",
+      "label": "Durga Chew-Bose",
+      "qid": "Q29019720",
+      "topRev": 1358499848,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Durga Chew-Bose at the 2024 Toronto International Film Festival (TIFF) 01 (cropped).jpg",
+          "rev": 1358499848,
+          "ts": "2026-06-09T02:16:32Z",
+          "user": "Historygirl444"
+        },
+        {
+          "file": "File:2024 Durga Chew-Bose (cropped).jpg",
+          "rev": 1248144201,
+          "ts": "2024-09-27T22:24:36Z",
+          "user": "Saraa.kom"
+        },
+        {
+          "file": "File:Author Durga Chew-Bose (sq cropped).jpg",
+          "rev": 1237699721,
+          "ts": "2024-07-31T02:44:37Z",
+          "user": "Bearcat"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Kiyoshi Kurosawa",
+      "label": "Kiyoshi Kurosawa",
+      "qid": "Q53834",
+      "topRev": 1370865511,
+      "more": true,
+      "timeline": [
+        {
+          "file": "File:Kiyoshi Kurosawa at the 2024 Toronto International Film Festival (cropped).jpg",
+          "rev": 1370865511,
+          "ts": "2026-08-23T13:43:09Z",
+          "user": "Jevansen"
+        },
+        {
+          "file": "File:Kiyoshi Kurosawa (cropped).jpg",
+          "rev": 1247134999,
+          "ts": "2024-09-23T00:15:08Z",
+          "user": "89.240.76.160"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Dea Kulumbegashvili",
+      "label": "Dea Kulumbegashvili",
+      "qid": "Q96942531",
+      "topRev": 1338571666,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:დეა კულუმბეგაშვილი-66355.jpg",
+          "rev": 1338571666,
+          "ts": "2026-02-15T23:52:13Z",
+          "user": "CitationAuditor"
+        }
+      ]
+    },
+    {
+      "lang": "fr",
+      "article": "Kakha Kintsurashvili",
+      "label": "Kakha Kintsurashvili",
+      "qid": "Q22338801",
+      "topRev": 223005866,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:კახა კინწურაშვილი-66376.jpg",
+          "rev": 223005866,
+          "ts": "2025-02-14T13:57:54Z",
+          "user": "Milyon"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Omar Apollo",
+      "label": "Omar Apollo",
+      "qid": "Q65675682",
+      "topRev": 1366592368,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Omar Apollo at 81st Venice International Film Festival.jpg",
+          "rev": 1366592368,
+          "ts": "2026-07-28T23:24:22Z",
+          "user": "DivingSpicy"
+        },
+        {
+          "file": "File:Omar Apollo Interview Dec 2022 (cropped).png",
+          "rev": 1357771014,
+          "ts": "2026-06-04T15:59:30Z",
+          "user": "Web-julio"
+        },
+        {
+          "file": "File:Omar Apollo at 81st Venice International Film Festival.jpg",
+          "rev": 1339147167,
+          "ts": "2026-02-19T04:13:11Z",
+          "user": "Nikkimaria"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Dong Abay",
+      "label": "Dong Abay",
+      "qid": "Q3546717",
+      "topRev": 1368031834,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Dong Abay at 81st Venice International Film Festival.jpg",
+          "rev": 1368031834,
+          "ts": "2026-08-06T16:39:31Z",
+          "user": "Sevshoon"
+        },
+        {
+          "file": "File:Dong Abay the 81st Venice International Film Festival.jpg",
+          "rev": 1249682287,
+          "ts": "2024-10-06T07:40:11Z",
+          "user": "Farmeryano"
+        },
+        {
+          "file": "File:Dong Abay at the 81st Venice International Film Festival.jpg",
+          "rev": 1249682054,
+          "ts": "2024-10-06T07:37:21Z",
+          "user": "Farmeryano"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Elizabeth Lo",
+      "label": "Elizabeth Lo",
+      "qid": "Q27044561",
+      "topRev": 1351904119,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Elizabeth Lo at 81st Venice International Film Festival 2.jpg",
+          "rev": 1351904119,
+          "ts": "2026-04-30T21:09:36Z",
+          "user": "JJMC89 bot III"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Hazel Orencio",
+      "label": "Hazel Orencio",
+      "qid": "Q55613520",
+      "topRev": 1306154475,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Hazel Orencio at 81st Venice International Film Festival.jpg",
+          "rev": 1306154475,
+          "ts": "2025-08-16T06:56:16Z",
+          "user": "Kuragehime000"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Francesco Gheghi",
+      "label": "Francesco Gheghi",
+      "qid": "Q107686613",
+      "topRev": 1368788173,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Francesco Gheghi-68145.jpg",
+          "rev": 1368788173,
+          "ts": "2026-08-11T02:50:49Z",
+          "user": "Mellamelina"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Jurnee Smollett",
+      "label": "Q2350967",
+      "qid": "Q2350967",
+      "topRev": 1369783279,
+      "more": true,
+      "timeline": [
+        {
+          "file": "File:Jurnee Smollett-67817 (cropped).jpg",
+          "rev": 1369783279,
+          "ts": "2026-08-17T03:31:22Z",
+          "user": "Ser Amantio di Nicolao"
+        },
+        {
+          "file": "File:Jurnee Smollett Bell cropped.JPG",
+          "rev": 1243315635,
+          "ts": "2024-08-31T20:04:14Z",
+          "user": "Asqueladd"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Ncuti Gatwa",
+      "label": "Ncuti Gatwa",
+      "qid": "Q60618349",
+      "topRev": 1371249649,
+      "more": true,
+      "timeline": [
+        {
+          "file": "File:Ncuti Gatwa-65764.jpg",
+          "rev": 1371249649,
+          "ts": "2026-08-25T12:39:04Z",
+          "user": "SkywalkerEccleston"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Deepak Rauniyar",
+      "label": "Deepak Rauniyar",
+      "qid": "Q43379601",
+      "topRev": 1342384676,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Director Deepak Rauniyar at 81st Venice International Film Festival for Pouja, Sir EDITED.jpg",
+          "rev": 1342384676,
+          "ts": "2026-03-08T17:40:26Z",
+          "user": "Ira Leviton"
+        },
+        {
+          "file": "File:IFFR 2017-1.jpg",
+          "rev": 1242992052,
+          "ts": "2024-08-29T21:42:14Z",
+          "user": "Mellamelina"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Nahuel Pérez Biscayart",
+      "label": "Nahuel Pérez Biscayart",
+      "qid": "Q2879350",
+      "topRev": 1357069320,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Nahuel Pérez Biscayart -65369.jpg",
+          "rev": 1357069320,
+          "ts": "2026-05-31T15:50:48Z",
+          "user": "PrimeBOT"
+        },
+        {
+          "file": "File:Nahuel Perez Biscayart César 2018.jpg",
+          "rev": 1243051682,
+          "ts": "2024-08-30T06:31:02Z",
+          "user": "Oupals"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Taylor Russell",
+      "label": "Taylor Russell",
+      "qid": "Q26997598",
+      "topRev": 1366567681,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Taylor Russell-64289 (cropped).jpg",
+          "rev": 1366567681,
+          "ts": "2026-07-28T19:46:39Z",
+          "user": "Youknowmyname657"
+        },
+        {
+          "file": "File:Taylor Russell jury Venice Film Festival 2024.jpg",
+          "rev": 1257749958,
+          "ts": "2024-11-16T13:02:48Z",
+          "user": "Sharpeye11"
+        },
+        {
+          "file": "File:Taylor Russell-64289 (cropped).jpg",
+          "rev": 1255791428,
+          "ts": "2024-11-06T18:12:08Z",
+          "user": "BattyBot"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Úrsula Corberó",
+      "label": "Úrsula Corberó",
+      "qid": "Q2632981",
+      "topRev": 1369374088,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Úrsula Corberó-65339.jpg",
+          "rev": 1369374088,
+          "ts": "2026-08-14T15:58:02Z",
+          "user": "Lacon432"
+        },
+        {
+          "file": "File:Premios Goya 2018 - Úrsula Corberó (cropped).jpg",
+          "rev": 1241516178,
+          "ts": "2024-08-21T16:23:58Z",
+          "user": "2601:403:C001:DF50:AC6C:38E8:7B4:C75D"
+        },
+        {
+          "file": "File:Ursula-corbero-2022.jpg",
+          "rev": 1127037104,
+          "ts": "2022-12-12T15:11:07Z",
+          "user": "MatouLolita"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Zhang Ziyi",
+      "label": "Zhang Ziyi",
+      "qid": "Q180852",
+      "topRev": 1364383848,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Zhang Ziyi-63357.jpg",
+          "rev": 1364383848,
+          "ts": "2026-07-16T05:45:33Z",
+          "user": "Phraowin"
+        },
+        {
+          "file": "File:Zhang Ziyi the Jury President at Opening Ceremony of the Tokyo International Film Festival 2019 (49013444988) (cropped).jpg",
+          "rev": 1354951981,
+          "ts": "2026-05-19T03:42:26Z",
+          "user": "Zackmann08"
+        },
+        {
+          "file": "File:Zhang-Ziyi-Macau-International-Movie-Festival-2025.jpg",
+          "rev": 1339205182,
+          "ts": "2026-02-19T13:25:25Z",
+          "user": "~2026-11095-74"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Sophie Duker",
+      "label": "Sophie Duker",
+      "qid": "Q63011331",
+      "topRev": 1368964287,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Sophie Duker at the 2024 Edinburgh Festival Fringe 03 (cropped).jpg",
+          "rev": 1368964287,
+          "ts": "2026-08-12T02:58:46Z",
+          "user": "Zyxw"
+        },
+        {
+          "file": "File:Sophie Duker - 2019 (cropped).jpg",
+          "rev": 1247597098,
+          "ts": "2024-09-25T00:53:19Z",
+          "user": "JJMC89 bot III"
+        },
+        {
+          "file": "File:Sophisticating Duker drink.jpg",
+          "rev": 985008489,
+          "ts": "2020-10-23T12:11:48Z",
+          "user": "2A00:23C4:8891:7400:5DE0:C557:68A2:3DE3"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Lara Ricote",
+      "label": "Lara Ricote",
+      "qid": "Q115482597",
+      "topRev": 1370454693,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Lara Ricote at the 2024 Edinburgh Festival Fringe 3.jpg",
+          "rev": 1370454693,
+          "ts": "2026-08-21T05:13:57Z",
+          "user": "Rager7"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Temi Wilkey",
+      "label": "Temi Wilkey",
+      "qid": "Q129256730",
+      "topRev": 1368682055,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Temi Wilkey at the 2024 Edinburgh Festival Fringe (cropped).jpg",
+          "rev": 1368682055,
+          "ts": "2026-08-10T13:44:56Z",
+          "user": "Hwyaden fach"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Anna Akana",
+      "label": "Anna Akana",
+      "qid": "Q17305622",
+      "topRev": 1371032216,
+      "more": true,
+      "timeline": [
+        {
+          "file": "File:Anna Akana at the 2024 Edinburgh Festival Fringe (cropped).jpg",
+          "rev": 1371032216,
+          "ts": "2026-08-24T05:39:21Z",
+          "user": "Ser Amantio di Nicolao"
+        },
+        {
+          "file": "File:Anna Akana at 2018 Vidcon EU.png",
+          "rev": 1296350857,
+          "ts": "2025-06-19T13:03:45Z",
+          "user": "Melodiam.aqua.vitae"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Kenice Mobley",
+      "label": "Q116943351",
+      "qid": "Q116943351",
+      "topRev": 1359726440,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Kenice Mobley 2024 Edinburgh Festival Fringe.jpg",
+          "rev": 1359726440,
+          "ts": "2026-06-16T21:17:04Z",
+          "user": "Sluzzelin"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Don Airey",
+      "label": "Don Airey",
+      "qid": "Q310708",
+      "topRev": 1364953223,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Don Airey (cropped).jpg",
+          "rev": 1364953223,
+          "ts": "2026-07-19T13:39:27Z",
+          "user": "Justdoowit665"
+        },
+        {
+          "file": "File:Don Airey 2005.jpg",
+          "rev": 1252626063,
+          "ts": "2024-10-22T06:37:46Z",
+          "user": "2001:18E8:3:2000:E000:0:0:DA25"
+        },
+        {
+          "file": "File:Deep Purple - inFinite - The Long Goodbye Tour - Barclaycard Arena Hamburg 2017 02.jpg",
+          "rev": 826955113,
+          "ts": "2018-02-21T23:10:16Z",
+          "user": "84.248.36.158"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Molly Carlson",
+      "label": "Molly Carlson",
+      "qid": "Q113548255",
+      "topRev": 1367775381,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Molly Carlson Boston 2024.jpg",
+          "rev": 1367775381,
+          "ts": "2026-08-05T03:17:19Z",
+          "user": "ElectriqueViolette"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Miguel Gomes (director)",
+      "label": "Miguel Gomes",
+      "qid": "Q1890376",
+      "topRev": 1365372104,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Miguel Gomes at 2024 Cannes Film Festival.jpg",
+          "rev": 1365372104,
+          "ts": "2026-07-22T00:15:15Z",
+          "user": "Martineden83"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Chhaya Kadam",
+      "label": "Chhaya Kadam",
+      "qid": "Q119890530",
+      "topRev": 1370468095,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Actress Chhaya Kadam at 2024 Cannes Film Festival 3 (cropped 2).jpg",
+          "rev": 1370468095,
+          "ts": "2026-08-21T07:17:53Z",
+          "user": "Rickyurs"
+        },
+        {
+          "file": "File:All We Imagine as Light Actress Chhaya Kadam at 2024 Cannes Film Festival.jpg",
+          "rev": 1225817385,
+          "ts": "2024-05-26T22:07:37Z",
+          "user": "2409:4081:99:5B8B:0:0:6C1:40AC"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Payal Kapadia (filmmaker)",
+      "label": "Payal Kapadia",
+      "qid": "Q107803283",
+      "topRev": 1352952557,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:All We Imagine as Light Director Payal Kapadia at 2024 Cannes Film Festival.jpg",
+          "rev": 1352952557,
+          "ts": "2026-05-07T06:22:08Z",
+          "user": "JJMC89 bot III"
+        },
+        {
+          "file": "File:payal kapadia 2021 2.jpg",
+          "rev": 1225445943,
+          "ts": "2024-05-24T14:08:47Z",
+          "user": "Indopug"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Divya Prabha",
+      "label": "Divya Prabha",
+      "qid": "Q18352086",
+      "topRev": 1359361348,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Divya Prabha at All We Imagine As Light Press Conference at 2024 Cannes Film Festival (cropped 2).jpg",
+          "rev": 1359361348,
+          "ts": "2026-06-14T20:41:36Z",
+          "user": "Tassedethe"
+        },
+        {
+          "file": "File:Divya Prabha Film Festival.jpg",
+          "rev": 1252038839,
+          "ts": "2024-10-19T13:14:16Z",
+          "user": "Krimuk2.0"
+        },
+        {
+          "file": "File:Divyaprabha.jpg",
+          "rev": 1108221264,
+          "ts": "2022-09-03T05:26:47Z",
+          "user": "BoyTheKingCanDance"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Fábio Assunção",
+      "label": "Fábio Assunção",
+      "qid": "Q2989328",
+      "topRev": 1355524280,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Actor Fábio Assunção at 2024 Cannes Film Festival.jpg",
+          "rev": 1355524280,
+          "ts": "2026-05-22T10:08:13Z",
+          "user": "PrimeBOT"
+        },
+        {
+          "file": "File:Fábio Assunção 2020.jpg",
+          "rev": 1239408934,
+          "ts": "2024-08-09T03:22:41Z",
+          "user": "Yacàwotçã"
+        },
+        {
+          "file": "File:Fábio_Assunção.jpg",
+          "rev": 1161583458,
+          "ts": "2023-06-23T17:35:00Z",
+          "user": "Perci Hong"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Karim Aïnouz",
+      "label": "Karim Aïnouz",
+      "qid": "Q749493",
+      "topRev": 1369193745,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Director Karim Anouz at 2024 Cannes Film Festival.jpg",
+          "rev": 1369193745,
+          "ts": "2026-08-13T12:14:25Z",
+          "user": "BD2412"
+        },
+        {
+          "file": "File:Karim Ainouz 01.JPG",
+          "rev": 1224627570,
+          "ts": "2024-05-19T13:50:36Z",
+          "user": "Martineden83"
+        },
+        {
+          "file": "File:Karim Aïnouz - Viajo porque preciso.jpg",
+          "rev": 695385400,
+          "ts": "2015-12-15T18:22:24Z",
+          "user": "Galeriafortesvilaca"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Mondher Rayahneh",
+      "label": "Monther Rayahneh",
+      "qid": "Q3320542",
+      "topRev": 1356874390,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Mondher Rayahneh at 2024 Cannes Film Festival for To a Land Unknown.jpg",
+          "rev": 1356874390,
+          "ts": "2026-05-30T10:49:40Z",
+          "user": "PrimeBOT"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Oulaya Amamra",
+      "label": "Oulaya Amamra",
+      "qid": "Q26761761",
+      "topRev": 1292716129,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Actress Oulaya Amamra at 2024 Cannes Film Festival for Animale.jpg",
+          "rev": 1292716129,
+          "ts": "2025-05-28T12:19:26Z",
+          "user": "Waacstats"
+        },
+        {
+          "file": "File:Oulaya Amamra 2017 2.jpg",
+          "rev": 1211308622,
+          "ts": "2024-03-01T22:07:19Z",
+          "user": "Οἶδα"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Erwan Kepoa Falé",
+      "label": "Erwan Kepoa Falé",
+      "qid": "Q127687938",
+      "topRev": 1363148757,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Erwan Kepoa Falé at 2024 Cannes Film Festival for Eat the Night.jpg",
+          "rev": 1363148757,
+          "ts": "2026-07-08T10:25:16Z",
+          "user": "CoryGlee"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Hala Elkoussy",
+      "label": "Hala Elkoussy",
+      "qid": "Q3782513",
+      "topRev": 1342158579,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Hala Elkoussy at 2024 Cannes Film Festival for East of Noon (cropped).jpg",
+          "rev": 1342158579,
+          "ts": "2026-03-07T10:45:37Z",
+          "user": "Ser Amantio di Nicolao"
+        },
+        {
+          "file": "File:Hala Elkoussy - 2013.jpg",
+          "rev": 1230356981,
+          "ts": "2024-06-22T07:36:20Z",
+          "user": "Xrimonciam"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Nobuhiro Yamashita",
+      "label": "Nobuhiro Yamashita",
+      "qid": "Q908962",
+      "topRev": 1336822755,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Nobuhiro Yamashita at 2024 Cannes Film Festival for Ghost Cat Anzu.jpg",
+          "rev": 1336822755,
+          "ts": "2026-02-05T23:07:32Z",
+          "user": "InternetArchiveBot"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Davi Kopenawa Yanomami",
+      "label": "Davi Kopenawa Yanomami",
+      "qid": "Q1173446",
+      "topRev": 1345109078,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Davi Kopenawa Yanomami at 2024 Cannes Film Festival for The Falling Sky (cropped).jpg",
+          "rev": 1345109078,
+          "ts": "2026-03-24T10:00:21Z",
+          "user": "LionmerterTHE"
+        },
+        {
+          "file": "File:Davikopenawa.jpg",
+          "rev": 1223344901,
+          "ts": "2024-05-11T14:11:33Z",
+          "user": "Bohemian Baltimore"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Karan Kandhari",
+      "label": "Karan Kandhari",
+      "qid": "Q6368386",
+      "topRev": 1363715582,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Karan Kandhari at 2024 Cannes Film Festival for Sister Midnight.jpg",
+          "rev": 1363715582,
+          "ts": "2026-07-11T22:58:47Z",
+          "user": "Dawnseeker2000"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Jean-Pascal Zadi",
+      "label": "Jean-Pascal Zadi",
+      "qid": "Q3168303",
+      "topRev": 1368683165,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Jean-Pascal Zadi at the 2024 Cannes Film Festival 2.jpg",
+          "rev": 1368683165,
+          "ts": "2026-08-10T13:54:51Z",
+          "user": "Babylon77"
+        },
+        {
+          "file": "File:Jean-Pascal Zadi (in 2015).png",
+          "rev": 1226493728,
+          "ts": "2024-05-31T00:11:18Z",
+          "user": "Numberguy6Bot"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Adrianne Palicki",
+      "label": "Adrianne Palicki",
+      "qid": "Q262278",
+      "topRev": 1351843440,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Adrianne Palicki at CCR Ontario 2024.jpg",
+          "rev": 1351843440,
+          "ts": "2026-04-30T13:58:01Z",
+          "user": "MBV2023"
+        },
+        {
+          "file": "File:Adrianne Palicki 2014 (cropped 3×4).jpg",
+          "rev": 1311141671,
+          "ts": "2025-09-13T17:23:41Z",
+          "user": "FlightTime"
+        },
+        {
+          "file": "File:Adrianne Palicki at CCR Ontario 2024.jpg",
+          "rev": 1311070271,
+          "ts": "2025-09-13T05:56:18Z",
+          "user": "PaulLim11"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Andrea Arnold",
+      "label": "Andrea Arnold",
+      "qid": "Q457493",
+      "topRev": 1369158411,
+      "more": true,
+      "timeline": [
+        {
+          "file": "File:Andrea Arnold receiving 2024 Carrosse d'Or Award at 2024 Cannes Film Festival group (cropped).jpg",
+          "rev": 1369158411,
+          "ts": "2026-08-13T06:37:25Z",
+          "user": "SchlurcherBot"
+        },
+        {
+          "file": "File:Andrea Arnold (Cannes Film Festival 2012).jpg",
+          "rev": 1348138593,
+          "ts": "2026-04-10T22:53:46Z",
+          "user": "Ponyo"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Sylvia Sanchez",
+      "label": "Sylvia Sanchez",
+      "qid": "Q12971471",
+      "topRev": 1357733958,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Directors' Factory 2024 at 2024 Cannes Film Festival 2 (cropped).jpg",
+          "rev": 1357733958,
+          "ts": "2026-06-04T10:58:08Z",
+          "user": "~2026-33118-72"
+        },
+        {
+          "file": "File:Sylvia_Sanchez_at_the_contract_renewal_of_Sylvia_Sanchez_by_Beautederm,_April_2019.jpg",
+          "rev": 1177179871,
+          "ts": "2023-09-26T14:04:47Z",
+          "user": "158.62.54.140"
+        },
+        {
+          "file": "File:https://en.wikipedia.org/wiki/File:Sylvia_Sanchez_at_the_contract_renewal_of_Sylvia_Sanchez_by_Beautederm,_April_2019.jpg",
+          "rev": 942071670,
+          "ts": "2020-02-22T11:54:56Z",
+          "user": "58.178.6.250"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Lily Gladstone",
+      "label": "Lily Gladstone",
+      "qid": "Q27450671",
+      "topRev": 1371017376,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Lily Gladstone at the 2024 Cannes Film Festival (cropped).jpg",
+          "rev": 1371017376,
+          "ts": "2026-08-24T03:57:38Z",
+          "user": "Misha Vargas"
+        },
+        {
+          "file": "File:Lily gladstone (cropped).jpg",
+          "rev": 1224691551,
+          "ts": "2024-05-19T21:56:40Z",
+          "user": "HadesTTW"
+        },
+        {
+          "file": "File:Lily Gladstone Killers of the Flower Moon Cannes (cropped).jpg",
+          "rev": 1213167822,
+          "ts": "2024-03-11T13:19:43Z",
+          "user": "JackTheSecond"
+        }
+      ]
+    },
+    {
+      "lang": "ig",
+      "article": "Ebele Okobi",
+      "label": "Ebele Okobi",
+      "qid": "Q54907935",
+      "topRev": 198032,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Ebele Okobi at International Journalism Festival 2024 in Perugia 4.jpg",
+          "rev": 198032,
+          "ts": "2024-12-16T16:48:30Z",
+          "user": "Phibeatrice"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Jameel Jaffer",
+      "label": "Jameel Jaffer",
+      "qid": "Q6127892",
+      "topRev": 1350710888,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Jameel Jaffer at the International Journalism Festival 2024 in Perugia, Italy 3 (cropped).jpg",
+          "rev": 1350710888,
+          "ts": "2026-04-23T14:38:06Z",
+          "user": "Curmudgeon 289"
+        },
+        {
+          "file": "File:Jameel Jaffer (cropped).jpg",
+          "rev": 1241947979,
+          "ts": "2024-08-24T02:40:00Z",
+          "user": "Jay-Wiki"
+        },
+        {
+          "file": "File:Replace this image male.svg",
+          "rev": 433501573,
+          "ts": "2011-06-10T04:43:46Z",
+          "user": "SmackBot"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Jeffrey Alexander Sterling",
+      "label": "Jeffrey Alexander Sterling",
+      "qid": "Q6175821",
+      "topRev": 1342160978,
+      "more": true,
+      "timeline": [
+        {
+          "file": "File:Jeffrey Sterling at the International Journalism Festival 2024 in Perugia, Italy 6 (cropped).jpg",
+          "rev": 1342160978,
+          "ts": "2026-03-07T11:03:34Z",
+          "user": "Ser Amantio di Nicolao"
+        },
+        {
+          "file": "File:Sterling Photo.jpg",
+          "rev": 1245899205,
+          "ts": "2024-09-15T19:41:15Z",
+          "user": "Brinerustle"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Khadija Patel",
+      "label": "Khadija Patel",
+      "qid": "Q97154102",
+      "topRev": 1333533228,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Khadija Patel at International Journalism Festival 2024 in Perugia 4 (cropped).jpg",
+          "rev": 1333533228,
+          "ts": "2026-01-18T10:07:53Z",
+          "user": "InternetArchiveBot"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Sevgil Musayeva",
+      "label": "Sevgil Musayeva-Borovyk",
+      "qid": "Q17275373",
+      "topRev": 1362212744,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Sevgil Musaieva at the International Journalism Festival 2024 in Perugia, Italy 2 (cropped).jpg",
+          "rev": 1362212744,
+          "ts": "2026-07-02T15:13:44Z",
+          "user": "Grosa"
+        },
+        {
+          "file": "File:Sevgil Musayeva 2022 Global Forum.jpg",
+          "rev": 1223530515,
+          "ts": "2024-05-12T19:24:16Z",
+          "user": "Hongkongski"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Tomiwa Aladekomo",
+      "label": "Tomiwa Aladekomo",
+      "qid": "Q125425910",
+      "topRev": 1362383607,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Tomiwa Aladekomo at the International Journalism Festival 2024 in Perugia, Italy 5.jpg",
+          "rev": 1362383607,
+          "ts": "2026-07-03T16:19:23Z",
+          "user": "VWF bot"
+        },
+        {
+          "file": "File:Tomiwa Aladekomo 2020 - black.jpg",
+          "rev": 1268002165,
+          "ts": "2025-01-07T18:36:13Z",
+          "user": "Aadirulez8"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "S. Mitra Kalita",
+      "label": "S. Mitra Kalita",
+      "qid": "Q103231964",
+      "topRev": 1353911719,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Mitra Kalita at the International Journalism Festival 2024 in Perugia, Italy.jpg",
+          "rev": 1353911719,
+          "ts": "2026-05-13T03:38:39Z",
+          "user": "Zackmann08"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Vin Gupta (pulmonologist)",
+      "label": "Vin Gupta",
+      "qid": "Q110620404",
+      "topRev": 1371802112,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Vin Gupta WikiPortrait at SXSW 2024.jpg",
+          "rev": 1371802112,
+          "ts": "2026-08-28T14:52:38Z",
+          "user": "~2026-46231-97"
+        },
+        {
+          "file": "File:Dr. Vin Gupta.png",
+          "rev": 1221391132,
+          "ts": "2024-04-29T17:17:12Z",
+          "user": "Bonadea"
+        },
+        {
+          "file": "File:SV Wellness 2021.jpg",
+          "rev": 1066575289,
+          "ts": "2022-01-19T01:51:23Z",
+          "user": "67.171.36.119"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Vinod Khosla",
+      "label": "Vinod Khosla",
+      "qid": "Q738005",
+      "topRev": 1371663117,
+      "more": true,
+      "timeline": [
+        {
+          "file": "File:2024-03-14 SXSW Vinod-Khosla 08741.jpg",
+          "rev": 1371663117,
+          "ts": "2026-08-27T18:44:24Z",
+          "user": "McSquidwich"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Freddie Wong",
+      "label": "Freddie Wong",
+      "qid": "Q971622",
+      "topRev": 1358921866,
+      "more": true,
+      "timeline": [
+        {
+          "file": "File:Freddie Wong WikiPortrait at SXSW 2024 Taken March 13, 2024.jpg",
+          "rev": 1358921866,
+          "ts": "2026-06-11T21:13:17Z",
+          "user": "SourceIsOpen"
+        },
+        {
+          "file": "File:Freddie Wong (2012) cropped.jpg",
+          "rev": 1211267295,
+          "ts": "2024-03-01T18:02:51Z",
+          "user": "SeaBrightener"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Tiana Tukes",
+      "label": "Tiana Tukes",
+      "qid": "Q137259203",
+      "topRev": 1366633878,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Tiana Tukes WikiPortrait at SXSW 2024 Taken March 13, 2024.jpg",
+          "rev": 1366633878,
+          "ts": "2026-07-29T05:00:29Z",
+          "user": "Ser Amantio di Nicolao"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Kausar Mohammed",
+      "label": "Kausar Mohammed",
+      "qid": "Q98987413",
+      "topRev": 1363984688,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Kausar Mohammed at SXSW on March 9 2024.jpg",
+          "rev": 1363984688,
+          "ts": "2026-07-13T19:13:19Z",
+          "user": "~2026-39412-81"
+        },
+        {
+          "file": "File:Kausar Mohammed.jpg",
+          "rev": 1210941481,
+          "ts": "2024-02-29T01:58:22Z",
+          "user": "2600:100C:A21C:CF07:28A6:C194:F47F:572B"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Lilly Singh",
+      "label": "Lilly Singh",
+      "qid": "Q17403226",
+      "topRev": 1371086808,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:2024-03-08 SXSW-2024 Variety-comedy-awards 04707 (cropped).jpg",
+          "rev": 1371086808,
+          "ts": "2026-08-24T14:06:01Z",
+          "user": "WeissNI"
+        },
+        {
+          "file": "File:Lilly Singh SDG 2025.jpg",
+          "rev": 1365342996,
+          "ts": "2026-07-21T20:28:58Z",
+          "user": "GreenC bot"
+        },
+        {
+          "file": "File:LillySingh.jpg",
+          "rev": 1320413306,
+          "ts": "2025-11-04T15:14:11Z",
+          "user": "Neils51"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Jaboukie Young-White",
+      "label": "Jaboukie Young-White",
+      "qid": "Q52274823",
+      "topRev": 1370542761,
+      "more": true,
+      "timeline": [
+        {
+          "file": "File:2024-03-08 SXSW-2024 Variety-comedy-awards 05196 (cropped).jpg",
+          "rev": 1370542761,
+          "ts": "2026-08-21T19:06:11Z",
+          "user": "Pre85"
+        },
+        {
+          "file": "File:https://thefader-res.cloudinary.com/private_images/w_1800,c_limit,f_auto,q_auto:best/Jaboukie_380_-_Credit_Jack_McKain_rjs1gx/song-you-need-jaboukies-bbc-is-seriously-fun.jpg",
+          "rev": 1196193897,
+          "ts": "2024-01-16T19:21:50Z",
+          "user": "12.3.105.34"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Jarone Lee",
+      "label": "Jarone Lee",
+      "qid": "Q43619993",
+      "topRev": 1366472908,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Jarone Lee at SXSW on March 9 2024.jpg",
+          "rev": 1366472908,
+          "ts": "2026-07-28T05:52:15Z",
+          "user": "Ser Amantio di Nicolao"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Meghan, Duchess of Sussex",
+      "label": "Meghan, Duchess of Sussex",
+      "qid": "Q3304418",
+      "topRev": 1371605623,
+      "more": true,
+      "timeline": [
+        {
+          "file": "File:SXSW-2024-OB7A9986-alih-Meghan, Duchess of Sussex (cropped).jpg",
+          "rev": 1371605623,
+          "ts": "2026-08-27T10:17:56Z",
+          "user": "LateFatherKarma"
+        },
+        {
+          "file": "File:SXSW-2024-OB7A0018-alih-Meghan, Duchess of Sussex-crop2-v2.jpg",
+          "rev": 1280434111,
+          "ts": "2025-03-14T16:27:48Z",
+          "user": "Keivan.f"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Errin Haines",
+      "label": "Q105662335",
+      "qid": "Q105662335",
+      "topRev": 1371554382,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:SXSW-2024-OB7A9989-alih-Errin Haines-crop.jpg",
+          "rev": 1371554382,
+          "ts": "2026-08-27T02:52:50Z",
+          "user": "ZackBot"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Yiying Lu",
+      "label": "Yiying Lu",
+      "qid": "Q107270888",
+      "topRev": 1366498267,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Yiying Lu at South by Southwest on March 7, 2024.jpg",
+          "rev": 1366498267,
+          "ts": "2026-07-28T10:20:45Z",
+          "user": "~2026-41849-80"
+        },
+        {
+          "file": "File:Yiying Yu at South by Southwest on March 7, 2024.jpg",
+          "rev": 1254761967,
+          "ts": "2024-11-01T15:17:47Z",
+          "user": "Citation bot"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Kemba (rapper)",
+      "label": "Kemba",
+      "qid": "Q8045855",
+      "topRev": 1366445318,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Sundance Film Festival 2024 - As we speak - Kemba-104A2984.jpg",
+          "rev": 1366445318,
+          "ts": "2026-07-28T02:11:37Z",
+          "user": "Staryu"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Goh Nakamura",
+      "label": "Goh Nakamura",
+      "qid": "Q17386440",
+      "topRev": 1258777599,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Sundance Film Festival 2024 - Goh Nakamura-104A3212.jpg",
+          "rev": 1258777599,
+          "ts": "2024-11-21T15:53:42Z",
+          "user": "2600:1700:7C10:AF50:2C5A:E276:4F39:73B1"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Virgie Tovar",
+      "label": "Virgie Tovar",
+      "qid": "Q118591521",
+      "topRev": 1356256981,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Sundance Film Festival 2024 - Virgie Tovar-104A3385.jpg",
+          "rev": 1356256981,
+          "ts": "2026-05-26T17:33:51Z",
+          "user": "Abs145"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Bilal Hasna",
+      "label": "Bilal Hasna",
+      "qid": "Q117263265",
+      "topRev": 1371593632,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Sundance Film Festival 2024 - Layla - Bilal Hasna-104A1481 (cropped).jpg",
+          "rev": 1371593632,
+          "ts": "2026-08-27T07:51:11Z",
+          "user": "~2026-46475-10"
+        },
+        {
+          "file": "File:Sundance Film Festival 2024 - Layla - Bilal Hasana-104A1481.jpg",
+          "rev": 1197065190,
+          "ts": "2024-01-19T06:27:26Z",
+          "user": "César"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Samson Kayo",
+      "label": "Samson Kayo",
+      "qid": "Q66362723",
+      "topRev": 1371638662,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Samson Kayo at MCM London 2023 02.jpg",
+          "rev": 1371634760,
+          "ts": "2026-08-27T15:00:56Z",
+          "user": "JaceMerlyn"
+        },
+        {
+          "file": "File:Samson Kayo.jpg",
+          "rev": 1272649956,
+          "ts": "2025-01-29T18:14:06Z",
+          "user": "Ira Leviton"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Eirik Hundvin",
+      "label": "Eirik Hundvin",
+      "qid": "Q579363",
+      "topRev": 1362175290,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Pytten 2023 (cropped).jpg",
+          "rev": 1362175290,
+          "ts": "2026-07-02T10:04:11Z",
+          "user": "Robby.is.on"
+        },
+        {
+          "file": "File:Pytten.jpg",
+          "rev": 1281808127,
+          "ts": "2025-03-22T16:45:00Z",
+          "user": "Tassedethe"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Oli London",
+      "label": "Oli London",
+      "qid": "Q107359013",
+      "topRev": 1364137668,
+      "more": true,
+      "timeline": [
+        {
+          "file": "File:Oli London at 80th Venice International Film Festival.jpg",
+          "rev": 1364137668,
+          "ts": "2026-07-14T19:05:46Z",
+          "user": "GreenC bot"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Aaron Schoenke",
+      "label": "Aaron Schoenke",
+      "qid": "Q4662412",
+      "topRev": 1346202781,
+      "more": true,
+      "timeline": [
+        {
+          "file": "File:Aaron Schoenke at SDCC 2023.jpg",
+          "rev": 1346202781,
+          "ts": "2026-03-30T14:14:19Z",
+          "user": "~2026-19865-48"
+        },
+        {
+          "file": "File:Aaron Schoenke by Gage Skidmore.jpg",
+          "rev": 1324711001,
+          "ts": "2025-11-29T05:27:22Z",
+          "user": "Win8x"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Vigdis Hjorth",
+      "label": "Vigdis Hjorth",
+      "qid": "Q2615981",
+      "topRev": 1371711796,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Vigdis Hjorth 2023-3.jpg",
+          "rev": 1371711796,
+          "ts": "2026-08-28T01:16:42Z",
+          "user": "ZackBot"
+        },
+        {
+          "file": "File:Vigdis_Hjort_2023-3.jpg",
+          "rev": 1311962903,
+          "ts": "2025-09-17T21:52:51Z",
+          "user": "Lensbirdie"
+        },
+        {
+          "file": "File:2012 Vigdis Hjorth.jpg",
+          "rev": 1308864532,
+          "ts": "2025-08-31T22:57:30Z",
+          "user": "100W bulb"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Synne Sun Løes",
+      "label": "Synne Sun Løes",
+      "qid": "Q16900432",
+      "topRev": 1371350110,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Synne Sun Løes 2022-2.jpg",
+          "rev": 1371350110,
+          "ts": "2026-08-26T01:22:46Z",
+          "user": "Jevansen"
         }
       ]
     },
@@ -2027,6 +6099,34 @@
           "rev": 1338395589,
           "ts": "2026-02-14T22:52:15Z",
           "user": "Rift"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Hridhu Haroon",
+      "label": "Hridhu Haroon",
+      "qid": "Q126122148",
+      "topRev": 1346066848,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Actor Hridhu Haroon at 2024 Cannes Film Festival 2 (cropped).jpg",
+          "rev": 1346066848,
+          "ts": "2026-03-29T19:22:07Z",
+          "user": "Aadirulez8"
+        },
+        {
+          "file": "File:Actor Hridhu Haroon at 2024 Cannes Film Festival 6.jpg",
+          "rev": 1269357266,
+          "ts": "2025-01-14T07:59:41Z",
+          "user": "Swapna Chaudhary"
+        },
+        {
+          "file": "File:Actor Hridhu Haroon at 2024 Cannes Film Festival 2 (cropped).jpg",
+          "rev": 1269348082,
+          "ts": "2025-01-14T06:42:29Z",
+          "user": "Krimuk2.0"
         }
       ]
     },
@@ -2070,6 +6170,22 @@
     },
     {
       "lang": "en",
+      "article": "Eddie Hall",
+      "label": "Eddie Hall",
+      "qid": "Q5336657",
+      "topRev": 1369264351,
+      "more": true,
+      "timeline": [
+        {
+          "file": "File:Eddie Hall (cropped).jpg",
+          "rev": 1369264351,
+          "ts": "2026-08-13T22:33:14Z",
+          "user": "Dafootballguy"
+        }
+      ]
+    },
+    {
+      "lang": "en",
       "article": "David Cross",
       "label": "David Cross",
       "qid": "Q362332",
@@ -2087,6 +6203,22 @@
           "rev": 1282862957,
           "ts": "2025-03-29T02:13:19Z",
           "user": "Citation bot"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Wade Cunningham",
+      "label": "Wade Cunningham",
+      "qid": "Q1790883",
+      "topRev": 1348642961,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Wade Cunningham by Dan Depew.png",
+          "rev": 1348642961,
+          "ts": "2026-04-13T17:05:03Z",
+          "user": "Finn Shipley"
         }
       ]
     },
@@ -2115,6 +6247,60 @@
           "rev": 1105759238,
           "ts": "2022-08-21T17:19:08Z",
           "user": "Stark578"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Shuhan He",
+      "label": "Shuhan He",
+      "qid": "Q96021759",
+      "topRev": 1368894442,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Shuhan He at an Evening Reception in Support of Mayor Michelle Wu (cropped).jpg",
+          "rev": 1368894442,
+          "ts": "2026-08-11T17:58:24Z",
+          "user": "Phibeatrice"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "David Walliams",
+      "label": "David Walliams",
+      "qid": "Q359665",
+      "topRev": 1364964101,
+      "more": true,
+      "timeline": [
+        {
+          "file": "File:David Walliams at the 2025 Jaipur Literature Festival (cropped).jpg",
+          "rev": 1364964101,
+          "ts": "2026-07-19T14:48:17Z",
+          "user": "Jonny Nixon"
+        },
+        {
+          "file": "File:Ashleigh and David Walliams (the voice of Pudsey in the movie) (cropped).JPG",
+          "rev": 1332035432,
+          "ts": "2026-01-09T14:47:28Z",
+          "user": "Salsareans"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Stephen R. Platt",
+      "label": "Stephen Platt",
+      "qid": "Q55956128",
+      "topRev": 1362494555,
+      "more": false,
+      "timeline": [
+        {
+          "file": "File:Stephen R. Platt at the 2025 Jaipur Literature Festival.jpg",
+          "rev": 1362494555,
+          "ts": "2026-07-04T09:17:14Z",
+          "user": "Omnipaedista"
         }
       ]
     }
