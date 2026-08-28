@@ -52,6 +52,9 @@
     <label class="age-filter">files per click
       <input type="number" id="chunk_size" min="1" max="5000" value="100"></label>
   </div>
+  <div id="recheck" hidden>
+    <button type="button" id="recheck_btn" class="secondary">Re-check all files (find newly-depicted / newly-used)</button>
+  </div>
   <div id="results"></div>
 </main>
 
@@ -79,7 +82,9 @@
         deep the tree is walked; <em>Scan more files</em> continues the scan.
         Enumeration is capped at a few thousand files; <em>Slow un-capped scan</em>
         walks the whole tree. You can Save partway through and resume in a later
-        session.</li>
+        session. <em>Re-check all files</em> re-runs depicts + liveness over every
+        file to catch people who became live since a scan (a photo that only later
+        got a depicts statement, or only later became the infobox photo).</li>
     </ul>
     <h3>Notes</h3>
     <ul>
@@ -628,11 +633,11 @@ function updateCatStatus() {
     + (remaining ? ` ${remaining} file(s) left — Save now to resume later.` : " Done.")
     + (cat.truncated ? ` (Capped at ${CAT_FILE_CAP} files — use “Slow un-capped scan” for the whole category.)` : "");
   $("loadmore").hidden = remaining === 0;
-  if (cat.scanned > 0) showSave();   // any progress is worth saving (resume later), even with 0 live yet
+  if (cat.scanned > 0 || cat.people.length) { showSave(); showRecheck(); }
 }
 async function scanAndRender() {
-  const go = $("go"), more = $("loadmore_btn"), save = $("save_gh");
-  go.disabled = true; more.disabled = true; save.disabled = true;   // no save mid-chunk (would drop the in-flight batch)
+  const go = $("go"), more = $("loadmore_btn"), save = $("save_gh"), recheck = $("recheck_btn");
+  go.disabled = true; more.disabled = true; save.disabled = true; recheck.disabled = true;   // no save/recheck mid-chunk
   try {
     $("status").className = ""; $("status").textContent = "Checking depicts and current infobox photos…";
     const people = await scanCatChunk();
@@ -644,7 +649,7 @@ async function scanAndRender() {
     showError(/rate-limiting/i.test(err.message)
       ? "Wikimedia is rate-limiting us right now. Wait a moment and try again." : "Error: " + err.message);
   } finally {
-    go.disabled = false; more.disabled = false; save.disabled = false;
+    go.disabled = false; more.disabled = false; save.disabled = false; recheck.disabled = false;
   }
 }
 function resetCat(inp) {
@@ -672,7 +677,7 @@ async function run() {
   const status = $("status"), go = $("go");
   status.className = ""; status.textContent = "Resolving…";
   $("subject").innerHTML = ""; $("results").innerHTML = ""; $("loadmore").hidden = true;
-  hideSave(); single = null; shownPeople = {}; personSeq = 0; go.disabled = true;
+  hideSave(); hideRecheck(); single = null; shownPeople = {}; personSeq = 0; go.disabled = true;
   try {
     const inp = parseInput($("q").value);
     if (!inp) { showError("Enter an article link, a file name, a file link, or a category."); return; }
@@ -879,6 +884,32 @@ async function saveToGitHub() {
 }
 function showSave() { const b = $("save_gh"); if (b) b.hidden = false; }
 function hideSave() { const b = $("save_gh"); if (b) b.hidden = true; }
+function showRecheck() { $("recheck").hidden = false; }
+function hideRecheck() { $("recheck").hidden = true; }
+
+// Re-check all files: re-enumerate the whole category and re-run depicts +
+// liveness across every file, keeping the people already found (they're skipped
+// via cat.done) and adding anyone who became live since the scan — e.g. a file
+// that only got a depicts statement, or only became the infobox photo, later.
+async function recheckAll() {
+  if (!currentInput || currentInput.type !== "category") return;
+  const btn = $("recheck_btn"), orig = btn.textContent;
+  btn.disabled = true; btn.textContent = "Re-enumerating…";
+  try {
+    const cap = cat.uncapped ? Infinity : CAT_FILE_CAP;
+    const { files, addedThrough } = await enumerateFiles(currentInput.title,
+      Math.max(0, parseInt($("depth").value, 10) || 0), cap);
+    if (addedThrough) cat.addedThrough = addedThrough;   // move the watermark forward
+    cat.queue = files;                                    // re-process every file (done people are skipped)
+    cat.scanned = 0;
+    await scanAndRender();                                // first chunk now; "Scan more files" continues
+  } catch (err) {
+    showError(/rate-limiting/i.test(err.message)
+      ? "Wikimedia is rate-limiting us right now. Wait a moment and try again." : "Error: " + err.message);
+  } finally {
+    btn.disabled = false; btn.textContent = orig;
+  }
+}
 
 // --- read-through: hydrate from a saved record, then refresh deltas ---
 async function currentTopRev(lang, article) {
@@ -979,7 +1010,7 @@ $("uncapped_scan").addEventListener("click", async () => {
     return;
   }
   $("status").className = ""; $("subject").innerHTML = ""; $("results").innerHTML = "";
-  $("loadmore").hidden = true; hideSave(); single = null; shownPeople = {}; personSeq = 0;
+  $("loadmore").hidden = true; hideSave(); hideRecheck(); single = null; shownPeople = {}; personSeq = 0;
   currentInput = inp; $("go").disabled = true;
   try { await runCategory(inp, { uncapped: true }); }
   catch (err) {
@@ -988,6 +1019,7 @@ $("uncapped_scan").addEventListener("click", async () => {
   } finally { $("go").disabled = false; }
 });
 $("loadmore_btn").addEventListener("click", () => scanAndRender());
+$("recheck_btn").addEventListener("click", () => recheckAll());
 $("results").addEventListener("click", e => {
   const deep = e.target.closest(".deep-btn");
   if (deep) { deepSearch(deep.getAttribute("data-id")); return; }
