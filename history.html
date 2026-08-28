@@ -186,10 +186,13 @@ async function* mwQuery(base, params) {
 async function wbGetEntities(base, ids, props, extra) {
   return (await apiGet(base, { action: "wbgetentities", ids: ids.join("|"), props, ...(extra || {}) })).entities || {};
 }
-async function fetchFilesImageinfo(titles) {
+// `base` is the wiki to ask. Query the article's own wiki (not Commons): it
+// returns imageinfo for BOTH locally-uploaded files (e.g. non-free infobox
+// images) and shared Commons files, whereas Commons only knows its own.
+async function fetchFilesImageinfo(base, titles) {
   const result = {};
   for (const batch of chunked(titles)) {
-    for await (const query of mwQuery(COMMONS_API, { titles: batch.join("|"), prop: "imageinfo",
+    for await (const query of mwQuery(base, { titles: batch.join("|"), prop: "imageinfo",
         iiprop: "timestamp|url|extmetadata|size", iiurlwidth: String(THUMB_WIDTH) })) {
       for (const page of Object.values(query.pages || {})) {
         const info = (page.imageinfo || [])[0]; if (!info) continue;
@@ -306,11 +309,15 @@ async function buildTimeline(lang, article, budget, wantDistinct, resume, opts) 
         read++;
         const wt = ((r.slots || {}).main || {})["*"] || "";
         const m = INFOBOX_IMG.exec(wt); if (!m) continue;
-        // Editors leave HTML comments / tags after the filename ("Foo.jpg <!-- note -->");
-        // strip comments and cut at any remaining "<" before building the File: title.
-        const val = m[1].replace(/<!--[\s\S]*?-->/g, "").replace(/<.*$/, "").trim();
-        if (!val) continue;
-        const file = "File:" + val.replace(/^\s*(?:File|Image)\s*:\s*/i, "");
+        // Editors leave HTML comments / tags after the filename ("Foo.jpg <!-- note -->"),
+        // sometimes wrap it in [[File:…]], and sometimes the value is a template or
+        // empty. Strip the noise, then require a plain image filename so junk/empty
+        // captures don't become unreadable cards.
+        let val = m[1].replace(/<!--[\s\S]*?-->/g, "").replace(/<.*$/, "").trim();
+        val = val.replace(/^\[\[\s*/, "").replace(/\s*\]\]\s*$/, "")
+                 .replace(/^\s*(?:File|Image)\s*:\s*/i, "").trim();
+        if (!/\.(jpe?g|png|gif|tiff?|webp|svg)$/i.test(val)) continue;
+        const file = "File:" + val;
         const key = cropParent(file) || file;
         if (!timeline.length || timeline[timeline.length - 1].key !== key)
           timeline.push({ file, key, rev: r.revid, ts: r.timestamp, user: r.user });
@@ -336,7 +343,7 @@ async function cropFamily(fileTitle, exclude) {
   const titles = ((d.query || {}).prefixsearch || []).map(r => r.title)
     .filter(t => sameOrCrop(t, baseFile) && t !== exclude);
   if (!titles.length) return [];
-  const info = await fetchFilesImageinfo(titles);
+  const info = await fetchFilesImageinfo(COMMONS_API, titles);   // crop siblings are Commons files
   return titles.map(t => info[t]).filter(Boolean);
 }
 
@@ -393,11 +400,16 @@ async function scanCatChunk() {
   return people;
 }
 
-// Fetch imageinfo for every shown photo across a set of people, in one batch.
+// Fetch imageinfo for every shown photo, batched per wiki (people can be on
+// different Wikipedias, and infobox images may be local to that wiki).
 async function attachInfo(people) {
-  const files = [...new Set(people.flatMap(p => p.shown.map(e => e.file)))];
-  const info = files.length ? await fetchFilesImageinfo(files) : {};
-  for (const p of people) for (const e of p.shown) e.info = info[e.file] || null;
+  const byLang = {};
+  for (const p of people) for (const e of p.shown)
+    (byLang[p.lang] = byLang[p.lang] || new Set()).add(e.file);
+  const info = {};
+  for (const [lang, set] of Object.entries(byLang))
+    info[lang] = await fetchFilesImageinfo(wpApi(lang), [...set]);
+  for (const p of people) for (const e of p.shown) e.info = (info[p.lang] || {})[e.file] || null;
 }
 
 let personSeq = 0;              // stable ids so a single row can be re-rendered in place
@@ -459,7 +471,7 @@ function tlCard(entry, i, newer) {
     <div class="tl-head">${esc(headLabel(i))}</div>
     ${photo}
     <div class="meta left" style="text-align:left">
-      ${row("File", link(info ? info.descriptionurl : "", entry.file))}${author}
+      ${row("File", link(info ? info.descriptionurl : "", entry.file.replace(/^File:/i, "")))}${author}
       ${info ? row("Resolution", resolution(info)) : ""}
       ${info ? row("Date taken", esc(dateOnly(info.taken))) : ""}
       ${usedInfo}
@@ -565,7 +577,7 @@ async function finishSingle() {
   const s = single;
   $("status").className = ""; $("status").textContent = "Fetching photo details…";
   s.shown = s.timeline.slice(0, s.count);
-  const info = await fetchFilesImageinfo(s.shown.map(e => e.file));
+  const info = await fetchFilesImageinfo(wpApi(s.lang), s.shown.map(e => e.file));
   for (const e of s.shown) e.info = info[e.file] || null;
   await ensureFam();   // crops of each shown photo, unless originals are hidden
   renderSingle();
