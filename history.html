@@ -453,8 +453,10 @@ async function filesAddedSince(category, depth, since) {
   return { files, addedThrough };
 }
 
-// Category walk state: remaining file queue, running tallies, dedup of people.
-const cat = { queue: [], scanned: 0, live: 0, truncated: false, count: 3, done: new Set(), addedThrough: "" };
+// Category walk state: remaining file queue, running tallies, dedup of people,
+// and the accumulated live people (rendered sorted by initial-photo date).
+const cat = { queue: [], scanned: 0, truncated: false, count: 3, done: new Set(),
+              addedThrough: "", people: [] };
 
 // Resolve a list of files to the live people whose current infobox photo is one
 // of them (crop-aware), and build each person's history. Shared by the chunk
@@ -490,7 +492,6 @@ async function processFiles(fileList) {
                   topRev: res.topRev, shown: res.timeline.slice(0, cat.count), more: res.more });
   }
   await attachInfo(people);
-  cat.live += people.length;
   return people;
 }
 // Process the next CAT_CHUNK files from the queue.
@@ -515,6 +516,25 @@ async function attachInfo(people) {
 let personSeq = 0;              // stable ids so a single row can be re-rendered in place
 let shownPeople = {};           // id -> person (for the deeper-search re-render); reset each run()
 function renderPerson(p) { const id = "pb-" + personSeq++; p._id = id; shownPeople[id] = p; return renderPersonBlock(id, p); }
+
+// Sort key for category people: when the INITIAL infobox photo was taken
+// (earliest capture date among the shown photos). Undated sinks to the end.
+function takenTime(entry) {
+  const m = /(\d{4})-(\d{2})-(\d{2})/.exec((entry && entry.info && entry.info.taken) || "");
+  return m ? Date.UTC(+m[1], +m[2] - 1, +m[3]) : null;
+}
+function personSortKey(p) {
+  let best = null;
+  for (const e of p.shown || []) { const t = takenTime(e); if (t != null && (best == null || t < best)) best = t; }
+  return best == null ? Infinity : best;
+}
+// Render all accumulated category people, sorted by initial-photo date (oldest
+// first). Rebuilds ids so a later deep-search re-renders the right block.
+function renderCatPeople() {
+  cat.people.sort((a, b) => personSortKey(a) - personSortKey(b));
+  shownPeople = {}; personSeq = 0;
+  $("results").innerHTML = cat.people.map(renderPerson).join("");
+}
 function renderPersonBlock(id, p) {
   LANG = p.lang;                // diff links in tlCard() read this; set per person
   const cards = p.shown.map((e, i) => tlCard(e, i, p.shown[i - 1])).join("");
@@ -590,32 +610,32 @@ function showWarn(msg) { return `<div class="warn-banner">${esc(msg)}</div>`; }
 function updateCatStatus() {
   const s = $("status"); s.className = "";
   const remaining = cat.queue.length;
-  s.textContent = `Scanned ${cat.scanned} file(s); ${cat.live} currently live in an infobox.`
-    + (remaining ? ` ${remaining} file(s) left.` : " Done.")
+  s.textContent = `Scanned ${cat.scanned} file(s); ${cat.people.length} currently live in an infobox.`
+    + (remaining ? ` ${remaining} file(s) left — Save now to resume later.` : " Done.")
     + (cat.truncated ? ` (Category capped at ${CAT_FILE_CAP} files.)` : "");
   $("loadmore").hidden = remaining === 0;
-  if (remaining === 0) showSave();   // fully pulled → can save
+  if (cat.people.length) showSave();   // any results (even partial) can be saved
 }
 async function scanAndRender() {
-  const go = $("go"), more = $("loadmore_btn");
-  go.disabled = true; more.disabled = true;
+  const go = $("go"), more = $("loadmore_btn"), save = $("save_gh");
+  go.disabled = true; more.disabled = true; save.disabled = true;   // no save mid-chunk (would drop the in-flight batch)
   try {
     $("status").className = ""; $("status").textContent = "Checking depicts and current infobox photos…";
     const people = await scanCatChunk();
-    if (people.length) $("results").insertAdjacentHTML("beforeend", people.map(renderPerson).join(""));
-    else if (!cat.queue.length && !cat.live)
+    if (people.length) { cat.people.push(...people); renderCatPeople(); }
+    else if (!cat.queue.length && !cat.people.length)
       $("results").innerHTML = `<p class="none">No photo in this category is currently the infobox photo of the person it depicts.</p>`;
     updateCatStatus();
   } catch (err) {
     showError(/rate-limiting/i.test(err.message)
       ? "Wikimedia is rate-limiting us right now. Wait a moment and try again." : "Error: " + err.message);
   } finally {
-    go.disabled = false; more.disabled = false;
+    go.disabled = false; more.disabled = false; save.disabled = false;
   }
 }
 function resetCat(inp) {
-  cat.queue = []; cat.scanned = 0; cat.live = 0; cat.truncated = false;
-  cat.count = imgCount(); cat.done = new Set(); cat.addedThrough = "";
+  cat.queue = []; cat.scanned = 0; cat.truncated = false;
+  cat.count = imgCount(); cat.done = new Set(); cat.addedThrough = ""; cat.people = [];
 }
 async function runCategory(inp) {
   resetCat(inp);
@@ -797,8 +817,11 @@ function buildPayload() {
   const base = { schema: 1, algoVersion: ALGO_VERSION, identity: cacheIdentity(currentInput),
     asOf: new Date().toISOString(), input: currentInput };
   if (currentInput.type === "category") {
+    // `pending`/`done`/`scanned` let a big category be saved mid-scan and resumed
+    // in a later session; `pending` is empty once the whole category is scanned.
     return { ...base, type: "category", count: cat.count, addedThrough: cat.addedThrough || "",
-      people: Object.values(shownPeople).map(p => ({ lang: p.lang, article: p.article,
+      scanned: cat.scanned, pending: cat.queue.slice(), done: [...cat.done],
+      people: cat.people.map(p => ({ lang: p.lang, article: p.article,
         label: p.label || null, qid: p.qid || null, topRev: p.topRev || null, more: !!p.more,
         timeline: timelineToJson(p.shown) })) };
   }
@@ -873,19 +896,21 @@ async function hydrateCategory(data, inp) {
   resetCat(inp);
   cat.count = data.count || imgCount();
   cat.addedThrough = data.addedThrough || "";
-  const stored = (data.people || []).map(p => ({ lang: p.lang, article: p.article, label: p.label,
+  cat.scanned = data.scanned || (data.people || []).length;
+  cat.queue = (data.pending || []).slice();                 // resume an unfinished scan
+  for (const k of (data.done || [])) cat.done.add(k);
+  cat.people = (data.people || []).map(p => ({ lang: p.lang, article: p.article, label: p.label,
     qid: p.qid, topRev: p.topRev, more: p.more,
     shown: p.timeline.map(e => ({ ...e, key: cropParent(e.file) || e.file })) }));
-  for (const p of stored) cat.done.add(p.lang + ":" + p.article);
+  for (const p of cat.people) cat.done.add(p.lang + ":" + p.article);
   $("subject").innerHTML = `<p class="lead"><strong>${esc(inp.title)}</strong> — saved record from `
-    + `${esc((data.asOf || "").slice(0, 10))} (${stored.length} live); checking for changes…</p>`;
-  await attachInfo(stored);
-  cat.live = stored.length;
-  $("results").innerHTML = stored.map(renderPerson).join("");
+    + `${esc((data.asOf || "").slice(0, 10))} (${cat.people.length} live${cat.queue.length ? `, ${cat.queue.length} file(s) not yet scanned` : ""}); checking for changes…</p>`;
+  await attachInfo(cat.people);
+  renderCatPeople();
   // Refresh stored people whose article changed since save.
   $("status").className = ""; $("status").textContent = "Checking stored people for updates…";
   const byLang = {};
-  for (const p of stored) (byLang[p.lang] = byLang[p.lang] || []).push(p);
+  for (const p of cat.people) (byLang[p.lang] = byLang[p.lang] || []).push(p);
   for (const [lang, ps] of Object.entries(byLang)) {
     const last = await lastRevIds(lang, ps.map(p => p.article));
     for (const p of ps) {
@@ -900,15 +925,13 @@ async function hydrateCategory(data, inp) {
   // Add people from files added to the category after the saved watermark.
   $("status").className = ""; $("status").textContent = "Checking for new photos…";
   const { files, addedThrough } = await filesAddedSince(inp.title, Math.max(0, parseInt($("depth").value, 10) || 0), cat.addedThrough || "");
-  const before = cat.live;
+  const before = cat.people.length;
   if (files.length) {
     const fresh = await processFiles(files);
-    if (fresh.length) $("results").insertAdjacentHTML("beforeend", fresh.map(renderPerson).join(""));
+    if (fresh.length) { cat.people.push(...fresh); renderCatPeople(); }
   }
   if (addedThrough && addedThrough > cat.addedThrough) cat.addedThrough = addedThrough;
-  $("status").className = "";
-  $("status").textContent = `Saved record loaded; ${cat.live} live${cat.live > before ? ` (+${cat.live - before} new)` : ""}.`;
-  showSave();
+  updateCatStatus();   // reflects live count, remaining queue (Scan more files), and enables Save
 }
 
 $("save_gh").addEventListener("click", saveToGitHub);
