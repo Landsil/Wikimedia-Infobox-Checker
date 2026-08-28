@@ -83,9 +83,12 @@ const WIKIDATA_API = "https://www.wikidata.org/w/api.php";
 const BATCH = 50;
 const THUMB_WIDTH = 320;
 const REV_PAGE = 50;            // revisions fetched per API page (rvlimit)
-const SINGLE_REV_LIMIT = 500;   // revisions walked on the first single article/file pass
+// We read only the lead section (rvsection=0) per revision — ~2% of full-article
+// payload — so bandwidth is no longer the limiter; round-trips (budget/REV_PAGE
+// requests) are, which is why the caps are generous but not unbounded.
+const SINGLE_REV_LIMIT = 1000;  // revisions walked on the first single article/file pass
 const SINGLE_REV_EXTEND = 1000; // extra revisions per "Search another N revisions" click
-const CAT_REV_LIMIT = 100;      // max revisions walked per person in category mode
+const CAT_REV_LIMIT = 200;      // max revisions walked per person in category mode
 const PREVIOUS = 2;             // previous photos shown (current + PREVIOUS)
 const CAT_CHUNK = 20;           // people scanned per "Scan more people" (one history walk each)
 const CAT_ARTICLE_CAP = 3000;   // safety cap on articles enumerated from a category tree
@@ -250,37 +253,53 @@ async function currentLead(lang, article) {
 // Reads up to `budget` NEW revisions this call, following `continue`, stopping
 // once `wantDistinct` photos are collected. `resume` ({ timeline, cont }) lets a
 // follow-up call continue exactly where a previous one stopped, so extra budget
-// is spent on unseen history rather than re-reading it. Returns { timeline, more,
-// cont, read }: `more` = budget hit with history still remaining; `cont` = the
-// continue token to resume from; `read` = revisions read this call.
+// is spent on unseen history rather than re-reading it.
+//
+// Only the lead section (rvsection=0) is fetched — the infobox lives there, and
+// it's ~2% of the full-article payload. If the lead section yields no image at
+// all on a fresh walk (exotic case: infobox transcluded below a heading), and
+// `opts.allowFallback` is set, we retry once with full content so correctness
+// can't regress. `opts.fullContent` forces the full-content mode (used when a
+// resume must match a walk that already fell back).
+//
+// Returns { timeline, more, cont, read, usedFull }.
 const INFOBOX_IMG = /\|\s*(?:image|image_name|photo|img)\s*=\s*([^\n|}]+)/i;
-async function buildTimeline(lang, article, budget, wantDistinct, resume) {
-  const timeline = resume ? resume.timeline : [];
-  let read = 0;
-  const p = { action: "query", prop: "revisions", titles: article,
+async function buildTimeline(lang, article, budget, wantDistinct, resume, opts) {
+  opts = opts || {};
+  const base = { action: "query", prop: "revisions", titles: article,
     rvprop: "ids|timestamp|user|comment|content", rvslots: "main",
     rvlimit: String(REV_PAGE), rvdir: "older" };
-  if (resume && resume.cont) Object.assign(p, resume.cont);
-  while (true) {
-    const d = await apiGet(wpApi(lang), p);
-    const page = Object.values((d.query || {}).pages || {})[0];
-    for (const r of (page && page.revisions) || []) {
-      read++;
-      const wt = ((r.slots || {}).main || {})["*"] || "";
-      const m = INFOBOX_IMG.exec(wt); if (!m) continue;
-      // Editors leave HTML comments / tags after the filename ("Foo.jpg <!-- note -->");
-      // strip comments and cut at any remaining "<" before building the File: title.
-      const val = m[1].replace(/<!--[\s\S]*?-->/g, "").replace(/<.*$/, "").trim();
-      if (!val) continue;
-      const file = "File:" + val.replace(/^\s*(?:File|Image)\s*:\s*/i, "");
-      const key = cropParent(file) || file;
-      if (!timeline.length || timeline[timeline.length - 1].key !== key)
-        timeline.push({ file, key, rev: r.revid, ts: r.timestamp, user: r.user });
-      if (timeline.length >= wantDistinct) return { timeline, more: false, cont: null, read };
+  const walk = async (extra, startTimeline, startCont) => {
+    const timeline = startTimeline || [];
+    let read = 0;
+    const p = { ...base, ...extra };
+    if (startCont) Object.assign(p, startCont);
+    while (true) {
+      const d = await apiGet(wpApi(lang), p);
+      const page = Object.values((d.query || {}).pages || {})[0];
+      for (const r of (page && page.revisions) || []) {
+        read++;
+        const wt = ((r.slots || {}).main || {})["*"] || "";
+        const m = INFOBOX_IMG.exec(wt); if (!m) continue;
+        // Editors leave HTML comments / tags after the filename ("Foo.jpg <!-- note -->");
+        // strip comments and cut at any remaining "<" before building the File: title.
+        const val = m[1].replace(/<!--[\s\S]*?-->/g, "").replace(/<.*$/, "").trim();
+        if (!val) continue;
+        const file = "File:" + val.replace(/^\s*(?:File|Image)\s*:\s*/i, "");
+        const key = cropParent(file) || file;
+        if (!timeline.length || timeline[timeline.length - 1].key !== key)
+          timeline.push({ file, key, rev: r.revid, ts: r.timestamp, user: r.user });
+        if (timeline.length >= wantDistinct) return { timeline, more: false, cont: null, read };
+      }
+      if (read >= budget) return { timeline, more: !!d.continue, cont: d.continue || null, read };
+      if (d.continue) Object.assign(p, d.continue); else return { timeline, more: false, cont: null, read };
     }
-    if (read >= budget) return { timeline, more: !!d.continue, cont: d.continue || null, read };
-    if (d.continue) Object.assign(p, d.continue); else return { timeline, more: false, cont: null, read };
-  }
+  };
+  const res = await walk(opts.fullContent ? {} : { rvsection: "0" },
+    resume ? resume.timeline : [], resume ? resume.cont : null);
+  if (!opts.fullContent && opts.allowFallback && !resume && res.timeline.length === 0)
+    return { ...(await walk({}, [], null)), usedFull: true };
+  return { ...res, usedFull: !!opts.fullContent };
 }
 
 // Base + crop variants of a photo (excluding `exclude`). One prefixsearch + imageinfo.
@@ -474,7 +493,7 @@ async function run() {
     LANG = lang;
 
     status.textContent = "Reading the article's revision history…";
-    const res = await buildTimeline(lang, article, SINGLE_REV_LIMIT, PREVIOUS + 1);
+    const res = await buildTimeline(lang, article, SINGLE_REV_LIMIT, PREVIOUS + 1, null, { allowFallback: true });
     if (!res.timeline.length) { showError(`No infobox photo found in ${article}'s recent history.`); return; }
 
     const subjHtml = label
@@ -484,7 +503,7 @@ async function run() {
     $("subject").innerHTML = subjHtml;
 
     single = { lang, article, warnMsg, timeline: res.timeline, more: res.more,
-               cont: res.cont, scanned: res.read };
+               cont: res.cont, scanned: res.read, fullContent: res.usedFull };
     await finishSingle();
   } catch (err) {
     showError(/rate-limiting/i.test(err.message)
@@ -525,7 +544,7 @@ async function extendSingle() {
   if (btn) { btn.disabled = true; btn.textContent = "Searching…"; }
   try {
     const res = await buildTimeline(s.lang, s.article, SINGLE_REV_EXTEND, PREVIOUS + 1,
-      { timeline: s.timeline, cont: s.cont });
+      { timeline: s.timeline, cont: s.cont }, { fullContent: s.fullContent });
     s.timeline = res.timeline; s.more = res.more; s.cont = res.cont; s.scanned += res.read;
     await finishSingle();
   } catch (err) {
