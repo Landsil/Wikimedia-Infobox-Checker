@@ -46,6 +46,7 @@
 </header>
 <main>
   <div id="status"></div>
+  <div id="mode_badge" hidden></div>
   <div id="subject"></div>
   <div id="loadmore" hidden>
     <button type="button" id="loadmore_btn">Scan more files</button>
@@ -305,21 +306,33 @@ async function resolveSubjectFromFile(fileTitle) {
 // Batched version for category mode: resolve many files' depicted person at once.
 // file -> pageid (Commons info) -> depicts QIDs (Commons entities) -> person
 // (Wikidata entities). Returns a Map of file -> {lang,article,label,qid}.
-async function batchResolve(files) {
+async function batchResolve(files, onProgress) {
   const pageid = {};                                     // file -> Commons pageid
-  for (const b of chunked(files))
+  let n = 0;
+  for (const b of chunked(files)) {
     for await (const q of mwQuery(COMMONS_API, { titles: b.join("|"), prop: "info" }))
       for (const p of Object.values(q.pages || {})) if (!("missing" in p)) pageid[p.title] = p.pageid;
+    n += b.length;
+    if (onProgress) onProgress(`Reading file info ${n}/${files.length}…`);
+  }
 
   const midToQids = {};                                  // "M<id>" -> [qids]
-  for (const b of chunked(Object.values(pageid).map(id => "M" + id))) {
+  const mids = Object.values(pageid).map(id => "M" + id);
+  n = 0;
+  for (const b of chunked(mids)) {
     const ents = await wbGetEntities(COMMONS_API, b, "claims");
     for (const [mid, ent] of Object.entries(ents)) midToQids[mid] = allDepictsQids(ent.statements || ent.claims || {});
+    n += b.length;
+    if (onProgress) onProgress(`Reading depicts statements ${n}/${mids.length}…`);
   }
   const allQids = [...new Set(Object.values(midToQids).flat())];
   const wd = {};
-  for (const b of chunked(allQids))
+  n = 0;
+  for (const b of chunked(allQids)) {
     Object.assign(wd, await wbGetEntities(WIKIDATA_API, b, "claims|sitelinks|labels", { languages: "en" }));
+    n += b.length;
+    if (onProgress) onProgress(`Resolving people ${n}/${allQids.length}…`);
+  }
 
   const out = new Map();
   for (const file of files) {
@@ -479,14 +492,15 @@ const cat = { queue: [], scanned: 0, truncated: false, count: 3, done: new Set()
 // Resolve a list of files to the live people whose current infobox photo is one
 // of them (crop-aware), and build each person's history. Shared by the chunk
 // scan and the incremental refresh.
-async function processFiles(fileList) {
+async function processFiles(fileList, onProgress) {
   // 1. Resolve every file's depicted person in batched queries (cheap in bulk).
-  const resolved = await batchResolve(fileList);
+  const resolved = await batchResolve(fileList, onProgress);
   const candidates = [...resolved].map(([file, subj]) => ({ file, ...subj }))
     .filter(c => !cat.done.has(c.lang + ":" + c.article));
   // 2. Batch the current-lead lookup per wiki, then keep files that are the lead
   //    (crop-aware) and dedup by person AFTER the liveness check (a person may be
   //    depicted by several files; only the one matching the infobox is "live").
+  if (onProgress) onProgress(`Checking current infobox photos for ${candidates.length} candidate(s)…`);
   const byLang = {};
   for (const c of candidates) (byLang[c.lang] = byLang[c.lang] || new Set()).add(c.article);
   const leads = {};
@@ -501,7 +515,9 @@ async function processFiles(fileList) {
   // 3. Walk history only for the live people (require a real infobox |image=
   //    whose current entry is this photo; plain lead thumbnails have no history).
   const people = [];
+  let i = 0;
   for (const c of live) {
+    if (onProgress) onProgress(`Building history ${++i}/${live.length}: ${c.label || c.article}`);
     cat.done.add(c.lang + ":" + c.article);
     let res;
     try { res = await buildTimeline(c.lang, c.article, CAT_REV_LIMIT, cat.count); } catch (_) { continue; }
@@ -515,10 +531,12 @@ async function processFiles(fileList) {
 // How many files a "Scan more files" click processes (user-adjustable, 1..5000).
 const chunkSize = () => Math.min(5000, Math.max(1, parseInt($("chunk_size").value, 10) || CAT_CHUNK));
 // Process the next chunk of files from the queue.
-async function scanCatChunk() {
+async function scanCatChunk(onProgress) {
   const batch = cat.queue.splice(0, chunkSize());
+  const start = cat.scanned + 1, end = cat.scanned + batch.length;
   cat.scanned += batch.length;
-  return processFiles(batch);
+  const label = onProgress ? (msg => onProgress(`Files ${start}-${end}: ${msg}`)) : null;
+  return processFiles(batch, label);
 }
 
 // Fetch imageinfo for every shown photo, batched per wiki (people can be on
@@ -624,6 +642,27 @@ let LANG = "en";   // wiki of the article being shown (for diff links)
 function showError(msg) { const s = $("status"); s.className = "error"; s.textContent = msg; }
 function showWarn(msg) { return `<div class="warn-banner">${esc(msg)}</div>`; }
 
+// Persistent badge telling you whether you're looking at a fresh scan or saved
+// history (+ when it was saved). Inline-styled so it needs no shared-CSS change.
+function setModeBadge(kind, when) {
+  const el = $("mode_badge"); if (!el) return;
+  const base = "display:inline-block;padding:2px 10px;border-radius:10px;font-size:12px;font-weight:600;";
+  let text, style;
+  if (kind === "cache") {
+    text = `From saved history${when ? " — saved " + esc(when) : ""}`;
+    style = base + "background:#eef6ec;color:#276749;border:1px solid #cbe6cf;";
+  } else if (kind === "recheck") {
+    text = "Re-checked all files (live)";
+    style = base + "background:#fdf3e6;color:#9a5b00;border:1px solid #f0d9b5;";
+  } else {
+    text = "Live scan";
+    style = base + "background:#eef2f7;color:#2b6cb0;border:1px solid #d6e0ec;";
+  }
+  el.innerHTML = `<span style="${style}">${text}</span>`;
+  el.hidden = false;
+}
+function hideBadge() { const el = $("mode_badge"); if (el) { el.hidden = true; el.innerHTML = ""; } }
+
 // Category mode: scan files in chunks; render people whose current infobox photo
 // is from this Commons category, with their history.
 function updateCatStatus() {
@@ -640,7 +679,7 @@ async function scanAndRender() {
   go.disabled = true; more.disabled = true; save.disabled = true; recheck.disabled = true;   // no save/recheck mid-chunk
   try {
     $("status").className = ""; $("status").textContent = "Checking depicts and current infobox photos…";
-    const people = await scanCatChunk();
+    const people = await scanCatChunk(msg => { $("status").className = ""; $("status").textContent = msg; });
     if (people.length) { cat.people.push(...people); renderCatPeople(); }
     else if (!cat.queue.length && !cat.people.length)
       $("results").innerHTML = `<p class="none">No photo in this category is currently the infobox photo of the person it depicts.</p>`;
@@ -670,6 +709,7 @@ async function runCategory(inp, opts) {
   cat.queue = files;
   $("subject").innerHTML = `<p class="lead"><strong>${esc(inp.title)}</strong> — `
     + `${files.length}${cat.truncated ? "+" : ""} file(s); showing people whose current infobox photo is from this category.</p>`;
+  setModeBadge("live");
   await scanAndRender();
 }
 
@@ -677,7 +717,7 @@ async function run() {
   const status = $("status"), go = $("go");
   status.className = ""; status.textContent = "Resolving…";
   $("subject").innerHTML = ""; $("results").innerHTML = ""; $("loadmore").hidden = true;
-  hideSave(); hideRecheck(); single = null; shownPeople = {}; personSeq = 0; go.disabled = true;
+  hideSave(); hideRecheck(); hideBadge(); single = null; shownPeople = {}; personSeq = 0; go.disabled = true;
   try {
     const inp = parseInput($("q").value);
     if (!inp) { showError("Enter an article link, a file name, a file link, or a category."); return; }
@@ -717,6 +757,7 @@ async function run() {
 
     single = { lang, article, label, qid, warnMsg, timeline: res.timeline, more: res.more,
                cont: res.cont, scanned: res.read, fullContent: res.usedFull, count, topRev: res.topRev };
+    setModeBadge("live");
     await finishSingle();
   } catch (err) {
     showError(/rate-limiting/i.test(err.message)
@@ -902,6 +943,7 @@ async function recheckAll() {
     if (addedThrough) cat.addedThrough = addedThrough;   // move the watermark forward
     cat.queue = files;                                    // re-process every file (done people are skipped)
     cat.scanned = 0;
+    setModeBadge("recheck");
     await scanAndRender();                                // first chunk now; "Scan more files" continues
   } catch (err) {
     showError(/rate-limiting/i.test(err.message)
@@ -937,6 +979,7 @@ async function hydrateSingle(data, inp) {
     timeline: data.timeline.map(e => ({ ...e, key: cropParent(e.file) || e.file })),
     more: data.more, cont: data.cont, fullContent: data.fullContent, scanned: data.scanned || 0,
     count: imgCount(), topRev: data.topRev };
+  setModeBadge("cache", (data.asOf || "").slice(0, 10));
   $("status").className = ""; $("status").textContent = "Loaded saved record; checking for changes…";
   try {
     const cur = await currentTopRev(data.lang, data.article);
@@ -961,6 +1004,7 @@ async function hydrateCategory(data, inp) {
   for (const p of cat.people) cat.done.add(p.lang + ":" + p.article);
   $("subject").innerHTML = `<p class="lead"><strong>${esc(inp.title)}</strong> — saved record from `
     + `${esc((data.asOf || "").slice(0, 10))} (${cat.people.length} live); checking for changes…</p>`;
+  setModeBadge("cache", (data.asOf || "").slice(0, 10));
   await attachInfo(cat.people);
   renderCatPeople();
   // Refresh stored people whose article changed since save.
@@ -983,7 +1027,7 @@ async function hydrateCategory(data, inp) {
   const { files, addedThrough } = await filesAddedSince(inp.title, Math.max(0, parseInt($("depth").value, 10) || 0), cat.addedThrough || "");
   const before = cat.people.length;
   if (files.length) {
-    const fresh = await processFiles(files);
+    const fresh = await processFiles(files, msg => { $("status").className = ""; $("status").textContent = "New photos — " + msg; });
     if (fresh.length) { cat.people.push(...fresh); renderCatPeople(); }
   }
   if (addedThrough && addedThrough > cat.addedThrough) cat.addedThrough = addedThrough;
