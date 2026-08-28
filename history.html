@@ -43,8 +43,8 @@
 <main>
   <div id="status"></div>
   <div id="subject"></div>
-  <div id="results"></div>
   <div id="loadmore" hidden><button type="button" id="loadmore_btn">Scan more files</button></div>
+  <div id="results"></div>
 </main>
 
 <div class="overlay" id="about_overlay" hidden>
@@ -103,7 +103,7 @@ const REV_PAGE = 50;            // revisions fetched per API page (rvlimit)
 const SINGLE_REV_LIMIT = 1000;  // revisions walked on the first single article/file pass
 const SINGLE_REV_EXTEND = 1000; // extra revisions per "Search another N revisions" click
 const CAT_REV_LIMIT = 200;      // max revisions walked per person in category mode
-const CAT_CHUNK = 15;           // files scanned per "Scan more files" (depicts + history each)
+const CAT_CHUNK = 100;          // files scanned per "Scan more files" (depicts resolved in batches)
 const CAT_FILE_CAP = 3000;      // safety cap on files enumerated from a Commons category tree
 const MAX_RETRIES = 6;
 const BACKOFF_BASE = 1.0;
@@ -245,19 +245,11 @@ function allDepictsQids(claims) {
   return out;
 }
 
-// File -> depicted person -> their article. Returns {lang,article,label,qid} or {error}.
-async function resolveSubjectFromFile(fileTitle) {
-  const d = await apiGet(COMMONS_API, { action: "query", titles: fileTitle, prop: "info" });
-  const page = Object.values(d.query.pages)[0];
-  if (!page || "missing" in page) return { error: `No such Commons file: ${fileTitle}` };
-  const ents = await wbGetEntities(COMMONS_API, ["M" + page.pageid], "claims");
-  const ent = ents["M" + page.pageid] || {};
-  const st = ent.statements || ent.claims || {};
-  const qids = allDepictsQids(st);
-  if (!qids.length) return { error: `“${fileTitle}” has no depicts (P180) statement, so I can't tell who it's of.` };
-  const we = await wbGetEntities(WIKIDATA_API, qids.slice(0, BATCH), "claims|sitelinks|labels", { languages: "en" });
+// Given depicts QIDs and their fetched Wikidata entities, return the first that
+// is a human (P31=Q5) with a Wikipedia article: {lang,article,label,qid}, else null.
+function subjectFromQids(qids, entities) {
   for (const q of qids) {
-    const e = we[q]; if (!e) continue;
+    const e = entities[q]; if (!e) continue;
     const claims = e.claims || {};
     const human = (claims.P31 || []).some(s => { try { return s.mainsnak.datavalue.value.id === "Q5"; } catch (_) { return false; } });
     if (!human) continue;
@@ -265,16 +257,67 @@ async function resolveSubjectFromFile(fileTitle) {
     const label = (e.labels && e.labels.en && e.labels.en.value) || q;
     let site = "enwiki", title = (sl.enwiki || {}).title;
     if (!title) for (const [s, l] of Object.entries(sl)) { if (s.endsWith("wiki") && !NON_WIKIPEDIA_WIKIS.has(s)) { site = s; title = l.title; break; } }
-    if (!title) return { error: `${label} (the depicted person) has no Wikipedia article.` };
+    if (!title) continue;
     return { lang: wikiLang(site), article: title, label, qid: q };
   }
-  return { error: `“${fileTitle}” depicts something that isn't a person.` };
+  return null;
+}
+
+// File -> depicted person -> their article. Returns {lang,article,label,qid} or {error}.
+async function resolveSubjectFromFile(fileTitle) {
+  const d = await apiGet(COMMONS_API, { action: "query", titles: fileTitle, prop: "info" });
+  const page = Object.values(d.query.pages)[0];
+  if (!page || "missing" in page) return { error: `No such Commons file: ${fileTitle}` };
+  const ents = await wbGetEntities(COMMONS_API, ["M" + page.pageid], "claims");
+  const st = (ents["M" + page.pageid] || {});
+  const qids = allDepictsQids(st.statements || st.claims || {});
+  if (!qids.length) return { error: `“${fileTitle}” has no depicts (P180) statement, so I can't tell who it's of.` };
+  const we = await wbGetEntities(WIKIDATA_API, qids.slice(0, BATCH), "claims|sitelinks|labels", { languages: "en" });
+  const subj = subjectFromQids(qids, we);
+  return subj || { error: `“${fileTitle}” depicts something that isn't a person with a Wikipedia article.` };
+}
+
+// Batched version for category mode: resolve many files' depicted person at once.
+// file -> pageid (Commons info) -> depicts QIDs (Commons entities) -> person
+// (Wikidata entities). Returns a Map of file -> {lang,article,label,qid}.
+async function batchResolve(files) {
+  const pageid = {};                                     // file -> Commons pageid
+  for (const b of chunked(files))
+    for await (const q of mwQuery(COMMONS_API, { titles: b.join("|"), prop: "info" }))
+      for (const p of Object.values(q.pages || {})) if (!("missing" in p)) pageid[p.title] = p.pageid;
+
+  const midToQids = {};                                  // "M<id>" -> [qids]
+  for (const b of chunked(Object.values(pageid).map(id => "M" + id))) {
+    const ents = await wbGetEntities(COMMONS_API, b, "claims");
+    for (const [mid, ent] of Object.entries(ents)) midToQids[mid] = allDepictsQids(ent.statements || ent.claims || {});
+  }
+  const allQids = [...new Set(Object.values(midToQids).flat())];
+  const wd = {};
+  for (const b of chunked(allQids))
+    Object.assign(wd, await wbGetEntities(WIKIDATA_API, b, "claims|sitelinks|labels", { languages: "en" }));
+
+  const out = new Map();
+  for (const file of files) {
+    const pid = pageid[file]; if (pid == null) continue;
+    const subj = subjectFromQids(midToQids["M" + pid] || [], wd);
+    if (subj) out.set(file, subj);
+  }
+  return out;
 }
 
 async function currentLead(lang, article) {
   const d = await apiGet(wpApi(lang), { action: "query", titles: article, prop: "pageimages", piprop: "name", redirects: "1" });
   const p = Object.values((d.query || {}).pages || {})[0];
   return (p && p.pageimage) ? "File:" + p.pageimage.replace(/_/g, " ") : null;
+}
+
+// Batched current-lead lookup: article -> lead File: title, for many articles on one wiki.
+async function currentLeads(lang, articles) {
+  const out = {};
+  for (const b of chunked(articles))
+    for await (const q of mwQuery(wpApi(lang), { titles: b.join("|"), prop: "pageimages", piprop: "name", redirects: "1" }))
+      for (const p of Object.values(q.pages || {})) if (p.pageimage) out[p.title] = "File:" + p.pageimage.replace(/_/g, " ");
+  return out;
 }
 
 // Distinct infobox photos, newest first (crop variants collapsed to one).
@@ -378,25 +421,34 @@ const cat = { queue: [], scanned: 0, live: 0, truncated: false, count: 3, done: 
 // build that person's history for display.
 async function scanCatChunk() {
   const batch = cat.queue.splice(0, CAT_CHUNK);
+  cat.scanned += batch.length;
+  // 1. Resolve every file's depicted person in batched queries (cheap for big chunks).
+  const resolved = await batchResolve(batch);
+  const candidates = [...resolved].map(([file, subj]) => ({ file, ...subj }))
+    .filter(c => !cat.done.has(c.lang + ":" + c.article));
+  // 2. Batch the current-lead lookup per wiki, then keep files that are the lead
+  //    (crop-aware) and dedup by person AFTER the liveness check (a person may be
+  //    depicted by several files; only the one matching the infobox is "live").
+  const byLang = {};
+  for (const c of candidates) (byLang[c.lang] = byLang[c.lang] || new Set()).add(c.article);
+  const leads = {};
+  for (const [lang, set] of Object.entries(byLang)) leads[lang] = await currentLeads(lang, [...set]);
+  const live = [], seen = new Set();
+  for (const c of candidates) {
+    if (!sameOrCrop(c.file, (leads[c.lang] || {})[c.article])) continue;
+    const key = c.lang + ":" + c.article;
+    if (seen.has(key)) continue; seen.add(key);
+    live.push(c);
+  }
+  // 3. Walk history only for the live people (require a real infobox |image=
+  //    whose current entry is this photo; plain lead thumbnails have no history).
   const people = [];
-  for (const file of batch) {
-    cat.scanned++;
-    let r;
-    try { r = await resolveSubjectFromFile(file); } catch (_) { continue; }
-    if (r.error) continue;                                   // no depicts / not a person / no article
-    const key = r.lang + ":" + r.article;
-    if (cat.done.has(key)) continue;                         // person already shown
-    let lead;
-    try { lead = await currentLead(r.lang, r.article); } catch (_) { continue; }
-    if (!sameOrCrop(file, lead)) continue;                   // cheap gate: lead image isn't this photo
-    cat.done.add(key);
+  for (const c of live) {
+    cat.done.add(c.lang + ":" + c.article);
     let res;
-    try { res = await buildTimeline(r.lang, r.article, CAT_REV_LIMIT, cat.count); } catch (_) { continue; }
-    // Require a real infobox |image= history whose current entry is this photo.
-    // Some articles show the photo only as a plain lead thumbnail (no infobox);
-    // pageimages still reports it, but there's nothing to show — skip those.
-    if (!res.timeline.length || !sameOrCrop(file, res.timeline[0].file)) continue;
-    people.push({ lang: r.lang, article: r.article, label: r.label, qid: r.qid,
+    try { res = await buildTimeline(c.lang, c.article, CAT_REV_LIMIT, cat.count); } catch (_) { continue; }
+    if (!res.timeline.length || !sameOrCrop(c.file, res.timeline[0].file)) continue;
+    people.push({ lang: c.lang, article: c.article, label: c.label, qid: c.qid,
                   shown: res.timeline.slice(0, cat.count), more: res.more });
   }
   await attachInfo(people);
