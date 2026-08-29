@@ -545,7 +545,7 @@ async function processFiles(fileList, onProgress) {
   return people;
 }
 // How many files a "Scan more files" click processes (user-adjustable, 1..5000).
-const chunkSize = () => Math.min(5000, Math.max(1, parseInt($("chunk_size").value, 10) || CAT_CHUNK));
+const chunkSize = () => Math.min(50000, Math.max(1, parseInt($("chunk_size").value, 10) || CAT_CHUNK));
 // Process the next chunk of files from the queue.
 async function scanCatChunk(onProgress) {
   const batch = cat.queue.splice(0, chunkSize());
