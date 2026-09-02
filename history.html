@@ -413,7 +413,11 @@ async function buildTimeline(lang, article, budget, wantDistinct, resume, opts) 
         val = val.replace(/^\[\[\s*/, "").replace(/\s*\]\]\s*$/, "")
                  .replace(/^\s*(?:File|Image)\s*:\s*/i, "").trim();
         if (!/\.(jpe?g|png|gif|tiff?|webp|svg)$/i.test(val)) continue;
-        const file = "File:" + val;
+        // Normalise underscores to spaces (MediaWiki treats them as equal) so the
+        // wikitext filename matches the pageimages/categorymembers form; otherwise
+        // "Steve_Mould_in_2026.jpg" wouldn't equal the lead "Steve Mould in 2026.jpg"
+        // and mergeCurrent would show the same photo as both current and previous.
+        const file = "File:" + val.replace(/_/g, " ");
         const key = cropParent(file) || file;
         if (!timeline.length || timeline[timeline.length - 1].key !== key)
           timeline.push({ file, key, rev: r.revid, ts: r.timestamp, user: r.user });
