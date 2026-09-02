@@ -2,7 +2,7 @@
   "schema": 1,
   "algoVersion": 3,
   "identity": "category|Category:Photographs by Mateusz Malta",
-  "asOf": "2026-09-02T12:34:38.775Z",
+  "asOf": "2026-09-02T13:21:05.848Z",
   "input": {
     "type": "category",
     "title": "Category:Photographs by Mateusz Malta"
@@ -10,12 +10,15 @@
   "type": "category",
   "count": 3,
   "addedThrough": "2026-09-02T12:12:29Z",
-  "uncapped": false,
+  "uncapped": true,
   "scanned": 156,
   "pending": [],
   "done": [
     "en:Alasdair Beckett-King",
+    "en:Cameron Leslie (businessman)",
     "en:Carlos Frenk",
+    "en:Charlie Dark",
+    "en:Chris Levine",
     "en:David Hayter",
     "en:Maggie Aderin",
     "en:Rangan Chatterjee",
@@ -23,11 +26,15 @@
     "en:Esther Perel",
     "en:GK Barry",
     "en:Guto Harri",
+    "en:Helen Arney",
     "en:Isabel Ibañez",
+    "en:Jack Edwards (internet personality)",
     "en:Jarred McGinnis",
     "en:John Burgmeier",
     "en:Kaouther Ben Hania",
+    "en:Kate Griggs",
     "en:Keisha Buchanan",
+    "de:Kulbhushansingh Suryawanshi",
     "en:Lin King",
     "en:Lucy Pardee",
     "en:Luke Roberts (actor)",
@@ -35,23 +42,16 @@
     "en:Michael Wooldridge (computer scientist)",
     "en:Nadim Cheikhrouha",
     "en:Natasha Walter",
+    "en:Neill Cameron",
+    "en:Rebecca Perry",
     "en:Rosie Hewlett",
+    "de:Sam Weinberg",
     "en:Sharon Horgan",
+    "en:Steve Mould",
     "en:Steven McRae",
     "en:Tom Holland (author)",
     "en:Yomi Adegoke",
-    "en:Yang Shuang-zi",
-    "en:Neill Cameron",
-    "en:Rebecca Perry",
-    "en:Cameron Leslie (businessman)",
-    "en:Charlie Dark",
-    "en:Chris Levine",
-    "en:Helen Arney",
-    "en:Jack Edwards (internet personality)",
-    "en:Kate Griggs",
-    "de:Sam Weinberg",
-    "en:Steve Mould",
-    "de:Kulbhushansingh Suryawanshi"
+    "en:Yang Shuang-zi"
   ],
   "people": [
     {
@@ -73,29 +73,6 @@
     },
     {
       "lang": "en",
-      "article": "Steven McRae",
-      "label": "Steven McRae",
-      "qid": "Q16968300",
-      "topRev": 1371773901,
-      "more": false,
-      "lead": null,
-      "timeline": [
-        {
-          "file": "File:Steven McRae in 2026.jpg",
-          "rev": 1371773901,
-          "ts": "2026-08-28T10:47:02Z",
-          "user": "Landsil"
-        },
-        {
-          "file": "File:Sugar Plum Fairy.jpg",
-          "rev": 1359477105,
-          "ts": "2026-06-15T14:10:09Z",
-          "user": "Pol098"
-        }
-      ]
-    },
-    {
-      "lang": "en",
       "article": "Neill Cameron",
       "label": "Neill Cameron",
       "qid": "Q6989564",
@@ -110,7 +87,7 @@
           "user": "PaulLim11"
         },
         {
-          "file": "File:Neill_c_at_work.jpg",
+          "file": "File:Neill c at work.jpg",
           "rev": 1342265700,
           "ts": "2026-03-08T00:51:29Z",
           "user": "Canoot"
@@ -141,6 +118,29 @@
       ]
     },
     {
+      "lang": "en",
+      "article": "Steven McRae",
+      "label": "Steven McRae",
+      "qid": "Q16968300",
+      "topRev": 1371773901,
+      "more": false,
+      "lead": "File:Steven McRae in 2026.jpg",
+      "timeline": [
+        {
+          "file": "File:Steven McRae in 2026.jpg",
+          "rev": 1371773901,
+          "ts": "2026-08-28T10:47:02Z",
+          "user": "Landsil"
+        },
+        {
+          "file": "File:Sugar Plum Fairy.jpg",
+          "rev": 1359477105,
+          "ts": "2026-06-15T14:10:09Z",
+          "user": "Pol098"
+        }
+      ]
+    },
+    {
       "lang": "de",
       "article": "Kulbhushansingh Suryawanshi",
       "label": "Kulbhushansingh R. Suryawanshi",
@@ -159,12 +159,41 @@
     },
     {
       "lang": "en",
+      "article": "Jack Edwards (internet personality)",
+      "label": "Jack Edwards",
+      "qid": "Q121330994",
+      "topRev": 1372744322,
+      "more": false,
+      "lead": "File:Jack Edwards.jpg",
+      "timeline": [
+        {
+          "file": "File:Jack Edwards.jpg",
+          "rev": 1372744322,
+          "ts": "2026-09-02T02:25:01Z",
+          "user": "Jevansen"
+        },
+        {
+          "file": "File:Jack Edwards at BAFTAs 2026 02.jpg",
+          "rev": 1370039179,
+          "ts": "2026-08-18T19:53:58Z",
+          "user": "BitterGiant"
+        },
+        {
+          "file": "File:Jack Edwards at BAFTAs 2026 01.jpg",
+          "rev": 1363200522,
+          "ts": "2026-07-08T18:00:22Z",
+          "user": "JesseL0vesT0ast"
+        }
+      ]
+    },
+    {
+      "lang": "en",
       "article": "Jarred McGinnis",
       "label": "Jarred McGinnis",
       "qid": "Q122727301",
       "topRev": 1371631767,
       "more": false,
-      "lead": null,
+      "lead": "File:Jarred McGinnis in 2026.jpg",
       "timeline": [
         {
           "file": "File:Jarred McGinnis in 2026.jpg",
@@ -193,7 +222,7 @@
       "qid": "Q131301149",
       "topRev": 1371607621,
       "more": false,
-      "lead": null,
+      "lead": "File:Lin King Edinburgh Book festival 2026.jpg",
       "timeline": [
         {
           "file": "File:Lin King Edinburgh Book festival 2026.jpg",
@@ -208,10 +237,10 @@
           "user": "Rodw"
         },
         {
-          "file": "File:Lin_King,_translator,_at_the_2024_National_Book_Awards_finalist_reading_4.jpg",
-          "rev": 1356406905,
-          "ts": "2026-05-27T15:44:21Z",
-          "user": "William Avery"
+          "file": "File:Lin King at the 2024 National Book Awards 03 (cropped) (cropped).jpg",
+          "rev": 1285828953,
+          "ts": "2025-04-16T02:04:47Z",
+          "user": "219.121.71.248"
         }
       ]
     },
@@ -263,6 +292,81 @@
     },
     {
       "lang": "en",
+      "article": "Charlie Dark",
+      "label": "Charlie Dark",
+      "qid": "Q119843372",
+      "topRev": 1371877725,
+      "more": false,
+      "lead": "File:Charlie Dark 4.jpg",
+      "timeline": [
+        {
+          "file": "File:Charlie Dark 4.jpg",
+          "rev": 1371877725,
+          "ts": "2026-08-29T01:50:56Z",
+          "user": "Jevansen"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Helen Arney",
+      "label": "Helen Arney",
+      "qid": "Q21062313",
+      "topRev": 1372183133,
+      "more": false,
+      "lead": "File:Helen Arney in 2026.jpg",
+      "timeline": [
+        {
+          "file": "File:Helen Arney in 2026.jpg",
+          "rev": 1372183133,
+          "ts": "2026-08-30T19:36:44Z",
+          "user": "DreamRimmer bot III"
+        },
+        {
+          "file": "File:Helen Arney, Winchester Skeptics - 13 December 12.jpg",
+          "rev": 1335329182,
+          "ts": "2026-01-28T17:10:10Z",
+          "user": "Ser Amantio di Nicolao"
+        },
+        {
+          "file": "File:Helen Arney - EdSciFest 2014 (37).JPG",
+          "rev": 716759794,
+          "ts": "2016-04-23T17:45:45Z",
+          "user": "Chienlit"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Steve Mould",
+      "label": "Steve Mould",
+      "qid": "Q19667165",
+      "topRev": 1371152771,
+      "more": false,
+      "lead": "File:Steve Mould in 2026.jpg",
+      "timeline": [
+        {
+          "file": "File:Steve Mould in 2026.jpg",
+          "rev": 1371152771,
+          "ts": "2026-08-24T22:19:55Z",
+          "user": "ThundorLord"
+        },
+        {
+          "file": "File:Steve Mould at FameLab UK 2013 (cropped).jpg",
+          "rev": 1334604166,
+          "ts": "2026-01-24T15:40:21Z",
+          "user": "~2026-52727-5"
+        },
+        {
+          "file": "File:cmglee Cambridge Science Festival 2015 Steve Mould.jpg",
+          "rev": 1091026903,
+          "ts": "2022-06-01T19:12:43Z",
+          "user": "71.237.232.33"
+        }
+      ]
+    },
+    {
+      "lang": "en",
       "article": "Kaouther Ben Hania",
       "label": "Kaouther Ben Hania",
       "qid": "Q30005402",
@@ -297,7 +401,7 @@
       "qid": "Q115930458",
       "topRev": 1362046405,
       "more": false,
-      "lead": null,
+      "lead": "File:Lucy Pardee at SXSW London 2026.jpg",
       "timeline": [
         {
           "file": "File:Lucy Pardee at SXSW London 2026.jpg",
@@ -314,7 +418,7 @@
       "qid": "Q65116406",
       "topRev": 1368702193,
       "more": false,
-      "lead": null,
+      "lead": "File:Nadim Cheikhrouha at SXSW London 2026 (cropped).jpg",
       "timeline": [
         {
           "file": "File:Nadim Cheikhrouha at SXSW London 2026 (cropped).jpg",
@@ -327,6 +431,23 @@
           "rev": 1357069154,
           "ts": "2026-05-31T15:49:27Z",
           "user": "PrimeBOT"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Cameron Leslie (businessman)",
+      "label": "Cameron Leslie",
+      "qid": "Q5026291",
+      "topRev": 1358264351,
+      "more": false,
+      "lead": "File:Cameron Leslie at SXSW London 2026.jpg",
+      "timeline": [
+        {
+          "file": "File:Cameron Leslie at SXSW London 2026.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
         }
       ]
     },
@@ -366,7 +487,7 @@
       "qid": "Q55237998",
       "topRev": 1358264666,
       "more": false,
-      "lead": null,
+      "lead": "File:Dr Rangan Chatterjee at SXSW London 2026.jpg",
       "timeline": [
         {
           "file": "File:Dr Rangan Chatterjee at SXSW London 2026.jpg",
@@ -412,7 +533,7 @@
       "qid": "Q5621836",
       "topRev": 1358264870,
       "more": true,
-      "lead": null,
+      "lead": "File:Guto Harri at SXSW London 2026.jpg",
       "timeline": [
         {
           "file": "File:Guto Harri at SXSW London 2026.jpg",
@@ -425,6 +546,23 @@
           "rev": 1347294907,
           "ts": "2026-04-05T21:37:38Z",
           "user": "PrimeBOT"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Kate Griggs",
+      "label": "Kate Griggs",
+      "qid": "Q6375516",
+      "topRev": 1368704299,
+      "more": false,
+      "lead": "File:Kate Griggs at SXSW London 2026 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Kate Griggs at SXSW London 2026 (cropped).jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
         }
       ]
     },
@@ -482,35 +620,30 @@
     },
     {
       "lang": "en",
-      "article": "Cameron Leslie (businessman)",
-      "label": "Cameron Leslie",
-      "qid": "Q5026291",
-      "topRev": 1358264351,
+      "article": "Chris Levine",
+      "label": "Chris Levine",
+      "qid": "Q16193711",
+      "topRev": 1365248072,
       "more": false,
-      "lead": "File:Cameron Leslie at SXSW London 2026.jpg",
+      "lead": "File:Chris Levine in 2026.jpg",
       "timeline": [
         {
-          "file": "File:Cameron Leslie at SXSW London 2026.jpg",
+          "file": "File:Chris Levine in 2026.jpg",
           "rev": null,
           "ts": null,
           "user": null
-        }
-      ]
-    },
-    {
-      "lang": "en",
-      "article": "Kate Griggs",
-      "label": "Kate Griggs",
-      "qid": "Q6375516",
-      "topRev": 1368704299,
-      "more": false,
-      "lead": "File:Kate Griggs at SXSW London 2026 (cropped).jpg",
-      "timeline": [
+        },
         {
-          "file": "File:Kate Griggs at SXSW London 2026 (cropped).jpg",
-          "rev": null,
-          "ts": null,
-          "user": null
+          "file": "File:Wave Form Dish Other 01 300 ppi H1333 W2000.jpg",
+          "rev": 989399643,
+          "ts": "2020-11-18T19:27:12Z",
+          "user": "Hannahgill92"
+        },
+        {
+          "file": "File:Flower of Life, Chris Levine.png",
+          "rev": 988547454,
+          "ts": "2020-11-13T21:04:57Z",
+          "user": "WikiCleanerBot"
         }
       ]
     },
@@ -550,7 +683,7 @@
       "qid": "Q235772",
       "topRev": 1368866389,
       "more": false,
-      "lead": null,
+      "lead": "File:Keisha Buchanan at SXSW London 2026.jpg",
       "timeline": [
         {
           "file": "File:Keisha Buchanan at SXSW London 2026.jpg",
@@ -579,42 +712,13 @@
       "qid": "Q6794765",
       "topRev": 1358262345,
       "more": true,
-      "lead": null,
+      "lead": "File:Max Foster in 2026.jpg",
       "timeline": [
         {
           "file": "File:Max Foster in 2026.jpg",
           "rev": 1358262345,
           "ts": "2026-06-07T16:54:07Z",
           "user": "Landsil"
-        }
-      ]
-    },
-    {
-      "lang": "en",
-      "article": "Chris Levine",
-      "label": "Chris Levine",
-      "qid": "Q16193711",
-      "topRev": 1365248072,
-      "more": false,
-      "lead": "File:Chris Levine in 2026.jpg",
-      "timeline": [
-        {
-          "file": "File:Chris Levine in 2026.jpg",
-          "rev": null,
-          "ts": null,
-          "user": null
-        },
-        {
-          "file": "File:Wave Form Dish Other 01 300 ppi H1333 W2000.jpg",
-          "rev": 989399643,
-          "ts": "2020-11-18T19:27:12Z",
-          "user": "Hannahgill92"
-        },
-        {
-          "file": "File:Flower of Life, Chris Levine.png",
-          "rev": 988547454,
-          "ts": "2020-11-13T21:04:57Z",
-          "user": "WikiCleanerBot"
         }
       ]
     },
@@ -677,7 +781,7 @@
       "qid": "Q123693651",
       "topRev": 1367671445,
       "more": false,
-      "lead": null,
+      "lead": "File:Isabel Ibanez at ComicCon 2026.jpg",
       "timeline": [
         {
           "file": "File:Isabel Ibanez at ComicCon 2026.jpg",
@@ -693,20 +797,14 @@
       "label": "John Burgmeier",
       "qid": "Q4119370",
       "topRev": 1356174187,
-      "more": false,
-      "lead": null,
+      "more": true,
+      "lead": "File:John Burgmeier at ComicCon 2026.jpg",
       "timeline": [
         {
           "file": "File:John Burgmeier at ComicCon 2026.jpg",
           "rev": 1356174187,
           "ts": "2026-05-26T03:40:49Z",
           "user": "Starklinson"
-        },
-        {
-          "file": "File:John Burgmeier.jpg",
-          "rev": 478987242,
-          "ts": "2012-02-26T18:48:53Z",
-          "user": "Kiggles"
         }
       ]
     },
@@ -717,7 +815,7 @@
       "qid": "Q4354675",
       "topRev": 1370191852,
       "more": false,
-      "lead": null,
+      "lead": "File:Luke Roberts at ComicCon 2026.jpg",
       "timeline": [
         {
           "file": "File:Luke Roberts at ComicCon 2026.jpg",
@@ -815,7 +913,7 @@
       "qid": "Q33125489",
       "topRev": 1361585353,
       "more": false,
-      "lead": null,
+      "lead": "File:Michael Wooldridge at Royal Society in 2026.jpg",
       "timeline": [
         {
           "file": "File:Michael Wooldridge at Royal Society in 2026.jpg",
@@ -845,116 +943,6 @@
           "rev": null,
           "ts": null,
           "user": null
-        }
-      ]
-    },
-    {
-      "lang": "en",
-      "article": "Charlie Dark",
-      "label": "Charlie Dark",
-      "qid": "Q119843372",
-      "topRev": 1371877725,
-      "more": false,
-      "lead": "File:Charlie Dark 4.jpg",
-      "timeline": [
-        {
-          "file": "File:Charlie Dark 4.jpg",
-          "rev": null,
-          "ts": null,
-          "user": null
-        },
-        {
-          "file": "File:Charlie_Dark_4.jpg",
-          "rev": 1371877725,
-          "ts": "2026-08-29T01:50:56Z",
-          "user": "Jevansen"
-        }
-      ]
-    },
-    {
-      "lang": "en",
-      "article": "Helen Arney",
-      "label": "Helen Arney",
-      "qid": "Q21062313",
-      "topRev": 1372183133,
-      "more": false,
-      "lead": "File:Helen Arney in 2026.jpg",
-      "timeline": [
-        {
-          "file": "File:Helen Arney in 2026.jpg",
-          "rev": null,
-          "ts": null,
-          "user": null
-        },
-        {
-          "file": "File:Helen_Arney_in_2026.jpg",
-          "rev": 1372183133,
-          "ts": "2026-08-30T19:36:44Z",
-          "user": "DreamRimmer bot III"
-        },
-        {
-          "file": "File:Helen Arney, Winchester Skeptics - 13 December 12.jpg",
-          "rev": 1335329182,
-          "ts": "2026-01-28T17:10:10Z",
-          "user": "Ser Amantio di Nicolao"
-        }
-      ]
-    },
-    {
-      "lang": "en",
-      "article": "Jack Edwards (internet personality)",
-      "label": "Jack Edwards",
-      "qid": "Q121330994",
-      "topRev": 1372744322,
-      "more": false,
-      "lead": "File:Jack Edwards.jpg",
-      "timeline": [
-        {
-          "file": "File:Jack Edwards.jpg",
-          "rev": null,
-          "ts": null,
-          "user": null
-        },
-        {
-          "file": "File:Jack_Edwards.jpg",
-          "rev": 1372744322,
-          "ts": "2026-09-02T02:25:01Z",
-          "user": "Jevansen"
-        },
-        {
-          "file": "File:Jack Edwards at BAFTAs 2026 02.jpg",
-          "rev": 1370039179,
-          "ts": "2026-08-18T19:53:58Z",
-          "user": "BitterGiant"
-        }
-      ]
-    },
-    {
-      "lang": "en",
-      "article": "Steve Mould",
-      "label": "Steve Mould",
-      "qid": "Q19667165",
-      "topRev": 1371152771,
-      "more": false,
-      "lead": "File:Steve Mould in 2026.jpg",
-      "timeline": [
-        {
-          "file": "File:Steve Mould in 2026.jpg",
-          "rev": null,
-          "ts": null,
-          "user": null
-        },
-        {
-          "file": "File:Steve_Mould_in_2026.jpg",
-          "rev": 1371152771,
-          "ts": "2026-08-24T22:19:55Z",
-          "user": "ThundorLord"
-        },
-        {
-          "file": "File:Steve Mould at FameLab UK 2013 (cropped).jpg",
-          "rev": 1334604166,
-          "ts": "2026-01-24T15:40:21Z",
-          "user": "~2026-52727-5"
         }
       ]
     }
