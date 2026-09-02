@@ -2,16 +2,16 @@
   "schema": 1,
   "algoVersion": 3,
   "identity": "category|Category:Photographs by Mateusz Malta",
-  "asOf": "2026-08-29T16:06:37.029Z",
+  "asOf": "2026-09-02T12:34:38.775Z",
   "input": {
     "type": "category",
     "title": "Category:Photographs by Mateusz Malta"
   },
   "type": "category",
   "count": 3,
-  "addedThrough": "2026-08-29T12:10:10Z",
+  "addedThrough": "2026-09-02T12:12:29Z",
   "uncapped": false,
-  "scanned": 154,
+  "scanned": 156,
   "pending": [],
   "done": [
     "en:Alasdair Beckett-King",
@@ -50,7 +50,8 @@
     "en:Jack Edwards (internet personality)",
     "en:Kate Griggs",
     "de:Sam Weinberg",
-    "en:Steve Mould"
+    "en:Steve Mould",
+    "de:Kulbhushansingh Suryawanshi"
   ],
   "people": [
     {
@@ -58,15 +59,15 @@
       "article": "Natasha Walter",
       "label": "Natasha Walter",
       "qid": "Q1966363",
-      "topRev": 1371783595,
+      "topRev": 1372799272,
       "more": false,
-      "lead": null,
+      "lead": "File:Natasha Walter in 2026 01.jpg",
       "timeline": [
         {
           "file": "File:Natasha Walter in 2026 01.jpg",
-          "rev": 1371783595,
-          "ts": "2026-08-28T12:18:24Z",
-          "user": "Landsil"
+          "rev": 1372799272,
+          "ts": "2026-09-02T09:20:08Z",
+          "user": "Chlorine-ps"
         }
       ]
     },
@@ -140,6 +141,23 @@
       ]
     },
     {
+      "lang": "de",
+      "article": "Kulbhushansingh Suryawanshi",
+      "label": "Kulbhushansingh R. Suryawanshi",
+      "qid": "Q88457548",
+      "topRev": 270170424,
+      "more": false,
+      "lead": "File:Kulbhushansingh Suryawanshi in 2026.jpg",
+      "timeline": [
+        {
+          "file": "File:Kulbhushansingh Suryawanshi in 2026.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
       "lang": "en",
       "article": "Jarred McGinnis",
       "label": "Jarred McGinnis",
@@ -202,15 +220,15 @@
       "article": "Tom Holland (author)",
       "label": "Tom Holland",
       "qid": "Q1236243",
-      "topRev": 1371703994,
+      "topRev": 1372646564,
       "more": true,
-      "lead": null,
+      "lead": "File:Tom Holland at Edinburgh International Book Festival 2026.jpg",
       "timeline": [
         {
           "file": "File:Tom Holland at Edinburgh International Book Festival 2026.jpg",
-          "rev": 1371703994,
-          "ts": "2026-08-28T00:23:35Z",
-          "user": "ZackBot"
+          "rev": 1372646564,
+          "ts": "2026-09-01T16:36:58Z",
+          "user": "Sentience Scholar"
         },
         {
           "file": "File:Writer Tom Holland, February 2020.jpg",
@@ -225,15 +243,15 @@
       "article": "Yang Shuang-zi",
       "label": "Yang Shuang-zi",
       "qid": "Q65045983",
-      "topRev": 1371607879,
+      "topRev": 1372356277,
       "more": false,
-      "lead": null,
+      "lead": "File:Yáng Shuāng-zǐ Edinburgh Book festival 2026 (cropped).jpg",
       "timeline": [
         {
           "file": "File:Yáng Shuāng-zǐ Edinburgh Book festival 2026 (cropped).jpg",
-          "rev": 1371607879,
-          "ts": "2026-08-27T10:46:22Z",
-          "user": "Landsil"
+          "rev": 1372356277,
+          "ts": "2026-08-31T11:17:30Z",
+          "user": "~2026-47492-18"
         },
         {
           "file": "File:Yang Shuang-zi at the 2024 National Book Awards (cropped).jpg",
@@ -248,15 +266,15 @@
       "article": "Kaouther Ben Hania",
       "label": "Kaouther Ben Hania",
       "qid": "Q30005402",
-      "topRev": 1368700739,
+      "topRev": 1372438865,
       "more": false,
-      "lead": null,
+      "lead": "File:Kaouther Ben Hania at SXSW London 2026.jpg",
       "timeline": [
         {
           "file": "File:Kaouther Ben Hania at SXSW London 2026.jpg",
-          "rev": 1368700739,
-          "ts": "2026-08-10T16:11:14Z",
-          "user": "Landsil"
+          "rev": 1372438865,
+          "ts": "2026-08-31T19:14:28Z",
+          "user": "Οἶδα"
         },
         {
           "file": "File:Kaouther Ben Hania - IFFR 2024.jpg",
@@ -317,15 +335,15 @@
       "article": "Maggie Aderin",
       "label": "Maggie Aderin",
       "qid": "Q6730175",
-      "topRev": 1370081882,
+      "topRev": 1372432777,
       "more": false,
-      "lead": null,
+      "lead": "File:Dr Maggie Aderin at SXSW London 2026 (cropped).jpg",
       "timeline": [
         {
           "file": "File:Dr Maggie Aderin at SXSW London 2026 (cropped).jpg",
-          "rev": 1370081882,
-          "ts": "2026-08-19T01:07:54Z",
-          "user": "~2026-45307-90"
+          "rev": 1372432777,
+          "ts": "2026-08-31T18:43:04Z",
+          "user": "Martinevans123"
         },
         {
           "file": "File:Maggie Aderin-Pocock, The Royal Society.jpg",
@@ -363,15 +381,15 @@
       "article": "Esther Perel",
       "label": "Esther Perel",
       "qid": "Q17388335",
-      "topRev": 1369520021,
+      "topRev": 1371992321,
       "more": false,
-      "lead": null,
+      "lead": "File:Esther Perel at SXSW London 2026.jpg",
       "timeline": [
         {
           "file": "File:Esther Perel at SXSW London 2026.jpg",
-          "rev": 1369520021,
-          "ts": "2026-08-15T13:50:07Z",
-          "user": "Notecards from the Edge"
+          "rev": 1371992321,
+          "ts": "2026-08-29T19:16:56Z",
+          "user": "ZackBot"
         },
         {
           "file": "File:Esther Perel 2017.jpg",
@@ -415,15 +433,15 @@
       "article": "Sharon Horgan",
       "label": "Sharon Horgan",
       "qid": "Q7490096",
-      "topRev": 1370235721,
+      "topRev": 1372200543,
       "more": false,
-      "lead": null,
+      "lead": "File:Sharon Horgan at SXSW London 2026 1 (cropped).jpg",
       "timeline": [
         {
           "file": "File:Sharon Horgan at SXSW London 2026 1 (cropped).jpg",
-          "rev": 1370235721,
-          "ts": "2026-08-19T23:12:00Z",
-          "user": "Mutt Lunker"
+          "rev": 1372200543,
+          "ts": "2026-08-30T21:08:07Z",
+          "user": "Wikipedical"
         },
         {
           "file": "File:Sharon Horgan at SXSW London 2026 3.jpg",
@@ -444,15 +462,15 @@
       "article": "Yomi Adegoke",
       "label": "Yomi Adegoke",
       "qid": "Q58641607",
-      "topRev": 1371894094,
+      "topRev": 1372498984,
       "more": false,
       "lead": "File:Yomi Adegoke at SXSW London 2026.jpg",
       "timeline": [
         {
           "file": "File:Yomi Adegoke at SXSW London 2026.jpg",
-          "rev": 1371894094,
-          "ts": "2026-08-29T04:17:14Z",
-          "user": "ZackBot"
+          "rev": 1372498984,
+          "ts": "2026-09-01T01:02:28Z",
+          "user": "Vitorperrut555"
         },
         {
           "file": "File:Yomi Adegoke at the 2024 Edinburgh International Book Festival 2.jpg",
@@ -605,15 +623,15 @@
       "article": "David Hayter",
       "label": "David Hayter",
       "qid": "Q711792",
-      "topRev": 1368706674,
+      "topRev": 1372379614,
       "more": false,
-      "lead": null,
+      "lead": "File:David Hayter (cropped).jpg",
       "timeline": [
         {
           "file": "File:David Hayter (cropped).jpg",
-          "rev": 1368706674,
-          "ts": "2026-08-10T16:57:26Z",
-          "user": "Landsil"
+          "rev": 1372379614,
+          "ts": "2026-08-31T13:31:14Z",
+          "user": "DreamRimmer bot III"
         },
         {
           "file": "File:David Hayter by Gage Skidmore.jpg",
@@ -634,15 +652,15 @@
       "article": "Ella McLeod (writer)",
       "label": "Ella McLeod",
       "qid": "Q134081120",
-      "topRev": 1358891359,
+      "topRev": 1372498420,
       "more": false,
-      "lead": null,
+      "lead": "File:E.S. McLeod at MCM ComicCon London 2026.jpg",
       "timeline": [
         {
           "file": "File:E.S. McLeod at MCM ComicCon London 2026.jpg",
-          "rev": 1358891359,
-          "ts": "2026-06-11T17:02:10Z",
-          "user": "Entranced98"
+          "rev": 1372498420,
+          "ts": "2026-09-01T01:00:08Z",
+          "user": "DreamRimmer bot III"
         },
         {
           "file": "File:ella mcleod 2026 1.jpg",
@@ -726,15 +744,15 @@
       "article": "Rosie Hewlett",
       "label": "Rosie Hewlett",
       "qid": "Q126924422",
-      "topRev": 1356172792,
+      "topRev": 1372384619,
       "more": false,
-      "lead": null,
+      "lead": "File:Rosie Hewlett at ComicCon 2026.jpg",
       "timeline": [
         {
           "file": "File:Rosie Hewlett at ComicCon 2026.jpg",
-          "rev": 1356172792,
-          "ts": "2026-05-26T03:29:39Z",
-          "user": "Starklinson"
+          "rev": 1372384619,
+          "ts": "2026-08-31T14:03:22Z",
+          "user": "DreamRimmer bot III"
         }
       ]
     },
@@ -743,15 +761,15 @@
       "article": "Alasdair Beckett-King",
       "label": "Alasdair Beckett-King",
       "qid": "Q79247034",
-      "topRev": 1365677694,
+      "topRev": 1372205843,
       "more": false,
-      "lead": null,
+      "lead": "File:Alasdair Beckett-King as King Of Crumbs (cropped).jpg",
       "timeline": [
         {
           "file": "File:Alasdair Beckett-King as King Of Crumbs (cropped).jpg",
-          "rev": 1365677694,
-          "ts": "2026-07-23T20:35:32Z",
-          "user": "Richard Nevell"
+          "rev": 1372205843,
+          "ts": "2026-08-30T21:33:36Z",
+          "user": "DreamRimmer bot III"
         },
         {
           "file": "File:Alasdair Beckett-King.jpg",
@@ -766,15 +784,15 @@
       "article": "Carlos Frenk",
       "label": "Carlos Frenk",
       "qid": "Q1042912",
-      "topRev": 1360645257,
+      "topRev": 1372802567,
       "more": false,
-      "lead": null,
+      "lead": "File:Carlos Frenk in 2026.jpg",
       "timeline": [
         {
           "file": "File:Carlos Frenk in 2026.jpg",
-          "rev": 1360645257,
-          "ts": "2026-06-22T19:17:30Z",
-          "user": "Cosedorasvaz"
+          "rev": 1372802567,
+          "ts": "2026-09-02T09:56:34Z",
+          "user": "~2026-47675-42"
         },
         {
           "file": "File:Carlos Frenk.jpg",
@@ -858,7 +876,7 @@
       "article": "Helen Arney",
       "label": "Helen Arney",
       "qid": "Q21062313",
-      "topRev": 1359819273,
+      "topRev": 1372183133,
       "more": false,
       "lead": "File:Helen Arney in 2026.jpg",
       "timeline": [
@@ -870,9 +888,9 @@
         },
         {
           "file": "File:Helen_Arney_in_2026.jpg",
-          "rev": 1359819273,
-          "ts": "2026-06-17T11:52:49Z",
-          "user": "Landsil"
+          "rev": 1372183133,
+          "ts": "2026-08-30T19:36:44Z",
+          "user": "DreamRimmer bot III"
         },
         {
           "file": "File:Helen Arney, Winchester Skeptics - 13 December 12.jpg",
@@ -887,7 +905,7 @@
       "article": "Jack Edwards (internet personality)",
       "label": "Jack Edwards",
       "qid": "Q121330994",
-      "topRev": 1371635953,
+      "topRev": 1372744322,
       "more": false,
       "lead": "File:Jack Edwards.jpg",
       "timeline": [
@@ -899,9 +917,9 @@
         },
         {
           "file": "File:Jack_Edwards.jpg",
-          "rev": 1371635953,
-          "ts": "2026-08-27T15:11:23Z",
-          "user": "Landsil"
+          "rev": 1372744322,
+          "ts": "2026-09-02T02:25:01Z",
+          "user": "Jevansen"
         },
         {
           "file": "File:Jack Edwards at BAFTAs 2026 02.jpg",
