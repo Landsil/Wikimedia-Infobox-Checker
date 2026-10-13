@@ -17,14 +17,14 @@ on:
         options: [new, full]
         default: new
       add:
-        description: "Optional: add a search to the saved history (category, article link or file — as typed on the page)"
+        description: "Leave EMPTY to just refresh. Only to save a NEW search: its Commons category, article link or file name (as typed on the page)"
         required: false
       depth:
-        description: "Subcategory depth for an added category"
+        description: "Only with a new search above: subcategory depth"
         required: false
         default: "1"
       exclude:
-        description: "Optional, for an added category: subcategories to skip (with everything below), separated by |"
+        description: "Only with a new search above: subcategories to skip (with everything below), separated by |"
         required: false
 
 permissions:
@@ -40,11 +40,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 350        # the script stops itself at BUDGET_MIN and saves progress
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
-          node-version: 22
+          node-version: 24
+          package-manager-cache: false   # no dependencies to cache
 
       - name: Refresh saved records
         env:

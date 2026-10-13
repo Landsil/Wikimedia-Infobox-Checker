@@ -410,7 +410,7 @@ drift from the page.
 | :-- | :-- | :-- |
 | Mondays 03:17 UTC | `new` | finish any unfinished scan; rebuild people whose article changed (`lastrevid` ≠ `topRev`); walk the whole tree — files added after the watermark are scanned, people whose photo left the tree are flagged `outside` |
 | 1st of month 03:47 UTC | `full` | all of the above, then re-check every file in the tree |
-| Manual (*Run workflow*) | either | same; optional **add** input creates a record for a new search (with **depth**, and **exclude** — `\|`-separated subcategories to skip) |
+| Manual (*Run workflow*) | either | same. Leave **add** empty for a plain refresh; fill it only to save a *new* search (with **depth**, and **exclude** — `\|`-separated subcategories to skip). A bad **add** is reported and skipped; the existing records are still refreshed |
 
 - **Time-boxed.** The script stops at `BUDGET_MIN` (320) inside the job's
   350-minute timeout. Progress lives in the record — `pending` files, and a
@@ -422,10 +422,16 @@ drift from the page.
 - **Bot etiquette** (non-interactive, unlike the page): `User-Agent`
   `WikimediaInfoboxCheckerBot/1.0 (<repo URL>[; <contact>]) node/<version>`,
   per the [User-Agent policy](https://foundation.wikimedia.org/wiki/Policy:Wikimedia_Foundation_User-Agent_Policy);
-  `maxlag=5` with ≥ 5 s waits on a lag error, per
-  [Manual:Maxlag parameter](https://www.mediawiki.org/wiki/Manual:Maxlag_parameter);
-  serial requests paced to `REQS_PER_MIN` = 180, under the 200/min bot limit. If
-  lag lasts over 30 minutes the run saves and stops; the next run continues.
+  `maxlag=5` on every wiki, per
+  [Manual:Maxlag parameter](https://www.mediawiki.org/wiki/Manual:Maxlag_parameter)
+  and [Wikidata:Bots](https://www.wikidata.org/wiki/Wikidata:Bots) ("Bots should
+  respect maxlag") — waits ≥ 5 s, doubling to 60 s; serial requests paced to
+  `REQS_PER_MIN` = 180, under the 200/min bot limit. **Wikidata's lag includes
+  Query Service (WDQS) lag**, which is often above 5 s (2026-10-13 14:13 UTC:
+  9.25 s from `wdqs1014` while the databases were at 0.2–0.7 s), so the
+  Wikidata step — resolving who a file depicts — can stall for a while. Refreshing
+  stored people only uses Wikipedia and isn't affected. If lag lasts over 60
+  minutes the run saves and stops; the next run continues.
 - **Contact address**: set an Actions secret `WIKIMEDIA_CONTACT` (e.g. an email)
   to have it appended to the `User-Agent`. It's sent only to Wikimedia's servers
   and never appears in the repo or the logs. Without it, the repo URL is the

@@ -69,7 +69,7 @@ export async function apiGet(base, params) {
   if (api.maxlag != null) s.set("maxlag", String(api.maxlag));
   const url = `${base}?${s.toString()}`;
   const init = { credentials: "omit", ...(api.userAgent ? { headers: { "User-Agent": api.userAgent } } : {}) };
-  let lagWaited = 0;
+  let lagWaited = 0, lagTries = 0;
   for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
     const gap = api.last + api.minIntervalMs - Date.now();
     if (gap > 0) await sleep(gap);
@@ -85,9 +85,11 @@ export async function apiGet(base, params) {
     if (!resp.ok) throw new Error(`HTTP ${resp.status} from ${base}`);
     if (data === null) throw new Error(`Non-JSON response from ${base}`);
     // maxlag rejections are HTTP 200 with no data. Wait as told (>= 5 s, per
-    // Manual:Maxlag_parameter) and ask again; this isn't a failed attempt.
+    // Manual:Maxlag_parameter), doubling up to 60 s so a long lag isn't polled
+    // every 5 s, and ask again; this isn't a failed attempt. On Wikidata the
+    // reported lag includes Query Service (WDQS) lag, so this can last a while.
     if (data.error && data.error.code === "maxlag") {
-      const ms = Math.max(5000, retryDelayMs(resp, 0));
+      const ms = Math.min(60000, Math.max(5000, retryDelayMs(resp, 0)) * 2 ** lagTries++);
       if (lagWaited + ms > api.maxLagWaitMs)
         throw new LagError(`Wikimedia lagged for over ${Math.round(api.maxLagWaitMs / 60000)} min (${data.error.info || "maxlag"}).`);
       lagWaited += ms; attempt--; await sleep(ms); continue;

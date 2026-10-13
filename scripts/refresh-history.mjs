@@ -23,8 +23,10 @@
 //
 // Wikimedia bot etiquette: a descriptive User-Agent with contact details
 // (WIKIMEDIA_CONTACT, kept in an Actions secret, is appended when set), maxlag=5
-// with >= 5 s waits on lag, serial requests paced under the 200/min limit for
-// identified unauthenticated bots (Wikimedia_APIs/Rate_limits, 2026).
+// with >= 5 s waits on lag (Wikidata:Bots asks bots to respect maxlag; on
+// Wikidata it includes Query Service lag), serial requests paced under the
+// 200/min limit for identified unauthenticated bots (Wikimedia_APIs/Rate_limits, 2026).
+// A bad --add is reported and skipped; the existing records are still refreshed.
 
 import { readFile, writeFile, readdir, rename, appendFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
@@ -50,6 +52,7 @@ core.configureApi({
   userAgent: `WikimediaInfoboxCheckerBot/1.0 (https://github.com/Landsil/Wikimedia-Infobox-Checker`
     + `${contact ? "; " + contact : ""}) node/${process.versions.node}`,
   maxlag: 5,
+  maxLagWaitMs: 60 * 60000,             // give up (save, stop; next run continues) after 60 min of lag
   minIntervalMs: Math.ceil(60000 / REQS_PER_MIN),
 });
 
@@ -227,9 +230,19 @@ async function refreshRecord(path) {
 let failed = 0;
 try {
   const records = [];
-  if (args.add) records.push(await addRecord(args.add, Math.max(0, parseInt(args.depth, 10) || 0),
-    Math.min(10, Math.max(1, parseInt(args.count, 10) || 3)),
-    (args.exclude || "").split("|").map(s => s.trim()).filter(Boolean).map(core.normCategory)));
+  // A bad --add (typo, empty category) is reported but must not stop the
+  // refresh of the existing records.
+  if (args.add) {
+    try {
+      records.push(await addRecord(args.add, Math.max(0, parseInt(args.depth, 10) || 0),
+        Math.min(10, Math.max(1, parseInt(args.count, 10) || 3)),
+        (args.exclude || "").split("|").map(s => s.trim()).filter(Boolean).map(core.normCategory)));
+    } catch (err) {
+      failed++;
+      summary.push(`- add "${args.add}": FAILED — ${err.message}`);
+      console.error(err.message);
+    }
+  }
   const dir = join(ROOT, core.HISTORY_DIR);
   for (const f of (await readdir(dir)).filter(f => f.endsWith(".json")).sort()) {
     const p = join(dir, f);
