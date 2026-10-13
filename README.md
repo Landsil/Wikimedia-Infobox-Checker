@@ -26,10 +26,19 @@ A landing hub links to self-contained tool pages; all share one stylesheet.
 | `index.html` | Landing hub — links to the tools |
 | `finder.html` | **Infobox Finder** — Commons category → unused photos depicting people, compared to the current infobox photo |
 | `gaps.html` | **Photo Gaps** — Wikipedia category → living people whose article has a missing/poor infobox photo |
-| `style.css` | Shared styles for all three pages |
+| `history.html` | **Infobox History** — a photo, article or Commons category → current infobox photo plus the ones it replaced |
+| `history-core.js` | The Infobox History pipeline (DOM-free ES module), shared by `history.html` and the background job |
+| `scripts/refresh-history.mjs` | Background job: keeps the saved Infobox History records up to date |
+| `.github/workflows/refresh-history.yml` | Runs that job weekly and monthly on GitHub Actions |
+| `data/history/` | Saved Infobox History records (JSON), written only by the background job |
+| `package.json` | No dependencies — only `"type": "module"` so Node loads `history-core.js` |
+| `style.css` | Shared styles for all pages |
 
-Each tool page embeds its own JS pipeline (they don't share a script), so a page
-is independently openable. Deployed on GitHub Pages from `main` /root.
+`finder.html` and `gaps.html` embed their own JS pipeline, so each is
+independently openable. `history.html` imports `history-core.js` as an ES
+module, which browsers refuse to load from `file://` — to try it locally, serve
+the folder (`python3 -m http.server`) and open `http://localhost:8000/history.html`.
+Deployed on GitHub Pages from `main` /root.
 
 Everything is client-side. That has one consequence worth knowing: **browsers
 forbid setting `User-Agent`**, so requests go out with the browser's UA plus
@@ -38,7 +47,7 @@ forbid setting `User-Agent`**, so requests go out with the browser's UA plus
 everything.)
 
 
-## Usage
+## Infobox Finder — usage
 
 Enter a Commons category, pick an upload-date window, hit **Search Candidates**.
 
@@ -264,11 +273,23 @@ Sending it caused frequent, avoidable failures:
 
 So the failures were self-imposed: refusing requests the servers were happy to
 serve. Etiquette for reads is still followed — serial (not parallel) requests,
-50-item batching, generators, and a descriptive `User-Agent` from `app.py`.
+50-item batching and generators. (The background job is the non-interactive
+case and does send `maxlag` — see [Background refresh](#background-refresh).)
 
 There is no published SLA or typical-response-time figure for the Wikimedia
 APIs; WDQS lag is tracked only on Grafana dashboards with no documented "normal"
 value, so there is nothing meaningful to gate on anyway.
+
+### Rate limits (2026)
+
+Wikimedia now enforces per-minute limits on the Action API
+([Wikimedia APIs/Rate limits](https://www.mediawiki.org/wiki/Wikimedia_APIs/Rate_limits),
+"new in 2026 and … subject to experimentation and change"): **200 requests/min**
+for unauthenticated browser traffic and for bots with a compliant `User-Agent`,
+**10/min** for clients identified only by IP. Over the limit is HTTP **429** with
+`Retry-After`, which `apiGet()` already honours. A fast serial browser scan can
+brush the limit; it just slows down. The limit is real — an un-paced probe
+(~3 req/s) got a 429 from Commons while this was being built.
 
 ### Would an API key help?
 
@@ -296,9 +317,125 @@ flat (depth 0) search finds nothing — hence the depth control and the honest
 `truncated` flag.
 
 
+## Infobox History (`history.html`)
+
+Shows how a Wikipedia infobox photo changed over time: the current photo plus
+the photos it replaced (`Images to show`, 1–10), each with when and by whom it
+was swapped in and a diff link. The pipeline is in `history-core.js`; the page
+keeps rendering, photo details and crop families.
+
+### Input
+
+`parseInput()`: a Commons file (name or URL), a Wikipedia article URL, or —
+anything else — a Commons photo category (bare name, `Category:…`, or a category
+link on either wiki). A bare title is never guessed to be an article.
+
+### One person (article or file)
+
+1. A file is resolved to its person: Commons `prop=info` → MediaInfo
+   `wbgetentities` (`statements.P180`) → Wikidata `P31=Q5` with a Wikipedia
+   sitelink (`enwiki` first).
+2. **The current photo is `pageimages`, not the newest wikitext `|image=`.**
+   They diverge when the infobox takes the image from Wikidata (`P18`) and the
+   wikitext still holds a stale value; `mergeCurrent()` puts the lead first.
+3. `buildTimeline()` walks `prop=revisions` newest → older with
+   **`rvsection=0`** — only the lead section, where the infobox lives, ~2% of
+   the full payload — and regexes `|image=` / `image_name` / `photo` / `img`.
+   If the lead section yields no image at all, it retries once with full
+   content. Filenames are normalised (comments/tags stripped, `[[File:…]]`
+   unwrapped, underscores → spaces) and crops collapse into one photo.
+   It walks `SINGLE_REV_LIMIT` revisions first; **Search another N revisions**
+   resumes from the saved `continue` point rather than re-reading.
+4. Photo details come from the **article's own wiki** (`prop=imageinfo`), which
+   knows both local and Commons files. Non-English wikis rename the File
+   namespace (`Fichier:`, `Datei:`), so results are mapped back via `normalized`.
+
+### A Commons category
+
+| # | Step | API | Notes |
+| :-- | :-- | :-- | :-- |
+| 1 | `walkCategory` | Commons `list=categorymembers` | BFS to `Subcategory depth`; capped at `CAT_FILE_CAP` unless un-capped; records the latest category-add `timestamp` as the watermark |
+| 2 | `batchResolve` | Commons `info` + MediaInfo `wbgetentities` + Wikidata `wbgetentities` | depicted human per file, 50/call |
+| 3 | liveness | per-wiki `pageimages` | keep files that are (crop-aware) the person's current infobox photo; dedupe people |
+| 4 | `buildTimeline` | per-wiki `revisions` | `CAT_REV_LIMIT` revisions per person; **Search deeper** per row |
+
+Files are processed **files per click** at a time (**Scan more files**). A chunk is
+only consumed — queue shortened, people marked done — once it has fully
+succeeded, so after an error the same files are retried rather than skipped.
+**Re-check all files** re-runs steps 2–3 over every file (people already found
+are skipped), catching photos that later gained a depicts statement or became the
+infobox photo.
+
+### Saved history (`data/history/`)
+
+A search with a saved record loads it instead of scanning (badge: *From saved
+history — updated <date>*). The page only **reads** records (anonymously,
+via Pages); nothing done on the page is saved.
+
+- **File name**: `cachePath()` — a slug of the identity (`category|<title>`,
+  `article|<lang>|<title>`, `file|<title>`) plus an FNV-1a hash.
+- **Validity**: ignored unless `algoVersion` equals `ALGO_VERSION` — bump it when
+  extraction/crop/timeline logic changes, and every record is rebuilt.
+- **Category record**: `count`, `depth` (the page adopts it on load),
+  `exclude` (optional: subcategories skipped with everything below them — e.g.
+  `Category:WikiPortraits photos of animals`; a file also in an included
+  category still counts), `addedThrough` (watermark), `uncapped`, `scanned`, `pending` (files not yet
+  scanned; `[]` = complete; `null` in older browser-saved records = "too long to
+  store, re-enumerate and skip `scanned`"), `done` (`lang:article` keys),
+  `people` (each with `topRev`, `lead`, `timeline`, and `outside: true` when
+  the current photo is no longer from the category), `bg` (background-job state).
+- **Single record**: `lang`, `article`, `topRev`, `cont`, `fullContent`,
+  `scanned`, `lead`, `timeline`.
+- **Check for updates** applies the same delta as the weekly job, in the tab only.
+
+Until 2026-10 the page itself saved records through the GitHub Contents API
+with a pasted token; that was removed when the background job took over.
+(For the record: Contents API `GET` on a file over 1 MB returns `sha` but an
+empty body; a 5.2 MB record still saved fine.)
+
+### Hide
+
+Each photo card has a **Hide** button — a one-off, view-only removal (e.g. to
+screenshot the current photo next to an older one). The remaining headings
+renumber; *Was replaced* keeps stating the real swap. Nothing is stored; any
+re-render brings the card back.
+
+## Background refresh
+
+`.github/workflows/refresh-history.yml` runs `scripts/refresh-history.mjs` —
+the only writer of `data/history/`. It reuses `history-core.js`, so it can't
+drift from the page.
+
+| When | Mode | Does |
+| :-- | :-- | :-- |
+| Mondays 03:17 UTC | `new` | finish any unfinished scan; rebuild people whose article changed (`lastrevid` ≠ `topRev`); walk the whole tree — files added after the watermark are scanned, people whose photo left the tree are flagged `outside` |
+| 1st of month 03:47 UTC | `full` | all of the above, then re-check every file in the tree |
+| Manual (*Run workflow*) | either | same; optional **add** input creates a record for a new search (with **depth**, and **exclude** — `\|`-separated subcategories to skip) |
+
+- **Time-boxed.** The script stops at `BUDGET_MIN` (320) inside the job's
+  350-minute timeout. Progress lives in the record — `pending` files, and a
+  `bg.recheck.cursor` (last title of the sorted tree that was re-checked) — so
+  the next run continues. Records are written atomically after every chunk
+  (`CHUNK` = 500 files) and the commit step runs even after a failure or timeout.
+- **One commit per run**, `cache: background refresh`, with the run summary as
+  the body (also on the run's summary page).
+- **Bot etiquette** (non-interactive, unlike the page): `User-Agent`
+  `WikimediaInfoboxCheckerBot/1.0 (<repo URL>[; <contact>]) node/<version>`,
+  per the [User-Agent policy](https://foundation.wikimedia.org/wiki/Policy:Wikimedia_Foundation_User-Agent_Policy);
+  `maxlag=5` with ≥ 5 s waits on a lag error, per
+  [Manual:Maxlag parameter](https://www.mediawiki.org/wiki/Manual:Maxlag_parameter);
+  serial requests paced to `REQS_PER_MIN` = 180, under the 200/min bot limit. If
+  lag lasts over 30 minutes the run saves and stops; the next run continues.
+- **Contact address**: set an Actions secret `WIKIMEDIA_CONTACT` (e.g. an email)
+  to have it appended to the `User-Agent`. It's sent only to Wikimedia's servers
+  and never appears in the repo or the logs. Without it, the repo URL is the
+  contact.
+- **Locally**: `node scripts/refresh-history.mjs --only <record>.json --budget-min 5`
+  (Node 20+; reads Wikimedia, rewrites only the local record files).
+
 ## Tunables
 
-At the top of each tool's `<script>`:
+At the top of each tool's `<script>` (history: `history-core.js`; background job: `scripts/refresh-history.mjs`):
 
 | Constant | Value | Meaning |
 | :-- | :-- | :-- |
@@ -310,6 +447,14 @@ At the top of each tool's `<script>`:
 | `BACKOFF_BASE` | 1.0 | Backoff seconds, doubled per retry when no `Retry-After` |
 | `HISTORY_REV_LIMIT` | 50 | (finder) Revisions fetched per history lookup |
 | `GAP_ARTICLE_CAP` | 5000 | (gaps) Max articles enumerated from a category tree |
+| `SINGLE_REV_LIMIT` / `SINGLE_REV_EXTEND` | 1000 / 1000 | (history) Revisions walked for one person / per "Search another" |
+| `CAT_REV_LIMIT` | 200 | (history) Revisions walked per person in category mode |
+| `CAT_CHUNK` | 100 | (history page) Default *files per click* (input accepts 1–50000) |
+| `CAT_FILE_CAP` | 3000 | (history) File cap unless un-capped |
+| `ALGO_VERSION` | 3 | (history) Saved-record version; bump to invalidate all records |
+| `CHUNK` | 500 | (background job) Files per checkpoint |
+| `REQS_PER_MIN` | 180 | (background job) Request pacing, under the 200/min bot limit |
+| `BUDGET_MIN` | 320 | (background job, env) Minutes before a run saves and stops |
 
 
 ## Licence

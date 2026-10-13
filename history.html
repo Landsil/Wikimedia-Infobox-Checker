@@ -8,22 +8,20 @@
   Infobox History — one of the static, client-side tools on this site.
 
   Given a Commons photo (name or link) or a Wikipedia article, show the current
-  infobox photo of the depicted person plus the two photos it replaced, side by
-  side. Recognises crop variants as the same photo, and shows each photo's crop
-  family. Given a category instead, scan its people in chunks and list only those
-  whose infobox photo actually changed (>=2 distinct photos in recent history).
-  Runs entirely in the browser via the Wikimedia APIs (fetch + origin=*).
+  infobox photo of the depicted person plus the photos it replaced, side by side.
+  Recognises crop variants as the same photo, and shows each photo's crop family.
+  Given a Commons photo category instead, scan its files in chunks and list the
+  people whose CURRENT infobox photo is one of them, each with their history.
+  Runs entirely in the browser via the Wikimedia APIs (fetch + origin=*); the
+  pipeline lives in history-core.js, shared with the background refresh job.
 -->
-<link rel="stylesheet" href="style.css?v=4">
+<link rel="stylesheet" href="style.css?v=5">
 </head>
 <body>
 <header>
   <div class="titlebar">
     <h1><a href="index.html" class="home-link">Wikimedia</a> › Infobox History</h1>
-    <span class="titlebar-actions" style="display:flex;gap:8px">
-      <button type="button" id="save_gh" class="secondary" hidden>Save to GitHub</button>
-      <button type="button" id="about_btn">About</button>
-    </span>
+    <button type="button" id="about_btn">About</button>
   </div>
   <form id="f">
     <div><label>Article link, file name, file link, or category</label>
@@ -51,7 +49,7 @@
   <div id="loadmore" hidden>
     <button type="button" id="loadmore_btn">Scan more files</button>
     <label class="age-filter">files per click
-      <input type="number" id="chunk_size" min="1" max="50000" value="100"></label>
+      <input type="text" id="chunk_size" inputmode="numeric" pattern="[0-9]*" value="100"></label>
   </div>
   <div id="recheck" hidden>
     <button type="button" id="refresh_btn" class="secondary" hidden>Check for updates</button>
@@ -67,7 +65,7 @@
       <button type="button" id="about_close">Close</button>
     </div>
     <p>Shows how a Wikipedia infobox photo has changed over time: the current
-    photo of the depicted person plus the two it replaced, side by side, each
+    photo of the depicted person plus the photos it replaced, side by side, each
     with when and by whom it was swapped in.</p>
     <h3>Input</h3>
     <ul>
@@ -81,17 +79,31 @@
         resolves who each depicts, and lists the people whose <em>current</em>
         infobox photo is one of those files (crop-aware), with each person's
         history, newest current photo first. <em>Subcategory depth</em> sets how
-        deep the tree is walked; <em>Scan more files</em> continues the scan.
-        Enumeration is capped at a few thousand files; <em>Slow un-capped scan</em>
-        walks the whole tree. You can Save partway through and resume in a later
-        session. <em>Re-check all files</em> re-runs depicts + liveness over every
-        file to catch people who became live since a scan (a photo that only later
-        got a depicts statement, or only later became the infobox photo).</li>
+        deep the tree is walked; <em>Scan more files</em> continues the scan,
+        <em>files per click</em> at a time. Enumeration is capped at a few
+        thousand files; <em>Slow un-capped scan</em> walks the whole tree.
+        <em>Re-check all files</em> re-runs depicts + liveness over every file to
+        catch people who became live since a scan (a photo that only later got a
+        depicts statement, or only later became the infobox photo).</li>
+    </ul>
+    <h3>Saved history</h3>
+    <ul>
+      <li>Some searches have a <strong>saved record</strong>: it loads instantly,
+        with a badge showing when it was last updated. A background job keeps
+        these up to date — weekly for files newly added to a category and for
+        people whose article changed, plus a full re-check of every file monthly.</li>
+      <li><strong>Check for updates</strong> applies those changes now, in this
+        tab only. Nothing you do on this page is saved.</li>
+      <li>A person whose current infobox photo is no longer from the category is
+        kept, marked <em>no longer from this category</em>.</li>
     </ul>
     <h3>Notes</h3>
     <ul>
       <li><strong>Images to show</strong> sets how many photos back to display
         (current + previous), 1–10; default 3.</li>
+      <li><strong>Hide</strong> under a photo removes it from view (e.g. to
+        screenshot the current and an older photo side by side); the headings
+        renumber. It's a one-off: the next search or redraw brings it back.</li>
       <li>Crop variants of the same photo are treated as one; for a single
         subject, each photo's other crops are listed beneath it.
         <strong>Hide crop originals</strong> collapses that away, leaving only
@@ -107,34 +119,21 @@
   <a href="https://github.com/Landsil/Wikimedia-Infobox-Checker" target="_blank"
      rel="noopener">Wikimedia-Infobox-Checker on GitHub</a>
 </footer>
-<script>
-"use strict";
+<script type="module">
+import {
+  COMMONS_API, SINGLE_REV_LIMIT, SINGLE_REV_EXTEND, CAT_FILE_CAP, ALGO_VERSION,
+  chunked, wpApi, cropParent, sameOrCrop, mergeCurrent, apiGet, mwQuery, parseInput,
+  resolveSubjectFromFile, currentLead, buildTimeline, walkCategory, processFiles,
+  currentTopRev, refreshPeople, flagOutside, cacheIdentity, cachePath, timelineFromJson,
+} from "./history-core.js";
 
-const COMMONS_API = "https://commons.wikimedia.org/w/api.php";
-const WIKIDATA_API = "https://www.wikidata.org/w/api.php";
-const BATCH = 50;
 const THUMB_WIDTH = 320;
-const REV_PAGE = 50;            // revisions fetched per API page (rvlimit)
-// We read only the lead section (rvsection=0) per revision — ~2% of full-article
-// payload — so bandwidth is no longer the limiter; round-trips (budget/REV_PAGE
-// requests) are, which is why the caps are generous but not unbounded.
-const SINGLE_REV_LIMIT = 1000;  // revisions walked on the first single article/file pass
-const SINGLE_REV_EXTEND = 1000; // extra revisions per "Search another N revisions" click
-const CAT_REV_LIMIT = 200;      // max revisions walked per person in category mode
-const CAT_CHUNK = 100;          // files scanned per "Scan more files" (depicts resolved in batches)
-const CAT_FILE_CAP = 3000;      // safety cap on files enumerated from a Commons category tree
-const MAX_RETRIES = 6;
-const BACKOFF_BASE = 1.0;
-const NON_WIKIPEDIA_WIKIS = new Set([
-  "commonswiki", "wikidatawiki", "specieswiki", "metawiki", "mediawikiwiki",
-  "incubatorwiki", "sourceswiki", "foundationwiki", "outreachwiki", "wikimaniawiki", "testwiki",
-]);
+const CAT_CHUNK = 100;          // default files scanned per "Scan more files" (depicts resolved in batches)
 
 // ---- helpers ----
 const $ = id => document.getElementById(id);
 const esc = s => (s == null ? "" : String(s)).replace(/[&<>"']/g,
   c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const sleep = ms => new Promise(r => setTimeout(r, ms));
 const link = (url, text) =>
   url ? `<a href="${esc(url)}" target="_blank" rel="noopener">${esc(text)}</a>` : esc(text);
 const row = (k, v) =>
@@ -142,7 +141,7 @@ const row = (k, v) =>
 const pressed = id => $(id).getAttribute("aria-pressed") === "true";
 // How many photos to show / collect (current + previous). Default 3, capped 1..10.
 const imgCount = () => Math.min(10, Math.max(1, parseInt($("count").value, 10) || 3));
-function chunked(a, n = BATCH) { const o = []; for (let i = 0; i < a.length; i += n) o.push(a.slice(i, i + n)); return o; }
+const depthValue = () => Math.max(0, parseInt($("depth").value, 10) || 0);
 function stripHtml(v) {
   // Parse in an inert document: no resource loads, no event handlers fire — safe
   // for world-editable Commons extmetadata (unlike assigning to a live innerHTML).
@@ -155,27 +154,9 @@ function stripHtml(v) {
 }
 const dateOnly = v => { const m = /^(\d{4}-\d{2}-\d{2})/.exec((v == null ? "" : String(v)).trim()); return m ? m[1] : (v || ""); };
 const resolution = o => (o && o.megapixels != null && o.width && o.height) ? `${o.megapixels} MP (${o.width}×${o.height})` : "";
-const wikiLang = site => site.slice(0, -4).replace(/_/g, "-");   // "enwiki" -> "en"
-const wpApi = lang => `https://${lang}.wikipedia.org/w/api.php`;
 const wpArticleUrl = (lang, t) => `https://${lang}.wikipedia.org/wiki/${encodeURIComponent(t.replace(/ /g, "_"))}`;
-
-// Crop helpers (shared behaviour with the other tools).
-const CROP_SUFFIX = /^(?<base>.+?)\s*\((?:[^)]*crop[^)]*)\)(?<ext>\.\w+)$/i;
-const cropParent = t => { const m = CROP_SUFFIX.exec(t || ""); return m ? m.groups.base + m.groups.ext : null; };
-const sameOrCrop = (a, b) => !!a && !!b && (a === b || cropParent(a) === b || cropParent(b) === a);
-
-// The authoritative CURRENT infobox photo is pageimages (`lead`), not the newest
-// wikitext |image= — those diverge when the image is set via Wikidata (P18) with
-// no local |image=, leaving a stale (often deleted) wikitext value. So when the
-// lead isn't the newest wikitext entry, put the lead first (as current) and keep
-// the wikitext entries as the previous photos. The synthetic current has no rev/
-// ts/user (the switch happened outside wikitext). Idempotent (safe to re-run).
-function mergeCurrent(timeline, lead) {
-  if (!lead) return timeline;
-  if (timeline.length && sameOrCrop(lead, timeline[0].file)) return timeline;
-  const prev = timeline.filter(e => !sameOrCrop(e.file, lead));
-  return [{ file: lead, key: cropParent(lead) || lead, rev: null, ts: null, user: null }, ...prev];
-}
+const errorText = err => /rate-limiting/i.test(err.message)
+  ? "Wikimedia is rate-limiting us right now. Wait a moment and try again." : "Error: " + err.message;
 
 function sanitizeHref(href) {
   href = stripHtml(href).trim();
@@ -191,37 +172,7 @@ function parseAuthor(artistHtml) {
   return { name: stripHtml(artistHtml), url: null };
 }
 
-// ---- API ----
-function retryDelayMs(resp, attempt) {
-  const ra = resp.headers.get("Retry-After");
-  if (ra && /^\d+$/.test(ra)) return parseFloat(ra) * 1000;
-  return BACKOFF_BASE * 2 ** attempt * 1000;
-}
-async function apiGet(base, params) {
-  const s = new URLSearchParams(params); s.set("format", "json"); s.set("origin", "*");
-  const url = `${base}?${s.toString()}`;
-  for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
-    let resp;
-    try { resp = await fetch(url, { credentials: "omit" }); }
-    catch (err) { if (attempt < MAX_RETRIES - 1) { await sleep(BACKOFF_BASE * 2 ** attempt * 1000); continue; } throw err; }
-    let data = null; try { data = JSON.parse(await resp.text()); } catch (_) {}
-    if ([429, 500, 502, 503, 504].includes(resp.status)) {   // rate-limit or transient 5xx
-      if (attempt < MAX_RETRIES - 1) { await sleep(retryDelayMs(resp, attempt)); continue; }
-      throw new Error(`Wikimedia unavailable (HTTP ${resp.status}) after ${MAX_RETRIES} attempts.`);
-    }
-    if (!resp.ok) throw new Error(`HTTP ${resp.status} from ${base}`);
-    if (data === null) throw new Error(`Non-JSON response from ${base}`);
-    if (data.error) throw new Error(`Wikimedia API error: ${data.error.code}${data.error.info ? " — " + data.error.info : ""}`);
-    return data;
-  }
-}
-async function* mwQuery(base, params) {
-  const p = { ...params, action: "query" };
-  while (true) { const d = await apiGet(base, p); if (d.query) yield d.query; if (d.continue) Object.assign(p, d.continue); else break; }
-}
-async function wbGetEntities(base, ids, props, extra) {
-  return (await apiGet(base, { action: "wbgetentities", ids: ids.join("|"), props, ...(extra || {}) })).entities || {};
-}
+// ---- photo details (browser-only: parses extmetadata HTML) ----
 // `base` is the wiki to ask. Query the article's own wiki (not Commons): it
 // returns imageinfo for BOTH locally-uploaded files (e.g. non-free infobox
 // images) and shared Commons files, whereas Commons only knows its own.
@@ -252,188 +203,6 @@ async function fetchFilesImageinfo(base, titles) {
   return result;
 }
 
-// ---- input parsing ----
-// A single person is ALWAYS given as an article URL or a file (File: name / file
-// URL) — never as a bare title. Anything that isn't one of those, and isn't a
-// recognised article/file URL, is a Commons photo category.
-function parseInput(raw) {
-  const s = (raw || "").trim();
-  if (!s) return null;
-  // Commons file (URL)
-  let m = s.match(/commons\.wikimedia\.org\/(?:wiki\/|entity\/)?(File:[^?#]+)/i);
-  if (m) return { type: "file", title: decodeURIComponent(m[1]).replace(/_/g, " ") };
-  // Category from either wiki -> a Commons photo category
-  m = s.match(/(?:commons\.wikimedia\.org|[a-z-]+\.wikipedia\.org)\/wiki\/(Category:[^?#]+)/i);
-  if (m) return { type: "category", title: decodeURIComponent(m[1]).replace(/_/g, " ") };
-  // Wikipedia article (URL)
-  m = s.match(/([a-z-]+)\.wikipedia\.org\/wiki\/([^?#]+)/i);
-  if (m) return { type: "article", lang: m[1], title: decodeURIComponent(m[2]).replace(/_/g, " ") };
-  // Bare "Category:X"
-  if (/^category:/i.test(s)) return { type: "category", title: s.replace(/_/g, " ") };
-  // Bare "File:X" or a filename ending in an image extension
-  if (/^file:/i.test(s)) return { type: "file", title: s.replace(/_/g, " ") };
-  if (/\.(jpe?g|png|gif|tiff?|webp|svg)$/i.test(s)) return { type: "file", title: "File:" + s.replace(/_/g, " ") };
-  // Anything else is a Commons category name (no article-title guessing).
-  return { type: "category", title: "Category:" + s.replace(/_/g, " ") };
-}
-
-function allDepictsQids(claims) {
-  const out = [];
-  for (const st of (claims.P180 || [])) {
-    try { const id = st.mainsnak.datavalue.value.id; if (id && !out.includes(id)) out.push(id); } catch (_) {}
-  }
-  return out;
-}
-
-// Given depicts QIDs and their fetched Wikidata entities, return the first that
-// is a human (P31=Q5) with a Wikipedia article: {lang,article,label,qid}, else null.
-function subjectFromQids(qids, entities) {
-  for (const q of qids) {
-    const e = entities[q]; if (!e) continue;
-    const claims = e.claims || {};
-    const human = (claims.P31 || []).some(s => { try { return s.mainsnak.datavalue.value.id === "Q5"; } catch (_) { return false; } });
-    if (!human) continue;
-    const sl = e.sitelinks || {};
-    const label = (e.labels && e.labels.en && e.labels.en.value) || q;
-    let site = "enwiki", title = (sl.enwiki || {}).title;
-    if (!title) for (const [s, l] of Object.entries(sl)) { if (s.endsWith("wiki") && !NON_WIKIPEDIA_WIKIS.has(s)) { site = s; title = l.title; break; } }
-    if (!title) continue;
-    return { lang: wikiLang(site), article: title, label, qid: q };
-  }
-  return null;
-}
-
-// File -> depicted person -> their article. Returns {lang,article,label,qid} or {error}.
-async function resolveSubjectFromFile(fileTitle) {
-  const d = await apiGet(COMMONS_API, { action: "query", titles: fileTitle, prop: "info" });
-  const page = Object.values(d.query.pages)[0];
-  if (!page || "missing" in page) return { error: `No such Commons file: ${fileTitle}` };
-  const ents = await wbGetEntities(COMMONS_API, ["M" + page.pageid], "claims");
-  const st = (ents["M" + page.pageid] || {});
-  const qids = allDepictsQids(st.statements || st.claims || {});
-  if (!qids.length) return { error: `“${fileTitle}” has no depicts (P180) statement, so I can't tell who it's of.` };
-  const we = await wbGetEntities(WIKIDATA_API, qids.slice(0, BATCH), "claims|sitelinks|labels", { languages: "en" });
-  const subj = subjectFromQids(qids, we);
-  return subj || { error: `“${fileTitle}” depicts something that isn't a person with a Wikipedia article.` };
-}
-
-// Batched version for category mode: resolve many files' depicted person at once.
-// file -> pageid (Commons info) -> depicts QIDs (Commons entities) -> person
-// (Wikidata entities). Returns a Map of file -> {lang,article,label,qid}.
-async function batchResolve(files, onProgress) {
-  const pageid = {};                                     // file -> Commons pageid
-  let n = 0;
-  for (const b of chunked(files)) {
-    for await (const q of mwQuery(COMMONS_API, { titles: b.join("|"), prop: "info" }))
-      for (const p of Object.values(q.pages || {})) if (!("missing" in p)) pageid[p.title] = p.pageid;
-    n += b.length;
-    if (onProgress) onProgress(`Reading file info ${n}/${files.length}…`);
-  }
-
-  const midToQids = {};                                  // "M<id>" -> [qids]
-  const mids = Object.values(pageid).map(id => "M" + id);
-  n = 0;
-  for (const b of chunked(mids)) {
-    const ents = await wbGetEntities(COMMONS_API, b, "claims");
-    for (const [mid, ent] of Object.entries(ents)) midToQids[mid] = allDepictsQids(ent.statements || ent.claims || {});
-    n += b.length;
-    if (onProgress) onProgress(`Reading depicts statements ${n}/${mids.length}…`);
-  }
-  const allQids = [...new Set(Object.values(midToQids).flat())];
-  const wd = {};
-  n = 0;
-  for (const b of chunked(allQids)) {
-    Object.assign(wd, await wbGetEntities(WIKIDATA_API, b, "claims|sitelinks|labels", { languages: "en" }));
-    n += b.length;
-    if (onProgress) onProgress(`Resolving people ${n}/${allQids.length}…`);
-  }
-
-  const out = new Map();
-  for (const file of files) {
-    const pid = pageid[file]; if (pid == null) continue;
-    const subj = subjectFromQids(midToQids["M" + pid] || [], wd);
-    if (subj) out.set(file, subj);
-  }
-  return out;
-}
-
-async function currentLead(lang, article) {
-  const d = await apiGet(wpApi(lang), { action: "query", titles: article, prop: "pageimages", piprop: "name", redirects: "1" });
-  const p = Object.values((d.query || {}).pages || {})[0];
-  return (p && p.pageimage) ? "File:" + p.pageimage.replace(/_/g, " ") : null;
-}
-
-// Batched current-lead lookup: article -> lead File: title, for many articles on one wiki.
-async function currentLeads(lang, articles) {
-  const out = {};
-  for (const b of chunked(articles))
-    for await (const q of mwQuery(wpApi(lang), { titles: b.join("|"), prop: "pageimages", piprop: "name", redirects: "1" }))
-      for (const p of Object.values(q.pages || {})) if (p.pageimage) out[p.title] = "File:" + p.pageimage.replace(/_/g, " ");
-  return out;
-}
-
-// Distinct infobox photos, newest first (crop variants collapsed to one).
-// Reads up to `budget` NEW revisions this call, following `continue`, stopping
-// once `wantDistinct` photos are collected. `resume` ({ timeline, cont }) lets a
-// follow-up call continue exactly where a previous one stopped, so extra budget
-// is spent on unseen history rather than re-reading it.
-//
-// Only the lead section (rvsection=0) is fetched — the infobox lives there, and
-// it's ~2% of the full-article payload. If the lead section yields no image at
-// all on a fresh walk (exotic case: infobox transcluded below a heading), and
-// `opts.allowFallback` is set, we retry once with full content so correctness
-// can't regress. `opts.fullContent` forces the full-content mode (used when a
-// resume must match a walk that already fell back).
-//
-// Returns { timeline, more, cont, read, usedFull }.
-const INFOBOX_IMG = /\|\s*(?:image|image_name|photo|img)\s*=\s*([^\n|}]+)/i;
-async function buildTimeline(lang, article, budget, wantDistinct, resume, opts) {
-  opts = opts || {};
-  const base = { action: "query", prop: "revisions", titles: article,
-    rvprop: "ids|timestamp|user|comment|content", rvslots: "main",
-    rvlimit: String(REV_PAGE), rvdir: "older" };
-  const walk = async (extra, startTimeline, startCont, startTop) => {
-    const timeline = startTimeline || [];
-    let read = 0, topRev = startTop || null;
-    const p = { ...base, ...extra };
-    if (startCont) Object.assign(p, startCont);
-    while (true) {
-      const d = await apiGet(wpApi(lang), p);
-      const page = Object.values((d.query || {}).pages || {})[0];
-      for (const r of (page && page.revisions) || []) {
-        if (topRev == null) topRev = r.revid;   // newest revision seen = delta watermark
-        read++;
-        const wt = ((r.slots || {}).main || {})["*"] || "";
-        const m = INFOBOX_IMG.exec(wt); if (!m) continue;
-        // Editors leave HTML comments / tags after the filename ("Foo.jpg <!-- note -->"),
-        // sometimes wrap it in [[File:…]], and sometimes the value is a template or
-        // empty. Strip the noise, then require a plain image filename so junk/empty
-        // captures don't become unreadable cards.
-        let val = m[1].replace(/<!--[\s\S]*?-->/g, "").replace(/<.*$/, "").trim();
-        val = val.replace(/^\[\[\s*/, "").replace(/\s*\]\]\s*$/, "")
-                 .replace(/^\s*(?:File|Image)\s*:\s*/i, "").trim();
-        if (!/\.(jpe?g|png|gif|tiff?|webp|svg)$/i.test(val)) continue;
-        // Normalise underscores to spaces (MediaWiki treats them as equal) so the
-        // wikitext filename matches the pageimages/categorymembers form; otherwise
-        // "Steve_Mould_in_2026.jpg" wouldn't equal the lead "Steve Mould in 2026.jpg"
-        // and mergeCurrent would show the same photo as both current and previous.
-        const file = "File:" + val.replace(/_/g, " ");
-        const key = cropParent(file) || file;
-        if (!timeline.length || timeline[timeline.length - 1].key !== key)
-          timeline.push({ file, key, rev: r.revid, ts: r.timestamp, user: r.user });
-        if (timeline.length >= wantDistinct) return { timeline, more: false, cont: null, read, topRev };
-      }
-      if (read >= budget) return { timeline, more: !!d.continue, cont: d.continue || null, read, topRev };
-      if (d.continue) Object.assign(p, d.continue); else return { timeline, more: false, cont: null, read, topRev };
-    }
-  };
-  const res = await walk(opts.fullContent ? {} : { rvsection: "0" },
-    resume ? resume.timeline : [], resume ? resume.cont : null, resume ? resume.topRev : null);
-  if (!opts.fullContent && opts.allowFallback && !resume && res.timeline.length === 0)
-    return { ...(await walk({}, [], null, null)), usedFull: true };
-  return { ...res, usedFull: !!opts.fullContent };
-}
-
 // Base + crop variants of a photo (excluding `exclude`). One prefixsearch + imageinfo.
 async function cropFamily(fileTitle, exclude) {
   const baseFile = cropParent(fileTitle) || fileTitle;
@@ -448,115 +217,26 @@ async function cropFamily(fileTitle, exclude) {
 }
 
 // ---- category mode (Commons photo category) ----
-// Enumerate files (ns6) in a Commons category tree, recursing subcats to `depth`.
-// Cheap relative to the per-file depicts/history lookups. `cap` bounds the count
-// (CAT_FILE_CAP normally; Infinity for the "slow un-capped scan").
-async function enumerateFiles(category, depth, cap = CAT_FILE_CAP) {
-  const files = [], seen = new Set(), visited = new Set();
-  let addedThrough = "";                                   // latest category-add timestamp seen
-  let queue = [{ c: category, d: 0 }];
-  while (queue.length && files.length < cap) {
-    const { c, d } = queue.shift();
-    if (visited.has(c)) continue;
-    visited.add(c);
-    for await (const q of mwQuery(COMMONS_API, { list: "categorymembers", cmtitle: c,
-        cmtype: d < depth ? "file|subcat" : "file", cmprop: "title|type|timestamp", cmlimit: "500" })) {
-      for (const m of q.categorymembers || []) {
-        if (m.ns === 14) { if (d < depth) queue.push({ c: m.title, d: d + 1 }); }
-        else if (m.ns === 6 && !seen.has(m.title)) {
-          seen.add(m.title); files.push(m.title);
-          if (m.timestamp && m.timestamp > addedThrough) addedThrough = m.timestamp;
-        }
-      }
-      if (files.length >= cap) break;
-    }
-  }
-  return { files: files.slice(0, cap), addedThrough };
-}
-
-// Files in a Commons category tree added strictly after `since` (ISO timestamp).
-// Walks the full tree (so pre-existing subcats that gained new files aren't
-// missed) and filters files by their category-add timestamp; the heavy per-file
-// work downstream only touches the new files.
-async function filesAddedSince(category, depth, since) {
-  const files = [], seen = new Set(), visited = new Set();
-  let addedThrough = since || "";
-  let queue = [{ c: category, d: 0 }];
-  // No file cap here: the delta must see every new file across the whole tree
-  // (only genuinely new files are collected, and they're processed in chunks).
-  while (queue.length) {
-    const { c, d } = queue.shift();
-    if (visited.has(c)) continue;
-    visited.add(c);
-    for await (const q of mwQuery(COMMONS_API, { list: "categorymembers", cmtitle: c,
-        cmtype: d < depth ? "file|subcat" : "file", cmprop: "title|type|timestamp", cmlimit: "500" })) {
-      for (const m of q.categorymembers || []) {
-        if (m.ns === 14) { if (d < depth) queue.push({ c: m.title, d: d + 1 }); }
-        else if (m.ns === 6 && m.timestamp > since && !seen.has(m.title)) {
-          seen.add(m.title); files.push(m.title);
-          if (m.timestamp > addedThrough) addedThrough = m.timestamp;
-        }
-      }
-    }
-  }
-  return { files, addedThrough };
-}
-
 // Category walk state: remaining file queue, running tallies, dedup of people,
 // and the accumulated live people (rendered sorted by initial-photo date).
 const cat = { queue: [], scanned: 0, truncated: false, count: 3, done: new Set(),
-              addedThrough: "", people: [], uncapped: false, pendingDeferred: false };
+              addedThrough: "", people: [], uncapped: false, pendingDeferred: false, exclude: [] };
 
-// Resolve a list of files to the live people whose current infobox photo is one
-// of them (crop-aware), and build each person's history. Shared by the chunk
-// scan and the incremental refresh.
-async function processFiles(fileList, onProgress) {
-  // 1. Resolve every file's depicted person in batched queries (cheap in bulk).
-  const resolved = await batchResolve(fileList, onProgress);
-  const candidates = [...resolved].map(([file, subj]) => ({ file, ...subj }))
-    .filter(c => !cat.done.has(c.lang + ":" + c.article));
-  // 2. Batch the current-lead lookup per wiki, then keep files that are the lead
-  //    (crop-aware) and dedup by person AFTER the liveness check (a person may be
-  //    depicted by several files; only the one matching the infobox is "live").
-  if (onProgress) onProgress(`Checking current infobox photos for ${candidates.length} candidate(s)…`);
-  const byLang = {};
-  for (const c of candidates) (byLang[c.lang] = byLang[c.lang] || new Set()).add(c.article);
-  const leads = {};
-  for (const [lang, set] of Object.entries(byLang)) leads[lang] = await currentLeads(lang, [...set]);
-  const live = [], seen = new Set();
-  for (const c of candidates) {
-    const lead = (leads[c.lang] || {})[c.article];
-    if (!sameOrCrop(c.file, lead)) continue;      // this photo is the person's current infobox photo
-    const key = c.lang + ":" + c.article;
-    if (seen.has(key)) continue; seen.add(key);
-    live.push({ ...c, lead });
-  }
-  // 3. Walk history for each live person; the CURRENT photo is the pageimages
-  //    lead, the wikitext walk supplies the previous photos.
-  const people = [];
-  let i = 0;
-  for (const c of live) {
-    if (onProgress) onProgress(`Building history ${++i}/${live.length}: ${c.label || c.article}`);
-    cat.done.add(c.lang + ":" + c.article);
-    let res;
-    try { res = await buildTimeline(c.lang, c.article, CAT_REV_LIMIT, cat.count); } catch (_) { res = { timeline: [], more: false, topRev: null }; }
-    const merged = mergeCurrent(res.timeline, c.lead);
-    if (!merged.length) continue;
-    people.push({ lang: c.lang, article: c.article, label: c.label, qid: c.qid, lead: c.lead,
-                  topRev: res.topRev, shown: merged.slice(0, cat.count), more: res.more });
-  }
-  await attachInfo(people);
-  return people;
-}
-// How many files a "Scan more files" click processes (user-adjustable, 1..5000).
+// How many files a "Scan more files" click processes (user-adjustable, 1..50000).
 const chunkSize = () => Math.min(50000, Math.max(1, parseInt($("chunk_size").value, 10) || CAT_CHUNK));
-// Process the next chunk of files from the queue.
+// Process the next chunk of files from the queue. The chunk is only consumed
+// (queue shortened, people marked done) once it fully succeeds, so after an
+// error "Scan more files" retries the same files instead of silently skipping them.
 async function scanCatChunk(onProgress) {
-  const batch = cat.queue.splice(0, chunkSize());
+  const batch = cat.queue.slice(0, chunkSize());
   const start = cat.scanned + 1, end = cat.scanned + batch.length;
-  cat.scanned += batch.length;
   const label = onProgress ? (msg => onProgress(`Files ${start}-${end}: ${msg}`)) : null;
-  return processFiles(batch, label);
+  const { people, doneKeys } = await processFiles(batch, { done: cat.done, count: cat.count, onProgress: label });
+  await attachInfo(people);
+  cat.queue.splice(0, batch.length);
+  cat.scanned += batch.length;
+  for (const k of doneKeys) cat.done.add(k);
+  return people;
 }
 
 // Fetch imageinfo for every shown photo, batched per wiki (people can be on
@@ -600,10 +280,11 @@ function renderPersonBlock(id, p) {
   const deep = (p.more && !p.deepDone)
     ? ` <button type="button" class="mini deep-btn" data-id="${id}">`
       + `Search deeper (${SINGLE_REV_LIMIT} revisions)</button>` : "";
+  const outside = p.outside ? ` <span class="tl-flag">no longer from this category</span>` : "";
   const heading = link(wpArticleUrl(p.lang, p.article), p.label || p.article)
     + (p.qid ? ` · ${link("https://www.wikidata.org/wiki/" + p.qid, p.qid)}` : "");
   return `<div class="tl-person-block" id="${id}">`
-    + `<div class="tl-person">${heading}${deep}</div>`
+    + `<div class="tl-person">${heading}${outside}${deep}</div>`
     + `<div class="timeline">${cards}</div></div>`;
 }
 // Delegated handler for the per-row "Search deeper" buttons.
@@ -662,7 +343,19 @@ function tlCard(entry, i, newer) {
       ${usedInfo}
     </div>
     ${famBlock(entry.fam || [])}
+    <button type="button" class="mini tl-hide">Hide</button>
   </div>`;
+}
+// One-off, view-only: drop a card (e.g. to screenshot the current photo next to
+// an older one) and renumber the remaining headings. Nothing is stored — any
+// re-render brings it back. "Was replaced" on each card still states the real
+// swap, which may have been to the now-hidden photo.
+function hideCard(btn) {
+  const card = btn.closest(".tl-card"), timeline = card.parentElement;
+  card.remove();
+  let pos = 0;
+  for (const c of timeline.querySelectorAll(".tl-card:not(.current)"))
+    c.querySelector(".tl-head").textContent = headLabel(++pos);
 }
 
 let LANG = "en";   // wiki of the article being shown (for diff links)
@@ -671,13 +364,13 @@ function showError(msg) { const s = $("status"); s.className = "error"; s.textCo
 function showWarn(msg) { return `<div class="warn-banner">${esc(msg)}</div>`; }
 
 // Persistent badge telling you whether you're looking at a fresh scan or saved
-// history (+ when it was saved). Inline-styled so it needs no shared-CSS change.
+// history (+ when it was last updated). Inline-styled so it needs no shared-CSS change.
 function setModeBadge(kind, when) {
   const el = $("mode_badge"); if (!el) return;
   const base = "display:inline-block;padding:2px 10px;border-radius:10px;font-size:12px;font-weight:600;";
   let text, style;
   if (kind === "cache") {
-    text = `From saved history${when ? " — saved " + esc(when) : ""}`;
+    text = `From saved history${when ? " — updated " + esc(when) : ""}`;
     style = base + "background:#eef6ec;color:#276749;border:1px solid #cbe6cf;";
   } else if (kind === "recheck") {
     text = "Re-checked all files (live)";
@@ -697,21 +390,21 @@ function updateCatStatus() {
   const s = $("status"); s.className = "";
   const remaining = cat.queue.length;
   s.textContent = `Scanned ${cat.scanned} file(s); ${cat.people.length} currently live in an infobox.`
-    + (remaining ? ` ${remaining} file(s) left — Save now to resume later.` : " Done.")
+    + (remaining ? ` ${remaining} file(s) left.` : cat.pendingDeferred ? " Scan unfinished." : " Done.")
     + (cat.truncated ? ` (Capped at ${CAT_FILE_CAP} files — use “Slow un-capped scan” for the whole category.)` : "");
   $("loadmore").hidden = remaining === 0 && !cat.pendingDeferred;
-  if (cat.scanned > 0 || cat.people.length) { showSave(); showRecheck(); }
+  if (cat.scanned > 0 || cat.people.length) showRecheck();
 }
 async function scanAndRender() {
-  const go = $("go"), more = $("loadmore_btn"), save = $("save_gh"), recheck = $("recheck_btn");
-  go.disabled = true; more.disabled = true; save.disabled = true; recheck.disabled = true;   // no save/recheck mid-chunk
+  const go = $("go"), more = $("loadmore_btn"), recheck = $("recheck_btn");
+  go.disabled = true; more.disabled = true; recheck.disabled = true;   // no recheck mid-chunk
   try {
-    // Resuming a huge saved scan: the pending list was too big to store, so rebuild
-    // it now (re-enumerate and skip what was already scanned) before continuing.
+    // Resuming a saved scan whose pending list wasn't stored (older records):
+    // rebuild it now (re-enumerate and skip what was already scanned). No
+    // `exclude` here: the skip count only lines up with the walk that made it.
     if (!cat.queue.length && cat.pendingDeferred) {
       $("status").className = ""; $("status").textContent = "Rebuilding the file list to resume…";
-      const cap = cat.uncapped ? Infinity : CAT_FILE_CAP;
-      const { files } = await enumerateFiles(currentInput.title, Math.max(0, parseInt($("depth").value, 10) || 0), cap);
+      const { files } = await walkCategory(currentInput.title, depthValue(), { cap: cat.uncapped ? Infinity : CAT_FILE_CAP });
       cat.queue = files.slice(cat.scanned || 0);
       cat.pendingDeferred = false;
     }
@@ -722,25 +415,23 @@ async function scanAndRender() {
       $("results").innerHTML = `<p class="none">No photo in this category is currently the infobox photo of the person it depicts.</p>`;
     updateCatStatus();
   } catch (err) {
-    showError(/rate-limiting/i.test(err.message)
-      ? "Wikimedia is rate-limiting us right now. Wait a moment and try again." : "Error: " + err.message);
+    showError(errorText(err));
   } finally {
-    go.disabled = false; more.disabled = false; save.disabled = false; recheck.disabled = false;
+    go.disabled = false; more.disabled = false; recheck.disabled = false;
   }
 }
 function resetCat(inp) {
   cat.queue = []; cat.scanned = 0; cat.truncated = false;
   cat.count = imgCount(); cat.done = new Set(); cat.addedThrough = ""; cat.people = []; cat.uncapped = false;
-  cat.pendingDeferred = false;
+  cat.pendingDeferred = false; cat.exclude = [];
 }
 async function runCategory(inp, opts) {
   opts = opts || {};
   resetCat(inp);
   cat.uncapped = !!opts.uncapped;
-  const cap = opts.uncapped ? Infinity : CAT_FILE_CAP;
   $("status").className = "";
   $("status").textContent = `Listing files in ${inp.title}…` + (opts.uncapped ? " (un-capped — this may take a while)" : "");
-  const { files, addedThrough } = await enumerateFiles(inp.title, Math.max(0, parseInt($("depth").value, 10) || 0), cap);
+  const { files, addedThrough } = await walkCategory(inp.title, depthValue(), { cap: opts.uncapped ? Infinity : CAT_FILE_CAP });
   if (!files.length) { showError(`No files found in ${inp.title}.`); return; }
   cat.truncated = !opts.uncapped && files.length >= CAT_FILE_CAP;
   cat.addedThrough = addedThrough;
@@ -755,14 +446,14 @@ async function run() {
   const status = $("status"), go = $("go");
   status.className = ""; status.textContent = "Resolving…";
   $("subject").innerHTML = ""; $("results").innerHTML = ""; $("loadmore").hidden = true;
-  hideSave(); hideRecheck(); hideRefresh(); hideBadge(); single = null; shownPeople = {}; personSeq = 0; go.disabled = true;
+  hideRecheck(); hideRefresh(); hideBadge(); single = null; shownPeople = {}; personSeq = 0; go.disabled = true;
   try {
     const inp = parseInput($("q").value);
     if (!inp) { showError("Enter an article link, a file name, a file link, or a category."); return; }
     currentInput = inp;
 
-    // Read-through cache: if a saved record exists for this exact search, load it
-    // and only refresh what changed since it was saved.
+    // Read-through cache: if a saved record exists for this exact search, show it;
+    // "Check for updates" fetches what changed since.
     const cached = await loadCache(inp);
     if (cached) { await hydrateFromCache(cached, inp); return; }
 
@@ -799,8 +490,7 @@ async function run() {
     setModeBadge("live");
     await finishSingle();
   } catch (err) {
-    showError(/rate-limiting/i.test(err.message)
-      ? "Wikimedia is rate-limiting us right now. Wait a moment and try again." : "Error: " + err.message);
+    showError(errorText(err));
   } finally {
     go.disabled = false;
   }
@@ -820,7 +510,6 @@ async function finishSingle() {
   $("status").className = "";
   $("status").textContent = `${s.shown.length} infobox photo(s) shown; checked ${s.scanned} revision(s)`
     + (s.more ? " — more history exists." : ".");
-  showSave();
 }
 // Fetch each shown photo's crop family on demand — skipped while originals are
 // hidden, then filled in if the filter is turned back off.
@@ -852,33 +541,14 @@ async function extendSingle() {
   }
 }
 // ===================================================================
-// GitHub-backed result cache
-//   - Save button commits the current results to data/history/<key>.json on
-//     `main` (needs your fine-grained PAT with Contents: write, kept in
-//     sessionStorage for the tab). Only someone with a write-capable token can save.
-//   - On search, a matching saved record is loaded first, then only what changed
-//     since it was saved is fetched (single: article top-revision check;
-//     category: files added after the saved watermark + changed people).
+// Saved history (read-only here)
+//   Records in data/history/ are written only by the background job
+//   (scripts/refresh-history.mjs via .github/workflows/refresh-history.yml).
+//   On search, a matching record is loaded instead of scanning; "Check for
+//   updates" fetches what changed since, in this tab only.
 // ===================================================================
-const ALGO_VERSION = 3;                 // bump when extraction/crop/timeline logic changes
-const PENDING_STORE_MAX = 8000;         // store the pending queue inline only up to this many files
-                                        // (GitHub's Contents API rejects files over ~1 MB); above it,
-                                        // resume re-enumerates and skips the already-scanned count.
-const GH = { owner: "Landsil", repo: "Wikimedia-Infobox-Checker", branch: "main", dir: "data/history" };
-const TOKEN_KEY = "ibx_gh_token";
 let currentInput = null;                // parsed input of the current search
 
-function hash32(s) { let h = 2166136261 >>> 0; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return (h >>> 0).toString(16); }
-function cacheIdentity(inp) {
-  return inp.type === "article" ? `article|${inp.lang}|${inp.title}`
-       : inp.type === "file"    ? `file|${inp.title}`
-       :                          `category|${inp.title}`;
-}
-function cachePath(inp) {
-  const id = cacheIdentity(inp);
-  const slug = id.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 80);
-  return `${GH.dir}/${slug}-${hash32(id)}.json`;
-}
 // Read the published static JSON (anonymous, via Pages) for this exact search.
 async function loadCache(inp) {
   try {
@@ -894,76 +564,6 @@ async function loadCache(inp) {
   } catch (_) { return null; }
 }
 
-// --- GitHub write (fine-grained PAT in sessionStorage) ---
-// sessionStorage (not localStorage): the write-capable PAT lives only for this
-// tab session and never persists to disk, limiting the exposure window.
-function ghToken() { return sessionStorage.getItem(TOKEN_KEY) || ""; }
-function setGhToken(t) { if (t) sessionStorage.setItem(TOKEN_KEY, t); else sessionStorage.removeItem(TOKEN_KEY); }
-function b64utf8(s) { return btoa(unescape(encodeURIComponent(s))); }
-async function ghApi(method, path, body) {
-  const r = await fetch(`https://api.github.com${path}`, {
-    method,
-    headers: { Authorization: `Bearer ${ghToken()}`, Accept: "application/vnd.github+json",
-      "X-GitHub-Api-Version": "2022-11-28", ...(body ? { "Content-Type": "application/json" } : {}) },
-    body: body ? JSON.stringify(body) : undefined });
-  const t = await r.text(); let d = null; try { d = JSON.parse(t); } catch (_) {}
-  if (!r.ok) throw new Error(`GitHub ${r.status}: ${(d && d.message) || t.slice(0, 120)}`);
-  return d;
-}
-async function ghCommit(path, obj, message) {
-  let sha;
-  try { const cur = await ghApi("GET", `/repos/${GH.owner}/${GH.repo}/contents/${path}?ref=${GH.branch}`); sha = cur && cur.sha; } catch (_) {}
-  return ghApi("PUT", `/repos/${GH.owner}/${GH.repo}/contents/${path}`,
-    { message, content: b64utf8(JSON.stringify(obj, null, 2)), branch: GH.branch, ...(sha ? { sha } : {}) });
-}
-
-// --- serialise current results ---
-const timelineToJson = t => t.map(e => ({ file: e.file, rev: e.rev, ts: e.ts, user: e.user }));
-function buildPayload() {
-  const base = { schema: 1, algoVersion: ALGO_VERSION, identity: cacheIdentity(currentInput),
-    asOf: new Date().toISOString(), input: currentInput };
-  if (currentInput.type === "category") {
-    // `pending`/`done`/`scanned` let a big category be saved mid-scan and resumed
-    // in a later session. A huge pending list would exceed GitHub's file-size
-    // limit, so above PENDING_STORE_MAX we store `pending: null` and resume by
-    // re-enumerating and skipping `scanned` files. `pending: []` means complete.
-    const storePending = cat.queue.length <= PENDING_STORE_MAX;
-    return { ...base, type: "category", count: cat.count, addedThrough: cat.addedThrough || "",
-      uncapped: cat.uncapped, scanned: cat.scanned,
-      pending: storePending ? cat.queue.slice() : null, done: [...cat.done],
-      people: cat.people.map(p => ({ lang: p.lang, article: p.article,
-        label: p.label || null, qid: p.qid || null, topRev: p.topRev || null, more: !!p.more,
-        lead: p.lead || null, timeline: timelineToJson(p.shown) })) };
-  }
-  const s = single;
-  return { ...base, type: "single", count: s.count, lang: s.lang, article: s.article,
-    label: s.label || null, qid: s.qid || null, topRev: s.topRev || null, more: !!s.more,
-    cont: s.cont || null, fullContent: !!s.fullContent, scanned: s.scanned || 0,
-    lead: s.lead || null, timeline: timelineToJson(s.timeline) };
-}
-async function saveToGitHub() {
-  if (!currentInput) return;
-  if (!ghToken()) {
-    const t = (prompt("Paste a GitHub fine-grained token (Contents: write on " + GH.owner + "/" + GH.repo + "):") || "").trim();
-    if (!t) return;
-    setGhToken(t);
-  }
-  const btn = $("save_gh"), orig = btn.dataset.label || btn.textContent; btn.dataset.label = orig;
-  btn.disabled = true; btn.textContent = "Saving…";
-  try {
-    await ghCommit(cachePath(currentInput), buildPayload(), `cache: ${cacheIdentity(currentInput)}`);
-    btn.textContent = "Saved ✓ (live after Pages rebuild)";
-    setTimeout(() => { btn.textContent = orig; btn.disabled = false; }, 3000);
-  } catch (err) {
-    btn.disabled = false; btn.textContent = orig;
-    if (/GitHub 40[13]/.test(err.message)
-        && confirm(`GitHub rejected the write (${err.message}). Clear the stored token so you can paste a new one?`))
-      setGhToken("");
-    else showError("Save failed: " + err.message);
-  }
-}
-function showSave() { const b = $("save_gh"); if (b) b.hidden = false; }
-function hideSave() { const b = $("save_gh"); if (b) b.hidden = true; }
 function showRecheck() { $("recheck").hidden = false; }
 function hideRecheck() { $("recheck").hidden = true; }
 function showRefresh() { $("recheck").hidden = false; $("refresh_btn").hidden = false; }
@@ -978,8 +578,7 @@ async function refreshLoaded() {
     if (currentInput && currentInput.type === "category") await refreshCategory();
     else await refreshSingle();
   } catch (err) {
-    showError(/rate-limiting/i.test(err.message)
-      ? "Wikimedia is rate-limiting us right now. Wait a moment and try again." : "Error: " + err.message);
+    showError(errorText(err));
   } finally { btn.disabled = false; btn.textContent = orig; }
 }
 async function refreshSingle() {
@@ -995,34 +594,31 @@ async function refreshSingle() {
   await finishSingle();
 }
 async function refreshCategory() {
-  // Refresh stored people whose article changed since save.
-  $("status").className = ""; $("status").textContent = "Checking stored people for updates…";
-  const byLang = {};
-  for (const p of cat.people) (byLang[p.lang] = byLang[p.lang] || []).push(p);
-  for (const [lang, ps] of Object.entries(byLang)) {
-    const last = await lastRevIds(lang, ps.map(p => p.article));
-    for (const p of ps) {
-      if (!last[p.article] || last[p.article] === p.topRev) continue;
-      let res; try { res = await buildTimeline(p.lang, p.article, CAT_REV_LIMIT, cat.count); } catch (_) { continue; }
-      p.lead = await currentLead(p.lang, p.article);   // current photo may have changed
-      const merged = mergeCurrent(res.timeline, p.lead);
-      if (!merged.length) continue;
-      p.topRev = res.topRev; p.more = res.more; p.shown = merged.slice(0, cat.count);
-      await attachInfo([p]);
-      if (p._id && $(p._id)) $(p._id).outerHTML = renderPersonBlock(p._id, p);
-    }
-  }
-  // Add people from files added to the category after the saved watermark.
-  const { files, addedThrough } = await filesAddedSince(currentInput.title,
-    Math.max(0, parseInt($("depth").value, 10) || 0), cat.addedThrough || "");
+  const say = msg => { $("status").className = ""; $("status").textContent = msg; };
+  // Refresh stored people whose article changed since the record was written.
+  say("Checking stored people for updates…");
+  await refreshPeople(cat.people, cat.count, { onProgress: say, onChanged: async p => {
+    await attachInfo([p]);
+    if (p._id && $(p._id)) $(p._id).outerHTML = renderPersonBlock(p._id, p);
+  } });
+  // Walk the whole tree: files added after the saved watermark are new, and the
+  // full listing tells us who is no longer from this category.
+  say(`Listing files in ${currentInput.title}…`);
+  const { files: tree, added, addedThrough } = await walkCategory(currentInput.title, depthValue(),
+    { cap: Infinity, since: cat.addedThrough || "", exclude: cat.exclude });
+  flagOutside(cat.people, tree);
   const before = cat.people.length;
-  if (files.length) {
-    const fresh = await processFiles(files, msg => { $("status").className = ""; $("status").textContent = "New photos — " + msg; });
-    if (fresh.length) { cat.people.push(...fresh); renderCatPeople(); }
+  if (added.length) {
+    const { people: fresh, doneKeys } = await processFiles(added,
+      { done: cat.done, count: cat.count, onProgress: msg => say("New photos — " + msg) });
+    await attachInfo(fresh);
+    for (const k of doneKeys) cat.done.add(k);
+    cat.people.push(...fresh);
   }
+  renderCatPeople();
   if (addedThrough && addedThrough > cat.addedThrough) cat.addedThrough = addedThrough;
   updateCatStatus();
-  $("status").textContent += cat.people.length > before ? ` (+${cat.people.length - before} new)` : " No changes.";
+  $("status").textContent += cat.people.length > before ? ` (+${cat.people.length - before} new)` : " No new people.";
 }
 
 // Re-check all files: re-enumerate the whole category and re-run depicts +
@@ -1034,35 +630,22 @@ async function recheckAll() {
   const btn = $("recheck_btn"), orig = btn.textContent;
   btn.disabled = true; btn.textContent = "Re-enumerating…";
   try {
-    const cap = cat.uncapped ? Infinity : CAT_FILE_CAP;
-    const { files, addedThrough } = await enumerateFiles(currentInput.title,
-      Math.max(0, parseInt($("depth").value, 10) || 0), cap);
+    const { files, addedThrough } = await walkCategory(currentInput.title, depthValue(),
+      { cap: cat.uncapped ? Infinity : CAT_FILE_CAP, exclude: cat.exclude });
     if (addedThrough) cat.addedThrough = addedThrough;   // move the watermark forward
     cat.queue = files;                                    // re-process every file (done people are skipped)
     cat.scanned = 0;
+    cat.pendingDeferred = false;
     setModeBadge("recheck");
     await scanAndRender();                                // first chunk now; "Scan more files" continues
   } catch (err) {
-    showError(/rate-limiting/i.test(err.message)
-      ? "Wikimedia is rate-limiting us right now. Wait a moment and try again." : "Error: " + err.message);
+    showError(errorText(err));
   } finally {
     btn.disabled = false; btn.textContent = orig;
   }
 }
 
-// --- read-through: hydrate from a saved record, then refresh deltas ---
-async function currentTopRev(lang, article) {
-  const d = await apiGet(wpApi(lang), { action: "query", titles: article, prop: "info", redirects: "1" });
-  const p = Object.values((d.query || {}).pages || {})[0];
-  return p ? p.lastrevid : null;
-}
-async function lastRevIds(lang, articles) {
-  const out = {};
-  for (const b of chunked(articles))
-    for await (const q of mwQuery(wpApi(lang), { titles: b.join("|"), prop: "info", redirects: "1" }))
-      for (const p of Object.values(q.pages || {})) out[p.title] = p.lastrevid;
-  return out;
-}
+// --- read-through: hydrate from a saved record ---
 async function hydrateFromCache(data, inp) {
   return data.type === "category" ? hydrateCategory(data, inp) : hydrateSingle(data, inp);
 }
@@ -1073,8 +656,7 @@ async function hydrateSingle(data, inp) {
       + (data.qid ? ` · ${link("https://www.wikidata.org/wiki/" + data.qid, data.qid)}` : "") + `</p>`
     : `<p class="lead"><strong>${link(wpArticleUrl(data.lang, data.article), data.article)}</strong></p>`;
   single = { lang: data.lang, article: data.article, label: data.label, qid: data.qid, warnMsg: "",
-    lead: data.lead || null,
-    timeline: data.timeline.map(e => ({ ...e, key: cropParent(e.file) || e.file })),
+    lead: data.lead || null, timeline: timelineFromJson(data.timeline),
     more: data.more, cont: data.cont, fullContent: data.fullContent, scanned: data.scanned || 0,
     count: imgCount(), topRev: data.topRev };
   setModeBadge("cache", (data.asOf || "").slice(0, 10));
@@ -1083,17 +665,22 @@ async function hydrateSingle(data, inp) {
 }
 async function hydrateCategory(data, inp) {
   resetCat(inp);
+  // The record was built at its own depth; mirror it so "Check for updates" /
+  // "Re-check all" walk the same tree.
+  if (Number.isInteger(data.depth)) $("depth").value = String(data.depth);
   cat.count = data.count || imgCount();
   cat.addedThrough = data.addedThrough || "";
   cat.scanned = data.scanned || (data.people || []).length;
   cat.uncapped = !!data.uncapped;
+  cat.exclude = Array.isArray(data.exclude) ? data.exclude : [];   // subcategories the record skips
   for (const k of (data.done || [])) cat.done.add(k);
   cat.people = (data.people || []).map(p => ({ lang: p.lang, article: p.article, label: p.label,
-    qid: p.qid, topRev: p.topRev, more: p.more, lead: p.lead || null,
-    shown: p.timeline.map(e => ({ ...e, key: cropParent(e.file) || e.file })) }));
+    qid: p.qid, topRev: p.topRev, more: p.more, lead: p.lead || null, outside: !!p.outside,
+    shown: timelineFromJson(p.timeline) }));
   for (const p of cat.people) cat.done.add(p.lang + ":" + p.article);
-  // Restore the backlog: stored list when present; if it was omitted (too large),
-  // defer re-enumeration until the user resumes so the load stays instant.
+  // Restore the backlog: stored list when present; if it was omitted (older,
+  // browser-saved records), defer re-enumeration until the user resumes so the
+  // load stays instant.
   if (Array.isArray(data.pending)) cat.queue = data.pending.slice();
   else if (data.pending === null) cat.pendingDeferred = true;   // rebuild on "Scan more files"
   $("subject").innerHTML = `<p class="lead"><strong>${esc(inp.title)}</strong> — saved record from `
@@ -1106,10 +693,9 @@ async function hydrateCategory(data, inp) {
   showRefresh();                     // "Check for updates" / "Re-check all" are manual
 }
 
-$("save_gh").addEventListener("click", saveToGitHub);
 $("f").addEventListener("submit", e => { e.preventDefault(); run(); });
 // Slow un-capped scan: a fresh full-tree scan of a category with no file cap,
-// bypassing the read-through cache. Save partway and resume across sessions.
+// bypassing the read-through cache.
 $("uncapped_scan").addEventListener("click", async () => {
   const inp = parseInput($("q").value);
   if (!inp || inp.type !== "category") {
@@ -1117,18 +703,18 @@ $("uncapped_scan").addEventListener("click", async () => {
     return;
   }
   $("status").className = ""; $("subject").innerHTML = ""; $("results").innerHTML = "";
-  $("loadmore").hidden = true; hideSave(); hideRecheck(); hideRefresh(); single = null; shownPeople = {}; personSeq = 0;
+  $("loadmore").hidden = true; hideRecheck(); hideRefresh(); single = null; shownPeople = {}; personSeq = 0;
   currentInput = inp; $("go").disabled = true;
   try { await runCategory(inp, { uncapped: true }); }
-  catch (err) {
-    showError(/rate-limiting/i.test(err.message)
-      ? "Wikimedia is rate-limiting us right now. Wait a moment and try again." : "Error: " + err.message);
-  } finally { $("go").disabled = false; }
+  catch (err) { showError(errorText(err)); }
+  finally { $("go").disabled = false; }
 });
 $("loadmore_btn").addEventListener("click", () => scanAndRender());
 $("recheck_btn").addEventListener("click", () => recheckAll());
 $("refresh_btn").addEventListener("click", () => refreshLoaded());
 $("results").addEventListener("click", e => {
+  const hide = e.target.closest(".tl-hide");
+  if (hide) { hideCard(hide); return; }
   const deep = e.target.closest(".deep-btn");
   if (deep) { deepSearch(deep.getAttribute("data-id")); return; }
   if (e.target.closest(".extend-btn")) extendSingle();

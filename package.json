@@ -1,0 +1,6 @@
+{
+  "name": "wikimedia-infobox-checker",
+  "private": true,
+  "description": "Static site; no dependencies. type=module lets Node load history-core.js (shared with history.html) for scripts/refresh-history.mjs.",
+  "type": "module"
+}

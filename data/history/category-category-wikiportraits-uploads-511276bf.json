@@ -208548,5 +208548,9 @@
         }
       ]
     }
+  ],
+  "depth": 4,
+  "exclude": [
+    "Category:WikiPortraits photos of animals"
   ]
 }

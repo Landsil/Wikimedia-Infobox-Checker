@@ -1,0 +1,90 @@
+# Keeps the Infobox History saved records (data/history/*.json) up to date.
+# The only writer of those files — see scripts/refresh-history.mjs for what a
+# run does. Weekly: new files + changed people. Monthly: plus a full re-check.
+# Run it by hand (Actions → Refresh Infobox History → Run workflow) to add a
+# new search to the saved history, or to force a full re-check.
+name: Refresh Infobox History
+
+on:
+  schedule:
+    - cron: "17 3 * * 1"    # Mondays 03:17 UTC — weekly (mode: new)
+    - cron: "47 3 1 * *"    # 1st of the month 03:47 UTC — monthly (mode: full)
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "new = new files + changed people; full = also re-check every file"
+        type: choice
+        options: [new, full]
+        default: new
+      add:
+        description: "Optional: add a search to the saved history (category, article link or file — as typed on the page)"
+        required: false
+      depth:
+        description: "Subcategory depth for an added category"
+        required: false
+        default: "1"
+      exclude:
+        description: "Optional, for an added category: subcategories to skip (with everything below), separated by |"
+        required: false
+
+permissions:
+  contents: write
+  pages: write        # only for the "Request a Pages build" step below
+
+concurrency:
+  group: refresh-history        # weekly and monthly can coincide: run one after the other
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350        # the script stops itself at BUDGET_MIN and saves progress
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Refresh saved records
+        env:
+          MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.mode || (github.event.schedule == '47 3 1 * *' && 'full' || 'new') }}
+          ADD: ${{ inputs.add }}
+          DEPTH: ${{ inputs.depth }}
+          EXCLUDE: ${{ inputs.exclude }}
+          BUDGET_MIN: "320"
+          SUMMARY_FILE: ${{ runner.temp }}/summary.txt
+          WIKIMEDIA_CONTACT: ${{ secrets.WIKIMEDIA_CONTACT }}
+        run: |
+          if [ -n "$ADD" ]; then
+            node scripts/refresh-history.mjs --add "$ADD" --depth "$DEPTH" --exclude "$EXCLUDE"
+          else
+            node scripts/refresh-history.mjs
+          fi
+
+      # Runs even if the refresh failed or timed out: records are written
+      # atomically after every chunk, so partial progress is still consistent.
+      - name: Commit updated records
+        id: commit
+        if: always()
+        env:
+          SUMMARY_FILE: ${{ runner.temp }}/summary.txt
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
+          git add data/history
+          if git diff --cached --quiet; then echo "No changes."; exit 0; fi
+          { echo "cache: background refresh"; echo; cat "$SUMMARY_FILE" 2>/dev/null || true; } > "$RUNNER_TEMP/msg.txt"
+          git commit -F "$RUNNER_TEMP/msg.txt"
+          git pull --rebase origin "${GITHUB_REF_NAME}"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
+          echo "pushed=1" >> "$GITHUB_OUTPUT"
+
+      # Pushes made with GITHUB_TOKEN don't trigger workflow runs (GitHub docs),
+      # and the docs list no exception for the branch-based Pages build — so ask
+      # for one explicitly. Non-fatal: the records are committed either way.
+      - name: Request a Pages build
+        if: always() && steps.commit.outputs.pushed == '1'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api -X POST "repos/${GITHUB_REPOSITORY}/pages/builds" || echo "::warning::Pages build request failed; the site updates on the next push."

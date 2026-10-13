@@ -1,4 +1,4 @@
-/* Shared styles for the Wikimedia tools site (hub, finder, gaps). */
+/* Shared styles for the Wikimedia tools site (hub, finder, gaps, history). */
   :root {
     --bg: #f6f7f9; --panel: #fff; --ink: #1c1e21; --muted: #6b7178;
     --line: #dfe3e8; --accent: #2b6cb0; --accent-ink: #fff; --new: #276749;
@@ -181,3 +181,12 @@
   /* "Search another N revisions" control under a single-subject timeline. */
   .tl-extend { margin: 12px 0 4px; }
   .tl-extend-note { color: var(--muted); font-size: 13px; margin-left: 8px; }
+  /* Per-card "Hide" (one-off, view-only) sits under the card's details. */
+  .tl-card .tl-hide { margin: 10px 0 0; }
+  /* Person whose current photo is no longer from the scanned category. */
+  .tl-flag { display: inline-block; margin-left: 6px; padding: 1px 8px; border-radius: 4px;
+             background: #fdf3e6; color: #9a5b00; font-size: 11px; font-weight: 700;
+             text-transform: uppercase; letter-spacing: .04em; vertical-align: middle; }
+  /* History "files per click": room for 4 more digits than .age-filter's 66px; it's a
+     text input (no spinner arrows). */
+  #chunk_size { width: calc(66px + 4ch); }
