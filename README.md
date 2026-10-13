@@ -409,7 +409,7 @@ drift from the page.
 | When | Mode | Does |
 | :-- | :-- | :-- |
 | Mondays 03:17 UTC | weekly (`new`) | finish any unfinished scan; rebuild people whose article changed (`lastrevid` ≠ `topRev`); walk the whole tree — files added after the watermark are scanned, people whose photo left the tree are flagged `outside` |
-| 1st of month 02:00 UTC | monthly (`full`) | all of the above, then re-check every file in the tree |
+| 1st of month 02:13 UTC | monthly (`full`) | all of the above, then re-check every file in the tree |
 | Manual (*Run workflow*) | either | same. The form is pre-filled like a scheduled weekly run. Leave **new_search** empty for a plain refresh; fill it only to start tracking a *new* search (with **new_search_depth**, and **new_search_exclude** — `\|`-separated subcategories to skip). A bad new search is reported and skipped; the existing records are still refreshed. **budget_minutes** (default 320, max 330) |
 
 Every run — scheduled or manual — refreshes **every** record in `data/history/`.

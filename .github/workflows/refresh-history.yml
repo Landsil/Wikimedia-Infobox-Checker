@@ -2,17 +2,17 @@
 # The only writer of those files — see scripts/refresh-history.mjs for what a
 # run does. Every run refreshes every saved record.
 #   Weekly  (Mondays 03:17 UTC):     new files + people whose article changed.
-#   Monthly (1st, 02:00 UTC):        the weekly work, plus a re-check of every file.
+#   Monthly (1st, 02:13 UTC):        the weekly work, plus a re-check of every file.
 # Run it by hand (Actions → Refresh Infobox History → Run workflow) to do either
 # now, or to start tracking a new search. The form is pre-filled with what the
 # scheduled runs use.
 name: Refresh Infobox History
-run-name: "${{ github.event_name == 'schedule' && (github.event.schedule == '0 2 1 * *' && 'Monthly refresh (scheduled)' || 'Weekly refresh (scheduled)') || format('Manual {0} refresh{1}', startsWith(inputs.mode, 'monthly') && 'monthly' || 'weekly', inputs.new_search && format(' + new search: {0}', inputs.new_search) || '') }}"
+run-name: "${{ github.event_name == 'schedule' && (github.event.schedule == '13 2 1 * *' && 'Monthly refresh (scheduled)' || 'Weekly refresh (scheduled)') || format('Manual {0} refresh{1}', startsWith(inputs.mode, 'monthly') && 'monthly' || 'weekly', inputs.new_search && format(' + new search: {0}', inputs.new_search) || '') }}"
 
 on:
   schedule:
     - cron: "17 3 * * 1"    # Mondays 03:17 UTC — weekly
-    - cron: "0 2 1 * *"     # 1st of the month 02:00 UTC — monthly
+    - cron: "13 2 1 * *"    # 1st of the month 02:13 UTC — monthly
   workflow_dispatch:
     inputs:
       mode:
@@ -64,7 +64,7 @@ concurrency:
 
 env:
   # Scheduled runs have no inputs: monthly cron → full, weekly cron → new.
-  MODE: "${{ github.event_name == 'workflow_dispatch' && (startsWith(inputs.mode, 'monthly') && 'full' || 'new') || (github.event.schedule == '0 2 1 * *' && 'full' || 'new') }}"
+  MODE: "${{ github.event_name == 'workflow_dispatch' && (startsWith(inputs.mode, 'monthly') && 'full' || 'new') || (github.event.schedule == '13 2 1 * *' && 'full' || 'new') }}"
 
 jobs:
   refresh:
