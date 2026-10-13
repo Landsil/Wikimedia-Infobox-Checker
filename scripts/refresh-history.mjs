@@ -42,7 +42,8 @@ const { values: args } = parseArgs({ options: {
   exclude: { type: "string" },
 } });
 const MODE = args.mode || process.env.MODE || "new";
-const BUDGET_MIN = Number(args["budget-min"] || process.env.BUDGET_MIN) || 330;
+// Clamped to finish (and commit) inside the workflow's 350-minute job limit.
+const BUDGET_MIN = Math.min(330, Math.max(1, Number(args["budget-min"] || process.env.BUDGET_MIN) || 320));
 const CHUNK = 500;                      // files per processFiles call; a checkpoint follows each
 const REQS_PER_MIN = 180;               // under the 200/min bot limit, with headroom
 if (!["new", "full"].includes(MODE)) throw new Error(`--mode must be new or full, not ${MODE}`);

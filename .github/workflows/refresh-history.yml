@@ -1,31 +1,58 @@
 # Keeps the Infobox History saved records (data/history/*.json) up to date.
 # The only writer of those files — see scripts/refresh-history.mjs for what a
-# run does. Weekly: new files + changed people. Monthly: plus a full re-check.
-# Run it by hand (Actions → Refresh Infobox History → Run workflow) to add a
-# new search to the saved history, or to force a full re-check.
+# run does. Every run refreshes every saved record.
+#   Weekly  (Mondays 03:17 UTC):     new files + people whose article changed.
+#   Monthly (1st, 02:00 UTC):        the weekly work, plus a re-check of every file.
+# Run it by hand (Actions → Refresh Infobox History → Run workflow) to do either
+# now, or to start tracking a new search. The form is pre-filled with what the
+# scheduled runs use.
 name: Refresh Infobox History
+run-name: "${{ github.event_name == 'schedule' && (github.event.schedule == '0 2 1 * *' && 'Monthly refresh (scheduled)' || 'Weekly refresh (scheduled)') || format('Manual {0} refresh{1}', startsWith(inputs.mode, 'monthly') && 'monthly' || 'weekly', inputs.new_search && format(' + new search: {0}', inputs.new_search) || '') }}"
 
 on:
   schedule:
-    - cron: "17 3 * * 1"    # Mondays 03:17 UTC — weekly (mode: new)
-    - cron: "47 3 1 * *"    # 1st of the month 03:47 UTC — monthly (mode: full)
+    - cron: "17 3 * * 1"    # Mondays 03:17 UTC — weekly
+    - cron: "0 2 1 * *"     # 1st of the month 02:00 UTC — monthly
   workflow_dispatch:
     inputs:
       mode:
-        description: "new = new files + changed people; full = also re-check every file"
+        description: >-
+          Which refresh to run on every saved search. Weekly = scan files newly
+          added to each category + update people whose article changed. Monthly =
+          the weekly work, plus re-check every file in each category.
         type: choice
-        options: [new, full]
-        default: new
-      add:
-        description: "Leave EMPTY to just refresh. Only to save a NEW search: its Commons category, article link or file name (as typed on the page)"
+        options:
+          - "weekly — new files + changed people"
+          - "monthly — weekly + re-check every file"
+        default: "weekly — new files + changed people"
+      new_search:
+        description: >-
+          Usually leave EMPTY — every saved search is refreshed either way. Fill
+          in only to START tracking a new search: exactly what you'd type in the
+          Infobox History box, e.g. "Category:WikiPortraits at SXSW London 2026",
+          a Commons category link, an article link like
+          https://en.wikipedia.org/wiki/Alasdair_Beckett-King, or a File: name.
         required: false
-      depth:
-        description: "Only with a new search above: subcategory depth"
+        default: ""
+      new_search_depth:
+        description: >-
+          Only used with a new CATEGORY search: subcategory depth (1 = the
+          category and its direct subcategories). Saved searches keep their own.
+        type: number
+        default: 1
+      new_search_exclude:
+        description: >-
+          Only used with a new CATEGORY search: subcategories to skip, with
+          everything below them, separated by | — e.g. "Category:WikiPortraits
+          photos of animals". Empty = skip nothing.
         required: false
-        default: "1"
-      exclude:
-        description: "Only with a new search above: subcategories to skip (with everything below), separated by |"
-        required: false
+        default: ""
+      budget_minutes:
+        description: >-
+          Stop, save progress and commit after this many minutes; the next run
+          carries on. Scheduled runs use 320 (the job's hard limit is 350).
+        type: number
+        default: 320
 
 permissions:
   contents: write
@@ -34,6 +61,10 @@ permissions:
 concurrency:
   group: refresh-history        # weekly and monthly can coincide: run one after the other
   cancel-in-progress: false
+
+env:
+  # Scheduled runs have no inputs: monthly cron → full, weekly cron → new.
+  MODE: "${{ github.event_name == 'workflow_dispatch' && (startsWith(inputs.mode, 'monthly') && 'full' || 'new') || (github.event.schedule == '0 2 1 * *' && 'full' || 'new') }}"
 
 jobs:
   refresh:
@@ -49,16 +80,15 @@ jobs:
 
       - name: Refresh saved records
         env:
-          MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.mode || (github.event.schedule == '47 3 1 * *' && 'full' || 'new') }}
-          ADD: ${{ inputs.add }}
-          DEPTH: ${{ inputs.depth }}
-          EXCLUDE: ${{ inputs.exclude }}
-          BUDGET_MIN: "320"
+          NEW_SEARCH: ${{ inputs.new_search }}
+          NEW_SEARCH_DEPTH: ${{ inputs.new_search_depth }}
+          NEW_SEARCH_EXCLUDE: ${{ inputs.new_search_exclude }}
+          BUDGET_MIN: ${{ inputs.budget_minutes || 320 }}
           SUMMARY_FILE: ${{ runner.temp }}/summary.txt
           WIKIMEDIA_CONTACT: ${{ secrets.WIKIMEDIA_CONTACT }}
         run: |
-          if [ -n "$ADD" ]; then
-            node scripts/refresh-history.mjs --add "$ADD" --depth "$DEPTH" --exclude "$EXCLUDE"
+          if [ -n "$NEW_SEARCH" ]; then
+            node scripts/refresh-history.mjs --add "$NEW_SEARCH" --depth "$NEW_SEARCH_DEPTH" --exclude "$NEW_SEARCH_EXCLUDE"
           else
             node scripts/refresh-history.mjs
           fi
@@ -75,7 +105,7 @@ jobs:
           git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
           git add data/history
           if git diff --cached --quiet; then echo "No changes."; exit 0; fi
-          { echo "cache: background refresh"; echo; cat "$SUMMARY_FILE" 2>/dev/null || true; } > "$RUNNER_TEMP/msg.txt"
+          { echo "cache: background refresh ($MODE)"; echo; cat "$SUMMARY_FILE" 2>/dev/null || true; } > "$RUNNER_TEMP/msg.txt"
           git commit -F "$RUNNER_TEMP/msg.txt"
           git pull --rebase origin "${GITHUB_REF_NAME}"
           git push origin "HEAD:${GITHUB_REF_NAME}"

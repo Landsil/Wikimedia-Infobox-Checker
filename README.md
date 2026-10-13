@@ -408,9 +408,15 @@ drift from the page.
 
 | When | Mode | Does |
 | :-- | :-- | :-- |
-| Mondays 03:17 UTC | `new` | finish any unfinished scan; rebuild people whose article changed (`lastrevid` ≠ `topRev`); walk the whole tree — files added after the watermark are scanned, people whose photo left the tree are flagged `outside` |
-| 1st of month 03:47 UTC | `full` | all of the above, then re-check every file in the tree |
-| Manual (*Run workflow*) | either | same. Leave **add** empty for a plain refresh; fill it only to save a *new* search (with **depth**, and **exclude** — `\|`-separated subcategories to skip). A bad **add** is reported and skipped; the existing records are still refreshed |
+| Mondays 03:17 UTC | weekly (`new`) | finish any unfinished scan; rebuild people whose article changed (`lastrevid` ≠ `topRev`); walk the whole tree — files added after the watermark are scanned, people whose photo left the tree are flagged `outside` |
+| 1st of month 02:00 UTC | monthly (`full`) | all of the above, then re-check every file in the tree |
+| Manual (*Run workflow*) | either | same. The form is pre-filled like a scheduled weekly run. Leave **new_search** empty for a plain refresh; fill it only to start tracking a *new* search (with **new_search_depth**, and **new_search_exclude** — `\|`-separated subcategories to skip). A bad new search is reported and skipped; the existing records are still refreshed. **budget_minutes** (default 320, max 330) |
+
+Every run — scheduled or manual — refreshes **every** record in `data/history/`.
+Runs are named in the Actions list (*Weekly refresh (scheduled)*, *Monthly
+refresh (scheduled)*, *Manual weekly refresh*, …). GitHub notes scheduled runs
+can be delayed at busy times, especially at the start of an hour, and under
+heavy load some queued runs may be dropped.
 
 - **Time-boxed.** The script stops at `BUDGET_MIN` (320) inside the job's
   350-minute timeout. Progress lives in the record — `pending` files, and a
