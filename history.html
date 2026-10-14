@@ -124,7 +124,7 @@ import {
   COMMONS_API, SINGLE_REV_LIMIT, SINGLE_REV_EXTEND, CAT_FILE_CAP, ALGO_VERSION,
   chunked, wpApi, cropParent, sameOrCrop, mergeCurrent, apiGet, mwQuery, parseInput,
   resolveSubjectFromFile, currentLead, buildTimeline, walkCategory, processFiles,
-  currentTopRev, refreshPeople, flagOutside, cacheIdentity, cachePath, timelineFromJson,
+  currentTopRev, refreshPeople, flagOutside, knownPeople, cacheIdentity, cachePath, timelineFromJson,
 } from "./history-core.js";
 
 const THUMB_WIDTH = 320;
@@ -231,7 +231,8 @@ async function scanCatChunk(onProgress) {
   const batch = cat.queue.slice(0, chunkSize());
   const start = cat.scanned + 1, end = cat.scanned + batch.length;
   const label = onProgress ? (msg => onProgress(`Files ${start}-${end}: ${msg}`)) : null;
-  const { people, doneKeys } = await processFiles(batch, { done: cat.done, count: cat.count, onProgress: label });
+  const { people, doneKeys } = await processFiles(batch,
+    { done: cat.done, count: cat.count, onProgress: label, known: knownPeople(cat.people) });
   await attachInfo(people);
   cat.queue.splice(0, batch.length);
   cat.scanned += batch.length;
@@ -610,7 +611,7 @@ async function refreshCategory() {
   const before = cat.people.length;
   if (added.length) {
     const { people: fresh, doneKeys } = await processFiles(added,
-      { done: cat.done, count: cat.count, onProgress: msg => say("New photos — " + msg) });
+      { done: cat.done, count: cat.count, onProgress: msg => say("New photos — " + msg), known: knownPeople(cat.people) });
     await attachInfo(fresh);
     for (const k of doneKeys) cat.done.add(k);
     cat.people.push(...fresh);

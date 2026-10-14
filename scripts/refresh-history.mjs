@@ -108,7 +108,8 @@ async function drainPending(st, path, why) {
   while (st.pending.length) {
     checkTime();
     const batch = st.pending.slice(0, CHUNK);
-    const { people, doneKeys } = await core.processFiles(batch, { done: st.done, count: st.rec.count });
+    const { people, doneKeys } = await core.processFiles(batch,
+      { done: st.done, count: st.rec.count, known: core.knownPeople(st.people) });
     st.people.push(...people); found += people.length;
     for (const k of doneKeys) st.done.add(k);
     st.pending.splice(0, batch.length);
@@ -158,7 +159,8 @@ async function refreshCategory(st, path, out) {
     for (let i = 0; i < todo.length; i += CHUNK) {
       checkTime();
       const batch = todo.slice(i, i + CHUNK);
-      const { people, doneKeys } = await core.processFiles(batch, { done: st.done, count: rec.count });
+      const { people, doneKeys } = await core.processFiles(batch,
+        { done: st.done, count: rec.count, known: core.knownPeople(st.people) });
       st.people.push(...people); found += people.length; done += batch.length;
       for (const k of doneKeys) st.done.add(k);
       st.bg.recheck.cursor = batch[batch.length - 1];
@@ -231,8 +233,10 @@ async function refreshRecord(path) {
   // took, how much of that was waiting on Wikimedia lag, and why it stopped.
   const line = end => {
     const s = core.apiStats();
+    const known = s.qidsKnown - s0.qidsKnown, fetched = s.qidsFetched - s0.qidsFetched;
     const cost = `${mins(Date.now() - t0)}; ${s.requests - s0.requests} requests, `
       + `${mins(s.lagWaitMs - s0.lagWaitMs)} waiting on lag (${s.lagWaits - s0.lagWaits} waits)`
+      + (known + fetched ? `, depicted QIDs: ${known} known, ${fetched} fetched from Wikidata` : "")
       + (s.throttled > s0.throttled ? `, ${s.throttled - s0.throttled} × HTTP 429` : "");
     return `- ${rec.identity}: ${[...out, ...(end ? [end] : [])].join("; ")} [${cost}]`;
   };

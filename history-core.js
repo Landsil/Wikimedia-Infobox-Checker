@@ -55,7 +55,7 @@ export function mergeCurrent(timeline, lead) {
 const api = { userAgent: null, maxlag: null, minIntervalMs: 0, maxLagWaitMs: 30 * 60 * 1000, last: 0 };
 export function configureApi(opts) { Object.assign(api, opts); }
 // Running totals, for the background job's summary (how much time lag cost).
-const stats = { requests: 0, lagWaits: 0, lagWaitMs: 0, throttled: 0 };
+const stats = { requests: 0, lagWaits: 0, lagWaitMs: 0, throttled: 0, qidsKnown: 0, qidsFetched: 0 };
 export const apiStats = () => ({ ...stats });
 
 // Lag outlasted maxLagWaitMs. The job saves progress and stops rather than
@@ -146,8 +146,11 @@ function allDepictsQids(claims) {
 
 // Given depicts QIDs and their fetched Wikidata entities, return the first that
 // is a human (P31=Q5) with a Wikipedia article: {lang,article,label,qid}, else null.
-function subjectFromQids(qids, entities) {
+// `known` (QID -> subject) answers for people already in a saved record, in the
+// same first-match order, so their QIDs needn't be fetched.
+function subjectFromQids(qids, entities, known) {
   for (const q of qids) {
+    if (known && known.has(q)) return known.get(q);
     const e = entities[q]; if (!e) continue;
     const claims = e.claims || {};
     const human = (claims.P31 || []).some(s => { try { return s.mainsnak.datavalue.value.id === "Q5"; } catch (_) { return false; } });
@@ -179,7 +182,9 @@ export async function resolveSubjectFromFile(fileTitle) {
 // Batched version for category mode: resolve many files' depicted person at once.
 // file -> pageid (Commons info) -> depicts QIDs (Commons entities) -> person
 // (Wikidata entities). Returns a Map of file -> {lang,article,label,qid}.
-async function batchResolve(files, onProgress) {
+// QIDs in `known` are not fetched from Wikidata — that's the step that stalls
+// whenever Wikidata reports lag (its maxlag includes Query Service lag).
+async function batchResolve(files, onProgress, known) {
   const pageid = {};                                     // file -> Commons pageid
   let n = 0;
   for (const b of chunked(files)) {
@@ -198,7 +203,9 @@ async function batchResolve(files, onProgress) {
     n += b.length;
     if (onProgress) onProgress(`Reading depicts statements ${n}/${mids.length}…`);
   }
-  const allQids = [...new Set(Object.values(midToQids).flat())];
+  const qidSet = [...new Set(Object.values(midToQids).flat())];
+  const allQids = known ? qidSet.filter(q => !known.has(q)) : qidSet;
+  stats.qidsKnown += qidSet.length - allQids.length; stats.qidsFetched += allQids.length;
   const wd = {};
   n = 0;
   for (const b of chunked(allQids)) {
@@ -210,7 +217,7 @@ async function batchResolve(files, onProgress) {
   const out = new Map();
   for (const file of files) {
     const pid = pageid[file]; if (pid == null) continue;
-    const subj = subjectFromQids(midToQids["M" + pid] || [], wd);
+    const subj = subjectFromQids(midToQids["M" + pid] || [], wd, known);
     if (subj) out.set(file, subj);
   }
   return out;
@@ -351,9 +358,9 @@ export async function walkCategory(category, depth, { cap = CAT_FILE_CAP, since 
 // `doneKeys` done only once the whole chunk has succeeded, so a failed chunk can
 // simply be retried without losing anyone.
 // Returns { people, doneKeys }; people carry no photo details (`info`).
-export async function processFiles(fileList, { done, count, onProgress }) {
+export async function processFiles(fileList, { done, count, onProgress, known }) {
   // 1. Resolve every file's depicted person in batched queries (cheap in bulk).
-  const resolved = await batchResolve(fileList, onProgress);
+  const resolved = await batchResolve(fileList, onProgress, known);
   const candidates = [...resolved].map(([file, subj]) => ({ file, ...subj }))
     .filter(c => !done.has(c.lang + ":" + c.article));
   // 2. Batch the current-lead lookup per wiki, then keep files that are the lead
@@ -386,6 +393,13 @@ export async function processFiles(fileList, { done, count, onProgress }) {
                   topRev: res.topRev, shown: merged.slice(0, count), more: res.more });
   }
   return { people, doneKeys: live.map(c => c.lang + ":" + c.article) };
+}
+
+// QID -> subject for people already found, for processFiles({ known }).
+export function knownPeople(people) {
+  const m = new Map();
+  for (const p of people) if (p.qid) m.set(p.qid, { lang: p.lang, article: p.article, label: p.label, qid: p.qid });
+  return m;
 }
 
 // ---- refresh (shared by "Check for updates" and the background job) ----
