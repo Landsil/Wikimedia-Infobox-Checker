@@ -1,7 +1,8 @@
 # Keeps the Infobox History saved records (data/history/*.json) up to date.
 # The only writer of those files — see scripts/refresh-history.mjs for what a
-# run does. Every run refreshes every saved record.
-#   Weekly  (Mondays 03:17 UTC):     new files + people whose article changed.
+# run does. Every run refreshes every saved record, each in its own job (own
+# 320-minute budget), one at a time, smallest record first.
+#   Weekly  (Mondays 03:17 UTC):     new files + people whose current photo changed.
 #   Monthly (1st, 02:13 UTC):        the weekly work, plus a re-check of every file.
 # Run it by hand (Actions → Refresh Infobox History → Run workflow) to do either
 # now, or to start tracking a new search. The form is pre-filled with what the
@@ -67,45 +68,98 @@ env:
   MODE: "${{ github.event_name == 'workflow_dispatch' && (startsWith(inputs.mode, 'monthly') && 'full' || 'new') || (github.event.schedule == '13 2 1 * *' && 'full' || 'new') }}"
 
 jobs:
-  refresh:
+  # Saves a new search (if one was given) and lists the records to refresh,
+  # smallest first, for the matrix below.
+  plan:
     runs-on: ubuntu-latest
-    timeout-minutes: 350        # the script stops itself at BUDGET_MIN and saves progress
+    timeout-minutes: 30
+    outputs:
+      records: ${{ steps.list.outputs.records }}
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.ref_name }}
 
       - uses: actions/setup-node@v7
         with:
           node-version: 24
           package-manager-cache: false   # no dependencies to cache
 
-      - name: Refresh saved records
+      # A bad new search (typo, empty category) is reported here and skipped;
+      # the existing records are still refreshed.
+      - name: Save the new search
+        if: inputs.new_search != ''
+        continue-on-error: true
         env:
           NEW_SEARCH: ${{ inputs.new_search }}
           NEW_SEARCH_DEPTH: ${{ inputs.new_search_depth }}
           NEW_SEARCH_EXCLUDE: ${{ inputs.new_search_exclude }}
+          WIKIMEDIA_CONTACT: ${{ secrets.WIKIMEDIA_CONTACT }}
+        run: |
+          node scripts/refresh-history.mjs --add "$NEW_SEARCH" --depth "$NEW_SEARCH_DEPTH" --exclude "$NEW_SEARCH_EXCLUDE" --create-only
+          git config user.name "github-actions[bot]"
+          git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
+          git add data/history
+          if git diff --cached --quiet; then echo "Already saved."; exit 0; fi
+          git commit -m "cache: new search — $NEW_SEARCH"
+          git pull --rebase origin "${GITHUB_REF_NAME}"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
+
+      - name: List records, smallest first
+        id: list
+        run: |
+          records=$(node scripts/refresh-history.mjs --list)
+          echo "$records"
+          echo "records=$records" >> "$GITHUB_OUTPUT"
+
+  # One job per record, one at a time (a single request stream to Wikimedia),
+  # in the order listed: smallest first. Each has its own budget and commits
+  # its own record; one failing doesn't stop the others.
+  refresh:
+    needs: plan
+    if: needs.plan.outputs.records != '[]'
+    name: ${{ matrix.record.name }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 350        # the script stops itself at BUDGET_MIN and saves progress
+    strategy:
+      max-parallel: 1
+      fail-fast: false
+      matrix:
+        record: ${{ fromJSON(needs.plan.outputs.records) }}
+    steps:
+      # The branch tip, not the commit the run started from: earlier jobs in
+      # this run (and the plan job's new search) have pushed since.
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.ref_name }}
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          package-manager-cache: false   # no dependencies to cache
+
+      - name: Refresh ${{ matrix.record.name }} (${{ matrix.record.files }} files)
+        env:
+          RECORD: ${{ matrix.record.file }}
           BUDGET_MIN: ${{ inputs.budget_minutes || 320 }}
           SUMMARY_FILE: ${{ runner.temp }}/summary.txt
           WIKIMEDIA_CONTACT: ${{ secrets.WIKIMEDIA_CONTACT }}
-        run: |
-          if [ -n "$NEW_SEARCH" ]; then
-            node scripts/refresh-history.mjs --add "$NEW_SEARCH" --depth "$NEW_SEARCH_DEPTH" --exclude "$NEW_SEARCH_EXCLUDE"
-          else
-            node scripts/refresh-history.mjs
-          fi
+        run: node scripts/refresh-history.mjs --only "$RECORD"
 
       # Runs even if the refresh failed or timed out: records are written
       # atomically after every chunk, so partial progress is still consistent.
-      - name: Commit updated records
+      - name: Commit updated record
         id: commit
         if: always()
         env:
+          NAME: ${{ matrix.record.name }}
           SUMMARY_FILE: ${{ runner.temp }}/summary.txt
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
           git add data/history
           if git diff --cached --quiet; then echo "No changes."; exit 0; fi
-          { echo "cache: background refresh ($MODE)"; echo; cat "$SUMMARY_FILE" 2>/dev/null || true; } > "$RUNNER_TEMP/msg.txt"
+          { echo "cache: background refresh ($MODE) — $NAME"; echo; cat "$SUMMARY_FILE" 2>/dev/null || true; } > "$RUNNER_TEMP/msg.txt"
           git commit -F "$RUNNER_TEMP/msg.txt"
           git pull --rebase origin "${GITHUB_REF_NAME}"
           git push origin "HEAD:${GITHUB_REF_NAME}"
@@ -113,7 +167,7 @@ jobs:
 
       # Pushes made with GITHUB_TOKEN don't trigger workflow runs (GitHub docs),
       # and the docs list no exception for the branch-based Pages build — so ask
-      # for one explicitly. Non-fatal: the records are committed either way.
+      # for one explicitly. Non-fatal: the record is committed either way.
       - name: Request a Pages build
         if: always() && steps.commit.outputs.pushed == '1'
         env:

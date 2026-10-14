@@ -4,7 +4,11 @@
 //
 //   node scripts/refresh-history.mjs [--mode new|full] [--budget-min N]
 //        [--only <record file name>]
-//        [--add "<input>" --depth N [--count N] [--exclude "Category:A|Category:B"]]
+//        [--add "<input>" --depth N [--count N] [--exclude "Category:A|Category:B"] [--create-only]]
+//   node scripts/refresh-history.mjs --list     # records, smallest first, as JSON
+//
+// The workflow runs one job per record (smallest first): --list plans the jobs,
+// --add --create-only saves a new search, and each job runs --only <record>.
 //
 // Every run (weekly, --mode new):
 //   1. finish any unfinished scan (`pending` files),
@@ -40,8 +44,22 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const { values: args } = parseArgs({ options: {
   mode: { type: "string" }, "budget-min": { type: "string" }, only: { type: "string" },
   add: { type: "string" }, depth: { type: "string" }, count: { type: "string" },
-  exclude: { type: "string" },
+  exclude: { type: "string" }, "create-only": { type: "boolean" }, list: { type: "boolean" },
 } });
+
+// --list: every record with its size (files scanned + pending), smallest first,
+// as one line of JSON for the workflow's job matrix. Reads local files only.
+if (args.list) {
+  const dir = join(ROOT, core.HISTORY_DIR), out = [];
+  for (const f of (await readdir(dir)).filter(f => f.endsWith(".json"))) {
+    const r = JSON.parse(await readFile(join(dir, f), "utf8"));
+    const files = r.type === "category" ? (r.scanned || 0) + (Array.isArray(r.pending) ? r.pending.length : 0) : 0;
+    out.push({ file: f, name: r.identity || f, files });
+  }
+  out.sort((a, b) => a.files - b.files || a.file.localeCompare(b.file));
+  console.log(JSON.stringify(out));
+  process.exit(0);
+}
 const MODE = args.mode || process.env.MODE || "new";
 // Clamped to finish (and commit) inside the workflow's 350-minute job limit.
 const BUDGET_MIN = Math.min(330, Math.max(1, Number(args["budget-min"] || process.env.BUDGET_MIN) || 320));
@@ -191,7 +209,11 @@ async function addRecord(raw, depth, count, exclude) {
   const inp = core.parseInput(raw);
   if (!inp) throw new Error(`--add: can't parse "${raw}"`);
   const path = join(ROOT, core.cachePath(inp));
-  if (existsSync(path)) { log(`--add: ${core.cacheIdentity(inp)} already has a record; refreshing it`); return path; }
+  if (existsSync(path)) {
+    log(`--add: ${core.cacheIdentity(inp)} already has a record; ${args["create-only"] ? "its own job refreshes it" : "refreshing it"}`);
+    summary.push(`- ${core.cacheIdentity(inp)}: already saved`);
+    return path;
+  }
   const base = { schema: 1, algoVersion: core.ALGO_VERSION, identity: core.cacheIdentity(inp), asOf: now(), input: inp };
   let rec;
   if (inp.type === "category") {
@@ -270,10 +292,14 @@ try {
       console.error(err.message);
     }
   }
-  const dir = join(ROOT, core.HISTORY_DIR);
-  for (const f of (await readdir(dir)).filter(f => f.endsWith(".json")).sort()) {
-    const p = join(dir, f);
-    if (!records.includes(p) && (!args.only || f === args.only)) records.push(p);
+  // --create-only: just save the new search; its own job scans it.
+  if (args["create-only"]) records.length = 0;
+  else {
+    const dir = join(ROOT, core.HISTORY_DIR);
+    for (const f of (await readdir(dir)).filter(f => f.endsWith(".json")).sort()) {
+      const p = join(dir, f);
+      if (!records.includes(p) && (!args.only || f === args.only)) records.push(p);
+    }
   }
   for (const path of records) {
     try { await refreshRecord(path); }

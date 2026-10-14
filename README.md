@@ -412,7 +412,18 @@ drift from the page.
 | 1st of month 02:13 UTC | monthly (`full`) | all of the above, then re-check every file in the tree |
 | Manual (*Run workflow*) | either | same. The form is pre-filled like a scheduled weekly run. Leave **new_search** empty for a plain refresh; fill it only to start tracking a *new* search (with **new_search_depth**, and **new_search_exclude** — `\|`-separated subcategories to skip). A bad new search is reported and skipped; the existing records are still refreshed. **budget_minutes** (default 320, max 330) |
 
-Every run — scheduled or manual — refreshes **every** record in `data/history/`.
+Every run — scheduled or manual — refreshes **every** record in `data/history/`,
+**each in its own job**: a `plan` job saves a new search (if given, without
+scanning it — `--add … --create-only`) and lists the records smallest first
+(`--list`: files scanned + pending); then a matrix runs one job per record,
+**one at a time** (`max-parallel: 1` — a single request stream to Wikimedia,
+whose rate-limit guidance also asks for ≤ 3 concurrent requests). Each job has
+its own `BUDGET_MIN`, checks out the branch tip (earlier jobs have pushed),
+and commits its own record (`cache: background refresh (<mode>) — <record>`), so
+a big category no longer shares its time with the others, and one failing
+doesn't stop the rest. GitHub documents that matrix jobs are *created* in list
+order; that they also *run* in that order with `max-parallel: 1` is observed
+behaviour, not a documented guarantee.
 Runs are named in the Actions list (*Weekly refresh (scheduled)*, *Monthly
 refresh (scheduled)*, *Manual weekly refresh*, …). GitHub notes scheduled runs
 can be delayed at busy times, especially at the start of an hour, and under
@@ -431,8 +442,8 @@ heavy load some queued runs may be dropped.
   current photo (browser saves before 2026-08-28) have it filled in.
 - **"No longer from this category"** is only judged for people whose current
   photo is known (stored, or looked up this run); missing data never flags anyone.
-- **One commit per run**, `cache: background refresh (<mode>)`, with the run
-  summary as the body (also on the run's summary page): per record, what was
+- **One commit per record per run**, `cache: background refresh (<mode>) — <record>`,
+  with the record's summary as the body (also on the run's summary page): per record, what was
   done, how long it took, requests made, and time spent waiting on lag.
 - **Bot etiquette** (non-interactive, unlike the page): `User-Agent`
   `WikimediaInfoboxCheckerBot/1.0 (<repo URL>[; <contact>]) node/<version>`,
