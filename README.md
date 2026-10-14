@@ -60,6 +60,12 @@ Enter a Commons category, pick an upload-date window, hit **Search Candidates**.
   **Previous month** / **This month** / **This year** prefill other ranges.
   Dates are formatted from local date parts, not `toISOString()`, which would
   roll the day back under timezones ahead of UTC (e.g. BST).
+- **Subcategory depth** — how far down the tree to look: `0` = only this
+  category, `1` = also its subcategories, `2` (default) = also theirs; up to
+  `MAX_DEPTH` = 5. Each category is read once and a file in several counts once.
+  At most `MAX_TREE_FILES` = 10,000 files are read; the status line says
+  "Stopped after 10,000 files" when a search hits that, and "(Searched N
+  categories.)" otherwise.
 
 ### URL parameters
 
@@ -68,10 +74,12 @@ The form can be prefilled from the query string, so searches are shareable:
 ```
 ?category=WikiPortraits_photos_by_John_Manard
 ?category=Photographs+by+Mateusz+Malta&start=2026-05-01&end=2026-07-31&search=1
+?category=WikiPortraits+photos+of+animals&depth=1&search=1
 ```
 
 - `category` — underscores/`+` become spaces. A `Category:` prefix is fine.
 - `start`, `end` — `YYYY-MM-DD`; ignored (falling back to the default) if malformed.
+- `depth` — subcategory depth (0–5); default 2. *Copy static URL* includes it.
 - `search=1` — runs the search immediately on load.
 
 ### Filter toggles (appear after a search)
@@ -140,7 +148,7 @@ Stale dates and low resolutions render in red with a ⚠.
 
 | # | Step | API | Batching |
 | :-- | :-- | :-- | :-- |
-| 1 | `fetch_category_files` | Commons `generator=categorymembers` + `prop=imageinfo` | paged via `continue`, `gcmlimit=max` |
+| 1 | `fetchCategoryFiles` | Commons `generator=categorymembers` + `prop=imageinfo` per category; `list=categorymembers&cmtype=subcat` for the next level | paged via `continue`, `gcmlimit=max`; level by level to the chosen depth, capped at `MAX_TREE_FILES` |
 | 2 | `filter_unused` | Commons `prop=globalusage` (`guprop=namespace\|url`) | 50 titles/call |
 | 3 | `find_current_photos` | per-wiki `prop=pageimages` | 50 titles/call |
 | 4 | `attach_depicts` | Commons `wbgetentities` on `M`-ids | 50 ids/call |
@@ -514,6 +522,8 @@ At the top of each tool's `<script>` (history: `history-core.js`; background job
 | `BACKOFF_BASE` | 1.0 | Backoff seconds, doubled per retry when no `Retry-After` |
 | `HISTORY_REV_LIMIT` | 50 | (finder) Revisions fetched per history lookup |
 | `GAP_ARTICLE_CAP` | 5000 | (gaps) Max articles enumerated from a category tree |
+| `MAX_DEPTH` | 5 | (finder) Deepest subcategory depth accepted |
+| `MAX_TREE_FILES` | 10000 | (finder) Files read from a category tree before stopping |
 | `SINGLE_REV_LIMIT` / `SINGLE_REV_EXTEND` | 1000 / 1000 | (history) Revisions walked for one person / per "Search another" |
 | `CAT_REV_LIMIT` | 200 | (history) Revisions walked per person in category mode |
 | `CAT_CHUNK` | 100 | (history page) Default *files per click* (input accepts 1–50000) |

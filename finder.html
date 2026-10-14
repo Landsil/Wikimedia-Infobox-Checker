@@ -27,11 +27,13 @@
     <button type="button" id="q_month">This month</button>
     <button type="button" id="q_year">This year</button>
   </div>
-  <form id="f">
+  <form id="f" class="with-depth">
     <div><label>Category</label>
       <input id="category" value="Photographs by Mateusz Malta"></div>
     <div><label>Start date</label><input id="start_date" type="date"></div>
     <div><label>End date</label><input id="end_date" type="date"></div>
+    <div><label>Subcategory depth</label>
+      <input id="depth" type="number" min="0" max="5" value="2"></div>
     <button id="go" type="submit">Search Candidates</button>
     <button id="copy_url" type="button" class="secondary">Copy static URL</button>
   </form>
@@ -93,10 +95,14 @@
         <strong>upload</strong> date. Defaults to the last three months;
         <em>Previous month</em>, <em>This month</em> and <em>This year</em>
         prefill other common ranges.</li>
+      <li><strong>Subcategory depth</strong> — how far down the category tree to
+        look: 0 = only this category, 1 = also its subcategories, 2 (default) =
+        also their subcategories; up to 5. A file in several of them counts once.
+        At most 10,000 files are read; the status line says if a search hit that.</li>
     </ul>
     <p>You can prefill the form from the URL:
     <code>?category=Photographs_by_Mateusz_Malta</code>, optionally with
-    <code>&amp;start=2026-05-01&amp;end=2026-07-31</code>, and
+    <code>&amp;start=2026-05-01&amp;end=2026-07-31</code>, <code>&amp;depth=1</code>, and
     <code>&amp;search=1</code> to run it immediately.
     <strong>Copy static URL</strong> (next to the search button) builds that link
     from whatever is currently in the form, so you can share a search without
@@ -176,6 +182,8 @@ const STALE_MONTHS = 12;       // infobox photo flagged red when older than this
 const LOW_RES_MP = 2.0;        // resolution flagged red below this (megapixels)
 const MAX_RETRIES = 6;
 const BACKOFF_BASE = 1.0;      // seconds; doubled each retry when no Retry-After
+const MAX_DEPTH = 5;           // deepest "Subcategory depth" accepted
+const MAX_TREE_FILES = 10000;  // files read from a category tree before stopping
 const NON_WIKIPEDIA_WIKIS = new Set([
   "commonswiki", "wikidatawiki", "specieswiki", "metawiki",
   "mediawikiwiki", "incubatorwiki", "sourceswiki", "foundationwiki",
@@ -394,6 +402,8 @@ const wikipediaApiUrl = site => `https://${wikiLang(site)}.wikipedia.org/w/api.p
 // Wikis skipped this search because their API was unreachable (surfaced in the
 // status line by renderResults). Reset at the start of each runSearch.
 let skippedWikis = new Set();
+// How much of the category tree the last search covered (see renderResults).
+let treeScope = { categories: 1, truncated: false };
 async function fetchArticleLeadImages(articles) {
   const bySite = {};
   for (const [site, title] of articles) (bySite[site] = bySite[site] || new Set()).add(title);
@@ -432,15 +442,50 @@ async function fetchArticleLeadImages(articles) {
 // =========================================================================
 // Pipeline steps
 // =========================================================================
-async function fetchCategoryFiles(category, start, end) {
+// Subcategories of a category (titles), for the depth walk.
+async function fetchSubcats(category) {
+  const out = [];
+  for await (const query of mwQuery(COMMONS_API, { list: "categorymembers", cmtitle: category,
+      cmtype: "subcat", cmlimit: "max" }))
+    for (const m of query.categorymembers || []) out.push(m.title);
+  return out;
+}
+
+// Files in a category tree, `depth` levels of subcategories down (0 = just the
+// category), level by level; each category is read once and a file in several
+// counts once (keyed by pageid). Stops after MAX_TREE_FILES files read (before
+// the date filter) so a huge tree can't run away; `truncated` says so.
+// Returns { files, categories, truncated }.
+async function fetchCategoryFiles(category, start, end, depth = 0, onProgress) {
+  const files = {};
+  const visited = new Set();
+  let level = [category], read = 0, truncated = false;
+  for (let d = 0; d <= depth && level.length && !truncated; d++) {
+    const next = [];
+    for (const c of level) {
+      if (visited.has(c)) continue;
+      visited.add(c);
+      if (onProgress) onProgress(`Fetching category members… (${visited.size} categories, ${read} files)`);
+      truncated = await readCategoryFiles(c, start, end, files, () => ++read >= MAX_TREE_FILES);
+      if (truncated) break;
+      if (d < depth) next.push(...await fetchSubcats(c));
+    }
+    level = next;
+  }
+  return { files, categories: visited.size, truncated };
+}
+
+// One category's files (with imageinfo) into `files`, date-filtered. `full()`
+// is called per file read; returns true (stop) once the tree cap is reached.
+async function readCategoryFiles(category, start, end, files, full) {
   const params = {
     generator: "categorymembers", gcmtitle: category, gcmtype: "file",
     gcmlimit: "max", prop: "imageinfo",
     iiprop: "timestamp|url|extmetadata|user|size", iiurlwidth: String(THUMB_WIDTH),
   };
-  const files = {};
   for await (const query of mwQuery(COMMONS_API, params)) {
     for (const page of Object.values(query.pages || {})) {
+      if (full()) return true;
       const info = (page.imageinfo || [])[0];
       if (!info) continue;
       const ts = info.timestamp || "";
@@ -455,7 +500,7 @@ async function fetchCategoryFiles(category, start, end) {
       };
     }
   }
-  return files;
+  return false;
 }
 
 // "en.wikipedia.org" -> "enwiki"; null for non-Wikipedia projects (wikiquote,
@@ -729,14 +774,16 @@ async function fetchPersonData(files) {
 // =========================================================================
 // Orchestration — mirrors app.py run_search(), returns the same result shape.
 // =========================================================================
-async function runSearch(category, startDate, endDate, onProgress) {
+async function runSearch(category, startDate, endDate, depth, onProgress) {
   skippedWikis = new Set();                 // fresh per search (see renderResults)
   const [start, end] = normalizeBounds(startDate, endDate);
   const now = new Date();
   const say = msg => { if (onProgress) onProgress(msg); };
 
   say("Fetching category members…");
-  const allFiles = await fetchCategoryFiles(category, start, end);
+  const tree = await fetchCategoryFiles(category, start, end, depth, say);
+  treeScope = { categories: tree.categories, truncated: tree.truncated };
+  const allFiles = tree.files;
   say(`Filtering ${Object.keys(allFiles).length} file(s) by usage…`);
   const { unused, usedUsages } = await filterUnused(allFiles);
   say("Checking which category photos are already the current infobox photo…");
@@ -1049,8 +1096,9 @@ lastThreeMonths();
 // ---- Prefill from the URL query string ----------------------------------- //
 // ?category=... overrides the default category (underscores and "+" are fine —
 // normalizeCategory handles them). ?start=/?end= (YYYY-MM-DD) override the
-// default 3-month range. ?search=1 also runs the search immediately, so a link
-// can share a ready-made result.
+// default 3-month range; ?depth= the subcategory depth. ?search=1 also runs the
+// search immediately, so a link can share a ready-made result.
+const depthValue = () => Math.min(MAX_DEPTH, Math.max(0, parseInt($("depth").value, 10) || 0));
 function applyUrlParams() {
   const q = new URLSearchParams(location.search);
   const category = q.get("category");
@@ -1059,6 +1107,7 @@ function applyUrlParams() {
   const start = q.get("start"), end = q.get("end");
   if (isDate(start)) $("start_date").value = start;
   if (isDate(end)) $("end_date").value = end;
+  if (/^\d+$/.test(q.get("depth") || "")) $("depth").value = String(Math.min(MAX_DEPTH, +q.get("depth")));
   return q.get("search") === "1";
 }
 const autoSearch = applyUrlParams();
@@ -1070,6 +1119,7 @@ function staticUrl() {
   q.set("category", $("category").value.trim());
   if ($("start_date").value) q.set("start", $("start_date").value);
   if ($("end_date").value) q.set("end", $("end_date").value);
+  q.set("depth", String(depthValue()));
   q.set("search", "1");
   return `${location.origin}${location.pathname}?${q.toString()}`;
 }
@@ -1153,9 +1203,12 @@ function renderResults() {
   if (exclusive) { $("head").hidden = true; $("results").innerHTML = ""; }
 
   // If any wiki was unreachable this search, warn that results may be partial.
-  const skipNote = skippedWikis.size
+  const skipNote = (skippedWikis.size
     ? ` ⚠ ${skippedWikis.size} wiki(s) were unreachable and skipped (${[...skippedWikis].join(", ")}); results may be incomplete.`
-    : "";
+    : "")
+    + (treeScope.truncated
+      ? ` ⚠ Stopped after ${MAX_TREE_FILES.toLocaleString("en")} files (${treeScope.categories} categories) — lower the depth for complete results.`
+      : treeScope.categories > 1 ? ` (Searched ${treeScope.categories} categories.)` : "");
 
   if (showCur) {
     $("nodepicts").innerHTML = "";
@@ -1280,7 +1333,7 @@ $("f").addEventListener("submit", async e => {
   try {
     const category = normalizeCategory($("category").value);
     const search = await runSearch(
-      category, $("start_date").value, $("end_date").value,
+      category, $("start_date").value, $("end_date").value, depthValue(),
       msg => { status.textContent = msg; });
     allResults = search.results;
     allNoDepicts = search.noDepicts;

@@ -17,6 +17,8 @@
   .quick button { padding: 5px 12px; background: #eef2f7; color: var(--accent); font-size: 12px; }
   form { display: grid; grid-template-columns: 1fr 150px 150px auto auto;
          gap: 12px; align-items: end; max-width: 1100px; }
+  /* Finder: category | start | end | subcategory depth | buttons. */
+  form.with-depth { grid-template-columns: 1fr 150px 150px 130px auto auto; }
   /* Secondary action (copy shareable URL) sits next to the search button. */
   button.secondary { background: #eef2f7; color: var(--accent); }
   button.secondary:hover { background: #e2e8f0; }
