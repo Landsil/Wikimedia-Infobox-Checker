@@ -14,7 +14,7 @@
   Runs entirely in the browser: calls the Wikimedia APIs directly with fetch()
   + &origin=* (anonymous CORS). No server, no build step.
 -->
-<link rel="stylesheet" href="style.css?v=4">
+<link rel="stylesheet" href="style.css?v=6">
 </head>
 <body>
 <header>
@@ -143,6 +143,11 @@
         which often differs from the photo set on Wikidata.</li>
       <li>A photo can be live on several language Wikipedias; each appears as its
         own row, because each wiki has its own history.</li>
+      <li>The <strong>WikiPortraits logo</strong> after a photographer's name means they
+        are listed in <a href="https://commons.wikimedia.org/wiki/Category:WikiPortraits_photographers"
+        target="_blank" rel="noopener">Category:WikiPortraits photographers</a> — the photo's
+        credit links to their user page, or is exactly their username. The list is
+        read fresh each time the page loads.</li>
       <li>All data comes from read-only calls to the public Wikimedia APIs. If a
         search fails with a "busy" message, Wikimedia is briefly rate-limiting
         us — wait a moment and retry.</li>
@@ -154,6 +159,7 @@
   <a href="https://github.com/Landsil/Wikimedia-Infobox-Checker" target="_blank"
      rel="noopener">Wikimedia-Infobox-Checker on GitHub</a>
 </footer>
+<script src="wikiportraits.js"></script>
 <script>
 "use strict";
 
@@ -809,8 +815,10 @@ const link = (url, text) =>
   url ? `<a href="${esc(url)}" target="_blank" rel="noopener">${esc(text)}</a>` : esc(text);
 const row = (k, v, warn) =>
   `<div class="row"><span class="k">${k}</span><span class="v${warn ? " warn" : ""}">${v || "&mdash;"}</span></div>`;
+// "by <name>", plus the WikiPortraits badge when the photographer is listed.
+const wpBadge = (author, authorUrl) => window.WikiPortraits ? WikiPortraits.badge(author, authorUrl) : "";
 const authorLine = (author, authorUrl) =>
-  author ? `<div class="author">by ${authorUrl ? link(authorUrl, author) : esc(author)}</div>` : "";
+  author ? `<div class="author">by ${authorUrl ? link(authorUrl, author) : esc(author)}${wpBadge(author, authorUrl)}</div>` : "";
 // Drop the "File:" prefix for pasting into an infobox |image= field.
 const bareFilename = title => (title || "").replace(/^\s*File\s*:\s*/i, "");
 // Infobox file row: title already begins "File:...", so no "File" key label.
@@ -1275,6 +1283,7 @@ $("f").addEventListener("submit", async e => {
     allResults = search.results;
     allNoDepicts = search.noDepicts;
     allCurrent = search.currentPhotos;
+    if (window.WikiPortraits) await WikiPortraits.ready;   // badges from the first render
     $("filters").hidden =
       allResults.length === 0 && allNoDepicts.length === 0 && allCurrent.length === 0;
     renderResults();

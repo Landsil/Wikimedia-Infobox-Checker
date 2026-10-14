@@ -32,6 +32,7 @@ A landing hub links to self-contained tool pages; all share one stylesheet.
 | `.github/workflows/refresh-history.yml` | Runs that job weekly and monthly on GitHub Actions |
 | `data/history/` | Saved Infobox History records (JSON), written only by the background job |
 | `package.json` | No dependencies — only `"type": "module"` so Node loads `history-core.js` |
+| `wikiportraits.js` | WikiPortraits photographer badge, shared by `finder.html` and `history.html` (classic script) |
 | `style.css` | Shared styles for all pages |
 
 `finder.html` and `gaps.html` embed their own JS pipeline, so each is
@@ -316,6 +317,34 @@ A gap = a **living** person whose article photo is **missing, under 2 MP, or
 flat (depth 0) search finds nothing — hence the depth control and the honest
 `truncated` flag.
 
+
+## WikiPortraits photographer badge (`wikiportraits.js`)
+
+Both the Finder and History show who took each photo ("by …"). When that
+photographer is in
+[Category:WikiPortraits photographers](https://commons.wikimedia.org/wiki/Category:WikiPortraits_photographers),
+a text-height [WikiPortraits logo](https://commons.wikimedia.org/wiki/File:WikiPortraits_Logo.png)
+(CC0, via its Commons thumbnail) follows the name, linking to that category.
+
+- **The list** is the category's user pages (namespace 2; it also holds photos of
+  photographers and subcategories, which are ignored): ~250 members, one request
+  per page load, so it's always current with no caching. If it can't be fetched,
+  no badges are shown — never a wrong one. Pages await it before the first render.
+- **Matching** uses the credit the page already shows (Commons `extmetadata.Artist`):
+  1. the credit links to a user page — `/wiki/User:Name` or a red link
+     `index.php?title=User:Name`, on any wiki — and Name is listed (a hard match;
+     display names like "Bea Phi" for `User:Phibeatrice` work); or
+  2. the credit has no user-page link and its text is exactly a listed username
+     (plain-text credits such as "Harald Krichel").
+
+  Usernames compare with underscores = spaces and the first letter upper-cased.
+- **Not the uploader.** Uploaders on the list also upload other people's photos:
+  on 182 older infobox photos, matching by uploader would have mislabelled 8
+  (credits "Super Festivals", "Gage Skidmore"). Measured 2026-10-14 on 200
+  current WikiPortraits photos: rules 1–2 matched 137, no false matches.
+- **The category is the source of truth.** A WikiPortraits photographer whose
+  user page isn't in it gets no badge (2026-10-14: `User:Zafer`, credited on 63 of
+  those 200 photos).
 
 ## Infobox History (`history.html`)
 

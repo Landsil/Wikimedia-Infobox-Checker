@@ -15,7 +15,7 @@
   Runs entirely in the browser via the Wikimedia APIs (fetch + origin=*); the
   pipeline lives in history-core.js, shared with the background refresh job.
 -->
-<link rel="stylesheet" href="style.css?v=5">
+<link rel="stylesheet" href="style.css?v=6">
 </head>
 <body>
 <header>
@@ -110,6 +110,11 @@
         the exact (possibly cropped) version that was in the infobox.</li>
       <li><strong>Copy static URL</strong> builds a shareable link that prefills
         the form and runs automatically.</li>
+      <li>The <strong>WikiPortraits logo</strong> after a photographer's name means they
+        are listed in <a href="https://commons.wikimedia.org/wiki/Category:WikiPortraits_photographers"
+        target="_blank" rel="noopener">Category:WikiPortraits photographers</a> — the photo's
+        credit links to their user page, or is exactly their username. The list is
+        read fresh each time the page loads.</li>
       <li>All data comes from read-only calls to the public Wikimedia APIs.</li>
     </ul>
   </div>
@@ -119,6 +124,7 @@
   <a href="https://github.com/Landsil/Wikimedia-Infobox-Checker" target="_blank"
      rel="noopener">Wikimedia-Infobox-Checker on GitHub</a>
 </footer>
+<script src="wikiportraits.js"></script>
 <script type="module">
 import {
   COMMONS_API, SINGLE_REV_LIMIT, SINGLE_REV_EXTEND, CAT_FILE_CAP, ALGO_VERSION,
@@ -320,8 +326,9 @@ function tlCard(entry, i, newer) {
   const photo = info && info.thumb
     ? `<div class="photo"><img src="${esc(info.thumb)}" alt="" loading="lazy"></div>`
     : `<div class="photo"><div class="none">photo not readable</div></div>`;
+  const badge = info && window.WikiPortraits ? WikiPortraits.badge(info.author, info.author_url) : "";
   const author = info && info.author
-    ? `<div class="author">by ${info.author_url ? link(info.author_url, info.author) : esc(info.author)}</div>` : "";
+    ? `<div class="author">by ${info.author_url ? link(info.author_url, info.author) : esc(info.author)}${badge}</div>` : "";
   let usedInfo;
   if (i === 0) {
     usedInfo = entry.ts
@@ -449,6 +456,7 @@ async function run() {
   $("subject").innerHTML = ""; $("results").innerHTML = ""; $("loadmore").hidden = true;
   hideRecheck(); hideRefresh(); hideBadge(); single = null; shownPeople = {}; personSeq = 0; go.disabled = true;
   try {
+    if (window.WikiPortraits) await WikiPortraits.ready;   // badges from the first render
     const inp = parseInput($("q").value);
     if (!inp) { showError("Enter an article link, a file name, a file link, or a category."); return; }
     currentInput = inp;
@@ -706,7 +714,7 @@ $("uncapped_scan").addEventListener("click", async () => {
   $("status").className = ""; $("subject").innerHTML = ""; $("results").innerHTML = "";
   $("loadmore").hidden = true; hideRecheck(); hideRefresh(); single = null; shownPeople = {}; personSeq = 0;
   currentInput = inp; $("go").disabled = true;
-  try { await runCategory(inp, { uncapped: true }); }
+  try { if (window.WikiPortraits) await WikiPortraits.ready; await runCategory(inp, { uncapped: true }); }
   catch (err) { showError(errorText(err)); }
   finally { $("go").disabled = false; }
 });
