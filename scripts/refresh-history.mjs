@@ -8,7 +8,8 @@
 //
 // Every run (weekly, --mode new):
 //   1. finish any unfinished scan (`pending` files),
-//   2. rebuild people whose article changed since the last run,
+//   2. check every stored person's current photo (batched) and rebuild the
+//      history only of those whose photo changed,
 //   3. list the whole category tree: files added since the watermark become
 //      pending and are scanned; people whose current photo is no longer in the
 //      tree are flagged `outside`.
@@ -62,6 +63,11 @@ class OutOfTime extends Error {}
 const checkTime = () => { if (Date.now() > deadline) throw new OutOfTime(`time budget (${BUDGET_MIN} min) used up`); };
 const now = () => new Date().toISOString();
 const log = msg => console.log(`[${now().slice(11, 19)}] ${msg}`);
+// At most one line per `ms` (long phases would otherwise be silent, or flood the log).
+const every = (ms, f) => { let t = 0; return msg => { if (Date.now() - t >= ms) { t = Date.now(); f(msg); } }; };
+const mins = ms => ms < 60000 ? `${Math.round(ms / 1000)} s`
+  : ms < 3600000 ? `${Math.round(ms / 60000)} min`
+  : `${Math.floor(ms / 3600000)} h ${String(Math.floor(ms % 3600000 / 60000)).padStart(2, "0")} min`;
 const summary = [];
 
 // ---- record <-> working state ----
@@ -112,9 +118,10 @@ async function drainPending(st, path, why) {
   }
   return found;
 }
-async function refreshCategory(st, path) {
+// `out` collects one summary phrase per finished phase; it's the caller's, so
+// a run that stops part-way still reports what it did.
+async function refreshCategory(st, path, out) {
   const { rec } = st, title = rec.input.title, depth = rec.depth;
-  const out = [];
   // 1. Legacy records saved mid-scan without their pending list: rebuild it the
   //    way the page always did (re-enumerate, skip the scanned count). No
   //    `exclude`: the skip count only lines up with the walk that produced it.
@@ -125,10 +132,12 @@ async function refreshCategory(st, path) {
     await save(path, toRecord(st));
   }
   if (st.pending.length) out.push(`finished scan: +${await drainPending(st, path, "unfinished scan")} people`);
-  // 2. People whose article changed.
+  // 2. People whose current photo changed (one batched lookup per 50 people).
   checkTime();
-  const changed = await core.refreshPeople(st.people, rec.count);
-  out.push(`${changed} of ${st.people.length} people updated`);
+  const t0 = Date.now();
+  const r = await core.refreshPeople(st.people, rec.count, { onProgress: every(60000, m => log(`  people: ${m}`)) });
+  out.push(`${r.checked} people checked: ${r.rebuilt} rebuilt (photo changed), ${r.filled} missing current photo filled in (${mins(Date.now() - t0)})`);
+  log(`  people: ${r.checked} checked, ${r.rebuilt} rebuilt, ${r.filled} filled in`);
   await save(path, toRecord(st));
   // 3. Whole tree: new files become pending; flag people no longer in it.
   checkTime();
@@ -159,21 +168,20 @@ async function refreshCategory(st, path) {
     st.bg.lastFull = now(); delete st.bg.recheck;
     out.push(`full re-check of ${tree.length} files: +${found} people`);
   }
-  return out;
 }
 
 // ---- single (article / file) record ----
-async function refreshSingle(st) {
+async function refreshSingle(st, out) {
   const { rec } = st;
   checkTime();
   rec.lead = await core.currentLead(rec.lang, rec.article);
   const top = await core.currentTopRev(rec.lang, rec.article);
-  if (!top || top === rec.topRev) return ["unchanged"];
+  if (!top || top === rec.topRev) { out.push("unchanged"); return; }
   const res = await core.buildTimeline(rec.lang, rec.article, core.SINGLE_REV_LIMIT, rec.count, null, { allowFallback: true });
-  if (!res.timeline.length) return ["changed, but no infobox photo found — kept as was"];
+  if (!res.timeline.length) { out.push("changed, but no infobox photo found — kept as was"); return; }
   Object.assign(rec, { topRev: res.topRev, more: res.more, cont: res.cont || null, fullContent: !!res.usedFull,
     scanned: res.read, timeline: core.timelineToJson(res.timeline) });
-  return ["history rebuilt"];
+  out.push("history rebuilt");
 }
 
 // ---- --add: create a new record (then refreshed like any other) ----
@@ -218,14 +226,28 @@ async function refreshRecord(path) {
   }
   log(`${rec.identity} (${MODE})`);
   const st = fromRecord(rec);
-  let out;
+  const out = [], t0 = Date.now(), s0 = core.apiStats();
+  // One summary line per record, whatever happened: what was done, how long it
+  // took, how much of that was waiting on Wikimedia lag, and why it stopped.
+  const line = end => {
+    const s = core.apiStats();
+    const cost = `${mins(Date.now() - t0)}; ${s.requests - s0.requests} requests, `
+      + `${mins(s.lagWaitMs - s0.lagWaitMs)} waiting on lag (${s.lagWaits - s0.lagWaits} waits)`
+      + (s.throttled > s0.throttled ? `, ${s.throttled - s0.throttled} × HTTP 429` : "");
+    return `- ${rec.identity}: ${[...out, ...(end ? [end] : [])].join("; ")} [${cost}]`;
+  };
   try {
-    out = rec.type === "category" ? await refreshCategory(st, path) : await refreshSingle(st);
+    if (rec.type === "category") await refreshCategory(st, path, out); else await refreshSingle(st, out);
     st.bg.lastRun = now(); st.bg.lastMode = MODE;
+    summary.push(line());
+  } catch (err) {
+    const stop = err instanceof OutOfTime || err instanceof core.LagError;
+    summary.push(line(stop ? `stopped — ${err.message}; progress saved, next run continues` : `FAILED — ${err.message}`));
+    err.reported = true;
+    throw err;
   } finally {
     await save(path, toRecord(st));     // keep whatever progress was made, even on error
   }
-  summary.push(`- ${rec.identity}: ${out.join("; ")}`);
 }
 
 let failed = 0;
@@ -252,17 +274,17 @@ try {
   for (const path of records) {
     try { await refreshRecord(path); }
     catch (err) {
-      if (err instanceof OutOfTime || err instanceof core.LagError) {
-        summary.push(`- ${basename(path)}: stopped — ${err.message}; progress saved, next run continues`);
-        break;                          // later records wait for the next run
-      }
+      if (!err.reported) summary.push(`- ${basename(path)}: FAILED — ${err.message}`);
+      if (err instanceof OutOfTime || err instanceof core.LagError) break;   // later records wait for the next run
       failed++;
-      summary.push(`- ${basename(path)}: FAILED — ${err.message}`);
       console.error(err);
     }
   }
 } finally {
-  const text = `Infobox History refresh (${MODE})\n\n${summary.join("\n")}\n`;
+  const s = core.apiStats();
+  const total = `Total: ${s.requests} requests, ${mins(s.lagWaitMs)} waiting on lag (${s.lagWaits} waits)`
+    + (s.throttled ? `, ${s.throttled} × HTTP 429` : "");
+  const text = `Infobox History refresh (${MODE})\n\n${summary.join("\n")}\n\n${total}\n`;
   console.log("\n" + text);
   if (process.env.GITHUB_STEP_SUMMARY) await appendFile(process.env.GITHUB_STEP_SUMMARY, text);
   if (process.env.SUMMARY_FILE) await writeFile(process.env.SUMMARY_FILE, text);

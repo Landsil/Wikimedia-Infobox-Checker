@@ -595,7 +595,7 @@ async function refreshSingle() {
 }
 async function refreshCategory() {
   const say = msg => { $("status").className = ""; $("status").textContent = msg; };
-  // Refresh stored people whose article changed since the record was written.
+  // Refresh stored people whose current photo changed since the record was written.
   say("Checking stored people for updates…");
   await refreshPeople(cat.people, cat.count, { onProgress: say, onChanged: async p => {
     await attachInfo([p]);

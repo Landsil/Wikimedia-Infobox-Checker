@@ -54,6 +54,9 @@ export function mergeCurrent(timeline, lead) {
 // User-Agent, maxlag=5, and pacing under the per-minute limit for identified bots.
 const api = { userAgent: null, maxlag: null, minIntervalMs: 0, maxLagWaitMs: 30 * 60 * 1000, last: 0 };
 export function configureApi(opts) { Object.assign(api, opts); }
+// Running totals, for the background job's summary (how much time lag cost).
+const stats = { requests: 0, lagWaits: 0, lagWaitMs: 0, throttled: 0 };
+export const apiStats = () => ({ ...stats });
 
 // Lag outlasted maxLagWaitMs. The job saves progress and stops rather than
 // hammering a lagged cluster or hanging until the job timeout.
@@ -74,11 +77,13 @@ export async function apiGet(base, params) {
     const gap = api.last + api.minIntervalMs - Date.now();
     if (gap > 0) await sleep(gap);
     api.last = Date.now();
+    stats.requests++;
     let resp;
     try { resp = await fetch(url, init); }
     catch (err) { if (attempt < MAX_RETRIES - 1) { await sleep(BACKOFF_BASE * 2 ** attempt * 1000); continue; } throw err; }
     let data = null; try { data = JSON.parse(await resp.text()); } catch (_) {}
     if ([429, 500, 502, 503, 504].includes(resp.status)) {   // rate-limit or transient 5xx
+      if (resp.status === 429) stats.throttled++;
       if (attempt < MAX_RETRIES - 1) { await sleep(retryDelayMs(resp, attempt)); continue; }
       throw new Error(`Wikimedia unavailable (HTTP ${resp.status}) after ${MAX_RETRIES} attempts.`);
     }
@@ -92,7 +97,7 @@ export async function apiGet(base, params) {
       const ms = Math.min(60000, Math.max(5000, retryDelayMs(resp, 0)) * 2 ** lagTries++);
       if (lagWaited + ms > api.maxLagWaitMs)
         throw new LagError(`Wikimedia lagged for over ${Math.round(api.maxLagWaitMs / 60000)} min (${data.error.info || "maxlag"}).`);
-      lagWaited += ms; attempt--; await sleep(ms); continue;
+      lagWaited += ms; stats.lagWaits++; stats.lagWaitMs += ms; attempt--; await sleep(ms); continue;
     }
     if (data.error) throw new Error(`Wikimedia API error: ${data.error.code}${data.error.info ? " — " + data.error.info : ""}`);
     return data;
@@ -217,12 +222,25 @@ export async function currentLead(lang, article) {
   return (p && p.pageimage) ? "File:" + p.pageimage.replace(/_/g, " ") : null;
 }
 
-// Batched current-lead lookup: article -> lead File: title, for many articles on one wiki.
+// Batched current-lead lookup: article -> lead File: title, for many articles on
+// one wiki, keyed by the title AS REQUESTED. The API answers under the
+// normalised / redirect-target title, so a renamed article would otherwise look
+// like it has no photo; `normalized` and `redirects` are mapped back.
+// Articles with no lead image (or no longer existing) are absent from the result.
 async function currentLeads(lang, articles) {
   const out = {};
-  for (const b of chunked(articles))
-    for await (const q of mwQuery(wpApi(lang), { titles: b.join("|"), prop: "pageimages", piprop: "name", redirects: "1" }))
-      for (const p of Object.values(q.pages || {})) if (p.pageimage) out[p.title] = "File:" + p.pageimage.replace(/_/g, " ");
+  for (const b of chunked(articles)) {
+    const norm = {}, redir = {}, byTitle = {};
+    for await (const q of mwQuery(wpApi(lang), { titles: b.join("|"), prop: "pageimages", piprop: "name", redirects: "1" })) {
+      for (const n of q.normalized || []) norm[n.from] = n.to;
+      for (const r of q.redirects || []) redir[r.from] = r.to;
+      for (const p of Object.values(q.pages || {})) if (p.pageimage) byTitle[p.title] = "File:" + p.pageimage.replace(/_/g, " ");
+    }
+    for (const t of b) {
+      const n = norm[t] || t, lead = byTitle[redir[n] || n];
+      if (lead) out[t] = lead;
+    }
+  }
   return out;
 }
 
@@ -376,42 +394,51 @@ export async function currentTopRev(lang, article) {
   const p = Object.values((d.query || {}).pages || {})[0];
   return p ? p.lastrevid : null;
 }
-async function lastRevIds(lang, articles) {
-  const out = {};
-  for (const b of chunked(articles))
-    for await (const q of mwQuery(wpApi(lang), { titles: b.join("|"), prop: "info", redirects: "1" }))
-      for (const p of Object.values(q.pages || {})) out[p.title] = p.lastrevid;
-  return out;
-}
-
-// Rebuild the history of every stored person whose article changed since it was
-// recorded (top revision differs). Updates people in place; calls onChanged(p)
-// for each one that changed. A person whose rebuild fails is left as it was.
+// Bring stored people up to date. One batched current-photo (pageimages) lookup
+// per 50 people; a person's history is rebuilt only when their CURRENT photo
+// changed (not on every article edit — most edits don't touch the photo).
+// Trade-off: a photo swapped and swapped back between two runs isn't noticed.
+// People stored without a current photo (records saved before 2026-08-28) get
+// it filled in, rebuilding only if it isn't already the newest photo shown.
+// Marks each looked-up person `_leadChecked` (not saved) for flagOutside().
+// Updates people in place; calls onChanged(p) for each rebuilt one. A person
+// whose rebuild fails is left as it was. Returns { checked, rebuilt, filled }.
 export async function refreshPeople(people, count, { onProgress, onChanged } = {}) {
   const byLang = {};
   for (const p of people) (byLang[p.lang] = byLang[p.lang] || []).push(p);
-  let checked = 0, changed = 0;
+  let checked = 0, rebuilt = 0, filled = 0;
+  const say = msg => { if (onProgress) onProgress(`${msg} (${checked}/${people.length} checked, ${rebuilt} rebuilt)`); };
   for (const [lang, ps] of Object.entries(byLang)) {
-    const last = await lastRevIds(lang, ps.map(p => p.article));
+    say(`Checking current photos on ${lang}.wikipedia`);
+    const leads = await currentLeads(lang, ps.map(p => p.article));
     for (const p of ps) {
       checked++;
-      if (!last[p.article] || last[p.article] === p.topRev) continue;
-      if (onProgress) onProgress(`Updating ${p.label || p.article} (${checked}/${people.length} checked)…`);
+      const lead = leads[p.article] || null;
+      p._leadChecked = true;
+      if (lead && p.lead && sameOrCrop(lead, p.lead)) { p.lead = lead; continue; }   // unchanged
+      if (!lead && !p.lead) continue;                     // no photo before or now: nothing to rebuild
+      if (lead && !p.lead && p.shown && p.shown.length && sameOrCrop(lead, p.shown[0].file)) {
+        p.lead = lead; filled++; continue;                                           // legacy: fill in
+      }
+      say(`Updating ${p.label || p.article}`);
       let res; try { res = await buildTimeline(p.lang, p.article, CAT_REV_LIMIT, count); } catch (_) { continue; }
-      p.lead = await currentLead(p.lang, p.article);   // current photo may have changed
-      const merged = mergeCurrent(res.timeline, p.lead);
+      p.lead = lead;
+      const merged = mergeCurrent(res.timeline, lead);
       if (!merged.length) continue;
       p.topRev = res.topRev; p.more = res.more; p.shown = merged.slice(0, count);
-      changed++;
+      rebuilt++;
       if (onChanged) await onChanged(p);
     }
   }
-  return changed;
+  return { checked, rebuilt, filled };
 }
 
 // Mark people whose current infobox photo is no longer a file (or crop of a
 // file) in the category tree: they stay listed, flagged `outside`. Needs the
-// complete tree listing (walkCategory with cap = Infinity).
+// complete tree listing (walkCategory with cap = Infinity), and only judges
+// people whose photo is known: either stored, or looked up by refreshPeople()
+// this run (then "no photo" really means the article has none). A person with
+// no stored photo that wasn't looked up is left alone, never flagged on missing data.
 export function flagOutside(people, treeFiles) {
   // Both directions, like sameOrCrop: the lead may be a crop of a tree file, or
   // the tree may hold a crop of the lead.
@@ -419,6 +446,7 @@ export function flagOutside(people, treeFiles) {
   for (const f of treeFiles) { const parent = cropParent(f); if (parent) tree.add(parent); }
   for (const p of people) {
     const lead = p.lead;
+    if (!lead && !p._leadChecked) { delete p.outside; continue; }
     const inside = !!lead && (tree.has(lead) || tree.has(cropParent(lead) || ""));
     if (inside) delete p.outside; else p.outside = true;
   }

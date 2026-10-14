@@ -408,7 +408,7 @@ drift from the page.
 
 | When | Mode | Does |
 | :-- | :-- | :-- |
-| Mondays 03:17 UTC | weekly (`new`) | finish any unfinished scan; rebuild people whose article changed (`lastrevid` ≠ `topRev`); walk the whole tree — files added after the watermark are scanned, people whose photo left the tree are flagged `outside` |
+| Mondays 03:17 UTC | weekly (`new`) | finish any unfinished scan; check every stored person's current photo (`pageimages`, 50 per request) and rebuild the history only where it changed; walk the whole tree — files added after the watermark are scanned, people whose photo left the tree are flagged `outside` |
 | 1st of month 02:13 UTC | monthly (`full`) | all of the above, then re-check every file in the tree |
 | Manual (*Run workflow*) | either | same. The form is pre-filled like a scheduled weekly run. Leave **new_search** empty for a plain refresh; fill it only to start tracking a *new* search (with **new_search_depth**, and **new_search_exclude** — `\|`-separated subcategories to skip). A bad new search is reported and skipped; the existing records are still refreshed. **budget_minutes** (default 320, max 330) |
 
@@ -423,8 +423,17 @@ heavy load some queued runs may be dropped.
   `bg.recheck.cursor` (last title of the sorted tree that was re-checked) — so
   the next run continues. Records are written atomically after every chunk
   (`CHUNK` = 500 files) and the commit step runs even after a failure or timeout.
-- **One commit per run**, `cache: background refresh`, with the run summary as
-  the body (also on the run's summary page).
+- **Why "photo changed", not "article edited".** The first real run (2026-10-13)
+  rebuilt 4,653 of 8,572 WikiPortraits people because their article had *any*
+  edit since the record was saved — 3 h 49 min, almost all wasted. Comparing the
+  current photo costs ~180 requests for ~9,000 people. Trade-off: a photo swapped
+  and swapped back between two runs isn't noticed. People stored without a
+  current photo (browser saves before 2026-08-28) have it filled in.
+- **"No longer from this category"** is only judged for people whose current
+  photo is known (stored, or looked up this run); missing data never flags anyone.
+- **One commit per run**, `cache: background refresh (<mode>)`, with the run
+  summary as the body (also on the run's summary page): per record, what was
+  done, how long it took, requests made, and time spent waiting on lag.
 - **Bot etiquette** (non-interactive, unlike the page): `User-Agent`
   `WikimediaInfoboxCheckerBot/1.0 (<repo URL>[; <contact>]) node/<version>`,
   per the [User-Agent policy](https://foundation.wikimedia.org/wiki/Policy:Wikimedia_Foundation_User-Agent_Policy);
