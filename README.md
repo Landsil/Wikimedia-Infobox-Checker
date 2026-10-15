@@ -537,10 +537,17 @@ Landmarker of 2023-04-27). The weekly workflow
 assigned to Landsil links the comparison. Merging it updates the site; visitors
 then see *out of date* until they press Update.
 
-Why 1.0.1 and not the newest: the first copy was fetched on a machine whose
-security tool blocks npm packages published too recently to be vetted; 1.1.x
-(October 2026) was blocked, 1.0.1 (July 2026) was allowed. The 14-day minimum age
-keeps the automatic proposals in the same spirit.
+**Taking a specific version now:** *Run workflow* with **version** (e.g.
+`1.1.1`) skips the minimum age for the runtime only — an explicit choice, noted
+in `versions.json` (`runtime.explicit`) and `NOTICE.md`. It still goes through
+the branch + issue, and the npm integrity check.
+
+History: the first copy (1.0.1, July 2026) was fetched on a maintainer's machine
+whose security tool blocks npm packages published too recently to be vetted
+(1.1.x, October 2026, was blocked there). 1.1.1 was then taken on 2026-10-15 by
+an explicit *Run workflow* on GitHub's runner — not on that machine — to be
+tested on another one. The 14-day minimum age keeps the automatic proposals in
+the vetting spirit.
 
 Licences: the runtime is Apache-2.0 (npm `license` field, and the MediaPipe
 repository); the model cards (BlazeFace short- and full-range, Face Mesh V2, Blendshape V2,

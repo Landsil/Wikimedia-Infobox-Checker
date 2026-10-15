@@ -3,6 +3,9 @@
 //
 //   node scripts/sync-mediapipe.mjs           # report what's current vs upstream
 //   node scripts/sync-mediapipe.mjs --sync    # download a newer release if there is one
+//   node scripts/sync-mediapipe.mjs --sync --version 1.1.1
+//        # take exactly this runtime version, skipping the minimum age (an
+//        # explicit choice, e.g. to test it; the models still follow the rule)
 //
 // Sources (the "Google version" the page links to):
 //   - runtime: npm package @mediapipe/tasks-vision — the tarball is checked
@@ -43,6 +46,9 @@ const LICENSE_URL = "https://www.apache.org/licenses/LICENSE-2.0.txt";
 const UA = "WikimediaInfoboxChecker-sync/1.0 (https://github.com/Landsil/Wikimedia-Infobox-Checker)";
 
 const sync = process.argv.includes("--sync");
+const vi = process.argv.indexOf("--version");
+const wanted = vi > 0 ? process.argv[vi + 1] : (process.env.WANTED_VERSION || "").trim() || null;
+if (wanted && !/^\d+\.\d+\.\d+$/.test(wanted)) throw new Error(`--version must be a stable x.y.z version, not "${wanted}"`);
 const day = 86400000;
 const sha256 = buf => createHash("sha256").update(buf).digest("hex");
 const ymd = d => new Date(d).toISOString().slice(0, 10);
@@ -60,8 +66,9 @@ async function pickRuntime() {
   const eligible = stable.filter(v => Date.parse(meta.time[v]) <= cutoff)
     .sort((a, b) => Date.parse(meta.time[a]) - Date.parse(meta.time[b]));
   const latest = stable.sort((a, b) => Date.parse(meta.time[a]) - Date.parse(meta.time[b])).at(-1);
-  const v = eligible.at(-1);
-  return { version: v, published: meta.time[v], tarball: meta.versions[v].dist.tarball,
+  if (wanted && !stable.includes(wanted)) throw new Error(`${PACKAGE}@${wanted} doesn't exist on npm`);
+  const v = wanted || eligible.at(-1);
+  return { version: v, explicit: !!wanted, published: meta.time[v], tarball: meta.versions[v].dist.tarball,
            integrity: meta.versions[v].dist.integrity, license: meta.versions[v].license,
            newest_upstream: latest, newest_upstream_published: meta.time[latest] };
 }
@@ -86,12 +93,12 @@ const tooNewModel = Object.entries(models).find(([, m]) => Date.parse(m.last_mod
 const release = releaseId(rt, models);
 
 console.log(`current release: ${current ? current.release : "(none)"}`);
-console.log(`upstream:        ${release}  (runtime ${rt.version}, published ${ymd(rt.published)}; newest upstream ${rt.newest_upstream}, ${ymd(rt.newest_upstream_published)})`);
+console.log(`upstream:        ${release}  (runtime ${rt.version}${rt.explicit ? " — requested explicitly, minimum age skipped" : ""}, published ${ymd(rt.published)}; newest upstream ${rt.newest_upstream}, ${ymd(rt.newest_upstream_published)})`);
 if (tooNewModel) console.log(`note: ${tooNewModel[0]} changed upstream less than ${MIN_AGE_DAYS} days ago — waiting.`);
 const changed = !current || (current.release !== release && !tooNewModel);
 console.log(changed ? "→ a newer release is available" : "→ up to date");
 if (process.env.GITHUB_OUTPUT) await writeFile(process.env.GITHUB_OUTPUT,
-  `changed=${changed && sync ? 1 : 0}\nrelease=${release}\nprevious=${current ? current.release : ""}\n`, { flag: "a" });
+  `changed=${changed && sync ? 1 : 0}\nrelease=${release}\nprevious=${current ? current.release : ""}\nexplicit=${rt.explicit ? 1 : 0}\n`, { flag: "a" });
 if (!sync || !changed) process.exit(0);
 
 // ---- download, verify, write ----
@@ -130,7 +137,7 @@ photo score page), unmodified, under the Apache License 2.0 (\`LICENSE\`).
 | :-- | :-- |
 ${files.map(f => `| \`${f.name}\` | ${f.source} |`).join("\n")}
 
-- Runtime: \`${PACKAGE}\` ${rt.version} (published ${ymd(rt.published)}), npm licence field "${rt.license}";
+- Runtime: \`${PACKAGE}\` ${rt.version} (published ${ymd(rt.published)}${rt.explicit ? "; chosen explicitly, before the usual " + MIN_AGE_DAYS + "-day minimum age" : ""}), npm licence field "${rt.license}";
   tarball verified against the registry integrity \`${rt.integrity.slice(0, 20)}…\`.
 - Models: MediaPipe model cards link the Apache License 2.0 (Face Mesh V2,
   Blendshape V2, BlazeFace short- and full-range, BlazePose GHUM 3D):
@@ -139,7 +146,7 @@ ${files.map(f => `| \`${f.name}\` | ${f.source} |`).join("\n")}
 `);
 const manifest = {
   release, generated: new Date().toISOString(), min_age_days: MIN_AGE_DAYS,
-  runtime: { package: PACKAGE, version: rt.version, published: rt.published, tarball: rt.tarball, integrity: rt.integrity },
+  runtime: { package: PACKAGE, version: rt.version, published: rt.published, explicit: rt.explicit, tarball: rt.tarball, integrity: rt.integrity },
   models, license: "Apache-2.0",
   total_bytes: files.reduce((n, f) => n + f.bytes, 0),
   files,

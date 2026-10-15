@@ -11,6 +11,11 @@ on:
   schedule:
     - cron: "41 5 * * 3"    # Wednesdays 05:41 UTC
   workflow_dispatch:
+    inputs:
+      version:
+        description: "Usually leave EMPTY. Only to take one specific runtime version now (e.g. 1.1.1), skipping the 14-day minimum age"
+        required: false
+        default: ""
 
 permissions:
   contents: write     # push the update branch
@@ -34,6 +39,8 @@ jobs:
 
       - name: Look for a newer release (download it if there is one)
         id: sync
+        env:
+          WANTED_VERSION: ${{ inputs.version }}
         run: node scripts/sync-mediapipe.mjs --sync
 
       - name: Put it on a branch and open a review issue
@@ -42,6 +49,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           RELEASE: ${{ steps.sync.outputs.release }}
           PREVIOUS: ${{ steps.sync.outputs.previous }}
+          WHY: ${{ steps.sync.outputs.explicit == '1' && format('runtime {0} requested explicitly (minimum age skipped)', inputs.version) || 'at least 14 days old upstream' }}
         run: |
           branch="mediapipe-update/${RELEASE}"
           title="MediaPipe update available: ${RELEASE}"
@@ -60,7 +68,7 @@ jobs:
           fi
           compare="https://github.com/${GITHUB_REPOSITORY}/compare/main...${branch}"
           gh issue create --assignee Landsil --title "$title" --body "$(cat <<EOF
-          A newer MediaPipe release (at least 14 days old upstream) is ready on branch \`${branch}\`.
+          A newer MediaPipe release (${WHY}) is ready on branch \`${branch}\`.
 
           - Was: \`${PREVIOUS:-none}\`
           - Now: \`${RELEASE}\`
