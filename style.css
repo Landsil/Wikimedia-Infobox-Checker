@@ -183,6 +183,30 @@
   .gap-card .meta, .gap-card .meta.left, .gap-card .meta.right { text-align: left; }
   .gap-card .gap-data .meta + .meta { margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--line); }
   .gap-card .cand-photo img { max-height: 120px; }
+  /* Trial photo score page. */
+  .trial-banner { background: #fff8e6; border: 1px solid #f0d9b5; border-radius: 8px;
+                  padding: 10px 14px; margin: 0 0 14px; font-size: 13px; max-width: 1100px; }
+  .trial-banner p { margin: 0 0 6px; }
+  .trial-banner .trial-links { color: var(--muted); }
+  .lib-state { margin-top: 6px; padding: 6px 10px; border-radius: 6px; background: #fff; border: 1px solid var(--line); }
+  .lib-state.ok { border-color: #b7e0c6; color: var(--new); }
+  .lib-state.need { border-color: var(--accent); }
+  .lib-state.bad { border-color: #f3b4b4; color: #b91c1c; }
+  .lib-state button { padding: 5px 12px; font-size: 13px; margin-left: 6px; }
+  .lib-state code, .rules code { font-size: 12px; }
+  .rules { margin: 0 0 14px; font-size: 13px; }
+  .rules summary { cursor: pointer; color: var(--muted); }
+  .rules ul { margin: 6px 0 0; padding-left: 20px; }
+  .muted { color: var(--muted); }
+  .score-photo { position: relative; }
+  .score-photo img { display: block; }
+  .face-box { position: absolute; border: 2px solid rgba(255,255,255,.7); border-radius: 3px; pointer-events: none; }
+  .face-box.main { border-color: #22c55e; box-shadow: 0 0 0 1px rgba(0,0,0,.35); }
+  .checks { list-style: none; margin: 8px 0 0; padding: 0; font-size: 12px; }
+  .checks li::before { display: inline-block; width: 1.2em; font-weight: 700; }
+  .checks li.pass::before { content: "✓"; color: var(--new); }
+  .checks li.fail { color: #b91c1c; }
+  .checks li.fail::before { content: "✗"; }
   @media (max-width: 560px) { .gap-grid { grid-template-columns: 1fr; } .gap-card { grid-template-columns: 120px 1fr; } }
   .person-summary { margin: 4px 0 16px; }
   .cand-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }

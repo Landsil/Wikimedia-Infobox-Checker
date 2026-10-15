@@ -32,6 +32,10 @@ A landing hub links to self-contained tool pages; all share one stylesheet.
 | `.github/workflows/refresh-history.yml` | Runs that job weekly and monthly on GitHub Actions |
 | `data/history/` | Saved Infobox History records (JSON), written only by the background job |
 | `package.json` | No dependencies — only `"type": "module"` so Node loads `history-core.js` |
+| `score.html` | **Trial photo score** — one person → every Commons photo depicting them, scored with in-browser face and pose detection (MediaPipe) |
+| `vendor/mediapipe/` | Our unmodified copy of Google's MediaPipe runtime + two models, with `versions.json` (release id, sizes, SHA-256), `LICENSE`, `NOTICE.md` |
+| `scripts/sync-mediapipe.mjs` | Checks / downloads a newer MediaPipe release (≥ 14 days old upstream) |
+| `.github/workflows/check-mediapipe.yml` | Weekly: a newer release goes to its own branch + a review issue assigned to Landsil |
 | `wikiportraits.js` | WikiPortraits photographer badge, shared by `finder.html` and `history.html` (classic script) |
 | `style.css` | Shared styles for all pages |
 
@@ -453,6 +457,78 @@ category (hover: "WikiPortraits contributor").
 - **The categories are the source of truth.** Someone in neither gets no badge.
   (`User:Zafer`, credited on 63 of those 200 photos, is in contributors only —
   the reason contributors was added.)
+
+## Trial photo score (`score.html`)
+
+A **trial**. For one person — an article link on any Wikipedia, or a Commons
+photo of them — every Commons photo with depicts (P180) = that person (the same
+lookup as Photo Gaps' person mode, up to `PHOTO_CAP` = 300), each analysed **in
+the browser** with Google's MediaPipe and scored by simple rules shown on the page.
+
+### The saved copy (consent, versions, integrity)
+
+- The page links our copy (`vendor/mediapipe/` on GitHub) and Google's originals
+  (npm `@mediapipe/tasks-vision`, the model files on `storage.googleapis.com`).
+- Nothing is downloaded until the visitor presses **Agree**. The files (21.8 MB:
+  runtime 12.2 MB — `vision_bundle.mjs`, `vision_wasm_internal.{js,wasm}`, SIMD
+  build only — plus `face_landmarker.task` 3.8 MB and `pose_landmarker_lite.task`
+  5.8 MB) come from this site, are checked against the SHA-256 in
+  `vendor/mediapipe/versions.json`, and are kept in **Cache Storage** under
+  `score-mediapipe-<release>` (not the HTTP cache, so the page can see what's
+  there, verify it and remove it). A file that doesn't match is refused and
+  nothing is kept.
+- Every visit re-reads `versions.json` (no-store). If the saved release isn't the
+  current one, the page says *out of date* and scoring is off until **Update**;
+  older copies are deleted after a successful update. **Remove** deletes it.
+- MediaPipe is loaded only from that saved copy: the bundle via `import()` of a
+  blob URL, the WASM loader and binary as blob URLs (`wasmLoaderPath`,
+  `wasmBinaryPath`), the models as `modelAssetBuffer`. Photos are 960 px Commons
+  thumbnails loaded with `crossOrigin="anonymous"` (Wikimedia sends
+  `Access-Control-Allow-Origin: *`); nothing leaves the browser.
+
+### What it measures, and the trial rules
+
+Face Landmarker (`numFaces` 5, detection + presence confidence ≥ **0.8**,
+blendshapes and transformation matrix on) and Pose Landmarker lite (`numPoses`
+5, ≥ 0.8), CPU delegate. For the largest face: its height as a share of the
+photo, head **turned / tipped / tilted** (yaw `asin(-R20)`, pitch
+`atan2(R21, R22)`, roll `atan2(R10, R00)` from the column-major 4×4 matrix),
+eyes open (`eyeBlinkLeft/Right`) and look-away (max of the eight `eyeLook*`
+scores). Framing from the body points inside the photo (visibility ≥ 0.5):
+ankles → full body, knees → three-quarter, hips → half body, shoulders → head &
+shoulders; no body but a face ≥ 25% high → head & shoulders.
+
+The eight checks (`CHECKS` in the page): exactly one face · face ≥ 20% of the
+photo's height · eyes open (blink < 0.5) · head turned and tipped ≤ 20° · eyes
+towards the camera (every eye-look < 0.5) · framing head & shoulders or half body
+· ≥ 2 MP · taken within 12 months. Score = checks passed; best first, then newest.
+Measured 2026-10-15: Boots Riley, 9 photos in 6.9 s; the face model (BlazeFace
+short-range inside Face Landmarker) missed the face on two full-length shots.
+
+It detects faces and bodies; it does not recognise or identify anyone.
+
+### Keeping the copy current
+
+`scripts/sync-mediapipe.mjs` picks the newest stable npm release published at
+least **14 days** ago (and models whose `Last-Modified` is at least 14 days
+old), verifies the npm tarball against the registry's `integrity` (sha512), and
+writes `vendor/mediapipe/<release>/` plus `versions.json`. The release id names
+the parts, e.g. `tv-1.0.1_fl-20230503_pl-20230427` (runtime 1.0.1, Face
+Landmarker of 2023-05-03, Pose Landmarker of 2023-04-27). The weekly workflow
+(`check-mediapipe.yml`, Wednesdays 05:41 UTC, or *Run workflow*) never touches
+`main`: a newer release goes to branch `mediapipe-update/<release>` and an issue
+assigned to Landsil links the comparison. Merging it updates the site; visitors
+then see *out of date* until they press Update.
+
+Why 1.0.1 and not the newest: the first copy was fetched on a machine whose
+security tool blocks npm packages published too recently to be vetted; 1.1.x
+(October 2026) was blocked, 1.0.1 (July 2026) was allowed. The 14-day minimum age
+keeps the automatic proposals in the same spirit.
+
+Licences: the runtime is Apache-2.0 (npm `license` field, and the MediaPipe
+repository); the four model cards (BlazeFace, Face Mesh V2, Blendshape V2,
+BlazePose GHUM 3D) link the Apache License 2.0; their wording was read and checked by
+the maintainer on 2026-10-15. `LICENSE` and `NOTICE.md` sit next to the files.
 
 ## Infobox History (`history.html`)
 

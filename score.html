@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trial photo score</title>
+<!--
+  Trial photo score — one of the static, client-side tools on this site.
+
+  Given one person (an article link on any Wikipedia, or a Commons photo of
+  them), list every Commons photo that depicts them (SDC P180) and score each
+  with face and body-pose detection that runs IN THE BROWSER: Google's
+  MediaPipe (runtime + Face Landmarker + Pose Landmarker), from our unmodified
+  copy in vendor/mediapipe/, saved into the visitor's Cache Storage only after
+  they agree. Every rule behind "good" is shown on the page.
+-->
+<link rel="stylesheet" href="style.css?v=10">
+</head>
+<body>
+<header>
+  <div class="titlebar">
+    <h1><a href="index.html" class="home-link">Wikimedia</a> › Trial photo score</h1>
+    <button type="button" id="about_btn">About</button>
+  </div>
+  <div class="trial-banner">
+    <p><strong>Trial version.</strong> To score photos, this page saves a copy of
+    Google's <strong>MediaPipe</strong> into your browser's storage: the vision
+    runtime and two models — <em>Face Landmarker</em> (face position, 478 face
+    points, eyes open / looking direction) and <em>Pose Landmarker (lite)</em>
+    (body points, for framing) — <span id="lib_size">about 22 MB</span>, once.
+    Everything then runs on your device; no photo or result is sent anywhere.
+    Licence: Apache 2.0.</p>
+    <p class="trial-links">
+      <a href="https://github.com/Landsil/Wikimedia-Infobox-Checker/tree/main/vendor/mediapipe" target="_blank" rel="noopener">Our copy on GitHub</a> ·
+      Google's originals:
+      <a href="https://www.npmjs.com/package/@mediapipe/tasks-vision" target="_blank" rel="noopener">runtime (npm)</a>,
+      <a href="https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/latest/face_landmarker.task" target="_blank" rel="noopener">Face Landmarker</a>,
+      <a href="https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/latest/pose_landmarker_lite.task" target="_blank" rel="noopener">Pose Landmarker</a> ·
+      <a href="https://developers.google.com/edge/mediapipe/solutions/vision/face_landmarker" target="_blank" rel="noopener">MediaPipe docs</a>
+    </p>
+    <div id="lib_state" class="lib-state">Checking your saved copy…</div>
+  </div>
+  <form id="f">
+    <div><label>A person's article link (any Wikipedia), or a Commons photo of them</label>
+      <input id="q" value="https://en.wikipedia.org/wiki/Boots_Riley"></div>
+    <button id="go" type="submit" disabled>Score photos</button>
+    <button id="copy_url" type="button" class="secondary">Copy static URL</button>
+  </form>
+</header>
+<main class="wide">
+  <div id="status"></div>
+  <details class="rules" open>
+    <summary>What counts as "good" (trial rules — every photo shows how it did on each)</summary>
+    <ul id="rules_list"></ul>
+  </details>
+  <div id="subject"></div>
+  <div id="results"></div>
+</main>
+
+<div class="overlay" id="about_overlay" hidden>
+  <div class="about" role="dialog" aria-modal="true" aria-labelledby="about_title">
+    <div class="close-row">
+      <h2 id="about_title">About this tool</h2>
+      <button type="button" id="about_close">Close</button>
+    </div>
+    <p>A <strong>trial</strong>: for one person, every Commons photo that depicts
+    them, scored with simple, visible rules from face and body detection that
+    runs in your browser.</p>
+    <h3>Input</h3>
+    <ul>
+      <li>A link to the person's article on any Wikipedia, or a Commons photo of
+        them (file name or link) — the person is then whoever the photo depicts.
+        The photos are those with a <em>depicts</em> (P180) statement for them —
+        the same lookup as Photo Gaps' person mode — up to 300, newest first.</li>
+    </ul>
+    <h3>What it measures</h3>
+    <ul>
+      <li><strong>Faces</strong> found with confidence ≥ 0.8, and the main
+        (largest) face's height as a share of the photo's height.</li>
+      <li><strong>Head direction</strong> — how far the head is turned (left /
+        right), tipped (up / down) and tilted, from the face model's 3D head pose.</li>
+      <li><strong>Eyes</strong> — open or closed, and how far they look away from
+        straight ahead (the model's eye-blink and eye-look scores, 0–1).</li>
+      <li><strong>Framing</strong> — from the body points in frame: full body
+        (ankles), three-quarter (knees), half body (hips), head &amp; shoulders.
+        When no body is found, a large face counts as head &amp; shoulders.</li>
+      <li>Plus resolution and date, as on the other pages.</li>
+    </ul>
+    <h3>The saved copy</h3>
+    <ul>
+      <li>Nothing is downloaded until you press <em>Agree</em>. The files come
+        from this site (our unmodified copy of Google's MediaPipe), are checked
+        against SHA-256 hashes, and are kept in your browser's Cache Storage.</li>
+      <li>On every visit the page compares your copy with the current one. If
+        ours has been updated, yours is shown as out of date and scoring is off
+        until you press <em>Update</em>. <em>Remove</em> deletes it.</li>
+    </ul>
+    <h3>Limits</h3>
+    <ul>
+      <li>It detects faces and bodies; it does <strong>not</strong> recognise or
+        identify anyone, and it doesn't judge sharpness, lighting or expression.</li>
+      <li>The face model is tuned for faces fairly close to the camera; small
+        faces in wide shots can be missed. Photos are analysed at 960 px wide.</li>
+      <li>The rules are a first, transparent guess — they will change.</li>
+    </ul>
+  </div>
+</div>
+
+<footer>
+  <a href="https://github.com/Landsil/Wikimedia-Infobox-Checker" target="_blank"
+     rel="noopener">Wikimedia-Infobox-Checker on GitHub</a>
+</footer>
+<script src="wikiportraits.js"></script>
+<script type="module">
+import { COMMONS_API, WIKIDATA_API, BATCH, chunked, wpApi, apiGet, mwQuery, sameOrCrop,
+         resolveSubjectFromFile, currentLead } from "./history-core.js";
+
+// ---- tunables: the trial rules ----
+const MIN_CONFIDENCE = 0.8;      // face + pose detection and presence
+const MAX_FACES = 5;
+const ANALYSIS_WIDTH = 960;      // a standard Wikimedia thumbnail width
+const PHOTO_CAP = 300;           // depicting photos scored per person
+const LOW_RES_MP = 2.0;
+const STALE_MONTHS = 12;
+const MIN_FACE_SHARE = 0.20;     // main face height ≥ 20% of the photo height
+const MAX_HEAD_DEG = 20;         // turned / tipped at most this many degrees
+const MAX_EYE_LOOK = 0.5;        // every eye-look score below this
+const MAX_BLINK = 0.5;           // both eye-blink scores below this
+const GOOD_FRAMING = new Set(["head & shoulders", "half body"]);
+const VENDOR = "vendor/mediapipe/";
+const CACHE_PREFIX = "score-mediapipe-";
+
+// The checks, in display order: id, label, test(m) on a photo's measurements.
+const CHECKS = [
+  ["one_face", "Exactly one face", m => m.faces === 1],
+  ["face_size", `Face at least ${MIN_FACE_SHARE * 100}% of the photo's height`, m => m.faceShare != null && m.faceShare >= MIN_FACE_SHARE],
+  ["eyes_open", `Eyes open (blink scores under ${MAX_BLINK})`, m => m.blink != null && m.blink < MAX_BLINK],
+  ["facing", `Head facing the camera (turned and tipped ≤ ${MAX_HEAD_DEG}°)`, m => m.yaw != null && Math.abs(m.yaw) <= MAX_HEAD_DEG && Math.abs(m.pitch) <= MAX_HEAD_DEG],
+  ["eyes_camera", `Eyes towards the camera (eye-look scores under ${MAX_EYE_LOOK})`, m => m.look != null && m.look < MAX_EYE_LOOK],
+  ["framing", "Framing: head & shoulders or half body", m => GOOD_FRAMING.has(m.framing)],
+  ["resolution", `At least ${LOW_RES_MP} MP`, m => m.megapixels != null && m.megapixels >= LOW_RES_MP],
+  ["recent", `Taken within the last ${STALE_MONTHS} months`, m => !m.stale],
+];
+
+// ---- helpers ----
+const $ = id => document.getElementById(id);
+const esc = s => (s == null ? "" : String(s)).replace(/[&<>"']/g,
+  c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const link = (url, text) =>
+  url ? `<a href="${esc(url)}" target="_blank" rel="noopener">${esc(text)}</a>` : esc(text);
+const row = (k, v, warn) =>
+  `<div class="row"><span class="k">${k}</span><span class="v${warn ? " warn" : ""}">${v || "&mdash;"}</span></div>`;
+const say = (msg, error) => { const s = $("status"); s.className = error ? "error" : ""; s.textContent = msg; };
+const mb = n => `${(n / 1e6).toFixed(1)} MB`;
+function stripHtml(v) {
+  if (!v) return "";
+  const doc = new DOMParser().parseFromString(String(v), "text/html");
+  doc.body.querySelectorAll("*").forEach(el => el.after(" "));
+  return (doc.body.textContent || "").replace(/\s+/g, " ").trim();
+}
+const cleanDate = v => String(v || "").replace(/\s*date QS:P,\S*/g, "").trim();
+const dateOnly = v => { const m = /^(\d{4}-\d{2}-\d{2})/.exec(String(v || "").trim()); return m ? m[1] : (v || ""); };
+function parseTs(v) {
+  if (!v) return null;
+  const d = new Date(v); if (!isNaN(d)) return d;
+  const m = /(\d{4})-(\d{2})-(\d{2})/.exec(v); return m ? new Date(Date.UTC(+m[1], +m[2] - 1, +m[3])) : null;
+}
+const isStale = (taken, uploaded) => {
+  const when = parseTs(taken) || parseTs(uploaded);
+  return !!when && when < new Date(Date.now() - (365.25 / 12 * STALE_MONTHS) * 86400000);
+};
+function sanitizeHref(href) {
+  href = stripHtml(href).trim();
+  if (href.startsWith("//")) return "https:" + href;
+  if (href.startsWith("/")) return "https://commons.wikimedia.org" + href;
+  return /^https?:\/\//i.test(href) ? href : null;
+}
+function parseAuthor(html) {
+  if (!html) return { name: "", url: null };
+  const m = /<a\b[^>]*\bhref="([^"]+)"[^>]*>([\s\S]*?)<\/a>/i.exec(html);
+  return m ? { name: stripHtml(m[2]) || stripHtml(html), url: sanitizeHref(m[1]) } : { name: stripHtml(html), url: null };
+}
+const wpBadge = (n, u) => window.WikiPortraits ? WikiPortraits.badge(n, u) : "";
+const bareFilename = t => (t || "").replace(/^\s*File\s*:\s*/i, "");
+const wpArticleUrl = (lang, t) => `https://${lang}.wikipedia.org/wiki/${encodeURIComponent(t.replace(/ /g, "_"))}`;
+
+// ===================================================================
+// Saved copy of MediaPipe (Cache Storage), checked against versions.json
+// ===================================================================
+let manifest = null;              // vendor/mediapipe/versions.json
+let mp = null, face = null, pose = null;   // loaded runtime + the two landmarkers
+const cacheName = () => CACHE_PREFIX + manifest.release;
+const TYPES = { mjs: "text/javascript", js: "text/javascript", wasm: "application/wasm", task: "application/octet-stream" };
+
+async function sha256Hex(buf) {
+  const h = await crypto.subtle.digest("SHA-256", buf);
+  return [...new Uint8Array(h)].map(b => b.toString(16).padStart(2, "0")).join("");
+}
+// "ready" | "missing" | { outdated: [old release ids] }
+async function libraryState() {
+  manifest = await (await fetch(VENDOR + "versions.json", { cache: "no-store" })).json();
+  $("lib_size").textContent = `${mb(manifest.total_bytes)} (runtime ${manifest.runtime.version} + 2 models)`;
+  const ours = (await caches.keys()).filter(k => k.startsWith(CACHE_PREFIX));
+  if (ours.includes(cacheName())) {
+    const c = await caches.open(cacheName());
+    const saved = await c.match("versions.json");
+    const savedManifest = saved ? await saved.json() : null;
+    const complete = savedManifest && JSON.stringify(savedManifest.files) === JSON.stringify(manifest.files)
+      && (await Promise.all(manifest.files.map(f => c.match(f.path)))).every(Boolean);
+    if (complete) return "ready";
+  }
+  const old = ours.filter(k => k !== cacheName()).map(k => k.slice(CACHE_PREFIX.length));
+  return old.length ? { outdated: old } : "missing";
+}
+// Download every file from this site, check its SHA-256, save it; then drop
+// any older saved copies. Throws on a mismatch (nothing half-saved is used).
+async function saveLibraries() {
+  const name = cacheName();
+  await caches.delete(name);
+  const c = await caches.open(name);
+  let done = 0;
+  for (const f of manifest.files) {
+    setLibState(`Downloading ${f.name}… (${mb(done)} of ${mb(manifest.total_bytes)})`, "busy");
+    const r = await fetch(f.path, { cache: "no-store" });
+    if (!r.ok) throw new Error(`${f.name}: HTTP ${r.status}`);
+    const buf = await r.arrayBuffer();
+    if (buf.byteLength !== f.bytes || await sha256Hex(buf) !== f.sha256) {
+      await caches.delete(name);
+      throw new Error(`${f.name} doesn't match its SHA-256 in versions.json — not saved.`);
+    }
+    await c.put(f.path, new Response(buf, { headers: { "Content-Type": TYPES[f.name.split(".").pop()] || "application/octet-stream" } }));
+    done += f.bytes;
+  }
+  await c.put("versions.json", new Response(JSON.stringify(manifest), { headers: { "Content-Type": "application/json" } }));
+  for (const k of await caches.keys()) if (k.startsWith(CACHE_PREFIX) && k !== name) await caches.delete(k);
+}
+async function removeLibraries() {
+  for (const k of await caches.keys()) if (k.startsWith(CACHE_PREFIX)) await caches.delete(k);
+  mp = face = pose = null;
+  await refreshLibState();
+}
+// Load the runtime and both landmarkers from the saved copy only.
+async function loadModels() {
+  if (face && pose) return;
+  const c = await caches.open(cacheName());
+  const file = name => manifest.files.find(f => f.name === name);
+  const buf = async name => (await c.match(file(name).path)).arrayBuffer();
+  const blobUrl = async name => URL.createObjectURL(new Blob([await buf(name)], { type: TYPES[name.split(".").pop()] }));
+  mp = await import(await blobUrl("vision_bundle.mjs"));
+  const fileset = { wasmLoaderPath: await blobUrl("vision_wasm_internal.js"), wasmBinaryPath: await blobUrl("vision_wasm_internal.wasm") };
+  face = await mp.FaceLandmarker.createFromOptions(fileset, {
+    baseOptions: { modelAssetBuffer: new Uint8Array(await buf("face_landmarker.task")), delegate: "CPU" },
+    runningMode: "IMAGE", numFaces: MAX_FACES,
+    minFaceDetectionConfidence: MIN_CONFIDENCE, minFacePresenceConfidence: MIN_CONFIDENCE,
+    outputFaceBlendshapes: true, outputFacialTransformationMatrixes: true });
+  pose = await mp.PoseLandmarker.createFromOptions(fileset, {
+    baseOptions: { modelAssetBuffer: new Uint8Array(await buf("pose_landmarker_lite.task")), delegate: "CPU" },
+    runningMode: "IMAGE", numPoses: MAX_FACES,
+    minPoseDetectionConfidence: MIN_CONFIDENCE, minPosePresenceConfidence: MIN_CONFIDENCE });
+}
+
+function setLibState(html, kind) { const el = $("lib_state"); el.className = "lib-state " + (kind || ""); el.innerHTML = html; }
+let libReady = false;
+async function refreshLibState() {
+  libReady = false; $("go").disabled = true;
+  let st;
+  try { st = await libraryState(); }
+  catch (err) { setLibState(`Couldn't read the current version list (${esc(err.message)}).`, "bad"); return; }
+  if (st === "ready") {
+    libReady = true; $("go").disabled = false;
+    setLibState(`Saved in your browser: release <code>${esc(manifest.release)}</code> ✓ `
+      + `<button type="button" class="mini" id="lib_remove">Remove</button>`, "ok");
+  } else if (st === "missing") {
+    setLibState(`Not saved yet. <button type="button" id="lib_agree">Agree and download (${mb(manifest.total_bytes)})</button>`, "need");
+  } else {
+    setLibState(`Your saved copy (<code>${esc(st.outdated.join(", "))}</code>) is <strong>out of date</strong> — the current one is `
+      + `<code>${esc(manifest.release)}</code>. Scoring is off until you update. `
+      + `<button type="button" id="lib_update">Update (${mb(manifest.total_bytes)})</button> `
+      + `<button type="button" class="mini" id="lib_remove">Remove</button>`, "bad");
+  }
+}
+$("lib_state").addEventListener("click", async e => {
+  const id = e.target && e.target.id;
+  if (id === "lib_remove") { await removeLibraries(); return; }
+  if (id !== "lib_agree" && id !== "lib_update") return;
+  try { await saveLibraries(); await refreshLibState(); if (libReady && pendingAuto) { pendingAuto = false; run(); } }
+  catch (err) { setLibState(`Download failed: ${esc(err.message)} `
+    + `<button type="button" id="lib_agree">Try again</button>`, "bad"); }
+});
+
+// ===================================================================
+// The person and their depicting photos (as in Photo Gaps' person mode)
+// ===================================================================
+function parsePerson(raw) {
+  const s = (raw || "").trim();
+  if (!s) return null;
+  let m = s.match(/commons\.wikimedia\.org\/(?:wiki\/|entity\/)?(File:[^?#]+)/i);
+  if (m) return { type: "file", title: decodeURIComponent(m[1]).replace(/_/g, " ") };
+  m = s.match(/([a-z-]+)(?:\.m)?\.wikipedia\.org\/wiki\/([^?#]+)/i);
+  if (m && !/^category:/i.test(decodeURIComponent(m[2]))) return { type: "article", lang: m[1], title: decodeURIComponent(m[2]).replace(/_/g, " ") };
+  if (/^file:/i.test(s)) return { type: "file", title: s.replace(/_/g, " ") };
+  if (/\.(jpe?g|png|gif|tiff?|webp)$/i.test(s)) return { type: "file", title: "File:" + s.replace(/_/g, " ") };
+  return null;
+}
+async function resolvePerson(inp) {
+  if (inp.type === "file") {
+    const r = await resolveSubjectFromFile(inp.title);
+    if (r.error) return r;
+    return { lang: r.lang, article: r.article, qid: r.qid, label: r.label,
+             lead: r.article ? await currentLead(r.lang, r.article) : null };
+  }
+  const d = await apiGet(wpApi(inp.lang), { action: "query", titles: inp.title, prop: "pageprops|pageimages",
+    ppprop: "wikibase_item", piprop: "name", pilicense: "any", redirects: "1" });
+  const p = Object.values((d.query || {}).pages || {})[0];
+  if (!p || "missing" in p) return { error: `No article “${inp.title}” on ${inp.lang}.wikipedia.` };
+  const qid = (p.pageprops || {}).wikibase_item;
+  if (!qid) return { error: `“${p.title}” has no Wikidata item, so its photos can't be found.` };
+  return { lang: inp.lang, article: p.title, qid, lead: p.pageimage ? "File:" + p.pageimage.replace(/_/g, " ") : null };
+}
+async function depictingTitles(qid) {
+  const titles = []; let total = 0;
+  for await (const q of mwQuery(COMMONS_API, { list: "search", srsearch: `haswbstatement:P180=${qid}`,
+      srnamespace: "6", srlimit: "max", srprop: "", srinfo: "totalhits" })) {
+    if (q.searchinfo) total = q.searchinfo.totalhits;
+    for (const r of q.search || []) titles.push(r.title);
+    if (titles.length >= PHOTO_CAP) break;
+  }
+  return { titles: titles.slice(0, PHOTO_CAP), total: Math.max(total, titles.length) };
+}
+async function photoDetails(titles) {
+  const out = {};
+  for (const b of chunked(titles, BATCH))
+    for await (const q of mwQuery(COMMONS_API, { titles: b.join("|"), prop: "imageinfo",
+        iiprop: "timestamp|url|size|extmetadata", iiurlwidth: String(ANALYSIS_WIDTH),
+        iiextmetadatafilter: "Artist|DateTimeOriginal|ImageDescription" }))
+      for (const p of Object.values(q.pages || {})) {
+        const i = (p.imageinfo || [])[0]; if (!i) continue;
+        const ext = i.extmetadata || {}, a = parseAuthor((ext.Artist || {}).value);
+        const w = i.width || null, h = i.height || null;
+        out[p.title] = { title: p.title, page: i.descriptionurl, thumb: i.thumburl || i.url,
+          author: a.name, author_url: a.url, description: stripHtml((ext.ImageDescription || {}).value),
+          taken: cleanDate(stripHtml((ext.DateTimeOriginal || {}).value)) || i.timestamp || "", uploaded: i.timestamp || "",
+          width: w, height: h, megapixels: (w && h) ? Math.round(w * h / 100000) / 10 : null };
+      }
+  return out;
+}
+
+// ===================================================================
+// Analysis of one photo
+// ===================================================================
+// Head angles in degrees from the face model's 4×4 transform (column-major):
+// R[i][j] = data[j * 4 + i]; yaw = asin(-R20), pitch = atan2(R21, R22),
+// roll = atan2(R10, R00).
+function headAngles(matrix) {
+  const d = matrix.data, R = (i, j) => d[j * 4 + i], deg = r => r * 180 / Math.PI;
+  return { yaw: deg(Math.asin(Math.max(-1, Math.min(1, -R(2, 0))))), pitch: deg(Math.atan2(R(2, 1), R(2, 2))), roll: deg(Math.atan2(R(1, 0), R(0, 0))) };
+}
+const boxOf = pts => {
+  let x0 = 1, y0 = 1, x1 = 0, y1 = 0;
+  for (const p of pts) { x0 = Math.min(x0, p.x); y0 = Math.min(y0, p.y); x1 = Math.max(x1, p.x); y1 = Math.max(y1, p.y); }
+  return { x: x0, y: y0, w: x1 - x0, h: y1 - y0 };
+};
+// Framing from the body points actually inside the photo.
+function framingOf(poseLms, faceShare) {
+  if (poseLms) {
+    const inFrame = i => { const p = poseLms[i]; return p && (p.visibility == null || p.visibility >= 0.5) && p.x >= 0 && p.x <= 1 && p.y >= 0 && p.y <= 1; };
+    const any = ids => ids.some(inFrame);
+    if (any([27, 28])) return { framing: "full body", why: "ankles in frame" };
+    if (any([25, 26])) return { framing: "three-quarter", why: "knees in frame" };
+    if (any([23, 24])) return { framing: "half body", why: "hips in frame" };
+    if (any([11, 12])) return { framing: "head & shoulders", why: "shoulders, no hips" };
+  }
+  if (faceShare != null && faceShare >= 0.25) return { framing: "head & shoulders", why: "no body found; large face" };
+  return { framing: "unclear", why: poseLms ? "few body points in frame" : "no body found" };
+}
+async function analyse(photo) {
+  const img = new Image();
+  img.crossOrigin = "anonymous";   // Wikimedia sends Access-Control-Allow-Origin: *
+  img.src = photo.thumb;
+  await img.decode();
+  const fr = face.detect(img), pr = pose.detect(img);
+  const faces = fr.faceLandmarks.map((lms, i) => ({ box: boxOf(lms), i }));
+  faces.sort((a, b) => b.box.w * b.box.h - a.box.w * a.box.h);
+  const main = faces[0];
+  const m = { faces: faces.length, poses: pr.landmarks.length, boxes: faces.map(f => f.box),
+              megapixels: photo.megapixels, stale: isStale(photo.taken, photo.uploaded) };
+  if (main) {
+    m.faceShare = main.box.h;
+    const bs = Object.fromEntries((fr.faceBlendshapes[main.i] || { categories: [] }).categories.map(c => [c.categoryName, c.score]));
+    m.blink = Math.max(bs.eyeBlinkLeft || 0, bs.eyeBlinkRight || 0);
+    m.look = Math.max(...["eyeLookInLeft", "eyeLookOutLeft", "eyeLookUpLeft", "eyeLookDownLeft",
+      "eyeLookInRight", "eyeLookOutRight", "eyeLookUpRight", "eyeLookDownRight"].map(k => bs[k] || 0));
+    const mat = fr.facialTransformationMatrixes[main.i];
+    if (mat) Object.assign(m, headAngles(mat));
+  }
+  // The body nearest the main face (or the first) decides the framing.
+  let body = pr.landmarks[0] || null;
+  if (main && pr.landmarks.length > 1) {
+    const cx = main.box.x + main.box.w / 2;
+    body = pr.landmarks.slice().sort((a, b) => Math.abs(a[0].x - cx) - Math.abs(b[0].x - cx))[0];
+  }
+  Object.assign(m, framingOf(body, m.faceShare));
+  m.people = Math.max(m.faces, m.poses);
+  m.passed = CHECKS.filter(([, , t]) => t(m)).map(([id]) => id);
+  return m;
+}
+
+// ===================================================================
+// Run + render
+// ===================================================================
+let person = null, items = [];   // items: { photo, m | error }
+let pendingAuto = false;
+function renderRules() {
+  $("rules_list").innerHTML = CHECKS.map(([, label]) => `<li>${esc(label)}</li>`).join("")
+    + `<li class="muted">Score = how many of these ${CHECKS.length} a photo passes. Faces and bodies count only at confidence ≥ ${MIN_CONFIDENCE}.</li>`;
+}
+function photoCard(it) {
+  const p = it.photo, m = it.m;
+  const isCurrent = !!person.lead && sameOrCrop(p.title, person.lead);
+  const author = p.author ? `<div class="author">by ${p.author_url ? link(p.author_url, p.author) : esc(p.author)}${wpBadge(p.author, p.author_url)}</div>` : "";
+  const boxes = m ? m.boxes.map((b, i) => `<div class="face-box${i === 0 ? " main" : ""}" style="left:${b.x * 100}%;top:${b.y * 100}%;width:${b.w * 100}%;height:${b.h * 100}%"></div>`).join("") : "";
+  const head = `<div class="row"><span class="v">${link(p.page, p.title)}`
+    + `<button type="button" class="mini copy-file" data-file="${esc(bareFilename(p.title))}">Copy</button>${author}</span></div>`;
+  let body;
+  if (!m) body = row("Analysis", esc(it.error || "not analysed"), true);
+  else {
+    const score = `<span class="badge ${m.passed.length >= CHECKS.length - 1 ? "good" : m.passed.length >= CHECKS.length / 2 ? "old" : "low-res"}">score ${m.passed.length}/${CHECKS.length}</span>`;
+    const deg = v => v == null ? "—" : `${Math.round(Math.abs(v))}°`;
+    const checks = CHECKS.map(([id, label]) => `<li class="${m.passed.includes(id) ? "pass" : "fail"}">${esc(label)}</li>`).join("");
+    body = `<div class="row">${isCurrent ? `<span class="badge current">current infobox photo</span> ` : ""}${score}</div>
+      ${row("Faces", m.faces ? `${m.faces}${m.people > m.faces ? ` (${m.people} people)` : ""}` : "none found", m.faces !== 1)}
+      ${m.faceShare != null ? row("Face height", `${Math.round(m.faceShare * 100)}% of the photo`, m.faceShare < MIN_FACE_SHARE) : ""}
+      ${m.yaw != null ? row("Head", `turned ${deg(m.yaw)} · tipped ${deg(m.pitch)} · tilted ${deg(m.roll)}`) : ""}
+      ${m.blink != null ? row("Eyes", `${m.blink < MAX_BLINK ? "open" : "closed"} (blink ${m.blink.toFixed(2)}) · look-away ${m.look.toFixed(2)}`) : ""}
+      ${row("Framing", `${esc(m.framing)} <span class="muted">(${esc(m.why)})</span>`)}
+      ${row("Resolution", p.megapixels != null ? `${p.megapixels} MP (${p.width}×${p.height})` : "", p.megapixels == null || p.megapixels < LOW_RES_MP)}
+      ${row("Date taken", esc(dateOnly(p.taken)), m.stale)}
+      <ul class="checks">${checks}</ul>`;
+  }
+  return `<div class="gap-card${isCurrent ? " is-current" : ""}">
+    <div class="photo score-photo"><img src="${esc(p.thumb)}" alt="" loading="lazy">${boxes}</div>
+    <div class="gap-data meta">${head}${body}</div>
+  </div>`;
+}
+function renderResults(done) {
+  const when = it => { const d = parseTs(it.photo.taken) || parseTs(it.photo.uploaded); return d ? d.getTime() : -Infinity; };
+  const sorted = done
+    ? items.slice().sort((a, b) => ((b.m ? b.m.passed.length : -1) - (a.m ? a.m.passed.length : -1)) || (when(b) - when(a)))
+    : items;
+  $("results").innerHTML = sorted.length ? `<div class="gap-grid">${sorted.map(photoCard).join("")}</div>` : "";
+}
+async function run() {
+  if (!libReady) { pendingAuto = true; say("Agree to save the detection files first (above)."); return; }
+  const inp = parsePerson($("q").value);
+  if (!inp) { say("Enter a link to the person's article on a Wikipedia, or a Commons photo of them.", true); return; }
+  $("go").disabled = true; $("results").innerHTML = ""; $("subject").innerHTML = ""; items = [];
+  try {
+    say("Loading the detection models from your saved copy…");
+    await loadModels();
+    say("Resolving the person…");
+    const r = await resolvePerson(inp);
+    if (r.error) { say(r.error, true); return; }
+    if (!r.label) {
+      const ent = (await apiGet(WIKIDATA_API, { action: "wbgetentities", ids: r.qid, props: "labels", languages: "en" })).entities || {};
+      r.label = ((ent[r.qid] || {}).labels || {}).en ? ent[r.qid].labels.en.value : (r.article || r.qid);
+    }
+    person = r;
+    const art = r.article ? link(wpArticleUrl(r.lang, r.article), r.label) + ` (${esc(r.lang.toUpperCase())})` : esc(r.label);
+    $("subject").innerHTML = `<div class="tl-person">${art} · ${link("https://www.wikidata.org/wiki/" + r.qid, r.qid)}</div>`;
+    say("Finding photos that depict them…");
+    const { titles, total } = await depictingTitles(r.qid);
+    const info = await photoDetails(titles);
+    const photos = titles.map(t => info[t]).filter(Boolean);
+    if (window.WikiPortraits) await WikiPortraits.ready;
+    const t0 = performance.now();
+    for (let i = 0; i < photos.length; i++) {
+      say(`Analysing photo ${i + 1} of ${photos.length}…`);
+      const it = { photo: photos[i] };
+      try { it.m = await analyse(photos[i]); } catch (err) { it.error = err.message || String(err); }
+      items.push(it);
+      if (i % 6 === 5 || i === photos.length - 1) renderResults(false);
+    }
+    renderResults(true);
+    const ok = items.filter(it => it.m);
+    const top = ok.filter(it => it.m.passed.length === CHECKS.length).length;
+    const secs = ((performance.now() - t0) / 1000).toFixed(1);
+    say(`${ok.length} photo(s) of ${r.label} analysed in ${secs} s${total > photos.length ? ` (the first ${photos.length} of ${total})` : ""}; `
+      + `${top} pass every check. Best first.` + (ok.length < photos.length ? ` ${photos.length - ok.length} couldn't be analysed.` : ""));
+  } catch (err) {
+    say("Error: " + (err.message || err), true);
+  } finally {
+    $("go").disabled = !libReady;
+  }
+}
+
+// ---- events ----
+$("f").addEventListener("submit", e => { e.preventDefault(); run(); });
+$("results").addEventListener("click", async e => {
+  const b = e.target.closest(".copy-file"); if (!b) return;
+  let ok = false; try { await navigator.clipboard.writeText(b.dataset.file); ok = true; } catch (_) {}
+  b.textContent = ok ? "Copied" : "Copy failed"; setTimeout(() => { b.textContent = "Copy"; }, 1500);
+});
+$("copy_url").addEventListener("click", async () => {
+  const url = `${location.origin}${location.pathname}?q=${encodeURIComponent($("q").value.trim())}&search=1`;
+  const btn = $("copy_url"), orig = btn.textContent;
+  try { await navigator.clipboard.writeText(url); btn.textContent = "URL copied!"; } catch (_) { btn.textContent = "Copy failed"; }
+  setTimeout(() => { btn.textContent = orig; }, 1500);
+});
+const setAbout = open => { $("about_overlay").hidden = !open; };
+$("about_btn").addEventListener("click", () => setAbout(true));
+$("about_close").addEventListener("click", () => setAbout(false));
+$("about_overlay").addEventListener("click", e => { if (e.target === $("about_overlay")) setAbout(false); });
+document.addEventListener("keydown", e => { if (e.key === "Escape" && !$("about_overlay").hidden) setAbout(false); });
+
+renderRules();
+const params = new URLSearchParams(location.search);
+if (params.get("q")) $("q").value = params.get("q");
+await refreshLibState();
+if (params.get("search") === "1") run();
+</script>
+</body>
+</html>

@@ -1,0 +1,75 @@
+# Weekly check for a newer MediaPipe (runtime + models) for the trial photo
+# score page. Never changes main: a newer release (at least 14 days old
+# upstream — see scripts/sync-mediapipe.mjs) is downloaded, verified and
+# committed to its own branch, and an issue assigned to Landsil links it for
+# review. Merging that branch is what updates the site; visitors' saved copies
+# then show "out of date" until they press Update.
+name: Check MediaPipe version
+run-name: "Check MediaPipe version (${{ github.event_name == 'schedule' && 'weekly' || 'manual' }})"
+
+on:
+  schedule:
+    - cron: "41 5 * * 3"    # Wednesdays 05:41 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write     # push the update branch
+  issues: write       # open the review issue
+
+concurrency:
+  group: check-mediapipe
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          package-manager-cache: false   # no dependencies to cache
+
+      - name: Look for a newer release (download it if there is one)
+        id: sync
+        run: node scripts/sync-mediapipe.mjs --sync
+
+      - name: Put it on a branch and open a review issue
+        if: steps.sync.outputs.changed == '1'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE: ${{ steps.sync.outputs.release }}
+          PREVIOUS: ${{ steps.sync.outputs.previous }}
+        run: |
+          branch="mediapipe-update/${RELEASE}"
+          title="MediaPipe update available: ${RELEASE}"
+          if git ls-remote --exit-code --heads origin "$branch" >/dev/null; then
+            echo "Branch $branch already exists — nothing new to push."
+          else
+            git config user.name "github-actions[bot]"
+            git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
+            git checkout -b "$branch"
+            git add vendor/mediapipe
+            git commit -m "vendor: MediaPipe ${RELEASE} (was ${PREVIOUS:-none})"
+            git push origin "$branch"
+          fi
+          if [ -n "$(gh issue list --state open --search "in:title \"$title\"" --json number --jq '.[0].number')" ]; then
+            echo "An open issue already tracks this release."; exit 0
+          fi
+          compare="https://github.com/${GITHUB_REPOSITORY}/compare/main...${branch}"
+          gh issue create --assignee Landsil --title "$title" --body "$(cat <<EOF
+          A newer MediaPipe release (at least 14 days old upstream) is ready on branch \`${branch}\`.
+
+          - Was: \`${PREVIOUS:-none}\`
+          - Now: \`${RELEASE}\`
+          - Changes: ${compare}
+          - Details (sources, sizes, SHA-256): \`vendor/mediapipe/versions.json\` on that branch
+
+          To accept it: review the compare link, check the release notes upstream
+          (https://www.npmjs.com/package/@mediapipe/tasks-vision), then merge the branch into \`main\`.
+          Visitors' saved copies will show "out of date" until they press Update.
+          To skip it: close this issue and delete the branch.
+          EOF
+          )"
