@@ -68,12 +68,12 @@
     <div class="filter-item">
       <button type="button" id="check_other" class="toggle" aria-pressed="false">
         Check other Wikipedias</button>
-      <span class="filter-note">Look up the photo on every other-language article
-        about each person (about one request per Wikipedia).</span>
+      <span class="filter-note">Check the photo on each person's articles on the 20
+        largest Wikipedias: missing, poor or good.</span>
     </div>
     <div class="filter-item">
       <button type="button" id="only_other_gaps" class="toggle" aria-pressed="false" disabled>
-        Only missing a photo on another Wikipedia</button>
+        Only missing or poor photo on another Wikipedia</button>
       <span class="filter-note">Needs "Check other Wikipedias".</span>
     </div>
   </div>
@@ -135,12 +135,13 @@
         infobox photo, each with a button to fetch the previous photo by a
         different author.</li>
       <li><strong>Check other Wikipedias</strong> (off) — the right-hand side compares
-        one article per person (English if there is one). This looks up the lead
-        photo on <em>every</em> other-language Wikipedia article about each person —
-        about one request per Wikipedia, so it can take a minute — and shows which
-        have none, each language linking to that article's editor.</li>
-      <li><strong>Only missing a photo on another Wikipedia</strong> (off) — after
-        checking, show only people with at least one such article.</li>
+        one article per person (English if there is one). This checks the person's
+        articles on the <strong>20 largest Wikipedias</strong> (by active users):
+        which have <em>no photo</em>, and which photo each of the others uses, with
+        its size and date — red where it fails the "good" rule below. Each
+        language links to that article's editor. Usually ~20 requests.</li>
+      <li><strong>Only missing or poor photo on another Wikipedia</strong> (off) —
+        after checking, show only people with at least one such article.</li>
     </ul>
     <p>"Show no-depicts photos" and "Show category photos already in use" are
     exclusive views: turning one on replaces the comparison results and disables
@@ -150,8 +151,9 @@
       <li><strong>Wikidata image (P18)</strong> — the person's image on Wikidata, or
         <span class="flag">none set</span>. Many Wikipedias' infoboxes take their
         photo from it, so adding one there can fill several at once.</li>
-      <li><strong>Other Wikipedias</strong> — how many other-language articles there
-        are; after "Check other Wikipedias", which of them have no photo.</li>
+      <li><strong>Other top-20 Wikipedias</strong> — how many of the person's other
+        articles are on the 20 largest Wikipedias (and how many Wikipedias in all);
+        after "Check other Wikipedias", which have no photo, a poor one or a good one.</li>
     </ul>
 
     <h3>What "good" means</h3>
@@ -211,6 +213,13 @@ const MAX_RETRIES = 6;
 const BACKOFF_BASE = 1.0;      // seconds; doubled each retry when no Retry-After
 const MAX_DEPTH = 5;           // deepest "Subcategory depth" accepted
 const MAX_TREE_FILES = 10000;  // files read from a category tree before stopping
+// "Check other Wikipedias" looks at these 20: the largest by ACTIVE USERS
+// (siteinfo statistics, 2026-10-15). By article count ceb, arz, war and ce would
+// be in the top 20, but they are mostly bot-made place/species stubs with only
+// ~80–300 active users; he, id, ko and tr take their places.
+const TOP_WIKIS = new Set(["enwiki", "eswiki", "frwiki", "dewiki", "itwiki", "jawiki", "ruwiki",
+  "zhwiki", "plwiki", "nlwiki", "fawiki", "ptwiki", "hewiki", "arwiki", "idwiki", "kowiki",
+  "ukwiki", "svwiki", "viwiki", "trwiki"]);
 const NON_WIKIPEDIA_WIKIS = new Set([
   "commonswiki", "wikidatawiki", "specieswiki", "metawiki",
   "mediawikiwiki", "incubatorwiki", "sourceswiki", "foundationwiki",
@@ -672,6 +681,44 @@ function firstP18Filename(claims) {
   return null;
 }
 
+// Just enough to judge a photo good / poor: size and date taken (extmetadata
+// filtered to DateTimeOriginal — far lighter than the full metadata). Commons
+// first; files it doesn't have are local to a wiki and are asked there
+// (`localSites`: file -> site that uses it). Returns Map file -> info.
+async function fetchPhotoQuality(titles, localSites, onProgress) {
+  const out = new Map();
+  const ask = async (api, list) => {
+    for (const batch of chunked(list)) {
+      const params = { titles: batch.join("|"), prop: "imageinfo", iiprop: "size|timestamp|url|extmetadata",
+                       iiextmetadatafilter: "DateTimeOriginal" };
+      for await (const query of mwQuery(api, params)) {
+        const alias = {};                    // localised "Datei:" etc. back to the requested "File:"
+        for (const n of query.normalized || []) alias[n.to] = n.from;
+        for (const page of Object.values(query.pages || {})) {
+          const info = (page.imageinfo || [])[0];
+          if (!info) continue;
+          const w = info.width || null, h = info.height || null;
+          out.set(alias[page.title] || page.title, {
+            descriptionurl: info.descriptionurl || "", width: w, height: h,
+            megapixels: (w && h) ? Math.round(w * h / 100000) / 10 : null,
+            taken: stripHtml(((info.extmetadata || {}).DateTimeOriginal || {}).value) || info.timestamp || "",
+            timestamp: info.timestamp || "",
+          });
+        }
+      }
+    }
+  };
+  if (onProgress) onProgress(`Checking ${titles.length} photo(s) on Commons…`);
+  await ask(COMMONS_API, titles);
+  const local = {};
+  for (const t of titles) if (!out.has(t) && localSites.get(t)) (local[localSites.get(t)] = local[localSites.get(t)] || []).push(t);
+  for (const [site, list] of Object.entries(local)) {
+    if (onProgress) onProgress(`Checking ${list.length} local photo(s) on ${wikiLang(site)}.wikipedia…`);
+    try { await ask(wikipediaApiUrl(site), list); } catch (_) { skippedWikis.add(wikiLang(site)); }
+  }
+  return out;
+}
+
 async function fetchFilesImageinfo(titles) {
   const result = {};
   for (const batch of chunked(titles)) {
@@ -844,7 +891,9 @@ async function runSearch(category, startDate, endDate, depth, onProgress) {
       depicted_label: person.label || qid, depicted_qid: qid,
       depicted_p18: person.p18 || null,
       // Wikipedia articles other than the one compared on the right.
-      other_wikis: (person.wikis || []).filter(([s, t]) => !(s === person.site && t === person.article_title)),
+      other_wikis: (person.wikis || [])
+        .filter(([s, t]) => TOP_WIKIS.has(s) && !(s === person.site && t === person.article_title)),
+      wikis_total: (person.wikis || []).length,
       wikidata_url: `https://www.wikidata.org/wiki/${qid}`,
       date_taken: f.taken, date_uploaded: f.timestamp, description: f.description,
       author: f.author, author_url: f.author_url,
@@ -992,17 +1041,42 @@ function p18Row(c) {
   const same = "File:" + c.depicted_p18.replace(/_/g, " ") === c.title;
   return row("Wikidata image (P18)", link(page, c.depicted_p18) + (same ? " (this photo)" : ""));
 }
-// Other-language Wikipedia articles about the person: just the count until
-// "Check other Wikipedias" has looked up their photos, then which have none.
+// Other-language articles about the person on the TOP_WIKIS: just the count
+// until "Check other Wikipedias" has looked up their photos; then which have
+// no photo, which a poor one (grouped by file, with what's wrong), which a good
+// one. Each language links to that article's editor.
+// A date for a one-line summary: YYYY-MM-DD when there is one, else the first
+// year in free text ("Taken on 2 March 2011, … (according to Exif data)" -> 2011).
+const shortDate = v => {
+  const s = dateOnly(v);
+  if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+  const y = /\b(1[89]|20)\d{2}\b/.exec(s || "");
+  return y ? y[0] : (s || "").slice(0, 20);
+};
 function otherWikisRow(c) {
   const n = c.other_wikis.length;
-  if (!n) return row("Other Wikipedias", "none");
-  const count = `${n} article${n === 1 ? "" : "s"}`;
-  if (!otherShown || !otherLead) return row("Other Wikipedias", count);
-  const gaps = otherGaps(c);
-  if (!gaps.length) return row("Other Wikipedias", `${count} · all have a photo`);
-  const links = gaps.map(([s, t]) => link(wikipediaEditUrl(s, t), wikiLang(s).toUpperCase())).join(", ");
-  return row("Other Wikipedias", `${count} · no photo on ${links}`, true);
+  const all = c.wikis_total > n + 1 ? ` (${c.wikis_total} Wikipedias in all)` : "";
+  if (!n) return row("Other top-20 Wikipedias", "none" + all);
+  const count = `${n} article${n === 1 ? "" : "s"}` + all;
+  if (!otherShown || !otherLead) return row("Other top-20 Wikipedias", count);
+  const langs = list => list.map(([s, t]) => link(wikipediaEditUrl(s, t), wikiLang(s).toUpperCase())).join(", ");
+  const st = otherStatus(c);
+  const parts = [count];
+  if (st.none.length) parts.push(`<span class="warn">no photo: ${langs(st.none)}</span>`);
+  const now = new Date();
+  for (const [file, arts] of st.poor) {
+    // Only what's wrong is red: the size if under LOW_RES_MP (or unknown), the date if stale.
+    const q = otherInfo.get(file);
+    const low = q.megapixels == null || q.megapixels < LOW_RES_MP;
+    const old = isStale(q.taken, q.timestamp, now);
+    const size = q.megapixels != null ? `${q.megapixels} MP` : "size unknown";
+    const when = shortDate(q.taken);
+    parts.push(`${langs(arts)}: ${link(q.descriptionurl, bareFilename(file))} (`
+      + (low ? `<span class="warn">${esc(size)}</span>` : esc(size))
+      + (when ? " · " + (old ? `<span class="warn">${esc(when)}</span>` : esc(when)) : "") + ")");
+  }
+  if (st.good.length) parts.push(`good photo: ${langs(st.good)}`);
+  return row("Other top-20 Wikipedias", parts.join("<br>"));
 }
 
 function candidateMeta(c) {
@@ -1217,9 +1291,29 @@ let allCurrent = [];
 // "Check other Wikipedias": lead image per "site\ntitle" (null = no photo),
 // filled on demand once per search; null until checked.
 let otherLead = null;
-let otherShown = false;   // the toggle is on (switching it off keeps otherLead for next time)
-const otherGaps = c => (otherShown && otherLead)
-  ? c.other_wikis.filter(([s, t]) => otherLead.get(`${s}\n${t}`) === null) : [];
+let otherInfo = new Map();   // lead file -> { megapixels, taken, … } for judging it
+let otherShown = false;      // the toggle is on (switching it off keeps the data for next time)
+// Each other-language article: no photo, a poor one (by file), or a good one —
+// "good" by the same rule as the comparison (currentIsGood). Articles whose
+// wiki was unreachable, or whose photo couldn't be read, are left out.
+function otherStatus(c) {
+  const none = [], poor = new Map(), good = [];
+  if (!otherShown || !otherLead) return { none, poor, good };
+  const now = new Date();
+  for (const a of c.other_wikis) {
+    const key = `${a[0]}\n${a[1]}`;
+    if (!otherLead.has(key)) continue;
+    const file = otherLead.get(key);
+    if (file === null) { none.push(a); continue; }
+    const q = otherInfo.get(file);
+    if (!q) continue;
+    const ok = !isStale(q.taken, q.timestamp, now) && q.megapixels != null && q.megapixels >= LOW_RES_MP;
+    if (ok) good.push(a); else poor.set(file, [...(poor.get(file) || []), a]);
+  }
+  return { none, poor, good };
+}
+// Articles with no photo or a poor one (for the filter and the status line).
+const otherGaps = c => { const s = otherStatus(c); return [...s.none, ...[...s.poor.values()].flat()]; };
 const pressed = id => $(id).getAttribute("aria-pressed") === "true";
 
 // Current infobox photo is "good": present, fresh, and confirmed high-res.
@@ -1318,7 +1412,7 @@ function renderResults() {
   if (allCurrent.length) msg += ` ${allCurrent.length} are already in use.`;
   if (otherShown && otherLead) {
     const n = allResults.filter(r => otherGaps(r.candidate).length).length;
-    msg += ` ${n} depicted person(s) have no photo on at least one other Wikipedia.`;
+    msg += ` ${n} depicted person(s) have a missing or poor photo on another top-20 Wikipedia.`;
   }
   $("status").textContent = msg + skipNote;
 }
@@ -1346,8 +1440,14 @@ $("check_other").addEventListener("click", async () => {
   if (!otherLead) {
     btn.disabled = true;
     try {
+      const say = msg => { $("status").textContent = msg; };
       const articles = allResults.flatMap(r => r.candidate.other_wikis);
-      otherLead = await fetchArticleLeadImages(articles, msg => { $("status").textContent = msg; });
+      otherLead = await fetchArticleLeadImages(articles, say);
+      // Each distinct lead photo once (the same Commons file is usually reused
+      // across languages); remember a wiki that uses it, for wiki-local files.
+      const localSites = new Map();
+      for (const [key, file] of otherLead) if (file && !localSites.has(file)) localSites.set(file, key.split("\n")[0]);
+      otherInfo = await fetchPhotoQuality([...localSites.keys()], localSites, say);
     } finally { btn.disabled = false; }
   }
   btn.setAttribute("aria-pressed", "true");
@@ -1433,7 +1533,7 @@ $("f").addEventListener("submit", async e => {
       category, $("start_date").value, $("end_date").value, depthValue(),
       msg => { status.textContent = msg; });
     allResults = search.results;
-    otherLead = null; otherShown = false;                // "Check other Wikipedias" is per search
+    otherLead = null; otherInfo = new Map(); otherShown = false;   // "Check other Wikipedias" is per search
     $("check_other").setAttribute("aria-pressed", "false");
     $("only_other_gaps").setAttribute("aria-pressed", "false");
     allNoDepicts = search.noDepicts;
