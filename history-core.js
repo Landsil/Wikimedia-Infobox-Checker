@@ -26,7 +26,12 @@ const NON_WIKIPEDIA_WIKIS = new Set([
 // ---- helpers ----
 export const sleep = ms => new Promise(r => setTimeout(r, ms));
 export function chunked(a, n = BATCH) { const o = []; for (let i = 0; i < a.length; i += n) o.push(a.slice(i, i + n)); return o; }
-const wikiLang = site => site.slice(0, -4).replace(/_/g, "-");   // "enwiki" -> "en"
+// Wikidata site id -> Wikipedia host prefix. Usually the id minus "wiki" with
+// "_" -> "-"; the one exception among the 364 Wikipedias in Meta's sitematrix
+// (checked 2026-10-15) is be_x_oldwiki, which lives at be-tarask.wikipedia.org
+// (be-x-old.wikipedia.org redirects without CORS headers, so browser calls fail).
+const SITE_HOST_EXCEPTIONS = { be_x_oldwiki: "be-tarask" };
+const wikiLang = site => SITE_HOST_EXCEPTIONS[site] || site.slice(0, -4).replace(/_/g, "-");   // "enwiki" -> "en"
 export const wpApi = lang => `https://${lang}.wikipedia.org/w/api.php`;
 
 // Crop helpers (shared behaviour with the other tools).

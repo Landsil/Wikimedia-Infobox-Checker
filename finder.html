@@ -65,6 +65,17 @@
       <span class="filter-note">Category photos that are an article's current
         infobox photo — with a button to fetch the previous one.</span>
     </div>
+    <div class="filter-item">
+      <button type="button" id="check_other" class="toggle" aria-pressed="false">
+        Check other Wikipedias</button>
+      <span class="filter-note">Look up the photo on every other-language article
+        about each person (about one request per Wikipedia).</span>
+    </div>
+    <div class="filter-item">
+      <button type="button" id="only_other_gaps" class="toggle" aria-pressed="false" disabled>
+        Only missing a photo on another Wikipedia</button>
+      <span class="filter-note">Needs "Check other Wikipedias".</span>
+    </div>
   </div>
   <div id="head" class="pair-head" hidden>
     <div class="h-left">Unused Commons photo (new candidate)</div>
@@ -123,9 +134,25 @@
         showing <em>only</em> category photos that <em>are</em> an article's current
         infobox photo, each with a button to fetch the previous photo by a
         different author.</li>
+      <li><strong>Check other Wikipedias</strong> (off) — the right-hand side compares
+        one article per person (English if there is one). This looks up the lead
+        photo on <em>every</em> other-language Wikipedia article about each person —
+        about one request per Wikipedia, so it can take a minute — and shows which
+        have none, each language linking to that article's editor.</li>
+      <li><strong>Only missing a photo on another Wikipedia</strong> (off) — after
+        checking, show only people with at least one such article.</li>
     </ul>
-    <p>The last two are exclusive views: turning one on replaces the comparison
-    results and disables the other toggles.</p>
+    <p>"Show no-depicts photos" and "Show category photos already in use" are
+    exclusive views: turning one on replaces the comparison results and disables
+    the other toggles.</p>
+    <h3>Per candidate</h3>
+    <ul>
+      <li><strong>Wikidata image (P18)</strong> — the person's image on Wikidata, or
+        <span class="flag">none set</span>. Many Wikipedias' infoboxes take their
+        photo from it, so adding one there can fill several at once.</li>
+      <li><strong>Other Wikipedias</strong> — how many other-language articles there
+        are; after "Check other Wikipedias", which of them have no photo.</li>
+    </ul>
 
     <h3>What "good" means</h3>
     <p>A photo counts as good when it is present, <strong>not stale</strong> (taken
@@ -388,7 +415,12 @@ function pickWikipediaSitelink(sitelinks) {
   }
   return [null, null];
 }
-const wikiLang = site => site.slice(0, -4).replace(/_/g, "-");     // "enwiki" -> "en"
+// Wikidata site id -> Wikipedia host prefix. Usually the id minus "wiki" with
+// "_" -> "-"; the one exception among the 364 Wikipedias in Meta's sitematrix
+// (checked 2026-10-15) is be_x_oldwiki, which lives at be-tarask.wikipedia.org
+// (be-x-old.wikipedia.org redirects without CORS headers, so browser calls fail).
+const SITE_HOST_EXCEPTIONS = { be_x_oldwiki: "be-tarask" };
+const wikiLang = site => SITE_HOST_EXCEPTIONS[site] || site.slice(0, -4).replace(/_/g, "-");   // "enwiki" -> "en"
 const wikipediaArticleUrl = (site, title) =>
   `https://${wikiLang(site)}.wikipedia.org/wiki/${encodeURIComponent(title.replace(/ /g, "_"))}`;
 const wikipediaEditUrl = (site, title) =>
@@ -404,12 +436,14 @@ const wikipediaApiUrl = site => `https://${wikiLang(site)}.wikipedia.org/w/api.p
 let skippedWikis = new Set();
 // How much of the category tree the last search covered (see renderResults).
 let treeScope = { categories: 1, truncated: false };
-async function fetchArticleLeadImages(articles) {
+async function fetchArticleLeadImages(articles, onProgress) {
   const bySite = {};
   for (const [site, title] of articles) (bySite[site] = bySite[site] || new Set()).add(title);
 
   const lead = new Map();
-  for (const [site, titleSet] of Object.entries(bySite)) {
+  const sites = Object.keys(bySite);
+  for (const [i, [site, titleSet]] of Object.entries(bySite).entries()) {
+    if (onProgress) onProgress(`Checking Wikipedia ${i + 1}/${sites.length} (${wikiLang(site)})…`);
     const api = wikipediaApiUrl(site);
     try {
       for (const batch of chunked([...titleSet].sort())) {
@@ -749,6 +783,10 @@ async function fetchPersonData(files) {
       persons[qid].p18 = firstP18Filename(claims);
       persons[qid].site = site;
       persons[qid].article_title = articleTitle;
+      // Every Wikipedia article about the person (for "Other Wikipedias").
+      persons[qid].wikis = Object.entries(entity.sitelinks || {})
+        .filter(([s]) => s.endsWith("wiki") && !NON_WIKIPEDIA_WIKIS.has(s))
+        .map(([s, l]) => [s, l.title]);
     }
   }
 
@@ -804,6 +842,9 @@ async function runSearch(category, startDate, endDate, depth, onProgress) {
     const candidate = {
       title: f.title, file_page: f.descriptionurl, thumb: f.thumb,
       depicted_label: person.label || qid, depicted_qid: qid,
+      depicted_p18: person.p18 || null,
+      // Wikipedia articles other than the one compared on the right.
+      other_wikis: (person.wikis || []).filter(([s, t]) => !(s === person.site && t === person.article_title)),
       wikidata_url: `https://www.wikidata.org/wiki/${qid}`,
       date_taken: f.taken, date_uploaded: f.timestamp, description: f.description,
       author: f.author, author_url: f.author_url,
@@ -943,10 +984,33 @@ function searchMeta(title) {
   </div>`;
 }
 
+// Wikidata image (P18). Many Wikipedias' infoboxes take their photo from it, so
+// a missing P18 can leave several of them without one.
+function p18Row(c) {
+  if (!c.depicted_p18) return row("Wikidata image (P18)", "none set", true);
+  const page = "https://commons.wikimedia.org/wiki/File:" + encodeURIComponent(c.depicted_p18.replace(/ /g, "_"));
+  const same = "File:" + c.depicted_p18.replace(/_/g, " ") === c.title;
+  return row("Wikidata image (P18)", link(page, c.depicted_p18) + (same ? " (this photo)" : ""));
+}
+// Other-language Wikipedia articles about the person: just the count until
+// "Check other Wikipedias" has looked up their photos, then which have none.
+function otherWikisRow(c) {
+  const n = c.other_wikis.length;
+  if (!n) return row("Other Wikipedias", "none");
+  const count = `${n} article${n === 1 ? "" : "s"}`;
+  if (!otherShown || !otherLead) return row("Other Wikipedias", count);
+  const gaps = otherGaps(c);
+  if (!gaps.length) return row("Other Wikipedias", `${count} · all have a photo`);
+  const links = gaps.map(([s, t]) => link(wikipediaEditUrl(s, t), wikiLang(s).toUpperCase())).join(", ");
+  return row("Other Wikipedias", `${count} · no photo on ${links}`, true);
+}
+
 function candidateMeta(c) {
   return `<div class="meta left">
     ${candidateFileRow(c.file_page, c.title, c.author, c.author_url)}
     ${row("Depicted", link(c.wikidata_url, c.depicted_label + " (" + c.depicted_qid + ")"))}
+    ${p18Row(c)}
+    ${otherWikisRow(c)}
     ${row("Resolution", resolution(c), c.low_res)}
     ${row("Date taken", esc(dateOnly(c.date_taken)))}
     ${row("Date uploaded", esc(dateOnly(c.date_uploaded)))}
@@ -1150,6 +1214,12 @@ document.addEventListener("keydown", e => {
 let allResults = [];
 let allNoDepicts = [];
 let allCurrent = [];
+// "Check other Wikipedias": lead image per "site\ntitle" (null = no photo),
+// filled on demand once per search; null until checked.
+let otherLead = null;
+let otherShown = false;   // the toggle is on (switching it off keeps otherLead for next time)
+const otherGaps = c => (otherShown && otherLead)
+  ? c.other_wikis.filter(([s, t]) => otherLead.get(`${s}\n${t}`) === null) : [];
 const pressed = id => $(id).getAttribute("aria-pressed") === "true";
 
 // Current infobox photo is "good": present, fresh, and confirmed high-res.
@@ -1185,6 +1255,7 @@ const currentGoodRedundant = r => currentIsGood(r.infobox);
 function isHidden(r) {
   if (pressed("hide_same_author") && sameAuthorRedundant(r)) return true;
   if (pressed("hide_good_current") && currentGoodRedundant(r)) return true;
+  if (pressed("only_other_gaps") && !otherGaps(r.candidate).length) return true;
   return false;
 }
 
@@ -1196,6 +1267,8 @@ function renderResults() {
   const exclusive = showND || showCur;
   $("hide_same_author").disabled = exclusive;
   $("hide_good_current").disabled = exclusive;
+  $("check_other").disabled = exclusive;
+  $("only_other_gaps").disabled = exclusive || !otherShown;
   // The two exclusive views are mutually exclusive too.
   $("show_no_depicts").disabled = showCur;
   $("show_current").disabled = showND;
@@ -1243,6 +1316,10 @@ function renderResults() {
   if (hiddenCount) msg += ` Showing ${shown.length}; ${hiddenCount} hidden by filters.`;
   if (allNoDepicts.length) msg += ` ${allNoDepicts.length} more have no depicts statement.`;
   if (allCurrent.length) msg += ` ${allCurrent.length} are already in use.`;
+  if (otherShown && otherLead) {
+    const n = allResults.filter(r => otherGaps(r.candidate).length).length;
+    msg += ` ${n} depicted person(s) have no photo on at least one other Wikipedia.`;
+  }
   $("status").textContent = msg + skipNote;
 }
 
@@ -1256,6 +1333,26 @@ bindToggle("hide_same_author");
 bindToggle("hide_good_current");
 bindToggle("show_no_depicts");
 bindToggle("show_current");
+bindToggle("only_other_gaps");
+// On first switch-on per search, look up every other-language article's photo
+// (one batched request per Wikipedia, up to 50 articles each), then re-render.
+$("check_other").addEventListener("click", async () => {
+  const btn = $("check_other");
+  if (pressed("check_other")) {                         // switching off: hide, keep the data
+    btn.setAttribute("aria-pressed", "false");
+    $("only_other_gaps").setAttribute("aria-pressed", "false");
+    otherShown = false; renderResults(); return;
+  }
+  if (!otherLead) {
+    btn.disabled = true;
+    try {
+      const articles = allResults.flatMap(r => r.candidate.other_wikis);
+      otherLead = await fetchArticleLeadImages(articles, msg => { $("status").textContent = msg; });
+    } finally { btn.disabled = false; }
+  }
+  btn.setAttribute("aria-pressed", "true");
+  otherShown = true; renderResults();
+});
 
 // "Find previous photo by a different author" — fetched on click (the revision
 // history walk is the expensive part, so it stays out of the main search).
@@ -1336,6 +1433,9 @@ $("f").addEventListener("submit", async e => {
       category, $("start_date").value, $("end_date").value, depthValue(),
       msg => { status.textContent = msg; });
     allResults = search.results;
+    otherLead = null; otherShown = false;                // "Check other Wikipedias" is per search
+    $("check_other").setAttribute("aria-pressed", "false");
+    $("only_other_gaps").setAttribute("aria-pressed", "false");
     allNoDepicts = search.noDepicts;
     allCurrent = search.currentPhotos;
     if (window.WikiPortraits) await WikiPortraits.ready;   // badges from the first render

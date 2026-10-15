@@ -120,6 +120,32 @@ when current photo is good" — it only fires when the current photo is good. It
 value is letting you hide *your own* redundant duplicates while keeping good
 photos by *other* photographers visible: turn the second toggle off, the first on.
 
+### Other Wikipedias and the Wikidata image
+
+The comparison uses **one** article per person (`pickWikipediaSitelink`: English
+if it exists, else the first Wikipedia). The person's Wikidata entity — already
+fetched for the human check — also lists every Wikipedia article (sitelinks) and
+the Wikidata image (`P18`), so each candidate shows, for free:
+
+- **Wikidata image (P18)** — or "none set" (red). Many Wikipedias' infobox
+  templates take the photo from P18, so a missing P18 can leave several without
+  one (which ones do is per wiki; not checked).
+- **Other Wikipedias** — the count of other-language articles.
+
+**Check other Wikipedias** (toggle, off) looks up `pageimages` for all those
+articles, one batched request per Wikipedia (≤ 50 titles each, `pilicense=any`),
+so a search can mean ~150 requests (measured 2026-10-14: 50 people → 918 articles
+on 150 Wikipedias → 151 requests). It then lists the languages with no photo,
+each linking to that article's editor, and enables **Only missing a photo on
+another Wikipedia**. Results are kept until the next search; switching the
+toggle off only hides them.
+
+Site ids map to hosts by dropping `wiki` and `_` → `-` — except `be_x_oldwiki`,
+which is `be-tarask.wikipedia.org` (the only mismatch among the 364 Wikipedias in
+Meta's `action=sitematrix`, 2026-10-15; the old `be-x-old` host redirects without
+CORS headers, so browser calls to it fail). `SITE_HOST_EXCEPTIONS` in
+`finder.html` and `history-core.js`.
+
 ### What "good" means
 
 Present, **not stale**, **not low-res**, *and* resolution known:
