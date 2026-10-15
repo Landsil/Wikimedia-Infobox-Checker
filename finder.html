@@ -14,7 +14,7 @@
   Runs entirely in the browser: calls the Wikimedia APIs directly with fetch()
   + &origin=* (anonymous CORS). No server, no build step.
 -->
-<link rel="stylesheet" href="style.css?v=6">
+<link rel="stylesheet" href="style.css?v=9">
 </head>
 <body>
 <header>
@@ -38,7 +38,7 @@
     <button id="copy_url" type="button" class="secondary">Copy static URL</button>
   </form>
 </header>
-<main>
+<main class="wide">
   <div id="status"></div>
   <div id="filters" class="filters" hidden>
     <div class="filter-item">
@@ -77,9 +77,10 @@
       <span class="filter-note">Needs "Check other Wikipedias".</span>
     </div>
   </div>
-  <div id="head" class="pair-head" hidden>
+  <div id="head" class="pair-head pair-head-cmp" hidden>
     <div class="h-left">Unused Commons photo (new candidate)</div>
     <div class="h-right">Current Wikipedia infobox photo (existing)</div>
+    <div class="h-other">Other top-20 Wikipedias</div>
   </div>
   <div id="results"></div>
   <div id="nodepicts"></div>
@@ -151,9 +152,11 @@
       <li><strong>Wikidata image (P18)</strong> — the person's image on Wikidata, or
         <span class="flag">none set</span>. Many Wikipedias' infoboxes take their
         photo from it, so adding one there can fill several at once.</li>
-      <li><strong>Other top-20 Wikipedias</strong> — how many of the person's other
-        articles are on the 20 largest Wikipedias (and how many Wikipedias in all);
-        after "Check other Wikipedias", which have no photo, a poor one or a good one.</li>
+      <li><strong>Other top-20 Wikipedias</strong> (the right-hand column; under the
+        row on narrow screens) — how many of the person's other articles are on the
+        20 largest Wikipedias (and how many Wikipedias in all); after "Check other
+        Wikipedias", which have no photo, which photo the others use (red where it
+        is low-res or old) and which have a good one.</li>
     </ul>
 
     <h3>What "good" means</h3>
@@ -1044,10 +1047,10 @@ function p18Row(c) {
   const same = "File:" + c.depicted_p18.replace(/_/g, " ") === c.title;
   return row("Wikidata image (P18)", link(page, c.depicted_p18) + (same ? " (this photo)" : ""));
 }
-// Other-language articles about the person on the TOP_WIKIS: just the count
-// until "Check other Wikipedias" has looked up their photos; then which have
-// no photo, which a poor one (grouped by file, with what's wrong), which a good
-// one. Each language links to that article's editor.
+// Third section of a comparison row: the person's other articles on the
+// TOP_WIKIS. Just the count until "Check other Wikipedias" has looked up their
+// photos; then which have no photo, which a poor one (grouped by file, with
+// what's wrong), which a good one. Each language links to that article's editor.
 // A date for a one-line summary: YYYY-MM-DD when there is one, else the first
 // year in free text ("Taken on 2 March 2011, … (according to Exif data)" -> 2011).
 const shortDate = v => {
@@ -1056,16 +1059,20 @@ const shortDate = v => {
   const y = /\b(1[89]|20)\d{2}\b/.exec(s || "");
   return y ? y[0] : (s || "").slice(0, 20);
 };
-function otherWikisRow(c) {
+function otherWikisCell(c) {
   const n = c.other_wikis.length;
   const all = c.wikis_total > n + 1 ? ` (${c.wikis_total} Wikipedias in all)` : "";
-  if (!n) return row("Other top-20 Wikipedias", "none" + all);
+  const line = html => `<div class="ow-line">${html}</div>`;
+  // The title only shows when the section drops below the row (narrow screens),
+  // where the column heading isn't there.
+  const wrap = lines => `<div class="meta other-wikis"><div class="ow-title">Other top-20 Wikipedias</div>${lines.join("")}</div>`;
+  if (!n) return wrap([line("No other articles" + all)]);
   const count = `${n} article${n === 1 ? "" : "s"}` + all;
-  if (!otherShown || !otherLead) return row("Other top-20 Wikipedias", count);
+  if (!otherShown || !otherLead) return wrap([line(count), line(`<span class="ow-hint">Switch on “Check other Wikipedias” to see their photos.</span>`)]);
   const langs = list => list.map(([s, t]) => link(wikipediaEditUrl(s, t), wikiLang(s).toUpperCase())).join(", ");
   const st = otherStatus(c);
-  const parts = [count];
-  if (st.none.length) parts.push(`<span class="warn">no photo: ${langs(st.none)}</span>`);
+  const lines = [line(`<strong>${count}</strong>`)];
+  if (st.none.length) lines.push(line(`<span class="warn">no photo: ${langs(st.none)}</span>`));
   const now = new Date();
   for (const [file, arts] of st.poor) {
     // Only what's wrong is red: the size if under LOW_RES_MP (or unknown), the date if stale.
@@ -1074,12 +1081,12 @@ function otherWikisRow(c) {
     const old = isStale(q.taken, q.timestamp, now);
     const size = q.megapixels != null ? `${q.megapixels} MP` : "size unknown";
     const when = shortDate(q.taken);
-    parts.push(`${langs(arts)}: ${link(q.descriptionurl, bareFilename(file))} (`
+    lines.push(line(`${langs(arts)}: ${link(q.descriptionurl, bareFilename(file))} (`
       + (low ? `<span class="warn">${esc(size)}</span>` : esc(size))
-      + (when ? " · " + (old ? `<span class="warn">${esc(when)}</span>` : esc(when)) : "") + ")");
+      + (when ? " · " + (old ? `<span class="warn">${esc(when)}</span>` : esc(when)) : "") + ")"));
   }
-  if (st.good.length) parts.push(`good photo: ${langs(st.good)}`);
-  return row("Other top-20 Wikipedias", parts.join("<br>"));
+  if (st.good.length) lines.push(line(`good photo: ${langs(st.good)}`));
+  return wrap(lines);
 }
 
 function candidateMeta(c) {
@@ -1087,7 +1094,6 @@ function candidateMeta(c) {
     ${candidateFileRow(c.file_page, c.title, c.author, c.author_url)}
     ${row("Depicted", link(c.wikidata_url, c.depicted_label + " (" + c.depicted_qid + ")"))}
     ${p18Row(c)}
-    ${otherWikisRow(c)}
     ${row("Resolution", resolution(c), c.low_res)}
     ${row("Date taken", esc(dateOnly(c.date_taken)))}
     ${row("Date uploaded", esc(dateOnly(c.date_uploaded)))}
@@ -1120,8 +1126,8 @@ const infoboxPhoto = b => b.has_image
   : `<div class="photo"><div class="none">No image set in infobox</div></div>`;
 
 const pairRow = r =>
-  `<div class="pair">${candidateMeta(r.candidate)}${candidatePhoto(r.candidate)}`
-  + `${infoboxPhoto(r.infobox)}${infoboxMeta(r.infobox)}</div>`;
+  `<div class="pair pair-cmp">${candidateMeta(r.candidate)}${candidatePhoto(r.candidate)}`
+  + `${infoboxPhoto(r.infobox)}${infoboxMeta(r.infobox)}${otherWikisCell(r.candidate)}</div>`;
 
 // Left-column file metadata for a no-depicts photo (no depicted subject).
 function noDepictsMeta(c) {

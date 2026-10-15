@@ -119,8 +119,26 @@
   footer { border-top: 1px solid var(--line); margin-top: 30px; padding: 18px 24px 26px;
            text-align: center; color: var(--muted); font-size: 13px; }
 
+  /* Finder comparison rows get a third section: the person's other top-20
+     Wikipedias (candidate | photo | current photo | current text | other wikis).
+     The page is wider for it; under 1200px that section drops below the row. */
+  main.wide { max-width: 1440px; }
+  .pair-cmp, .pair-head-cmp { grid-template-columns: 1fr 200px 200px 1fr 1fr; }
+  .pair-head-cmp .h-other { grid-column: 5; color: var(--accent); }
+  .other-wikis { text-align: left; border-left: 1px solid var(--line); padding-left: 14px; }
+  .other-wikis .ow-line { margin: 0 0 6px; word-break: break-word; }
+  .other-wikis .ow-hint { color: var(--muted); font-size: 12px; }
+  .other-wikis .ow-title { display: none; font-size: 12px; font-weight: 700; text-transform: uppercase;
+                           letter-spacing: .04em; color: var(--accent); margin-bottom: 6px; }
+  @media (max-width: 1200px) {
+    .pair-cmp, .pair-head-cmp { grid-template-columns: 1fr 200px 200px 1fr; }
+    .pair-head-cmp .h-other { display: none; }
+    .pair-cmp .other-wikis { grid-column: 1 / -1; border-left: 0; padding-left: 0;
+                             border-top: 1px solid var(--line); margin-top: 12px; padding-top: 10px; }
+    .pair-cmp .other-wikis .ow-title { display: block; }
+  }
   @media (max-width: 860px) {
-    .pair, .pair-head, .pair-solo { grid-template-columns: 1fr 1fr; }
+    .pair, .pair-head, .pair-solo, .pair-cmp, .pair-head-cmp { grid-template-columns: 1fr 1fr; }
     .pair-head .h-left { grid-column: 1 / 2; }
     .pair-head .h-right { grid-column: 2 / 3; }
     .meta.left { text-align: left; }

@@ -130,8 +130,10 @@ the Wikidata image (`P18`), so each candidate shows, for free:
 - **Wikidata image (P18)** — or "none set" (red). Many Wikipedias' infobox
   templates take the photo from P18, so a missing P18 can leave several without
   one (which ones do is per wiki; not checked).
-- **Other top-20 Wikipedias** — the count of the person's other articles on the
-  `TOP_WIKIS` (and of Wikipedias in all).
+- **Other top-20 Wikipedias** — a third section of each comparison row, on the
+  right (the Finder's page is 1440 px wide for it; under 1200 px it drops to a
+  strip below the row): the count of the person's other articles on the
+  `TOP_WIKIS` (and of Wikipedias in all), then the check's results.
 
 `TOP_WIKIS` are the 20 largest Wikipedias **by active users** (siteinfo
 statistics, 2026-10-15): en es fr de it ja ru zh pl nl fa pt he ar id ko uk sv vi
