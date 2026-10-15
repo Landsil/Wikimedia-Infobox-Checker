@@ -207,6 +207,9 @@
   .timeline { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
               gap: 16px; align-items: start; margin: 8px 0; }
   .tl-person { margin: 20px 0 6px; font-size: 15px; font-weight: 600; }
+  /* Finder: the person heading sits over that person's comparison rows. */
+  #results > .tl-person { margin: 18px 0 8px; }
+  #results > .tl-person:first-child { margin-top: 4px; }
   .tl-card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
              padding: 14px 16px; }
   .tl-card.current { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; }

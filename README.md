@@ -82,6 +82,14 @@ The form can be prefilled from the query string, so searches are shareable:
 - `depth` — subcategory depth (0–5); default 2. *Copy static URL* includes it.
 - `search=1` — runs the search immediately on load.
 
+### Grouped by person
+
+Comparison rows are grouped by depicted person, as in Infobox History: one
+heading — the person's article (and its wiki) · their Wikidata item — over all
+of that person's candidates (`personGroups()`). People keep the order of their
+newest candidate; a person without a Wikipedia article gets their name and the
+Wikidata link only.
+
 ### Filter toggles (appear after a search)
 
 The search runs **once**; the toggles filter the already-fetched results

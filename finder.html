@@ -1092,7 +1092,6 @@ function otherWikisCell(c) {
 function candidateMeta(c) {
   return `<div class="meta left">
     ${candidateFileRow(c.file_page, c.title, c.author, c.author_url)}
-    ${row("Depicted", link(c.wikidata_url, c.depicted_label + " (" + c.depicted_qid + ")"))}
     ${p18Row(c)}
     ${row("Resolution", resolution(c), c.low_res)}
     ${row("Date taken", esc(dateOnly(c.date_taken)))}
@@ -1125,6 +1124,25 @@ const infoboxPhoto = b => b.has_image
   ? `<div class="photo"><img src="${esc(b.thumb)}" alt="" loading="lazy"></div>`
   : `<div class="photo"><div class="none">No image set in infobox</div></div>`;
 
+// Comparison rows grouped by depicted person, as in Infobox History: one heading
+// (article link · Wikidata item) over all of that person's candidates. People
+// keep the order of their first (newest) candidate.
+function personHeading(r) {
+  const c = r.candidate, b = r.infobox;
+  const name = b.wiki_article_url
+    ? link(b.wiki_article_url, c.depicted_label) + ` (${esc(wikiLang(b.wiki_site || "").toUpperCase())})`
+    : esc(c.depicted_label);
+  return `<div class="tl-person">${name} · ${link(c.wikidata_url, c.depicted_qid)}</div>`;
+}
+function personGroups(rows) {
+  const groups = new Map();
+  for (const r of rows) {
+    const k = r.candidate.depicted_qid;
+    if (!groups.has(k)) groups.set(k, []);
+    groups.get(k).push(r);
+  }
+  return [...groups.values()].map(rs => personHeading(rs[0]) + rs.map(pairRow).join("")).join("");
+}
 const pairRow = r =>
   `<div class="pair pair-cmp">${candidateMeta(r.candidate)}${candidatePhoto(r.candidate)}`
   + `${infoboxPhoto(r.infobox)}${infoboxMeta(r.infobox)}${otherWikisCell(r.candidate)}</div>`;
@@ -1412,7 +1430,7 @@ function renderResults() {
   const hiddenCount = allResults.length - shown.length;
   $("nodepicts").innerHTML = "";
   $("head").hidden = shown.length === 0;
-  $("results").innerHTML = shown.map(pairRow).join("")
+  $("results").innerHTML = personGroups(shown)
     || `<div class="none">No matching candidates.</div>`;
 
   let msg = `Found ${allResults.length} unused category photo(s) with a depicted subject.`;
