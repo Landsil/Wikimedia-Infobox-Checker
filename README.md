@@ -382,6 +382,18 @@ article's current infobox photo is highlighted.
 
 ### Category mode
 
+Results are cards, two per row (one when narrow): the current infobox photo on
+the left, the data beside it. **Show Commons photos for all** is a real toggle:
+on fetches anyone not fetched yet and shows everyone's depicting files; off goes
+back to only those opened with their own button. Fetched results are kept, so
+switching costs nothing. Only good (not old, not low-res) depicting files are
+offered; when none of the first 8 is good the card says so with the Commons total
+and a **see all N** link to person mode for that person.
+
+`DateTimeOriginal` from Commons' `{{other date}}` carries machine text
+(`1970s` + `date QS:P,+1970-00-00T00:00:00Z/8`); `cleanDate()` drops it (in
+`gaps.html`, `finder.html`, `history.html`).
+
 Given an English Wikipedia category and a subcategory depth:
 
 | # | Step | API | Notes |
@@ -390,7 +402,7 @@ Given an English Wikipedia category and a subcategory depth:
 | 2 | `fetchArticlePhotoState` | `prop=pageimages\|pageprops\|categories` | One batched call per 50: lead image? Wikidata id? in `Category:Living people`? |
 | 3 | assess | Commons `imageinfo` on the lead images | resolution + age of existing photos |
 | 4 | `fetchP18Images` | Wikidata `wbgetentities` | candidate via P18, batched |
-| 5 | (on demand) `fetchDepictingFiles` | Commons `list=search` `haswbstatement:P180=Q…` | files that depict the person; one search per person, so a per-row + "check all" button |
+| 5 | (on demand) `fetchDepictingFiles` | Commons `list=search` `haswbstatement:P180=Q…` (`srinfo=totalhits`) | the first `DEPICT_LIMIT` (8) files that depict the person, plus the total; one search per person, so a per-person button and a **Show Commons photos for all** toggle |
 
 A gap = a **living** person whose article photo is **missing, under 2 MP, or
 >12 months old**. `Category:Tennis players` is almost all subcategories, so a

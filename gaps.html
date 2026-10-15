@@ -21,7 +21,7 @@
 
   Runs entirely in the browser: Wikimedia APIs via fetch() + &origin=* (CORS).
 -->
-<link rel="stylesheet" href="style.css?v=7">
+<link rel="stylesheet" href="style.css?v=8">
 </head>
 <body>
 <header>
@@ -52,7 +52,8 @@
       </select></label></div>
     <div class="filter-item"><label class="age-filter">Max age
       <input type="number" id="max_age" min="0" placeholder="any"></label></div>
-    <div class="filter-item"><button type="button" id="check_all" class="toggle">Check all for Commons photos</button></div>
+    <div class="filter-item"><button type="button" id="check_all" class="toggle" aria-pressed="false">Show Commons photos for all</button>
+      <span class="filter-note">Search Commons for photos depicting each person (one search each, kept). Off: back to the per-person buttons.</span></div>
     <div class="filter-item"><button type="button" id="export_raw" class="secondary">Export CSV</button></div>
     <div class="filter-item"><button type="button" id="export_sheets" class="secondary">Export CSV for Sheets</button></div>
   </div>
@@ -85,7 +86,12 @@
         same walk and appends.</li>
       <li>For each person it reports whether a candidate photo already exists —
         via Wikidata <em>image</em> (P18) or Commons files that <em>depict</em>
-        them (SDC P180). Old or low-res candidates are ignored.</li>
+        them (SDC P180). Old or low-res candidates are ignored. Each person has a
+        <em>Find depicting files</em> button; <strong>Show Commons photos for all</strong>
+        does every person at once (switch it off to go back; results are kept). The
+        first 8 photos are checked — when none is good the card says how many
+        Commons has, with <em>see all N</em> opening this tool's person mode for
+        them (every photo, newest first).</li>
       <li>A photo is <strong>low-res</strong> below 2 megapixels and <strong>old</strong>
         past 12 months.</li>
     </ul>
@@ -217,6 +223,9 @@ async function wbGetEntities(base, ids, props, extra) {
   return (await apiGet(base, p)).entities || {};
 }
 
+// Commons' {{other date}} template leaves machine text in DateTimeOriginal
+// ("1970s" + "date QS:P,+1970-00-00T00:00:00Z/8"); keep only the readable part.
+const cleanDate = v => String(v || "").replace(/\s*date QS:P,\S*/g, "").trim();
 function sanitizeHref(href) {
   href = stripHtml(href).trim();
   if (href.startsWith("//")) return "https:" + href;
@@ -244,7 +253,7 @@ async function fetchFilesImageinfo(titles) {
         const info = (page.imageinfo || [])[0];
         if (!info) continue;
         const ext = info.extmetadata || {};
-        const taken = stripHtml((ext.DateTimeOriginal || {}).value) || info.timestamp || "";
+        const taken = cleanDate(stripHtml((ext.DateTimeOriginal || {}).value)) || info.timestamp || "";
         const w = info.width || null, h = info.height || null;
         const author = parseAuthor((ext.Artist || {}).value);
         result[alias[page.title] || page.title] = {
@@ -438,17 +447,23 @@ async function processTitles(titles, onProgress) {
 }
 
 // Commons files that depict a person (SDC P180). On-demand.
+// The first DEPICT_LIMIT of them, plus how many Commons has in all (so a
+// "nothing good" result can say how many there are and link to person mode).
 async function fetchDepictingFiles(qid) {
   const params = { list: "search", srsearch: `haswbstatement:P180=${qid}`,
-    srnamespace: "6", srlimit: String(DEPICT_LIMIT) };
+    srnamespace: "6", srlimit: String(DEPICT_LIMIT), srinfo: "totalhits" };
   const titles = [];
+  let total = 0;
   for await (const query of mwQuery(COMMONS_API, params)) {
     for (const r of query.search || []) titles.push(r.title);
+    total = (query.searchinfo || {}).totalhits || titles.length;
     break;
   }
   const info = await fetchFilesImageinfo(titles);
-  return titles.map(t => info[t]).filter(Boolean);
+  return { files: titles.map(t => info[t]).filter(Boolean), total };
 }
+// Link to this tool's person mode for g: every depicting photo, newest first.
+const personModeUrl = g => `${location.pathname}?category=${encodeURIComponent(g.article_url)}&search=1`;
 
 // =========================================================================
 // Person mode: an article link (any Wikipedia) or a Commons file -> every
@@ -587,15 +602,13 @@ function personPhotoRow(f, now) {
       : [q.low && `<span class="badge low-res">low-res</span>`, q.old && `<span class="badge old">old</span>`].filter(Boolean).join(" "));
   const author = f.author
     ? `<div class="author">by ${f.author_url ? link(f.author_url, f.author) : esc(f.author)}${wpBadge(f.author, f.author_url)}</div>` : "";
-  return `<div class="pair pair-solo${isCurrent ? " is-current" : ""}">
-    <div class="meta left">
+  return `<div class="gap-card${isCurrent ? " is-current" : ""}">
+    <div class="photo"><img src="${esc(f.thumb)}" alt="" loading="lazy"></div>
+    <div class="gap-data meta">
       <div class="row"><span class="v">${link(f.descriptionurl, f.title)}`
       + `<button type="button" class="mini copy-file" data-file="${esc(bareFilename(f.title))}">Copy</button>`
       + `${author}</span></div>
       ${tags ? `<div class="row">${tags}</div>` : ""}
-    </div>
-    <div class="photo"><img src="${esc(f.thumb)}" alt="" loading="lazy"></div>
-    <div class="meta right">
       ${row("Resolution", resolution(f), q.low)}
       ${row("Date taken", esc(dateOnly(f.taken)), q.old)}
       ${row("Date uploaded", esc(dateOnly(f.timestamp)))}
@@ -614,8 +627,9 @@ function renderPerson() {
     + row("Current infobox photo", p.lead ? esc(bareFilename(p.lead)) : (p.article ? "none" : "no Wikipedia article"), !p.lead)
     + row("Wikidata image (P18)", p18, !p.p18)
     + `</div>`;
-  $("results").innerHTML = head + (p.files.map(f => personPhotoRow(f, now)).join("")
-    || `<div class="none">No Commons photo has a depicts statement for ${esc(p.label)}.</div>`);
+  $("results").innerHTML = head + (p.files.length
+    ? `<div class="gap-grid">${p.files.map(f => personPhotoRow(f, now)).join("")}</div>`
+    : `<div class="none">No Commons photo has a depicts statement for ${esc(p.label)}.</div>`);
   const capped = p.total > p.files.length ? ` Showing the first ${p.files.length} of ${p.total}.` : "";
   $("status").className = "";
   $("status").textContent = `${p.files.length} photo(s) depict ${p.label}; ${good} good `
@@ -651,15 +665,24 @@ function candidatePhotoBlock(fp) {
 }
 function depictBlock(g, i) {
   if (!g.qid) return "";
-  if (!g.depictChecked) {
+  if (!depictVisible(g)) {
     return `<div class="cand-actions"><button type="button" class="mini find-cands" data-idx="${i}">`
       + `Find depicting files on Commons</button></div><div id="cands-${i}"></div>`;
   }
   const files = g.depictFiles || [];
-  const inner = files.length
-    ? `<div class="row"><span class="k">Depicting files (${files.length})</span></div>`
-      + files.map(candidatePhotoBlock).join("")
-    : row("Depicting files", "&mdash; none on Commons");
+  const total = g.depictTotal || 0, checked = g.depictCheckedCount || 0;
+  const seeAll = total && g.article_url ? ` · ${link(personModeUrl(g), `see all ${total}`)}` : "";
+  let inner;
+  if (files.length) {
+    inner = `<div class="row"><span class="k">Good depicting files (${files.length} of the first ${checked}`
+      + `; ${total} on Commons)</span><span class="v">${seeAll.replace(/^ · /, " ")}</span></div>`
+      + files.map(candidatePhotoBlock).join("");
+  } else if (total) {
+    inner = row("Depicting files", `${total} on Commons; none of the first ${checked} is good `
+      + `(all old or low-res, or the current photo)` + seeAll);
+  } else {
+    inner = row("Depicting files", "&mdash; none on Commons");
+  }
   return `<div id="cands-${i}">${inner}</div>`;
 }
 function candidateCell(g, i) {
@@ -675,8 +698,9 @@ function candidateCell(g, i) {
   }
   return `<div class="meta right">${p18}${depictBlock(g, i)}</div>`;
 }
+// One card per person: their current infobox photo on the left, the data beside it.
 const gapRow = (g, i) =>
-  `<div class="gap">${personMeta(g)}${currentPhotoCell(g)}${candidateCell(g, i)}</div>`;
+  `<div class="gap-card">${currentPhotoCell(g)}<div class="gap-data">${personMeta(g)}${candidateCell(g, i)}</div></div>`;
 
 // =========================================================================
 // State + filters
@@ -686,7 +710,12 @@ let allGaps = [];           // every gap found so far (across load-more presses)
 let scanned = 0;            // articles processed so far
 
 // A gap has a candidate if P18 gave one, or a depicts check found files.
-const hasCandidate = g => !!g.p18 || (g.depictChecked && g.depictFiles && g.depictFiles.length > 0);
+// A person's depicting files are shown when "Show Commons photos for all" is on,
+// or when their own "Find depicting files" button was pressed (g.depictOpen).
+// Fetched results are kept either way, so switching back and forth is free.
+let showAllDepicts = false;
+const depictVisible = g => g.depictChecked && (showAllDepicts || g.depictOpen);
+const hasCandidate = g => !!g.p18 || (depictVisible(g) && g.depictFiles && g.depictFiles.length > 0);
 const REASON_TOGGLE = { "missing": "f_missing", "low-res": "f_lowres", "old": "f_old" };
 function isShown(g) {
   if (!pressed(REASON_TOGGLE[g.reason])) return false;
@@ -705,7 +734,8 @@ function renderGaps() {
   // gapRow needs each gap's index in allGaps (for the depicts buttons), so map
   // with the real index and filter after.
   const html = allGaps.map((g, i) => isShown(g) ? gapRow(g, i) : "").join("");
-  $("results").innerHTML = html || `<div class="none">Nothing matches the current filters.</div>`;
+  $("results").innerHTML = html ? `<div class="gap-grid">${html}</div>`
+                                : `<div class="none">Nothing matches the current filters.</div>`;
   const shown = allGaps.filter(isShown).length;
   const base = `${scanned} article(s) scanned; ${allGaps.length} living `
     + `${allGaps.length === 1 ? "person needs" : "people need"} a photo`;
@@ -870,14 +900,16 @@ async function runDepicts(i) {
   if (slot) slot.innerHTML = row("Depicting files", "searching…");
   try {
     const now = new Date();
-    let files = await fetchDepictingFiles(g.qid);
+    let { files, total } = await fetchDepictingFiles(g.qid);
     // Drop the article's own (bad) photo (or a crop of it), and any candidate
     // that is itself old or low-res (no point offering it).
+    const checked = files.length;
     files = files.filter(f => (!g.current || !sameOrCrop(f.title, g.current.title))
                               && isGoodCandidate(f, now));
-    g.depictFiles = files; g.depictChecked = true;
+    g.depictFiles = files; g.depictTotal = total; g.depictCheckedCount = checked;
+    g.depictChecked = true; g.depictOpen = true;
   } catch (err) {
-    g.depictFiles = []; g.depictChecked = true;
+    g.depictFiles = []; g.depictChecked = true; g.depictOpen = true;
     if (slot) { slot.innerHTML = row("Depicting files", esc("failed: " + err.message)); return; }
   }
   renderGaps();   // re-render so the candidate filter reflects the new result
@@ -893,23 +925,31 @@ $("results").addEventListener("click", async e => {
     setTimeout(() => { copy.textContent = "Copy"; copy.classList.remove("copied"); }, 1500);
   }
 });
+// "Show Commons photos for all": on = fetch whoever isn't fetched yet, then show
+// everyone's depicting files; off = back to only the ones opened per person.
+const CHECK_ALL_LABEL = "Show Commons photos for all";
 $("check_all").addEventListener("click", async () => {
   const btn = $("check_all");
+  if (pressed("check_all")) {
+    btn.setAttribute("aria-pressed", "false"); showAllDepicts = false; renderGaps(); return;
+  }
   btn.disabled = true;
   const todo = allGaps.map((g, i) => [g, i]).filter(([g]) => g.qid && !g.depictChecked);
   for (let n = 0; n < todo.length; n++) {
     const [g, i] = todo[n];
-    btn.textContent = `Checking ${n + 1}/${todo.length}…`;
+    btn.textContent = `Searching Commons ${n + 1}/${todo.length}…`;
     try {
       const now = new Date();
-      let files = await fetchDepictingFiles(g.qid);
+      let { files, total } = await fetchDepictingFiles(g.qid);
+      const checked = files.length;
       files = files.filter(f => (!g.current || !sameOrCrop(f.title, g.current.title))
                                 && isGoodCandidate(f, now));
-      g.depictFiles = files;
+      g.depictFiles = files; g.depictTotal = total; g.depictCheckedCount = checked;
     } catch (_) { g.depictFiles = []; }
     g.depictChecked = true;
   }
-  btn.textContent = "Checked all"; btn.disabled = false;
+  btn.textContent = CHECK_ALL_LABEL; btn.disabled = false;
+  btn.setAttribute("aria-pressed", "true"); showAllDepicts = true;
   renderGaps();
 });
 
@@ -943,6 +983,7 @@ async function loadChunk(reset) {
 function startSearch() {
   const inp = parseInput($("category").value);
   person = null;
+  showAllDepicts = false; $("check_all").setAttribute("aria-pressed", "false");
   $("results").innerHTML = ""; $("filters").hidden = true; $("loadmore").hidden = true;
   if (!inp) { $("status").className = "error"; $("status").textContent = "Enter a category, an article link or a file."; return; }
   if (inp.type === "article" || inp.type === "file") { runPerson(inp); return; }

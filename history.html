@@ -166,6 +166,9 @@ const wpArticleUrl = (lang, t) => `https://${lang}.wikipedia.org/wiki/${encodeUR
 const errorText = err => /rate-limiting/i.test(err.message)
   ? "Wikimedia is rate-limiting us right now. Wait a moment and try again." : "Error: " + err.message;
 
+// Commons' {{other date}} template leaves machine text in DateTimeOriginal
+// ("1970s" + "date QS:P,+1970-00-00T00:00:00Z/8"); keep only the readable part.
+const cleanDate = v => String(v || "").replace(/\s*date QS:P,\S*/g, "").trim();
 function sanitizeHref(href) {
   href = stripHtml(href).trim();
   if (href.startsWith("//")) return "https:" + href;
@@ -201,7 +204,7 @@ async function fetchFilesImageinfo(base, titles) {
         result[alias[page.title] || page.title] = {
           title: page.title, descriptionurl: info.descriptionurl || "",
           thumb: info.thumburl || info.url || "",
-          taken: stripHtml((ext.DateTimeOriginal || {}).value) || info.timestamp || "",
+          taken: cleanDate(stripHtml((ext.DateTimeOriginal || {}).value)) || info.timestamp || "",
           timestamp: info.timestamp || "", author: author.name, author_url: author.url,
           width: w, height: h, megapixels: (w && h) ? Math.round(w * h / 100000) / 10 : null,
         };

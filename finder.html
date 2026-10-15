@@ -379,11 +379,14 @@ function sanitizeHref(href) {
   return null;
 }
 
+// Commons' {{other date}} template leaves machine text in DateTimeOriginal
+// ("1970s" + "date QS:P,+1970-00-00T00:00:00Z/8"); keep only the readable part.
+const cleanDate = v => String(v || "").replace(/\s*date QS:P,\S*/g, "").trim();
 function extractImageinfoMeta(info) {
   const ext = info.extmetadata || {};
   const val = k => (ext[k] && ext[k].value) || "";
   const uploaded = info.timestamp || "";
-  const taken = stripHtml(val("DateTimeOriginal")) || uploaded;
+  const taken = cleanDate(stripHtml(val("DateTimeOriginal"))) || uploaded;
   const author = parseAuthor(val("Artist"));
   const width = info.width || null;
   const height = info.height || null;
@@ -701,7 +704,7 @@ async function fetchPhotoQuality(titles, localSites, onProgress) {
           out.set(alias[page.title] || page.title, {
             descriptionurl: info.descriptionurl || "", width: w, height: h,
             megapixels: (w && h) ? Math.round(w * h / 100000) / 10 : null,
-            taken: stripHtml(((info.extmetadata || {}).DateTimeOriginal || {}).value) || info.timestamp || "",
+            taken: cleanDate(stripHtml(((info.extmetadata || {}).DateTimeOriginal || {}).value)) || info.timestamp || "",
             timestamp: info.timestamp || "",
           });
         }
