@@ -25,7 +25,7 @@ A landing hub links to self-contained tool pages; all share one stylesheet.
 | :-- | :-- |
 | `index.html` | Landing hub — links to the tools |
 | `finder.html` | **Infobox Finder** — Commons category → unused photos depicting people, compared to the current infobox photo |
-| `gaps.html` | **Photo Gaps** — Wikipedia category → living people whose article has a missing/poor infobox photo |
+| `gaps.html` | **Photo Gaps** — Wikipedia category → living people whose article has a missing/poor infobox photo; or one person (article / file) → every Commons photo depicting them |
 | `history.html` | **Infobox History** — a photo, article or Commons category → current infobox photo plus the ones it replaced |
 | `history-core.js` | The Infobox History pipeline (DOM-free ES module), shared by `history.html` and the background job |
 | `scripts/refresh-history.mjs` | Background job: keeps the saved Infobox History records up to date |
@@ -335,6 +335,33 @@ public source or forcing every visitor through an OAuth login.
 
 
 ## Photo Gaps pipeline (`gaps.html`)
+
+The input box takes the same forms as Infobox History (`parseInput()`): an
+**article link** (any Wikipedia, mobile links too) or a **Commons file** (name
+or link) switches to *person mode* (below); a bare name or an en.wikipedia
+**category** link runs the category mode. Categories here are English
+Wikipedia categories, so a Commons or other-language category link gets a
+message instead of a guess.
+
+### Person mode
+
+1. Resolve the person: an article → its `wikibase_item` (`pageprops`); a file →
+   its MediaInfo depicts (P180) → the first human (`P31=Q5`) with a Wikipedia
+   article (English first).
+2. Wikidata label + image (P18); the article's current infobox photo
+   (`pageimages`, `pilicense=any`).
+3. Every Commons file with depicts = that person: `list=search`
+   `haswbstatement:P180=Q…`, `srlimit=max`, paged, capped at `PERSON_FILE_CAP`
+   (1,000; the status line shows "first N of TOTAL" when capped).
+4. `imageinfo` + `extmetadata` (50 per request): author (with the WikiPortraits
+   badge), description, size, date taken.
+
+Sorted newest first by date taken, falling back to upload date. Each photo is
+*good* / *low-res* / *old* by the same rule as the other pages (≥ 2 MP and taken
+within 12 months, resolution known), and the one that is (crop-aware) the
+article's current infobox photo is highlighted.
+
+### Category mode
 
 Given an English Wikipedia category and a subcategory depth:
 

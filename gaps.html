@@ -15,9 +15,13 @@
   Enumeration is chunked and resumable: "Load more" continues the same category
   walk and appends, so long trees don't need one giant blocking pass.
 
+  Given an article link (any Wikipedia) or a Commons file instead — the same
+  inputs as Infobox History — list every Commons photo that depicts that person
+  (SDC P180), newest first, each marked good / low-res / old.
+
   Runs entirely in the browser: Wikimedia APIs via fetch() + &origin=* (CORS).
 -->
-<link rel="stylesheet" href="style.css?v=4">
+<link rel="stylesheet" href="style.css?v=7">
 </head>
 <body>
 <header>
@@ -26,7 +30,7 @@
     <button type="button" id="about_btn">About</button>
   </div>
   <form id="f">
-    <div><label>English Wikipedia category</label>
+    <div><label>English Wikipedia category, or a person's article link / file</label>
       <input id="category" value="Wimbledon champions"></div>
     <div class="depth-field"><label>Subcategory depth</label>
       <input id="depth" type="number" min="0" value="2"></div>
@@ -65,6 +69,15 @@
     <p>Given an English Wikipedia category, lists the <strong>living people</strong>
     whose article has a <strong>missing, low-resolution or dated</strong> infobox
     photo — the gaps worth filling.</p>
+    <p>Given <strong>one person</strong> instead — a link to their article on any
+    Wikipedia, or a Commons photo of them (file name or link) — lists
+    <strong>every Commons photo that depicts them</strong> (depicts / P180), newest
+    first (by date taken, else upload date). Each is marked <em>good</em>,
+    <em>low-res</em> (under 2 MP) or <em>old</em> (taken over 12 months ago), with
+    its author, resolution, dates, description and a <em>Copy</em> button; the
+    article's current infobox photo is highlighted. Up to 1,000 photos are listed.
+    A Commons category isn't a Photo Gaps input — use Infobox Finder or Infobox
+    History for that.</p>
     <h3>How it works</h3>
     <ul>
       <li><strong>Subcategory depth</strong> sets how deep the category tree is
@@ -93,6 +106,7 @@
   <a href="https://github.com/Landsil/Wikimedia-Infobox-Checker" target="_blank"
      rel="noopener">Wikimedia-Infobox-Checker on GitHub</a>
 </footer>
+<script src="wikiportraits.js"></script>
 <script>
 "use strict";
 
@@ -203,6 +217,21 @@ async function wbGetEntities(base, ids, props, extra) {
   return (await apiGet(base, p)).entities || {};
 }
 
+function sanitizeHref(href) {
+  href = stripHtml(href).trim();
+  if (href.startsWith("//")) return "https:" + href;
+  if (href.startsWith("/")) return "https://commons.wikimedia.org" + href;
+  if (/^https?:\/\//i.test(href)) return href;
+  return null;
+}
+// Photographer from extmetadata Artist: the first link's text + URL, else the text.
+function parseAuthor(artistHtml) {
+  if (!artistHtml) return { name: "", url: null };
+  const m = /<a\b[^>]*\bhref="([^"]+)"[^>]*>([\s\S]*?)<\/a>/i.exec(artistHtml);
+  if (m) return { name: stripHtml(m[2]) || stripHtml(artistHtml), url: sanitizeHref(m[1]) };
+  return { name: stripHtml(artistHtml), url: null };
+}
+
 async function fetchFilesImageinfo(titles) {
   const result = {};
   for (const batch of chunked(titles)) {
@@ -217,9 +246,12 @@ async function fetchFilesImageinfo(titles) {
         const ext = info.extmetadata || {};
         const taken = stripHtml((ext.DateTimeOriginal || {}).value) || info.timestamp || "";
         const w = info.width || null, h = info.height || null;
+        const author = parseAuthor((ext.Artist || {}).value);
         result[alias[page.title] || page.title] = {
           title: page.title, descriptionurl: info.descriptionurl || "",
           thumb: info.thumburl || info.url || "", taken, timestamp: info.timestamp || "",
+          author: author.name, author_url: author.url,
+          description: stripHtml((ext.ImageDescription || {}).value),
           width: w, height: h,
           megapixels: (w && h) ? Math.round(w * h / 100000) / 10 : null,
         };
@@ -416,6 +448,178 @@ async function fetchDepictingFiles(qid) {
   }
   const info = await fetchFilesImageinfo(titles);
   return titles.map(t => info[t]).filter(Boolean);
+}
+
+// =========================================================================
+// Person mode: an article link (any Wikipedia) or a Commons file -> every
+// Commons photo that depicts that person, newest first.
+// =========================================================================
+const PERSON_FILE_CAP = 1000;   // depicting files listed for one person
+const NON_WIKIPEDIA_WIKIS = new Set([
+  "commonswiki", "wikidatawiki", "specieswiki", "metawiki", "mediawikiwiki",
+  "incubatorwiki", "sourceswiki", "foundationwiki", "outreachwiki", "wikimaniawiki", "testwiki",
+]);
+// Wikidata site id -> host prefix; be_x_oldwiki is the one exception (see finder.html).
+const SITE_HOST_EXCEPTIONS = { be_x_oldwiki: "be-tarask" };
+const wikiLang = site => SITE_HOST_EXCEPTIONS[site] || site.slice(0, -4).replace(/_/g, "-");
+const wpApi = lang => `https://${lang}.wikipedia.org/w/api.php`;
+const wpArticleUrl = (lang, t) => `https://${lang}.wikipedia.org/wiki/${encodeURIComponent(t.replace(/ /g, "_"))}`;
+
+// The same input forms as Infobox History: an article link, a file (name or
+// link), or a category. Categories are this tool's English Wikipedia
+// categories; a Commons or other-language category is reported, not guessed.
+function parseInput(raw) {
+  const s = (raw || "").trim();
+  if (!s) return null;
+  let m = s.match(/commons\.wikimedia\.org\/(?:wiki\/|entity\/)?(File:[^?#]+)/i);
+  if (m) return { type: "file", title: decodeURIComponent(m[1]).replace(/_/g, " ") };
+  m = s.match(/commons\.wikimedia\.org\/wiki\/(Category:[^?#]+)/i);
+  if (m) return { type: "commons-category", title: decodeURIComponent(m[1]).replace(/_/g, " ") };
+  m = s.match(/([a-z-]+)(?:\.m)?\.wikipedia\.org\/wiki\/(Category:[^?#]+)/i);
+  if (m) return { type: m[1] === "en" ? "category" : "other-category", lang: m[1],
+                  title: decodeURIComponent(m[2]).replace(/_/g, " ") };
+  m = s.match(/([a-z-]+)(?:\.m)?\.wikipedia\.org\/wiki\/([^?#]+)/i);
+  if (m) return { type: "article", lang: m[1], title: decodeURIComponent(m[2]).replace(/_/g, " ") };
+  if (/^file:/i.test(s)) return { type: "file", title: s.replace(/_/g, " ") };
+  if (/\.(jpe?g|png|gif|tiff?|webp|svg)$/i.test(s)) return { type: "file", title: "File:" + s.replace(/_/g, " ") };
+  return { type: "category", title: s };
+}
+
+// Article -> its Wikidata item; file -> the first depicted human with a
+// Wikipedia article (English first). Returns { lang, article, qid } or { error }.
+async function resolvePerson(inp) {
+  if (inp.type === "article") {
+    const d = await apiGet(wpApi(inp.lang), { action: "query", titles: inp.title,
+      prop: "pageprops", ppprop: "wikibase_item", redirects: "1" });
+    const p = Object.values((d.query || {}).pages || {})[0];
+    if (!p || "missing" in p) return { error: `No article “${inp.title}” on ${inp.lang}.wikipedia.` };
+    const qid = (p.pageprops || {}).wikibase_item;
+    if (!qid) return { error: `“${p.title}” has no Wikidata item, so its depicting photos can't be found.` };
+    return { lang: inp.lang, article: p.title, qid };
+  }
+  const d = await apiGet(COMMONS_API, { action: "query", titles: inp.title, prop: "info" });
+  const page = Object.values((d.query || {}).pages || {})[0];
+  if (!page || "missing" in page) return { error: `No such Commons file: ${inp.title}` };
+  const ents = await wbGetEntities(COMMONS_API, ["M" + page.pageid], "claims");
+  const st = ents["M" + page.pageid] || {};
+  const qids = ((st.statements || st.claims || {}).P180 || [])
+    .map(s => { try { return s.mainsnak.datavalue.value.id; } catch (_) { return null; } }).filter(Boolean);
+  if (!qids.length) return { error: `“${inp.title}” has no depicts (P180) statement, so I can't tell who it's of.` };
+  const we = await wbGetEntities(WIKIDATA_API, qids.slice(0, BATCH), "claims|sitelinks");
+  for (const q of qids) {
+    const e = we[q]; if (!e) continue;
+    const human = ((e.claims || {}).P31 || []).some(s => { try { return s.mainsnak.datavalue.value.id === "Q5"; } catch (_) { return false; } });
+    if (!human) continue;
+    const sl = e.sitelinks || {};
+    let site = sl.enwiki ? "enwiki" : Object.keys(sl).find(s => s.endsWith("wiki") && !NON_WIKIPEDIA_WIKIS.has(s));
+    if (!site) return { lang: null, article: null, qid: q };          // person without any article
+    return { lang: wikiLang(site), article: sl[site].title, qid: q };
+  }
+  return { error: `“${inp.title}” depicts nothing that is a person.` };
+}
+
+// Every Commons file with depicts (P180) = qid, up to PERSON_FILE_CAP, plus the
+// total the search reports.
+async function fetchAllDepicting(qid, onProgress) {
+  const titles = [];
+  let total = null;
+  for await (const query of mwQuery(COMMONS_API, { list: "search", srsearch: `haswbstatement:P180=${qid}`,
+      srnamespace: "6", srlimit: "max", srprop: "", srinfo: "totalhits" })) {
+    if (query.searchinfo && total == null) total = query.searchinfo.totalhits;
+    for (const r of query.search || []) titles.push(r.title);
+    if (onProgress) onProgress(`Listing photos that depict them… ${titles.length}${total != null ? "/" + total : ""}`);
+    if (titles.length >= PERSON_FILE_CAP) break;
+  }
+  return { titles: titles.slice(0, PERSON_FILE_CAP), total: total != null ? total : titles.length };
+}
+
+let person = null;   // person mode: { lang, article, qid, label, lead, p18, files, total }
+
+async function runPerson(inp) {
+  const status = $("status"), go = $("go");
+  const say = msg => { status.className = ""; status.textContent = msg; };
+  go.disabled = true;
+  try {
+    say("Resolving the person…");
+    const r = await resolvePerson(inp);
+    if (r.error) { status.className = "error"; status.textContent = r.error; return; }
+    const ent = (await wbGetEntities(WIKIDATA_API, [r.qid], "labels|claims", { languages: "en" }))[r.qid] || {};
+    const label = (ent.labels && ent.labels.en && ent.labels.en.value) || r.article || r.qid;
+    const p18 = firstP18(ent.claims || {});
+    let lead = null;                                     // current infobox photo of that article
+    if (r.article) {
+      const d = await apiGet(wpApi(r.lang), { action: "query", titles: r.article, prop: "pageimages",
+        piprop: "name", pilicense: "any", redirects: "1" });
+      const p = Object.values((d.query || {}).pages || {})[0];
+      lead = p && p.pageimage ? "File:" + p.pageimage.replace(/_/g, " ") : null;
+    }
+    const { titles, total } = await fetchAllDepicting(r.qid, say);
+    say(`Reading details of ${titles.length} photo(s)…`);
+    const info = await fetchFilesImageinfo(titles);
+    const when = f => { const d = parseTs(f.taken) || parseTs(f.timestamp); return d ? d.getTime() : -Infinity; };
+    const files = titles.map(t => info[t]).filter(Boolean).sort((a, b) => when(b) - when(a));
+    if (window.WikiPortraits) await WikiPortraits.ready;
+    person = { ...r, label, lead, p18, files, total };
+    renderPerson();
+  } catch (err) {
+    status.className = "error";
+    status.textContent = /rate-limiting/i.test(err.message)
+      ? "Wikimedia is rate-limiting us right now. Wait a moment and try again." : "Error: " + err.message;
+  } finally {
+    go.disabled = false;
+  }
+}
+
+// Good = the same rule as the other pages: not stale, not low-res, and the
+// resolution is known.
+function photoQuality(f, now) {
+  const low = f.megapixels != null && f.megapixels < LOW_RES_MP;
+  const old = isStale(f.taken, f.timestamp, now);
+  return { low, old, good: !low && !old && f.megapixels != null };
+}
+const wpBadge = (name, url) => window.WikiPortraits ? WikiPortraits.badge(name, url) : "";
+const bareFilename = t => (t || "").replace(/^\s*File\s*:\s*/i, "");
+function personPhotoRow(f, now) {
+  const q = photoQuality(f, now);
+  const isCurrent = !!person.lead && sameOrCrop(f.title, person.lead);
+  const tags = (isCurrent ? `<span class="badge current">current infobox photo</span> ` : "")
+    + (q.good ? `<span class="badge good">good</span>`
+      : [q.low && `<span class="badge low-res">low-res</span>`, q.old && `<span class="badge old">old</span>`].filter(Boolean).join(" "));
+  const author = f.author
+    ? `<div class="author">by ${f.author_url ? link(f.author_url, f.author) : esc(f.author)}${wpBadge(f.author, f.author_url)}</div>` : "";
+  return `<div class="pair pair-solo${isCurrent ? " is-current" : ""}">
+    <div class="meta left">
+      <div class="row"><span class="v">${link(f.descriptionurl, f.title)}`
+      + `<button type="button" class="mini copy-file" data-file="${esc(bareFilename(f.title))}">Copy</button>`
+      + `${author}</span></div>
+      ${tags ? `<div class="row">${tags}</div>` : ""}
+    </div>
+    <div class="photo"><img src="${esc(f.thumb)}" alt="" loading="lazy"></div>
+    <div class="meta right">
+      ${row("Resolution", resolution(f), q.low)}
+      ${row("Date taken", esc(dateOnly(f.taken)), q.old)}
+      ${row("Date uploaded", esc(dateOnly(f.timestamp)))}
+      ${row("Description", esc(f.description))}
+    </div>
+  </div>`;
+}
+function renderPerson() {
+  const now = new Date();
+  const p = person;
+  const good = p.files.filter(f => photoQuality(f, now).good).length;
+  const articleLink = p.article ? link(wpArticleUrl(p.lang, p.article), p.label) + ` (${esc(p.lang.toUpperCase())})` : esc(p.label);
+  const p18 = p.p18 ? link("https://commons.wikimedia.org/wiki/File:" + encodeURIComponent(p.p18.replace(/ /g, "_")), p.p18) : "none set";
+  const head = `<p class="lead"><strong>${articleLink}</strong> · ${link("https://www.wikidata.org/wiki/" + p.qid, p.qid)}</p>`
+    + `<div class="meta person-summary">`
+    + row("Current infobox photo", p.lead ? esc(bareFilename(p.lead)) : (p.article ? "none" : "no Wikipedia article"), !p.lead)
+    + row("Wikidata image (P18)", p18, !p.p18)
+    + `</div>`;
+  $("results").innerHTML = head + (p.files.map(f => personPhotoRow(f, now)).join("")
+    || `<div class="none">No Commons photo has a depicts statement for ${esc(p.label)}.</div>`);
+  const capped = p.total > p.files.length ? ` Showing the first ${p.files.length} of ${p.total}.` : "";
+  $("status").className = "";
+  $("status").textContent = `${p.files.length} photo(s) depict ${p.label}; ${good} good `
+    + `(${LOW_RES_MP}+ MP, taken within ${STALE_MONTHS} months). Newest first.` + capped;
 }
 
 // =========================================================================
@@ -678,9 +882,16 @@ async function runDepicts(i) {
   }
   renderGaps();   // re-render so the candidate filter reflects the new result
 }
-$("results").addEventListener("click", e => {
+$("results").addEventListener("click", async e => {
   const btn = e.target.closest(".find-cands");
-  if (btn) runDepicts(Number(btn.dataset.idx));
+  if (btn) { runDepicts(Number(btn.dataset.idx)); return; }
+  // Person mode: copy the bare filename for an infobox |image= field.
+  const copy = e.target.closest(".copy-file");
+  if (copy) {
+    const ok = await copyText(copy.dataset.file);
+    copy.textContent = ok ? "Copied" : "Copy failed"; copy.classList.toggle("copied", ok);
+    setTimeout(() => { copy.textContent = "Copy"; copy.classList.remove("copied"); }, 1500);
+  }
 });
 $("check_all").addEventListener("click", async () => {
   const btn = $("check_all");
@@ -730,7 +941,19 @@ async function loadChunk(reset) {
 }
 
 function startSearch() {
-  const category = $("category").value.trim();
+  const inp = parseInput($("category").value);
+  person = null;
+  $("results").innerHTML = ""; $("filters").hidden = true; $("loadmore").hidden = true;
+  if (!inp) { $("status").className = "error"; $("status").textContent = "Enter a category, an article link or a file."; return; }
+  if (inp.type === "article" || inp.type === "file") { runPerson(inp); return; }
+  if (inp.type === "commons-category" || inp.type === "other-category") {
+    $("status").className = "error";
+    $("status").textContent = `Photo Gaps searches English Wikipedia categories; “${inp.title}” is a `
+      + (inp.type === "commons-category" ? "Commons category — try Infobox Finder or Infobox History for that."
+                                         : `${inp.lang}.wikipedia category.`);
+    return;
+  }
+  const category = inp.title.replace(/^category:/i, "Category:");
   const depth = Math.max(0, parseInt($("depth").value, 10) || 0);
   walk = newWalk(category, depth);
   allGaps = []; scanned = 0;
