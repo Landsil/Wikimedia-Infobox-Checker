@@ -1,6 +1,6 @@
 {
-  "release": "tv-1.0.1_fl-20230503_pl-20230427",
-  "generated": "2026-10-15T14:03:56.377Z",
+  "release": "tv-1.0.1_fd-20260311_fl-20230503_pl-20230427",
+  "generated": "2026-10-15T14:28:40.838Z",
   "min_age_days": 14,
   "runtime": {
     "package": "@mediapipe/tasks-vision",
@@ -10,6 +10,11 @@
     "integrity": "sha512-rvRE2FmAZ6ZxKSw7wq+e+jQDpN3t1B/tD2mJz9SmAzb1msoDkd4dMoE4wAh8Z30Um0PQwLiHr9QtomhmXk3aUQ=="
   },
   "models": {
+    "face_detector_full_range": {
+      "url": "https://storage.googleapis.com/mediapipe-models/face_detector/blaze_face_full_range/float16/latest/blaze_face_full_range.tflite",
+      "bytes": 1083786,
+      "last_modified": "Wed, 11 Mar 2026 20:53:48 GMT"
+    },
     "face_landmarker": {
       "url": "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/latest/face_landmarker.task",
       "bytes": 3758596,
@@ -22,39 +27,46 @@
     }
   },
   "license": "Apache-2.0",
-  "total_bytes": 21772112,
+  "total_bytes": 22855898,
   "files": [
     {
       "name": "vision_bundle.mjs",
-      "path": "vendor/mediapipe/tv-1.0.1_fl-20230503_pl-20230427/vision_bundle.mjs",
+      "path": "vendor/mediapipe/tv-1.0.1_fd-20260311_fl-20230503_pl-20230427/vision_bundle.mjs",
       "bytes": 155439,
       "sha256": "d885630c297c0b20b1fe86096cb06291c4c8080876f27852e724f24ac603713f",
       "source": "https://www.npmjs.com/package/@mediapipe/tasks-vision/v/1.0.1 (vision_bundle.mjs)"
     },
     {
       "name": "vision_wasm_internal.js",
-      "path": "vendor/mediapipe/tv-1.0.1_fl-20230503_pl-20230427/vision_wasm_internal.js",
+      "path": "vendor/mediapipe/tv-1.0.1_fd-20260311_fl-20230503_pl-20230427/vision_wasm_internal.js",
       "bytes": 323377,
       "sha256": "e170ee67dd4e16c1a6fcd8840a206687e5a59b22c20e4a902bc445b095454d73",
       "source": "https://www.npmjs.com/package/@mediapipe/tasks-vision/v/1.0.1 (wasm/vision_wasm_internal.js)"
     },
     {
       "name": "vision_wasm_internal.wasm",
-      "path": "vendor/mediapipe/tv-1.0.1_fl-20230503_pl-20230427/vision_wasm_internal.wasm",
+      "path": "vendor/mediapipe/tv-1.0.1_fd-20260311_fl-20230503_pl-20230427/vision_wasm_internal.wasm",
       "bytes": 11756954,
       "sha256": "8da277a733926eacd0474b8704b36742d6ec3231c57a860c5b889dff8f1df886",
       "source": "https://www.npmjs.com/package/@mediapipe/tasks-vision/v/1.0.1 (wasm/vision_wasm_internal.wasm)"
     },
     {
+      "name": "blaze_face_full_range.tflite",
+      "path": "vendor/mediapipe/tv-1.0.1_fd-20260311_fl-20230503_pl-20230427/blaze_face_full_range.tflite",
+      "bytes": 1083786,
+      "sha256": "3698b18f063835bc609069ef052228fbe86d9c9a6dc8dcb7c7c2d69aed2b181b",
+      "source": "https://storage.googleapis.com/mediapipe-models/face_detector/blaze_face_full_range/float16/latest/blaze_face_full_range.tflite"
+    },
+    {
       "name": "face_landmarker.task",
-      "path": "vendor/mediapipe/tv-1.0.1_fl-20230503_pl-20230427/face_landmarker.task",
+      "path": "vendor/mediapipe/tv-1.0.1_fd-20260311_fl-20230503_pl-20230427/face_landmarker.task",
       "bytes": 3758596,
       "sha256": "64184e229b263107bc2b804c6625db1341ff2bb731874b0bcc2fe6544e0bc9ff",
       "source": "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/latest/face_landmarker.task"
     },
     {
       "name": "pose_landmarker_lite.task",
-      "path": "vendor/mediapipe/tv-1.0.1_fl-20230503_pl-20230427/pose_landmarker_lite.task",
+      "path": "vendor/mediapipe/tv-1.0.1_fd-20260311_fl-20230503_pl-20230427/pose_landmarker_lite.task",
       "bytes": 5777746,
       "sha256": "59929e1d1ee95287735ddd833b19cf4ac46d29bc7afddbbf6753c459690d574a",
       "source": "https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/latest/pose_landmarker_lite.task"

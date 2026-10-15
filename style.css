@@ -207,6 +207,9 @@
   .checks li.pass::before { content: "✓"; color: var(--new); }
   .checks li.fail { color: #b91c1c; }
   .checks li.fail::before { content: "✗"; }
+  .checks li.unknown { color: var(--muted); }
+  .checks li.unknown::before { content: "?"; }
+  .face-box.low { border-style: dashed; }
   @media (max-width: 560px) { .gap-grid { grid-template-columns: 1fr; } .gap-card { grid-template-columns: 120px 1fr; } }
   .person-summary { margin: 4px 0 16px; }
   .cand-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }

@@ -14,7 +14,7 @@
   copy in vendor/mediapipe/, saved into the visitor's Cache Storage only after
   they agree. Every rule behind "good" is shown on the page.
 -->
-<link rel="stylesheet" href="style.css?v=10">
+<link rel="stylesheet" href="style.css?v=11">
 </head>
 <body>
 <header>
@@ -25,15 +25,17 @@
   <div class="trial-banner">
     <p><strong>Trial version.</strong> To score photos, this page saves a copy of
     Google's <strong>MediaPipe</strong> into your browser's storage: the vision
-    runtime and two models — <em>Face Landmarker</em> (face position, 478 face
-    points, eyes open / looking direction) and <em>Pose Landmarker (lite)</em>
-    (body points, for framing) — <span id="lib_size">about 22 MB</span>, once.
+    runtime and three models — a full-range <em>Face Detector</em> (finds faces,
+    small ones too), <em>Face Landmarker</em> (478 face points, eyes open /
+    looking direction, head angles) and <em>Pose Landmarker (lite)</em> (body
+    points, for framing) — <span id="lib_size">about 23 MB</span>, once.
     Everything then runs on your device; no photo or result is sent anywhere.
     Licence: Apache 2.0.</p>
     <p class="trial-links">
       <a href="https://github.com/Landsil/Wikimedia-Infobox-Checker/tree/main/vendor/mediapipe" target="_blank" rel="noopener">Our copy on GitHub</a> ·
       Google's originals:
       <a href="https://www.npmjs.com/package/@mediapipe/tasks-vision" target="_blank" rel="noopener">runtime (npm)</a>,
+      <a href="https://storage.googleapis.com/mediapipe-models/face_detector/blaze_face_full_range/float16/latest/blaze_face_full_range.tflite" target="_blank" rel="noopener">Face Detector (full range)</a>,
       <a href="https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/latest/face_landmarker.task" target="_blank" rel="noopener">Face Landmarker</a>,
       <a href="https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/latest/pose_landmarker_lite.task" target="_blank" rel="noopener">Pose Landmarker</a> ·
       <a href="https://developers.google.com/edge/mediapipe/solutions/vision/face_landmarker" target="_blank" rel="noopener">MediaPipe docs</a>
@@ -74,9 +76,22 @@
         the same lookup as Photo Gaps' person mode — up to 300, newest first.</li>
     </ul>
     <h3>What it measures</h3>
+    <p>In three steps. Every photo is assumed to show at least one face, so a
+    measurement that can't be made is shown as <strong>?</strong> (unknown) and
+    not counted against the photo.</p>
+    <ol>
+      <li><strong>Find faces</strong> with the full-range face detector (made for
+        faces up to ~5 m away). Faces at confidence ≥ 0.8 are counted; the best
+        one is kept even below that, marked as possibly small, turned or partly
+        covered (dashed box).</li>
+      <li><strong>Read the main face</strong> from an enlarged crop around it — eyes
+        and head angles — at confidence 0.8, or once more at 0.5 (shown).</li>
+      <li><strong>Body points</strong> for the framing, and a rough head direction
+        (ears and nose) if step 2 couldn't read the face.</li>
+    </ol>
     <ul>
-      <li><strong>Faces</strong> found with confidence ≥ 0.8, and the main
-        (largest) face's height as a share of the photo's height.</li>
+      <li><strong>Faces</strong> and the main (largest) face's height as a share
+        of the photo's height.</li>
       <li><strong>Head direction</strong> — how far the head is turned (left /
         right), tipped (up / down) and tilted, from the face model's 3D head pose.</li>
       <li><strong>Eyes</strong> — open or closed, and how far they look away from
@@ -127,18 +142,26 @@ const MAX_HEAD_DEG = 20;         // turned / tipped at most this many degrees
 const MAX_EYE_LOOK = 0.5;        // every eye-look score below this
 const MAX_BLINK = 0.5;           // both eye-blink scores below this
 const GOOD_FRAMING = new Set(["head & shoulders", "half body"]);
+const FACE_FLOOR = 0.3;          // faces kept at all (every photo is assumed to have one)
+const CROP_MARGIN = 2.2;         // crop side = this × the face box, before enlarging
+const CROP_SIZE = 512;           // the crop the face model reads, in pixels
 const VENDOR = "vendor/mediapipe/";
 const CACHE_PREFIX = "score-mediapipe-";
 
-// The checks, in display order: id, label, test(m) on a photo's measurements.
+// The checks, in display order: id, label, test(m) → true (pass), false (fail)
+// or null (unknown: the measurement couldn't be made — a detection miss is not
+// held against the photo). Every photo is assumed to show at least one face.
+const known = (v, test) => v == null ? null : test(v);
 const CHECKS = [
-  ["one_face", "Exactly one face", m => m.faces === 1],
-  ["face_size", `Face at least ${MIN_FACE_SHARE * 100}% of the photo's height`, m => m.faceShare != null && m.faceShare >= MIN_FACE_SHARE],
-  ["eyes_open", `Eyes open (blink scores under ${MAX_BLINK})`, m => m.blink != null && m.blink < MAX_BLINK],
-  ["facing", `Head facing the camera (turned and tipped ≤ ${MAX_HEAD_DEG}°)`, m => m.yaw != null && Math.abs(m.yaw) <= MAX_HEAD_DEG && Math.abs(m.pitch) <= MAX_HEAD_DEG],
-  ["eyes_camera", `Eyes towards the camera (eye-look scores under ${MAX_EYE_LOOK})`, m => m.look != null && m.look < MAX_EYE_LOOK],
-  ["framing", "Framing: head & shoulders or half body", m => GOOD_FRAMING.has(m.framing)],
-  ["resolution", `At least ${LOW_RES_MP} MP`, m => m.megapixels != null && m.megapixels >= LOW_RES_MP],
+  ["one_face", `Exactly one face (at confidence ≥ ${MIN_CONFIDENCE})`,
+    m => m.faces === 1 ? true : m.faces > 1 ? false : null],
+  ["face_size", `Face at least ${MIN_FACE_SHARE * 100}% of the photo's height`, m => known(m.faceShare, v => v >= MIN_FACE_SHARE)],
+  ["eyes_open", `Eyes open (blink scores under ${MAX_BLINK})`, m => known(m.blink, v => v < MAX_BLINK)],
+  ["facing", `Head facing the camera (turned and tipped ≤ ${MAX_HEAD_DEG}°)`,
+    m => m.yaw != null ? Math.abs(m.yaw) <= MAX_HEAD_DEG && Math.abs(m.pitch) <= MAX_HEAD_DEG : (m.facingEstimate ?? null)],
+  ["eyes_camera", `Eyes towards the camera (eye-look scores under ${MAX_EYE_LOOK})`, m => known(m.look, v => v < MAX_EYE_LOOK)],
+  ["framing", "Framing: head & shoulders or half body", m => m.framing === "unclear" ? null : GOOD_FRAMING.has(m.framing)],
+  ["resolution", `At least ${LOW_RES_MP} MP`, m => known(m.megapixels, v => v >= LOW_RES_MP)],
   ["recent", `Taken within the last ${STALE_MONTHS} months`, m => !m.stale],
 ];
 
@@ -188,7 +211,7 @@ const wpArticleUrl = (lang, t) => `https://${lang}.wikipedia.org/wiki/${encodeUR
 // Saved copy of MediaPipe (Cache Storage), checked against versions.json
 // ===================================================================
 let manifest = null;              // vendor/mediapipe/versions.json
-let mp = null, face = null, pose = null;   // loaded runtime + the two landmarkers
+let mp = null, detector = null, face = null, faceLow = null, pose = null;   // runtime + models
 const cacheName = () => CACHE_PREFIX + manifest.release;
 const TYPES = { mjs: "text/javascript", js: "text/javascript", wasm: "application/wasm", task: "application/octet-stream" };
 
@@ -199,7 +222,7 @@ async function sha256Hex(buf) {
 // "ready" | "missing" | { outdated: [old release ids] }
 async function libraryState() {
   manifest = await (await fetch(VENDOR + "versions.json", { cache: "no-store" })).json();
-  $("lib_size").textContent = `${mb(manifest.total_bytes)} (runtime ${manifest.runtime.version} + 2 models)`;
+  $("lib_size").textContent = `${mb(manifest.total_bytes)} (runtime ${manifest.runtime.version} + ${manifest.files.length - 3} models)`;
   const ours = (await caches.keys()).filter(k => k.startsWith(CACHE_PREFIX));
   if (ours.includes(cacheName())) {
     const c = await caches.open(cacheName());
@@ -236,23 +259,30 @@ async function saveLibraries() {
 }
 async function removeLibraries() {
   for (const k of await caches.keys()) if (k.startsWith(CACHE_PREFIX)) await caches.delete(k);
-  mp = face = pose = null;
+  mp = detector = face = faceLow = pose = null;
   await refreshLibState();
 }
 // Load the runtime and both landmarkers from the saved copy only.
 async function loadModels() {
-  if (face && pose) return;
+  if (detector && face && pose) return;
   const c = await caches.open(cacheName());
   const file = name => manifest.files.find(f => f.name === name);
   const buf = async name => (await c.match(file(name).path)).arrayBuffer();
   const blobUrl = async name => URL.createObjectURL(new Blob([await buf(name)], { type: TYPES[name.split(".").pop()] }));
   mp = await import(await blobUrl("vision_bundle.mjs"));
   const fileset = { wasmLoaderPath: await blobUrl("vision_wasm_internal.js"), wasmBinaryPath: await blobUrl("vision_wasm_internal.wasm") };
-  face = await mp.FaceLandmarker.createFromOptions(fileset, {
-    baseOptions: { modelAssetBuffer: new Uint8Array(await buf("face_landmarker.task")), delegate: "CPU" },
-    runningMode: "IMAGE", numFaces: MAX_FACES,
-    minFaceDetectionConfidence: MIN_CONFIDENCE, minFacePresenceConfidence: MIN_CONFIDENCE,
+  // 1. find faces: full-range detector, everything ≥ FACE_FLOOR (labelled when < MIN_CONFIDENCE)
+  detector = await mp.FaceDetector.createFromOptions(fileset, {
+    baseOptions: { modelAssetBuffer: new Uint8Array(await buf("blaze_face_full_range.tflite")), delegate: "CPU" },
+    runningMode: "IMAGE", minDetectionConfidence: FACE_FLOOR });
+  // 2. read the main face from a crop: at MIN_CONFIDENCE, then once more at 0.5 (labelled)
+  const flBytes = new Uint8Array(await buf("face_landmarker.task"));
+  const landmarker = c => mp.FaceLandmarker.createFromOptions(fileset, {
+    baseOptions: { modelAssetBuffer: flBytes, delegate: "CPU" }, runningMode: "IMAGE", numFaces: 3,
+    minFaceDetectionConfidence: c, minFacePresenceConfidence: c,
     outputFaceBlendshapes: true, outputFacialTransformationMatrixes: true });
+  face = await landmarker(MIN_CONFIDENCE);
+  faceLow = await landmarker(0.5);
   pose = await mp.PoseLandmarker.createFromOptions(fileset, {
     baseOptions: { modelAssetBuffer: new Uint8Array(await buf("pose_landmarker_lite.task")), delegate: "CPU" },
     runningMode: "IMAGE", numPoses: MAX_FACES,
@@ -373,35 +403,97 @@ function framingOf(poseLms, faceShare) {
   if (faceShare != null && faceShare >= 0.25) return { framing: "head & shoulders", why: "no body found; large face" };
   return { framing: "unclear", why: poseLms ? "few body points in frame" : "no body found" };
 }
+// Rough head direction from the body points when the face itself couldn't be
+// read (e.g. partly covered): facing if both ears show and the nose sits near
+// their middle; turned if only one ear shows. null if the points aren't there.
+function facingFromBody(lms) {
+  if (!lms) return null;
+  const vis = i => lms[i] && (lms[i].visibility == null || lms[i].visibility >= 0.5);
+  const [nose, earL, earR] = [lms[0], lms[7], lms[8]];
+  if (!vis(0)) return null;
+  if (vis(7) !== vis(8)) return false;
+  if (!vis(7)) return null;
+  const half = Math.abs(earL.x - earR.x) / 2;
+  return half > 0 && Math.abs(nose.x - (earL.x + earR.x) / 2) / half <= 0.35;
+}
 async function analyse(photo) {
   const img = new Image();
   img.crossOrigin = "anonymous";   // Wikimedia sends Access-Control-Allow-Origin: *
   img.src = photo.thumb;
   await img.decode();
-  const fr = face.detect(img), pr = pose.detect(img);
-  const faces = fr.faceLandmarks.map((lms, i) => ({ box: boxOf(lms), i }));
-  faces.sort((a, b) => b.box.w * b.box.h - a.box.w * a.box.h);
-  const main = faces[0];
-  const m = { faces: faces.length, poses: pr.landmarks.length, boxes: faces.map(f => f.box),
-              megapixels: photo.megapixels, stale: isStale(photo.taken, photo.uploaded) };
-  if (main) {
-    m.faceShare = main.box.h;
-    const bs = Object.fromEntries((fr.faceBlendshapes[main.i] || { categories: [] }).categories.map(c => [c.categoryName, c.score]));
+  const W = img.naturalWidth, H = img.naturalHeight;
+  const m = { megapixels: photo.megapixels, stale: isStale(photo.taken, photo.uploaded) };
+
+  // 1. Find faces two ways: the face model on the whole photo (its built-in
+  //    finder is short-range: sure of close-up faces), and the full-range
+  //    detector (finds small / distant faces, but is less sure of close-ups).
+  //    A face counts when either is at ≥ MIN_CONFIDENCE; the best one is kept
+  //    regardless, since every photo is assumed to show a face.
+  const whole = face.detect(img);
+  const wholeFaces = whole.faceLandmarks.map((l, i) => ({ i, score: null, ...boxOf(l) }));
+  const dets = detector.detect(img).detections.map(d => ({ score: d.categories[0].score,
+    x: d.boundingBox.originX / W, y: d.boundingBox.originY / H, w: d.boundingBox.width / W, h: d.boundingBox.height / H }));
+  const confident = dets.filter(d => d.score >= MIN_CONFIDENCE);
+  const biggest = list => list.slice().sort((a, b) => b.w * b.h - a.w * a.h)[0] || null;
+  const fromWhole = biggest(wholeFaces);
+  const main = fromWhole || biggest(confident.length ? confident : dets);
+  m.faces = Math.max(confident.length, wholeFaces.length);
+  const overlaps = (a, b) => {
+    const ix = Math.max(0, Math.min(a.x + a.w, b.x + b.w) - Math.max(a.x, b.x));
+    const iy = Math.max(0, Math.min(a.y + a.h, b.y + b.h) - Math.max(a.y, b.y));
+    return ix * iy > 0.3 * Math.min(a.w * a.h, b.w * b.h);
+  };
+  m.boxes = dets.filter(d => !(fromWhole && overlaps(fromWhole, d)))       // one box per face
+    .map(d => ({ ...d, main: !fromWhole && d === main, low: d.score < MIN_CONFIDENCE && !wholeFaces.some(f => overlaps(f, d)) }));
+  if (fromWhole) m.boxes.push({ ...fromWhole, main: true, low: false });
+  for (const f of wholeFaces) if (f !== fromWhole && !m.boxes.some(b => overlaps(b, f))) m.boxes.push({ ...f, main: false, low: false });
+  m.faceScore = fromWhole ? null : main ? main.score : null;   // null = found by the face model at ≥ MIN_CONFIDENCE
+  m.faceShare = main ? main.h : null;
+
+  // 2. Read the main face: straight from the face model's whole-photo result
+  //    when it found it; otherwise from an enlarged crop around the detector's face.
+  const read = (fr, i, how) => {
+    const bs = Object.fromEntries((fr.faceBlendshapes[i] || { categories: [] }).categories.map(k => [k.categoryName, k.score]));
     m.blink = Math.max(bs.eyeBlinkLeft || 0, bs.eyeBlinkRight || 0);
     m.look = Math.max(...["eyeLookInLeft", "eyeLookOutLeft", "eyeLookUpLeft", "eyeLookDownLeft",
       "eyeLookInRight", "eyeLookOutRight", "eyeLookUpRight", "eyeLookDownRight"].map(k => bs[k] || 0));
-    const mat = fr.facialTransformationMatrixes[main.i];
+    const mat = fr.facialTransformationMatrixes[i];
     if (mat) Object.assign(m, headAngles(mat));
+    m.readHow = how;
+  };
+  if (fromWhole) read(whole, fromWhole.i, "read from the photo");
+  else if (main) {
+    const cx = (main.x + main.w / 2) * W, cy = (main.y + main.h / 2) * H;
+    const side = Math.max(main.w * W, main.h * H) * CROP_MARGIN;
+    const c = document.createElement("canvas"); c.width = c.height = CROP_SIZE;
+    const g = c.getContext("2d"); g.fillStyle = "#808080"; g.fillRect(0, 0, CROP_SIZE, CROP_SIZE);
+    g.drawImage(img, cx - side / 2, cy - side / 2, side, side, 0, 0, CROP_SIZE, CROP_SIZE);
+    let fr = face.detect(c), how = "read from a crop";
+    if (!fr.faceLandmarks.length) { fr = faceLow.detect(c); how = "read from a crop, at confidence 0.5"; }
+    if (fr.faceLandmarks.length) {
+      // the crop may hold several faces: take the one nearest its centre
+      const near = fr.faceLandmarks.map((l, i) => { const b = boxOf(l); return { i, d: Math.hypot(b.x + b.w / 2 - 0.5, b.y + b.h / 2 - 0.5) }; })
+        .sort((a, b) => a.d - b.d)[0].i;
+      read(fr, near, how);
+    } else {
+      m.readHow = "couldn't read the face (partly covered, turned away or very small?)";
+    }
   }
-  // The body nearest the main face (or the first) decides the framing.
+
+  // 3. Body points: framing, and a rough head direction if step 2 failed.
+  const pr = pose.detect(img);
+  m.poses = pr.landmarks.length;
   let body = pr.landmarks[0] || null;
   if (main && pr.landmarks.length > 1) {
-    const cx = main.box.x + main.box.w / 2;
-    body = pr.landmarks.slice().sort((a, b) => Math.abs(a[0].x - cx) - Math.abs(b[0].x - cx))[0];
+    const fx = main.x + main.w / 2;
+    body = pr.landmarks.slice().sort((a, b) => Math.abs(a[0].x - fx) - Math.abs(b[0].x - fx))[0];
   }
   Object.assign(m, framingOf(body, m.faceShare));
+  if (m.yaw == null) m.facingEstimate = facingFromBody(body);
   m.people = Math.max(m.faces, m.poses);
-  m.passed = CHECKS.filter(([, , t]) => t(m)).map(([id]) => id);
+  m.results = Object.fromEntries(CHECKS.map(([id, , t]) => [id, t(m)]));
+  m.passed = CHECKS.filter(([id]) => m.results[id] === true).map(([id]) => id);
+  m.unknown = CHECKS.filter(([id]) => m.results[id] === null).length;
   return m;
 }
 
@@ -412,25 +504,34 @@ let person = null, items = [];   // items: { photo, m | error }
 let pendingAuto = false;
 function renderRules() {
   $("rules_list").innerHTML = CHECKS.map(([, label]) => `<li>${esc(label)}</li>`).join("")
-    + `<li class="muted">Score = how many of these ${CHECKS.length} a photo passes. Faces and bodies count only at confidence ≥ ${MIN_CONFIDENCE}.</li>`;
+    + `<li class="muted">Score = how many of these ${CHECKS.length} a photo passes; ? = couldn't be measured (not counted against it). `
+    + `Faces and bodies count at confidence ≥ ${MIN_CONFIDENCE}; every photo is assumed to show a face, so the best one is still read when it's below that.</li>`;
 }
 function photoCard(it) {
   const p = it.photo, m = it.m;
   const isCurrent = !!person.lead && sameOrCrop(p.title, person.lead);
   const author = p.author ? `<div class="author">by ${p.author_url ? link(p.author_url, p.author) : esc(p.author)}${wpBadge(p.author, p.author_url)}</div>` : "";
-  const boxes = m ? m.boxes.map((b, i) => `<div class="face-box${i === 0 ? " main" : ""}" style="left:${b.x * 100}%;top:${b.y * 100}%;width:${b.w * 100}%;height:${b.h * 100}%"></div>`).join("") : "";
+  const boxes = m ? m.boxes.map(b => `<div class="face-box${b.main ? " main" : ""}${b.low ? " low" : ""}" `
+    + `title="${b.score == null ? `face (face model, ≥ ${MIN_CONFIDENCE})` : `face, confidence ${b.score.toFixed(2)}`}" style="left:${b.x * 100}%;top:${b.y * 100}%;width:${b.w * 100}%;height:${b.h * 100}%"></div>`).join("") : "";
   const head = `<div class="row"><span class="v">${link(p.page, p.title)}`
     + `<button type="button" class="mini copy-file" data-file="${esc(bareFilename(p.title))}">Copy</button>${author}</span></div>`;
   let body;
   if (!m) body = row("Analysis", esc(it.error || "not analysed"), true);
   else {
-    const score = `<span class="badge ${m.passed.length >= CHECKS.length - 1 ? "good" : m.passed.length >= CHECKS.length / 2 ? "old" : "low-res"}">score ${m.passed.length}/${CHECKS.length}</span>`;
+    const score = `<span class="badge ${m.passed.length >= CHECKS.length - 1 ? "good" : m.passed.length >= CHECKS.length / 2 ? "old" : "low-res"}">score ${m.passed.length}/${CHECKS.length}</span>`
+      + (m.unknown ? ` <span class="muted">${m.unknown} unknown</span>` : "");
     const deg = v => v == null ? "—" : `${Math.round(Math.abs(v))}°`;
-    const checks = CHECKS.map(([id, label]) => `<li class="${m.passed.includes(id) ? "pass" : "fail"}">${esc(label)}</li>`).join("");
+    const cls = { true: "pass", false: "fail", null: "unknown" };
+    const checks = CHECKS.map(([id, label]) => `<li class="${cls[m.results[id]]}">${esc(label)}</li>`).join("");
+    const conf = m.faceScore == null ? "" : m.faceScore < MIN_CONFIDENCE
+      ? ` — best face at confidence ${m.faceScore.toFixed(2)}: small, turned or partly covered?` : ` (confidence ${m.faceScore.toFixed(2)})`;
     body = `<div class="row">${isCurrent ? `<span class="badge current">current infobox photo</span> ` : ""}${score}</div>
-      ${row("Faces", m.faces ? `${m.faces}${m.people > m.faces ? ` (${m.people} people)` : ""}` : "none found", m.faces !== 1)}
+      ${row("Faces", (m.faces ? `${m.faces}${m.people > m.faces ? ` (${m.people} people)` : ""}` : m.faceScore != null ? "none at ≥ " + MIN_CONFIDENCE : "none found") + conf, m.faces !== 1)}
+      ${m.readHow ? row("Face details", esc(m.readHow), !(m.blink != null)) : ""}
+      ${m.faces > 1 ? row("Note", `${m.faces} faces — the details below are for the largest (green box), which may not be ${esc(person.label)}`, true) : ""}
       ${m.faceShare != null ? row("Face height", `${Math.round(m.faceShare * 100)}% of the photo`, m.faceShare < MIN_FACE_SHARE) : ""}
-      ${m.yaw != null ? row("Head", `turned ${deg(m.yaw)} · tipped ${deg(m.pitch)} · tilted ${deg(m.roll)}`) : ""}
+      ${m.yaw != null ? row("Head", `turned ${deg(m.yaw)} · tipped ${deg(m.pitch)} · tilted ${deg(m.roll)}`)
+        : m.facingEstimate != null ? row("Head", `${m.facingEstimate ? "facing the camera" : "turned away"} <span class="muted">(estimated from body points)</span>`) : ""}
       ${m.blink != null ? row("Eyes", `${m.blink < MAX_BLINK ? "open" : "closed"} (blink ${m.blink.toFixed(2)}) · look-away ${m.look.toFixed(2)}`) : ""}
       ${row("Framing", `${esc(m.framing)} <span class="muted">(${esc(m.why)})</span>`)}
       ${row("Resolution", p.megapixels != null ? `${p.megapixels} MP (${p.width}×${p.height})` : "", p.megapixels == null || p.megapixels < LOW_RES_MP)}
@@ -445,7 +546,8 @@ function photoCard(it) {
 function renderResults(done) {
   const when = it => { const d = parseTs(it.photo.taken) || parseTs(it.photo.uploaded); return d ? d.getTime() : -Infinity; };
   const sorted = done
-    ? items.slice().sort((a, b) => ((b.m ? b.m.passed.length : -1) - (a.m ? a.m.passed.length : -1)) || (when(b) - when(a)))
+    ? items.slice().sort((a, b) => ((b.m ? b.m.passed.length : -1) - (a.m ? a.m.passed.length : -1))
+        || ((a.m ? a.m.unknown : 99) - (b.m ? b.m.unknown : 99)) || (when(b) - when(a)))
     : items;
   $("results").innerHTML = sorted.length ? `<div class="gap-grid">${sorted.map(photoCard).join("")}</div>` : "";
 }

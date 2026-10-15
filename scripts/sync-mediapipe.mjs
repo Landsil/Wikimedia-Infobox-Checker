@@ -33,6 +33,9 @@ const PACKAGE = "@mediapipe/tasks-vision";
 // Only the SIMD build is kept: every current browser supports WebAssembly SIMD.
 const RUNTIME_FILES = ["vision_bundle.mjs", "wasm/vision_wasm_internal.js", "wasm/vision_wasm_internal.wasm"];
 const MODELS = {
+  // Full-range BlazeFace: finds faces further from the camera (up to ~5 m) —
+  // the first pass, before the landmarker reads the face from a crop.
+  face_detector_full_range: "https://storage.googleapis.com/mediapipe-models/face_detector/blaze_face_full_range/float16/latest/blaze_face_full_range.tflite",
   face_landmarker: "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/latest/face_landmarker.task",
   pose_landmarker_lite: "https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/latest/pose_landmarker_lite.task",
 };
@@ -71,9 +74,10 @@ async function modelState() {
   }
   return out;
 }
+const stamp = m => ymd(m.last_modified).replace(/-/g, "");
 const releaseId = (rt, models) =>
-  `tv-${rt.version}_fl-${ymd(models.face_landmarker.last_modified).replace(/-/g, "")}`
-  + `_pl-${ymd(models.pose_landmarker_lite.last_modified).replace(/-/g, "")}`;
+  `tv-${rt.version}_fd-${stamp(models.face_detector_full_range)}`
+  + `_fl-${stamp(models.face_landmarker)}_pl-${stamp(models.pose_landmarker_lite)}`;
 
 const current = existsSync(MANIFEST) ? JSON.parse(await readFile(MANIFEST, "utf8")) : null;
 const rt = await pickRuntime();
@@ -113,7 +117,7 @@ for (const f of RUNTIME_FILES)
 for (const [name, m] of Object.entries(models)) {
   const buf = Buffer.from(await (await get(m.url)).arrayBuffer());
   if (buf.length !== m.bytes) throw new Error(`${name}: got ${buf.length} bytes, expected ${m.bytes}`);
-  await add(`${name}.task`, buf, m.url);
+  await add(m.url.split("/").pop(), buf, m.url);
 }
 const license = Buffer.from(await (await get(LICENSE_URL)).arrayBuffer());
 await writeFile(join(dir, "LICENSE"), license);
@@ -129,7 +133,7 @@ ${files.map(f => `| \`${f.name}\` | ${f.source} |`).join("\n")}
 - Runtime: \`${PACKAGE}\` ${rt.version} (published ${ymd(rt.published)}), npm licence field "${rt.license}";
   tarball verified against the registry integrity \`${rt.integrity.slice(0, 20)}…\`.
 - Models: MediaPipe model cards link the Apache License 2.0 (Face Mesh V2,
-  Blendshape V2, BlazeFace, BlazePose GHUM 3D):
+  Blendshape V2, BlazeFace short- and full-range, BlazePose GHUM 3D):
   https://storage.googleapis.com/mediapipe-assets/ (model cards).
 - SHA-256 of every file: \`../versions.json\`.
 `);

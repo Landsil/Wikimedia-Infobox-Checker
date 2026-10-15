@@ -469,10 +469,10 @@ the browser** with Google's MediaPipe and scored by simple rules shown on the pa
 
 - The page links our copy (`vendor/mediapipe/` on GitHub) and Google's originals
   (npm `@mediapipe/tasks-vision`, the model files on `storage.googleapis.com`).
-- Nothing is downloaded until the visitor presses **Agree**. The files (21.8 MB:
+- Nothing is downloaded until the visitor presses **Agree**. The files (22.9 MB:
   runtime 12.2 MB — `vision_bundle.mjs`, `vision_wasm_internal.{js,wasm}`, SIMD
-  build only — plus `face_landmarker.task` 3.8 MB and `pose_landmarker_lite.task`
-  5.8 MB) come from this site, are checked against the SHA-256 in
+  build only — plus `blaze_face_full_range.tflite` 1.1 MB, `face_landmarker.task`
+  3.8 MB and `pose_landmarker_lite.task` 5.8 MB) come from this site, are checked against the SHA-256 in
   `vendor/mediapipe/versions.json`, and are kept in **Cache Storage** under
   `score-mediapipe-<release>` (not the HTTP cache, so the page can see what's
   there, verify it and remove it). A file that doesn't match is refused and
@@ -488,9 +488,26 @@ the browser** with Google's MediaPipe and scored by simple rules shown on the pa
 
 ### What it measures, and the trial rules
 
-Face Landmarker (`numFaces` 5, detection + presence confidence ≥ **0.8**,
-blendshapes and transformation matrix on) and Pose Landmarker lite (`numPoses`
-5, ≥ 0.8), CPU delegate. For the largest face: its height as a share of the
+Every photo is assumed to show at least one face, so a measurement that can't
+be made is **unknown (?)**, not a fail. Three steps (CPU delegate):
+
+1. **Find faces two ways.** Face Landmarker on the whole photo (its built-in
+   finder is BlazeFace *short-range*: sure of close-ups) at confidence ≥ **0.8**,
+   and the full-range **Face Detector** (made for faces up to ~5 m) down to 0.3.
+   A face counts when either is at ≥ 0.8; the best one is kept even below that,
+   flagged "small, turned or partly covered?" (dashed box).
+2. **Read the main face** (the largest): straight from the whole-photo result
+   when the face model found it, else from a 512 px crop 2.2× the detector's
+   box, at 0.8 and once more at 0.5 (shown). With several faces the card says
+   the details are for the largest, which may not be the depicted person.
+3. **Pose Landmarker lite** (`numPoses` 5, ≥ 0.8): framing, and — when step 2
+   couldn't read the face — a rough head direction from the ears and nose.
+
+Measured 2026-10-15 on Boots Riley's 9 photos: before, the face was missed on
+two full-length shots; with steps 1–2, 8 of 9 were read (one from a 0.56
+detection) and the ninth fell back to body points; 1.1 s for all 9.
+
+For the main face: its height as a share of the
 photo, head **turned / tipped / tilted** (yaw `asin(-R20)`, pitch
 `atan2(R21, R22)`, roll `atan2(R10, R00)` from the column-major 4×4 matrix),
 eyes open (`eyeBlinkLeft/Right`) and look-away (max of the eight `eyeLook*`
@@ -501,9 +518,8 @@ shoulders; no body but a face ≥ 25% high → head & shoulders.
 The eight checks (`CHECKS` in the page): exactly one face · face ≥ 20% of the
 photo's height · eyes open (blink < 0.5) · head turned and tipped ≤ 20° · eyes
 towards the camera (every eye-look < 0.5) · framing head & shoulders or half body
-· ≥ 2 MP · taken within 12 months. Score = checks passed; best first, then newest.
-Measured 2026-10-15: Boots Riley, 9 photos in 6.9 s; the face model (BlazeFace
-short-range inside Face Landmarker) missed the face on two full-length shots.
+· ≥ 2 MP · taken within 12 months. Score = checks passed (unknowns shown, not counted); best first, then fewest
+unknowns, then newest.
 
 It detects faces and bodies; it does not recognise or identify anyone.
 
@@ -513,8 +529,9 @@ It detects faces and bodies; it does not recognise or identify anyone.
 least **14 days** ago (and models whose `Last-Modified` is at least 14 days
 old), verifies the npm tarball against the registry's `integrity` (sha512), and
 writes `vendor/mediapipe/<release>/` plus `versions.json`. The release id names
-the parts, e.g. `tv-1.0.1_fl-20230503_pl-20230427` (runtime 1.0.1, Face
-Landmarker of 2023-05-03, Pose Landmarker of 2023-04-27). The weekly workflow
+the parts, e.g. `tv-1.0.1_fd-20260311_fl-20230503_pl-20230427` (runtime 1.0.1,
+full-range Face Detector of 2026-03-11, Face Landmarker of 2023-05-03, Pose
+Landmarker of 2023-04-27). The weekly workflow
 (`check-mediapipe.yml`, Wednesdays 05:41 UTC, or *Run workflow*) never touches
 `main`: a newer release goes to branch `mediapipe-update/<release>` and an issue
 assigned to Landsil links the comparison. Merging it updates the site; visitors
@@ -526,7 +543,7 @@ security tool blocks npm packages published too recently to be vetted; 1.1.x
 keeps the automatic proposals in the same spirit.
 
 Licences: the runtime is Apache-2.0 (npm `license` field, and the MediaPipe
-repository); the four model cards (BlazeFace, Face Mesh V2, Blendshape V2,
+repository); the model cards (BlazeFace short- and full-range, Face Mesh V2, Blendshape V2,
 BlazePose GHUM 3D) link the Apache License 2.0; their wording was read and checked by
 the maintainer on 2026-10-15. `LICENSE` and `NOTICE.md` sit next to the files.
 
