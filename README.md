@@ -515,11 +515,24 @@ scores). Framing from the body points inside the photo (visibility ≥ 0.5):
 ankles → full body, knees → three-quarter, hips → half body, shoulders → head &
 shoulders; no body but a face ≥ 25% high → head & shoulders.
 
-The eight checks (`CHECKS` in the page): exactly one face · face ≥ 20% of the
-photo's height · eyes open (blink < 0.5) · head turned and tipped ≤ 20° · eyes
-towards the camera (every eye-look < 0.5) · framing head & shoulders or half body
-· ≥ 2 MP · taken within 12 months. Score = checks passed (unknowns shown, not counted); best first, then fewest
-unknowns, then newest.
+The seven checks (`CHECKS` in the page), 1 point each: exactly one face · face
+≥ 20% of the photo's height · eyes open (blink < 0.5) · head turned and tipped
+≤ 20° · eyes towards the camera (every eye-look < 0.5) · framing head &
+shoulders or half body · ≥ 2 MP.
+
+Plus **age points** (taken, else upload date): up to 6 months **+1** (new); up
+to 12 months **+0.5** (fine only if the other checks pass); from 1 year the
+points fall steadily to **−3.5** at 10 years; **10 years or older is always red**,
+whatever the other checks say. Score = checks passed + age points, out of 8:
+green ≥ 7, amber ≥ 4, red below. For a photo that passes all seven checks:
+
+| Age | 6 months | 1 year | 2 years | 3 years | 5 years | 8 years | 10+ years |
+| :-- | :-- | :-- | :-- | :-- | :-- | :-- | :-- |
+| Score | 8 green | 7.5 green | 7.1 green | 6.6 amber | 5.7 amber | 4.4 amber | red |
+
+Unknowns are shown, not counted. Order: 10+ years last, then highest score,
+then fewest unknowns, then newest. (Finder, gaps and history still use the flat
+`STALE_MONTHS` = 12 rule.)
 
 It detects faces and bodies; it does not recognise or identify anyone.
 
@@ -710,7 +723,10 @@ At the top of each tool's `<script>` (history: `history-core.js`; background job
 | :-- | :-- | :-- |
 | `BATCH` | 50 | Items per `titles=`/`ids=` request (non-bot cap) |
 | `THUMB_WIDTH` | 320 | Requested thumbnail width |
-| `STALE_MONTHS` | 12 | Age at which a photo is flagged stale |
+| `STALE_MONTHS` | 12 | Age at which a photo is flagged stale (finder, gaps, history; not the score page) |
+| `NEW_MONTHS` / `FINE_MONTHS` / `BAD_YEARS` | 6 / 12 / 10 | (score) Age bands: new, fine if the rest passes, always bad |
+| `AGE_POINTS_NEW` / `AGE_POINTS_FINE` / `AGE_POINTS_AT_BAD` | 1 / 0.5 / −3.5 | (score) Age points at those bands; linear between 1 and 10 years |
+| `GOOD_SCORE` / `OK_SCORE` | 7 / 4 | (score) Totals out of 8 for green / amber |
 | `LOW_RES_MP` | 2.0 | Megapixels below which resolution is flagged |
 | `MAX_RETRIES` | 6 | Attempts per request before aborting |
 | `BACKOFF_BASE` | 1.0 | Backoff seconds, doubled per retry when no `Retry-After` |

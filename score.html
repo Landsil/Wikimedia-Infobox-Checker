@@ -136,7 +136,14 @@ const MAX_FACES = 5;
 const ANALYSIS_WIDTH = 960;      // a standard Wikimedia thumbnail width
 const PHOTO_CAP = 300;           // depicting photos scored per person
 const LOW_RES_MP = 2.0;
-const STALE_MONTHS = 12;
+const NEW_MONTHS = 6;            // up to this age a photo counts as new
+const FINE_MONTHS = 12;          // up to this age it's fine if the other checks pass
+const BAD_YEARS = 10;            // this old or older is always bad
+const AGE_POINTS_NEW = 1;        // age points up to NEW_MONTHS
+const AGE_POINTS_FINE = 0.5;     // age points up to FINE_MONTHS
+const AGE_POINTS_AT_BAD = -3.5;  // age points just before BAD_YEARS (falls steadily from AGE_POINTS_FINE)
+const GOOD_SCORE = 7;            // total (out of 8) for a green badge
+const OK_SCORE = 4;              // total for an amber badge; below is red
 const MIN_FACE_SHARE = 0.20;     // main face height ≥ 20% of the photo height
 const MAX_HEAD_DEG = 20;         // turned / tipped at most this many degrees
 const MAX_EYE_LOOK = 0.5;        // every eye-look score below this
@@ -162,8 +169,10 @@ const CHECKS = [
   ["eyes_camera", `Eyes towards the camera (eye-look scores under ${MAX_EYE_LOOK})`, m => known(m.look, v => v < MAX_EYE_LOOK)],
   ["framing", "Framing: head & shoulders or half body", m => m.framing === "unclear" ? null : GOOD_FRAMING.has(m.framing)],
   ["resolution", `At least ${LOW_RES_MP} MP`, m => known(m.megapixels, v => v >= LOW_RES_MP)],
-  ["recent", `Taken within the last ${STALE_MONTHS} months`, m => !m.stale],
 ];
+const MAX_SCORE = CHECKS.length + AGE_POINTS_NEW;
+const AGE_RULE = `Age (taken, else uploaded): up to ${NEW_MONTHS} months +${AGE_POINTS_NEW}; up to ${FINE_MONTHS} months +${AGE_POINTS_FINE}; `
+  + `then falling steadily to ${AGE_POINTS_AT_BAD} at ${BAD_YEARS} years; ${BAD_YEARS} years or older is always bad, whatever the other checks say`;
 
 // ---- helpers ----
 const $ = id => document.getElementById(id);
@@ -188,10 +197,25 @@ function parseTs(v) {
   const d = new Date(v); if (!isNaN(d)) return d;
   const m = /(\d{4})-(\d{2})-(\d{2})/.exec(v); return m ? new Date(Date.UTC(+m[1], +m[2] - 1, +m[3])) : null;
 }
-const isStale = (taken, uploaded) => {
+const ageYears = (taken, uploaded) => {
   const when = parseTs(taken) || parseTs(uploaded);
-  return !!when && when < new Date(Date.now() - (365.25 / 12 * STALE_MONTHS) * 86400000);
+  return when ? Math.max(0, (Date.now() - when.getTime()) / (365.25 * 86400000)) : null;
 };
+// Age points for a photo this many years old (null = no date: unknown, not counted)
+function agePoints(years) {
+  if (years == null) return null;
+  if (years <= NEW_MONTHS / 12) return AGE_POINTS_NEW;
+  if (years <= FINE_MONTHS / 12) return AGE_POINTS_FINE;
+  if (years >= BAD_YEARS) return AGE_POINTS_AT_BAD;
+  const from = FINE_MONTHS / 12;
+  return AGE_POINTS_FINE + (years - from) / (BAD_YEARS - from) * (AGE_POINTS_AT_BAD - AGE_POINTS_FINE);
+}
+const ageText = y => y == null ? "" : y < 1 ? `${Math.round(y * 12)} months old` : `${y.toFixed(1)} years old`;
+const fmtScore = v => Number.isInteger(v) ? String(v) : v.toFixed(1);
+function band(m) {
+  if (m.tooOld) return "low-res";
+  return m.total >= GOOD_SCORE ? "good" : m.total >= OK_SCORE ? "old" : "low-res";
+}
 function sanitizeHref(href) {
   href = stripHtml(href).trim();
   if (href.startsWith("//")) return "https:" + href;
@@ -422,7 +446,7 @@ async function analyse(photo) {
   img.src = photo.thumb;
   await img.decode();
   const W = img.naturalWidth, H = img.naturalHeight;
-  const m = { megapixels: photo.megapixels, stale: isStale(photo.taken, photo.uploaded) };
+  const m = { megapixels: photo.megapixels, ageYears: ageYears(photo.taken, photo.uploaded) };
 
   // 1. Find faces two ways: the face model on the whole photo (its built-in
   //    finder is short-range: sure of close-up faces), and the full-range
@@ -494,6 +518,10 @@ async function analyse(photo) {
   m.results = Object.fromEntries(CHECKS.map(([id, , t]) => [id, t(m)]));
   m.passed = CHECKS.filter(([id]) => m.results[id] === true).map(([id]) => id);
   m.unknown = CHECKS.filter(([id]) => m.results[id] === null).length;
+  m.agePoints = agePoints(m.ageYears);
+  m.tooOld = m.ageYears != null && m.ageYears >= BAD_YEARS;
+  if (m.agePoints == null) m.unknown++;
+  m.total = m.passed.length + (m.agePoints || 0);
   return m;
 }
 
@@ -504,7 +532,9 @@ let person = null, items = [];   // items: { photo, m | error }
 let pendingAuto = false;
 function renderRules() {
   $("rules_list").innerHTML = CHECKS.map(([, label]) => `<li>${esc(label)}</li>`).join("")
-    + `<li class="muted">Score = how many of these ${CHECKS.length} a photo passes; ? = couldn't be measured (not counted against it). `
+    + `<li>${esc(AGE_RULE)}</li>`
+    + `<li class="muted">Score = 1 point for each of the first ${CHECKS.length} checks passed, plus the age points, out of ${MAX_SCORE} `
+    + `(green ≥ ${GOOD_SCORE}, amber ≥ ${OK_SCORE}, red below or ${BAD_YEARS}+ years old); ? = couldn't be measured (not counted against it). `
     + `Faces and bodies count at confidence ≥ ${MIN_CONFIDENCE}; every photo is assumed to show a face, so the best one is still read when it's below that.</li>`;
 }
 function photoCard(it) {
@@ -518,11 +548,14 @@ function photoCard(it) {
   let body;
   if (!m) body = row("Analysis", esc(it.error || "not analysed"), true);
   else {
-    const score = `<span class="badge ${m.passed.length >= CHECKS.length - 1 ? "good" : m.passed.length >= CHECKS.length / 2 ? "old" : "low-res"}">score ${m.passed.length}/${CHECKS.length}</span>`
+    const score = `<span class="badge ${band(m)}">score ${fmtScore(m.total)}/${MAX_SCORE}${m.tooOld ? ` · ${BAD_YEARS}+ years old` : ""}</span>`
       + (m.unknown ? ` <span class="muted">${m.unknown} unknown</span>` : "");
     const deg = v => v == null ? "—" : `${Math.round(Math.abs(v))}°`;
     const cls = { true: "pass", false: "fail", null: "unknown" };
-    const checks = CHECKS.map(([id, label]) => `<li class="${cls[m.results[id]]}">${esc(label)}</li>`).join("");
+    const ageCls = m.agePoints == null ? "unknown" : m.agePoints >= AGE_POINTS_NEW ? "pass" : "fail";
+    const ageLabel = m.agePoints == null ? "Age: no date" : `Age: ${ageText(m.ageYears)} (${m.agePoints > 0 ? "+" : ""}${fmtScore(Math.round(m.agePoints * 10) / 10)})`;
+    const checks = CHECKS.map(([id, label]) => `<li class="${cls[m.results[id]]}">${esc(label)}</li>`).join("")
+      + `<li class="${ageCls}">${esc(ageLabel)}</li>`;
     const conf = m.faceScore == null ? "" : m.faceScore < MIN_CONFIDENCE
       ? ` — best face at confidence ${m.faceScore.toFixed(2)}: small, turned or partly covered?` : ` (confidence ${m.faceScore.toFixed(2)})`;
     body = `<div class="row">${isCurrent ? `<span class="badge current">current infobox photo</span> ` : ""}${score}</div>
@@ -535,7 +568,7 @@ function photoCard(it) {
       ${m.blink != null ? row("Eyes", `${m.blink < MAX_BLINK ? "open" : "closed"} (blink ${m.blink.toFixed(2)}) · look-away ${m.look.toFixed(2)}`) : ""}
       ${row("Framing", `${esc(m.framing)} <span class="muted">(${esc(m.why)})</span>`)}
       ${row("Resolution", p.megapixels != null ? `${p.megapixels} MP (${p.width}×${p.height})` : "", p.megapixels == null || p.megapixels < LOW_RES_MP)}
-      ${row("Date taken", esc(dateOnly(p.taken)), m.stale)}
+      ${row("Date taken", esc(dateOnly(p.taken)) + (m.ageYears != null ? ` <span class="muted">(${ageText(m.ageYears)})</span>` : ""), m.agePoints == null || m.agePoints < AGE_POINTS_NEW)}
       <ul class="checks">${checks}</ul>`;
   }
   return `<div class="gap-card${isCurrent ? " is-current" : ""}">
@@ -546,7 +579,8 @@ function photoCard(it) {
 function renderResults(done) {
   const when = it => { const d = parseTs(it.photo.taken) || parseTs(it.photo.uploaded); return d ? d.getTime() : -Infinity; };
   const sorted = done
-    ? items.slice().sort((a, b) => ((b.m ? b.m.passed.length : -1) - (a.m ? a.m.passed.length : -1))
+    ? items.slice().sort((a, b) => ((a.m ? +a.m.tooOld : 2) - (b.m ? +b.m.tooOld : 2))
+        || ((b.m ? b.m.total : -99) - (a.m ? a.m.total : -99))
         || ((a.m ? a.m.unknown : 99) - (b.m ? b.m.unknown : 99)) || (when(b) - when(a)))
     : items;
   $("results").innerHTML = sorted.length ? `<div class="gap-grid">${sorted.map(photoCard).join("")}</div>` : "";
@@ -584,7 +618,7 @@ async function run() {
     }
     renderResults(true);
     const ok = items.filter(it => it.m);
-    const top = ok.filter(it => it.m.passed.length === CHECKS.length).length;
+    const top = ok.filter(it => it.m.total === MAX_SCORE).length;
     const secs = ((performance.now() - t0) / 1000).toFixed(1);
     say(`${ok.length} photo(s) of ${r.label} analysed in ${secs} s${total > photos.length ? ` (the first ${photos.length} of ${total})` : ""}; `
       + `${top} pass every check. Best first.` + (ok.length < photos.length ? ` ${photos.length - ok.length} couldn't be analysed.` : ""));
