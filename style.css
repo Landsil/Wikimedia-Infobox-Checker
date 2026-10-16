@@ -210,6 +210,18 @@
   .checks li.unknown { color: var(--muted); }
   .checks li.unknown::before { content: "?"; }
   .face-box.low { border-style: dashed; }
+  .checks li.crop::before { content: "✂"; color: var(--accent); }
+  .checks li.crop { color: var(--accent); }
+  .checks-head { margin: 8px 0 0; font-size: 11px; font-weight: 700; text-transform: uppercase;
+                 letter-spacing: .04em; color: var(--muted); }
+  .crop-box { position: absolute; border: 2px dashed #f59e0b; border-radius: 2px; pointer-events: none;
+              box-shadow: 0 0 0 9999px rgba(0,0,0,.18); }
+  .score-photo { overflow: hidden; }
+  .verdicts { margin: 0 0 8px; }
+  .verdict { font-size: 13px; padding: 3px 8px; border-radius: 6px; margin: 0 0 4px; }
+  .verdict.good { background: #e6f4ea; color: var(--new); }
+  .verdict.warn { background: #fdf3e6; color: #9a5b00; }
+  .rules ul ul { margin: 2px 0 6px; }
   @media (max-width: 560px) { .gap-grid { grid-template-columns: 1fr; } .gap-card { grid-template-columns: 120px 1fr; } }
   .person-summary { margin: 4px 0 16px; }
   .cand-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }

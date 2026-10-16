@@ -14,7 +14,7 @@
   copy in vendor/mediapipe/, saved into the visitor's Cache Storage only after
   they agree. Every rule behind "good" is shown on the page.
 -->
-<link rel="stylesheet" href="style.css?v=11">
+<link rel="stylesheet" href="style.css?v=12">
 </head>
 <body>
 <header>
@@ -99,7 +99,22 @@
       <li><strong>Framing</strong> — from the body points in frame: full body
         (ankles), three-quarter (knees), half body (hips), head &amp; shoulders.
         When no body is found, a large face counts as head &amp; shoulders.</li>
-      <li>Plus resolution and date, as on the other pages.</li>
+      <li>Plus resolution, and the photo's age (date taken, else uploaded).</li>
+    </ul>
+    <h3>Two results per photo</h3>
+    <ul>
+      <li><strong>Generic photo</strong> — good when its score is green: one
+        point per check passed plus age points, out of 8.</li>
+      <li><strong>Infobox</strong> — a stricter standard, good only when every
+        infobox check passes: one face, face ≥ 30% of the height, head turned /
+        tipped / tilted ≤ 15°, eyes open and to the camera, head &amp; shoulders,
+        ≥ 2 MP, taken within 3 years.</li>
+      <li>Otherwise <em>potentially problematic</em>, with what fails and what
+        couldn't be checked.</li>
+      <li><strong>✂ Croppable</strong>: when the face is too small (or the framing
+        too wide) but a 4:5 portrait crop giving the face the needed share would
+        still be ≥ 2 MP, the check passes "after a crop"; the suggested crop is
+        the dashed box on the photo.</li>
     </ul>
     <h3>The saved copy</h3>
     <ul>
@@ -152,6 +167,17 @@ const GOOD_FRAMING = new Set(["head & shoulders", "half body"]);
 const FACE_FLOOR = 0.3;          // faces kept at all (every photo is assumed to have one)
 const CROP_MARGIN = 2.2;         // crop side = this × the face box, before enlarging
 const CROP_SIZE = 512;           // the crop the face model reads, in pixels
+// Croppable: a face too small for a check still passes it (✂) when a portrait
+// crop (CROP_ASPECT, face centre CROP_FACE_Y down) giving the face the needed
+// share of the height would itself be at least LOW_RES_MP.
+const CROP_ASPECT = 0.8;         // crop width / height (4:5 portrait)
+const CROP_FACE_Y = 0.38;        // face centre this far down the crop
+// The infobox standard: stricter than the generic checks.
+const INFOBOX_FACE_SHARE = 0.30;
+const INFOBOX_HEAD_DEG = 15;     // turned, tipped and tilted each at most this
+const INFOBOX_BLINK = 0.4;
+const INFOBOX_EYE_LOOK = 0.35;
+const INFOBOX_MAX_YEARS = 3;
 const VENDOR = "vendor/mediapipe/";
 const CACHE_PREFIX = "score-mediapipe-";
 
@@ -162,14 +188,34 @@ const known = (v, test) => v == null ? null : test(v);
 const CHECKS = [
   ["one_face", `Exactly one face (at confidence ≥ ${MIN_CONFIDENCE})`,
     m => m.faces === 1 ? true : m.faces > 1 ? false : null],
-  ["face_size", `Face at least ${MIN_FACE_SHARE * 100}% of the photo's height`, m => known(m.faceShare, v => v >= MIN_FACE_SHARE)],
+  ["face_size", `Face at least ${MIN_FACE_SHARE * 100}% of the photo's height (✂ = after a crop)`,
+    m => known(m.faceShare, v => v >= MIN_FACE_SHARE ? true : m.crops.generic && m.crops.generic.ok ? "crop" : false)],
   ["eyes_open", `Eyes open (blink scores under ${MAX_BLINK})`, m => known(m.blink, v => v < MAX_BLINK)],
   ["facing", `Head facing the camera (turned and tipped ≤ ${MAX_HEAD_DEG}°)`,
     m => m.yaw != null ? Math.abs(m.yaw) <= MAX_HEAD_DEG && Math.abs(m.pitch) <= MAX_HEAD_DEG : (m.facingEstimate ?? null)],
   ["eyes_camera", `Eyes towards the camera (eye-look scores under ${MAX_EYE_LOOK})`, m => known(m.look, v => v < MAX_EYE_LOOK)],
-  ["framing", "Framing: head & shoulders or half body", m => m.framing === "unclear" ? null : GOOD_FRAMING.has(m.framing)],
+  ["framing", "Framing: head & shoulders or half body (✂ = after a crop)",
+    m => m.framing === "unclear" ? null : GOOD_FRAMING.has(m.framing) ? true : m.crops.generic && m.crops.generic.ok ? "crop" : false],
   ["resolution", `At least ${LOW_RES_MP} MP`, m => known(m.megapixels, v => v >= LOW_RES_MP)],
 ];
+// Infobox: every one of these must pass (✂ counts: good after the suggested crop).
+const headWithin = (m, deg) => m.yaw == null ? null
+  : Math.abs(m.yaw) <= deg && Math.abs(m.pitch) <= deg && Math.abs(m.roll) <= deg;
+const INFOBOX_CHECKS = [
+  ["one_face", `Exactly one face (at confidence ≥ ${MIN_CONFIDENCE})`,
+    m => m.faces === 1 ? true : m.faces > 1 ? false : null],
+  ["face_size", `Face at least ${INFOBOX_FACE_SHARE * 100}% of the height (✂ = after a crop)`,
+    m => known(m.faceShare, v => v >= INFOBOX_FACE_SHARE ? true : m.crops.infobox && m.crops.infobox.ok ? "crop" : false)],
+  ["facing", `Head turned, tipped and tilted ≤ ${INFOBOX_HEAD_DEG}° (measured, not estimated)`, m => headWithin(m, INFOBOX_HEAD_DEG)],
+  ["eyes_open", `Eyes open (blink under ${INFOBOX_BLINK})`, m => known(m.blink, v => v < INFOBOX_BLINK)],
+  ["eyes_camera", `Eyes to the camera (look-away under ${INFOBOX_EYE_LOOK})`, m => known(m.look, v => v < INFOBOX_EYE_LOOK)],
+  ["framing", "Framing: head & shoulders (✂ = after a crop)",
+    m => m.framing === "head & shoulders" ? true : m.crops.infobox && m.crops.infobox.ok ? "crop" : m.framing === "unclear" ? null : false],
+  ["resolution", `At least ${LOW_RES_MP} MP — of the crop, if one is needed`,
+    m => m.crops.infobox ? m.crops.infobox.mp >= LOW_RES_MP : known(m.megapixels, v => v >= LOW_RES_MP)],
+  ["recent", `Taken within the last ${INFOBOX_MAX_YEARS} years`, m => known(m.ageYears, v => v <= INFOBOX_MAX_YEARS)],
+];
+const passes = v => v === true || v === "crop";
 const MAX_SCORE = CHECKS.length + AGE_POINTS_NEW;
 const AGE_RULE = `Age (taken, else uploaded): up to ${NEW_MONTHS} months +${AGE_POINTS_NEW}; up to ${FINE_MONTHS} months +${AGE_POINTS_FINE}; `
   + `then falling steadily to ${AGE_POINTS_AT_BAD} at ${BAD_YEARS} years; ${BAD_YEARS} years or older is always bad, whatever the other checks say`;
@@ -210,8 +256,26 @@ function agePoints(years) {
   const from = FINE_MONTHS / 12;
   return AGE_POINTS_FINE + (years - from) / (BAD_YEARS - from) * (AGE_POINTS_AT_BAD - AGE_POINTS_FINE);
 }
+// A portrait crop around the main face in which the face is `share` of the
+// height, in the original photo's pixels; null when the face is already big
+// enough (or unknown). ok = the crop would still be at least LOW_RES_MP.
+function cropFor(m, p, share) {
+  const f = m.mainBox;
+  if (!f || !p.width || !p.height || m.faceShare == null || m.faceShare >= share) return null;
+  const W = p.width, H = p.height;
+  let ch = f.h * H / share, cw = ch * CROP_ASPECT;
+  if (cw > W) { cw = W; ch = cw / CROP_ASPECT; }
+  if (ch > H) { ch = H; cw = Math.min(W, ch * CROP_ASPECT); }
+  const x = Math.max(0, Math.min(W - cw, (f.x + f.w / 2) * W - cw / 2));
+  const y = Math.max(0, Math.min(H - ch, (f.y + f.h / 2) * H - ch * CROP_FACE_Y));
+  const mp = Math.round(cw * ch / 100000) / 10;
+  return { x: x / W, y: y / H, w: cw / W, h: ch / H, px: [Math.round(cw), Math.round(ch)], mp,
+           faceShare: f.h * H / ch, ok: mp >= LOW_RES_MP };
+}
 const ageText = y => y == null ? "" : y < 1 ? `${Math.round(y * 12)} months old` : `${y.toFixed(1)} years old`;
 const fmtScore = v => Number.isInteger(v) ? String(v) : v.toFixed(1);
+// A check's label without its "(…)" detail, lower-cased, for the reasons line.
+const shortLabel = l => l.replace(/\s*\(.*?\)/g, "").replace(/\s+—.*$/, "").replace(/^./, c => c.toLowerCase());
 function band(m) {
   if (m.tooOld) return "low-res";
   return m.total >= GOOD_SCORE ? "good" : m.total >= OK_SCORE ? "old" : "low-res";
@@ -473,6 +537,7 @@ async function analyse(photo) {
   for (const f of wholeFaces) if (f !== fromWhole && !m.boxes.some(b => overlaps(b, f))) m.boxes.push({ ...f, main: false, low: false });
   m.faceScore = fromWhole ? null : main ? main.score : null;   // null = found by the face model at ≥ MIN_CONFIDENCE
   m.faceShare = main ? main.h : null;
+  m.mainBox = main ? { x: main.x, y: main.y, w: main.w, h: main.h } : null;
 
   // 2. Read the main face: straight from the face model's whole-photo result
   //    when it found it; otherwise from an enlarged crop around the detector's face.
@@ -515,13 +580,29 @@ async function analyse(photo) {
   Object.assign(m, framingOf(body, m.faceShare));
   if (m.yaw == null) m.facingEstimate = facingFromBody(body);
   m.people = Math.max(m.faces, m.poses);
+  m.crops = { generic: cropFor(m, photo, MIN_FACE_SHARE), infobox: cropFor(m, photo, INFOBOX_FACE_SHARE) };
   m.results = Object.fromEntries(CHECKS.map(([id, , t]) => [id, t(m)]));
-  m.passed = CHECKS.filter(([id]) => m.results[id] === true).map(([id]) => id);
+  m.passed = CHECKS.filter(([id]) => passes(m.results[id])).map(([id]) => id);
   m.unknown = CHECKS.filter(([id]) => m.results[id] === null).length;
   m.agePoints = agePoints(m.ageYears);
   m.tooOld = m.ageYears != null && m.ageYears >= BAD_YEARS;
   if (m.agePoints == null) m.unknown++;
-  m.total = m.passed.length + (m.agePoints || 0);
+  m.total = Math.round((m.passed.length + (m.agePoints || 0)) * 10) / 10;   // rounded first, so badge colour = shown number
+  m.infobox = Object.fromEntries(INFOBOX_CHECKS.map(([id, , t]) => [id, t(m)]));
+  // The two final results.
+  // Reasons: "fails: a, b · couldn't check: c" (plus age for the generic one).
+  const why = (list, res, extra) => {
+    const fails = list.filter(([id]) => res[id] === false).map(([, l]) => shortLabel(l)).concat(extra || []);
+    const unk = list.filter(([id]) => res[id] === null).map(([, l]) => shortLabel(l));
+    return [fails.length ? "fails: " + fails.join(", ") : "", unk.length ? "couldn't check: " + unk.join(", ") : ""].filter(Boolean);
+  };
+  const ageWhy = m.tooOld ? [`${BAD_YEARS}+ years old`] : m.agePoints != null && m.agePoints < 0 ? [`old (${ageText(m.ageYears)})`] : [];
+  m.genericGood = band(m) === "good";
+  m.genericWhy = why(CHECKS, m.results, ageWhy);
+  if (!m.genericWhy.length) m.genericWhy = [`score ${fmtScore(m.total)} of ${MAX_SCORE}, under ${GOOD_SCORE}`];
+  m.infoboxGood = INFOBOX_CHECKS.every(([id]) => passes(m.infobox[id]));
+  m.infoboxCrop = m.infoboxGood && INFOBOX_CHECKS.some(([id]) => m.infobox[id] === "crop");
+  m.infoboxWhy = why(INFOBOX_CHECKS, m.infobox);
   return m;
 }
 
@@ -531,8 +612,13 @@ async function analyse(photo) {
 let person = null, items = [];   // items: { photo, m | error }
 let pendingAuto = false;
 function renderRules() {
-  $("rules_list").innerHTML = CHECKS.map(([, label]) => `<li>${esc(label)}</li>`).join("")
-    + `<li>${esc(AGE_RULE)}</li>`
+  $("rules_list").innerHTML = `<li><strong>Generic photo</strong> — good when the score below is green (≥ ${GOOD_SCORE} of ${MAX_SCORE}):<ul>`
+    + CHECKS.map(([, label]) => `<li>${esc(label)}</li>`).join("")
+    + `<li>${esc(AGE_RULE)}</li></ul></li>`
+    + `<li><strong>Infobox</strong> — good only when every one of these passes:<ul>`
+    + INFOBOX_CHECKS.map(([, label]) => `<li>${esc(label)}</li>`).join("") + `</ul></li>`
+    + `<li class="muted">✂ croppable: a face too small for a check still passes it when a ${CROP_ASPECT * 10}:10 portrait crop giving the face the needed `
+    + `share of the height would still be at least ${LOW_RES_MP} MP — the suggested crop is the dashed box on the photo.</li>`
     + `<li class="muted">Score = 1 point for each of the first ${CHECKS.length} checks passed, plus the age points, out of ${MAX_SCORE} `
     + `(green ≥ ${GOOD_SCORE}, amber ≥ ${OK_SCORE}, red below or ${BAD_YEARS}+ years old); ? = couldn't be measured (not counted against it). `
     + `Faces and bodies count at confidence ≥ ${MIN_CONFIDENCE}; every photo is assumed to show a face, so the best one is still read when it's below that.</li>`;
@@ -541,8 +627,11 @@ function photoCard(it) {
   const p = it.photo, m = it.m;
   const isCurrent = !!person.lead && sameOrCrop(p.title, person.lead);
   const author = p.author ? `<div class="author">by ${p.author_url ? link(p.author_url, p.author) : esc(p.author)}${wpBadge(p.author, p.author_url)}</div>` : "";
-  const boxes = m ? m.boxes.map(b => `<div class="face-box${b.main ? " main" : ""}${b.low ? " low" : ""}" `
-    + `title="${b.score == null ? `face (face model, ≥ ${MIN_CONFIDENCE})` : `face, confidence ${b.score.toFixed(2)}`}" style="left:${b.x * 100}%;top:${b.y * 100}%;width:${b.w * 100}%;height:${b.h * 100}%"></div>`).join("") : "";
+  const crop = m && (m.crops.infobox || m.crops.generic);
+  const cropBox = crop && crop.ok ? `<div class="crop-box" title="suggested crop: ${crop.px[0]}×${crop.px[1]} (${crop.mp} MP)" `
+    + `style="left:${crop.x * 100}%;top:${crop.y * 100}%;width:${crop.w * 100}%;height:${crop.h * 100}%"></div>` : "";
+  const boxes = cropBox + (m ? m.boxes.map(b => `<div class="face-box${b.main ? " main" : ""}${b.low ? " low" : ""}" `
+    + `title="${b.score == null ? `face (face model, ≥ ${MIN_CONFIDENCE})` : `face, confidence ${b.score.toFixed(2)}`}" style="left:${b.x * 100}%;top:${b.y * 100}%;width:${b.w * 100}%;height:${b.h * 100}%"></div>`).join("") : "");
   const head = `<div class="row"><span class="v">${link(p.page, p.title)}`
     + `<button type="button" class="mini copy-file" data-file="${esc(bareFilename(p.title))}">Copy</button>${author}</span></div>`;
   let body;
@@ -551,14 +640,24 @@ function photoCard(it) {
     const score = `<span class="badge ${band(m)}">score ${fmtScore(m.total)}/${MAX_SCORE}${m.tooOld ? ` · ${BAD_YEARS}+ years old` : ""}</span>`
       + (m.unknown ? ` <span class="muted">${m.unknown} unknown</span>` : "");
     const deg = v => v == null ? "—" : `${Math.round(Math.abs(v))}°`;
-    const cls = { true: "pass", false: "fail", null: "unknown" };
+    const cls = { true: "pass", false: "fail", null: "unknown", crop: "crop" };
+    const verdict = (name, good, why, extra) => good
+      ? `<div class="verdict good">${name}: <strong>good</strong>${extra || ""}</div>`
+      : `<div class="verdict warn">${name}: <strong>potentially problematic</strong> — ${esc(why.join(" · "))}</div>`;
+    const verdicts = `<div class="verdicts">`
+      + verdict("Generic photo", m.genericGood, m.genericWhy)
+      + verdict("Infobox", m.infoboxGood, m.infoboxWhy, m.infoboxCrop ? " (after the suggested crop)" : "")
+      + `</div>`;
+    const infoboxChecks = INFOBOX_CHECKS.map(([id, label]) => `<li class="${cls[m.infobox[id]]}">${esc(label)}</li>`).join("");
+    const cropRow = (name, c) => c ? row(`Crop for ${name}`, `${c.px[0]}×${c.px[1]} (${c.mp} MP), face ${Math.round(c.faceShare * 100)}% of it`
+      + (c.ok ? " — croppable" : ` — under ${LOW_RES_MP} MP, not croppable`), !c.ok) : "";
     const ageCls = m.agePoints == null ? "unknown" : m.agePoints >= AGE_POINTS_NEW ? "pass" : "fail";
     const ageLabel = m.agePoints == null ? "Age: no date" : `Age: ${ageText(m.ageYears)} (${m.agePoints > 0 ? "+" : ""}${fmtScore(Math.round(m.agePoints * 10) / 10)})`;
     const checks = CHECKS.map(([id, label]) => `<li class="${cls[m.results[id]]}">${esc(label)}</li>`).join("")
       + `<li class="${ageCls}">${esc(ageLabel)}</li>`;
     const conf = m.faceScore == null ? "" : m.faceScore < MIN_CONFIDENCE
       ? ` — best face at confidence ${m.faceScore.toFixed(2)}: small, turned or partly covered?` : ` (confidence ${m.faceScore.toFixed(2)})`;
-    body = `<div class="row">${isCurrent ? `<span class="badge current">current infobox photo</span> ` : ""}${score}</div>
+    body = `${verdicts}<div class="row">${isCurrent ? `<span class="badge current">current infobox photo</span> ` : ""}${score}</div>
       ${row("Faces", (m.faces ? `${m.faces}${m.people > m.faces ? ` (${m.people} people)` : ""}` : m.faceScore != null ? "none at ≥ " + MIN_CONFIDENCE : "none found") + conf, m.faces !== 1)}
       ${m.readHow ? row("Face details", esc(m.readHow), !(m.blink != null)) : ""}
       ${m.faces > 1 ? row("Note", `${m.faces} faces — the details below are for the largest (green box), which may not be ${esc(person.label)}`, true) : ""}
@@ -569,7 +668,9 @@ function photoCard(it) {
       ${row("Framing", `${esc(m.framing)} <span class="muted">(${esc(m.why)})</span>`)}
       ${row("Resolution", p.megapixels != null ? `${p.megapixels} MP (${p.width}×${p.height})` : "", p.megapixels == null || p.megapixels < LOW_RES_MP)}
       ${row("Date taken", esc(dateOnly(p.taken)) + (m.ageYears != null ? ` <span class="muted">(${ageText(m.ageYears)})</span>` : ""), m.agePoints == null || m.agePoints < AGE_POINTS_NEW)}
-      <ul class="checks">${checks}</ul>`;
+      ${cropRow("generic", m.crops.generic)}${cropRow("infobox", m.crops.infobox)}
+      <div class="checks-head">Generic checks</div><ul class="checks">${checks}</ul>
+      <div class="checks-head">Infobox checks</div><ul class="checks">${infoboxChecks}</ul>`;
   }
   return `<div class="gap-card${isCurrent ? " is-current" : ""}">
     <div class="photo score-photo"><img src="${esc(p.thumb)}" alt="" loading="lazy">${boxes}</div>
@@ -579,7 +680,9 @@ function photoCard(it) {
 function renderResults(done) {
   const when = it => { const d = parseTs(it.photo.taken) || parseTs(it.photo.uploaded); return d ? d.getTime() : -Infinity; };
   const sorted = done
-    ? items.slice().sort((a, b) => ((a.m ? +a.m.tooOld : 2) - (b.m ? +b.m.tooOld : 2))
+    ? items.slice().sort((a, b) => ((b.m ? +b.m.infoboxGood : -1) - (a.m ? +a.m.infoboxGood : -1))
+        || ((b.m ? +b.m.genericGood : -1) - (a.m ? +a.m.genericGood : -1))
+        || ((a.m ? +a.m.tooOld : 2) - (b.m ? +b.m.tooOld : 2))
         || ((b.m ? b.m.total : -99) - (a.m ? a.m.total : -99))
         || ((a.m ? a.m.unknown : 99) - (b.m ? b.m.unknown : 99)) || (when(b) - when(a)))
     : items;
@@ -618,10 +721,11 @@ async function run() {
     }
     renderResults(true);
     const ok = items.filter(it => it.m);
-    const top = ok.filter(it => it.m.total === MAX_SCORE).length;
+    const ib = ok.filter(it => it.m.infoboxGood), ibCrop = ib.filter(it => it.m.infoboxCrop).length;
+    const gen = ok.filter(it => it.m.genericGood).length;
     const secs = ((performance.now() - t0) / 1000).toFixed(1);
     say(`${ok.length} photo(s) of ${r.label} analysed in ${secs} s${total > photos.length ? ` (the first ${photos.length} of ${total})` : ""}; `
-      + `${top} pass every check. Best first.` + (ok.length < photos.length ? ` ${photos.length - ok.length} couldn't be analysed.` : ""));
+      + `${ib.length} good for an infobox${ibCrop ? ` (${ibCrop} after a crop)` : ""}, ${gen} good as a generic photo. Best first.` + (ok.length < photos.length ? ` ${photos.length - ok.length} couldn't be analysed.` : ""));
   } catch (err) {
     say("Error: " + (err.message || err), true);
   } finally {

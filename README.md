@@ -530,8 +530,24 @@ green ≥ 7, amber ≥ 4, red below. For a photo that passes all seven checks:
 | :-- | :-- | :-- | :-- | :-- | :-- | :-- | :-- |
 | Score | 8 green | 7.5 green | 7.1 green | 6.6 amber | 5.7 amber | 4.4 amber | red |
 
-Unknowns are shown, not counted. Order: 10+ years last, then highest score,
-then fewest unknowns, then newest. (Finder, gaps and history still use the flat
+Unknowns are shown, not counted.
+
+**Two final results** head every card: **Generic photo** (good = the score above
+is green; the total is rounded to one decimal *before* the colour is chosen) and
+**Infobox** (good only when every `INFOBOX_CHECKS` entry passes): exactly one face
+· face ≥ 30% of the height · head turned, tipped **and tilted** ≤ 15° (measured,
+not estimated from body points) · blink < 0.4 · look-away < 0.35 · head &
+shoulders · ≥ 2 MP (of the crop, when one is needed) · taken within 3 years.
+Otherwise *potentially problematic*, with "fails: … · couldn't check: …".
+
+**✂ Croppable** (`cropFor()`): when the face is under the needed share (20%
+generic, 30% infobox) or the framing is too wide, a 4:5 portrait crop around the
+face, sized so the face is that share of its height (face centre 38% down,
+clamped to the photo), is computed in the original's pixels; if it is still ≥ 2
+MP the check passes as "crop" (counts as passed; ✂ in the list) and the crop is
+drawn as a dashed box. Order: infobox-good first, then generic-good, then 10+
+years last, highest score, fewest unknowns, newest. Status line: "N good for an
+infobox (M after a crop), K good as a generic photo". (Finder, gaps and history still use the flat
 `STALE_MONTHS` = 12 rule.)
 
 It detects faces and bodies; it does not recognise or identify anyone.
@@ -727,6 +743,8 @@ At the top of each tool's `<script>` (history: `history-core.js`; background job
 | `NEW_MONTHS` / `FINE_MONTHS` / `BAD_YEARS` | 6 / 12 / 10 | (score) Age bands: new, fine if the rest passes, always bad |
 | `AGE_POINTS_NEW` / `AGE_POINTS_FINE` / `AGE_POINTS_AT_BAD` | 1 / 0.5 / −3.5 | (score) Age points at those bands; linear between 1 and 10 years |
 | `GOOD_SCORE` / `OK_SCORE` | 7 / 4 | (score) Totals out of 8 for green / amber |
+| `INFOBOX_FACE_SHARE` / `INFOBOX_HEAD_DEG` / `INFOBOX_BLINK` / `INFOBOX_EYE_LOOK` / `INFOBOX_MAX_YEARS` | 0.30 / 15 / 0.4 / 0.35 / 3 | (score) The infobox standard |
+| `CROP_ASPECT` / `CROP_FACE_Y` | 0.8 / 0.38 | (score) Suggested crop: 4:5, face centre 38% down |
 | `LOW_RES_MP` | 2.0 | Megapixels below which resolution is flagged |
 | `MAX_RETRIES` | 6 | Attempts per request before aborting |
 | `BACKOFF_BASE` | 1.0 | Backoff seconds, doubled per retry when no `Retry-After` |
