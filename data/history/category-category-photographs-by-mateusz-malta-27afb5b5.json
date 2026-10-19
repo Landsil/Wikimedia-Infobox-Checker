@@ -2,16 +2,16 @@
   "schema": 1,
   "algoVersion": 3,
   "identity": "category|Category:Photographs by Mateusz Malta",
-  "asOf": "2026-10-13T15:22:37.720Z",
+  "asOf": "2026-10-19T08:50:34.170Z",
   "input": {
     "type": "category",
     "title": "Category:Photographs by Mateusz Malta"
   },
   "type": "category",
   "count": 3,
-  "addedThrough": "2026-10-12T19:45:57Z",
+  "addedThrough": "2026-10-19T07:39:03Z",
   "uncapped": true,
-  "scanned": 219,
+  "scanned": 271,
   "pending": [],
   "done": [
     "en:Alasdair Beckett-King",
@@ -54,7 +54,13 @@
     "en:Yang Shuang-zi",
     "en:Nick Love",
     "en:Sekou Diaby",
-    "en:Sharon Duncan-Brewster"
+    "en:Sharon Duncan-Brewster",
+    "en:Ben Radcliffe (actor)",
+    "en:Celyn Jones",
+    "en:Dave Benett",
+    "en:John Sackville (actor)",
+    "en:Leo Suter",
+    "en:Marli Siu"
   ],
   "people": [
     {
@@ -971,10 +977,17 @@
       "article": "Sekou Diaby",
       "label": "Sekou Diaby",
       "qid": "Q139567713",
-      "topRev": 1380031102,
+      "topRev": 1380920571,
       "more": false,
-      "lead": "File:Sekou Diaby 02.jpg",
+      "lead": "File:Sekou Diaby BFI LFF 2026 2.jpg",
+      "outside": true,
       "timeline": [
+        {
+          "file": "File:Sekou Diaby BFI LFF 2026 2.jpg",
+          "rev": 1380920571,
+          "ts": "2026-10-18T20:02:28Z",
+          "user": "Starklinson"
+        },
         {
           "file": "File:Sekou Diaby 02.jpg",
           "rev": 1380031102,
@@ -999,12 +1012,138 @@
           "user": "Lovelano"
         }
       ]
+    },
+    {
+      "lang": "en",
+      "article": "Ben Radcliffe (actor)",
+      "label": "Ben Radcliffe",
+      "qid": "Q109984442",
+      "topRev": 1380968600,
+      "more": false,
+      "lead": "File:Ben Radcliffe 02.jpg",
+      "timeline": [
+        {
+          "file": "File:Ben Radcliffe 02.jpg",
+          "rev": 1380968600,
+          "ts": "2026-10-19T03:40:20Z",
+          "user": "Rusted AutoParts"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Celyn Jones",
+      "label": "Celyn Jones",
+      "qid": "Q17159675",
+      "topRev": 1380916695,
+      "more": false,
+      "lead": "File:Celyn Jones.jpg",
+      "timeline": [
+        {
+          "file": "File:Celyn Jones.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Dave Benett",
+      "label": "Dave Benett",
+      "qid": "Q16192603",
+      "topRev": 1380689943,
+      "more": false,
+      "lead": "File:Dave Benett.jpg",
+      "timeline": [
+        {
+          "file": "File:Dave Benett.jpg",
+          "rev": 1380689943,
+          "ts": "2026-10-17T07:41:10Z",
+          "user": "Landsil"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "John Sackville (actor)",
+      "label": "John Sackville",
+      "qid": "Q18921993",
+      "topRev": 1380917276,
+      "more": false,
+      "lead": "File:John Sackville.jpg",
+      "timeline": [
+        {
+          "file": "File:John Sackville.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Leo Suter",
+      "label": "Leo Suter",
+      "qid": "Q43170911",
+      "topRev": 1380919700,
+      "more": false,
+      "lead": "File:Leo Suter 01.jpg",
+      "timeline": [
+        {
+          "file": "File:Leo Suter 01.jpg",
+          "rev": 1380919700,
+          "ts": "2026-10-18T19:55:33Z",
+          "user": "Starklinson"
+        },
+        {
+          "file": "File:Leo Suter - Headshot.jpg",
+          "rev": 1331792932,
+          "ts": "2026-01-08T05:59:19Z",
+          "user": "~2026-14913-1"
+        },
+        {
+          "file": "File:Leo Suter - German Comic Con 2022.jpg",
+          "rev": 1297621810,
+          "ts": "2025-06-27T11:21:20Z",
+          "user": "Carnival Honey"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Marli Siu",
+      "label": "Marli Siu",
+      "qid": "Q79323001",
+      "topRev": 1380916864,
+      "more": false,
+      "lead": "File:Marli Siu 02.jpg",
+      "timeline": [
+        {
+          "file": "File:Marli Siu 02.jpg",
+          "rev": 1380916864,
+          "ts": "2026-10-18T19:32:02Z",
+          "user": "Starklinson"
+        },
+        {
+          "file": "File:Marli Siu circa 2017.jpg",
+          "rev": 1379721783,
+          "ts": "2026-10-11T15:28:15Z",
+          "user": "NeutralPath"
+        },
+        {
+          "file": "File:Marli Siu circa. 2017.jpg",
+          "rev": 1246745127,
+          "ts": "2024-09-20T20:35:43Z",
+          "user": "WikiPedant"
+        }
+      ]
     }
   ],
   "depth": 1,
   "bg": {
     "lastFull": "2026-10-13T15:22:37.720Z",
-    "lastRun": "2026-10-13T15:22:37.720Z",
-    "lastMode": "full"
+    "lastRun": "2026-10-19T08:50:34.170Z",
+    "lastMode": "new"
   }
 }
