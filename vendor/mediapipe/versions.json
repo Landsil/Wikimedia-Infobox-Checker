@@ -1,14 +1,14 @@
 {
-  "release": "tv-1.1.1_fd-20260311_fl-20230503_pl-20230427",
-  "generated": "2026-10-15T14:53:46.723Z",
+  "release": "tv-1.1.0_fd-20260311_fl-20230503_pl-20230427",
+  "generated": "2026-10-21T10:32:03.176Z",
   "min_age_days": 14,
   "runtime": {
     "package": "@mediapipe/tasks-vision",
-    "version": "1.1.1",
-    "published": "2026-10-14T20:48:46.273Z",
-    "explicit": true,
-    "tarball": "https://registry.npmjs.org/@mediapipe/tasks-vision/-/tasks-vision-1.1.1.tgz",
-    "integrity": "sha512-jwntgT5tzDrKOkqg6xNDNpRcTUnGvmylZE5DFnzPXossiWOIDdZX+C81LI75hlXhsG58YZW+lGzcmjH1qrQE/Q=="
+    "version": "1.1.0",
+    "published": "2026-10-06T17:55:06.100Z",
+    "explicit": false,
+    "tarball": "https://registry.npmjs.org/@mediapipe/tasks-vision/-/tasks-vision-1.1.0.tgz",
+    "integrity": "sha512-ZJqh0wMKOINorfSffvDAxzyO1//c+FiG3IkzOdNDnLqvBB3DbMfj0bB/tys2SNf9S914sgoIbIpF4HTOi336cg=="
   },
   "models": {
     "face_detector_full_range": {
@@ -28,46 +28,46 @@
     }
   },
   "license": "Apache-2.0",
-  "total_bytes": 24630317,
+  "total_bytes": 24108904,
   "files": [
     {
       "name": "vision_bundle.mjs",
-      "path": "vendor/mediapipe/tv-1.1.1_fd-20260311_fl-20230503_pl-20230427/vision_bundle.mjs",
-      "bytes": 156139,
-      "sha256": "a84921e02321e582484c1f8126d344b5f33b791fa09c640a52e20ee8632068f1",
-      "source": "https://www.npmjs.com/package/@mediapipe/tasks-vision/v/1.1.1 (vision_bundle.mjs)"
+      "path": "vendor/mediapipe/tv-1.1.0_fd-20260311_fl-20230503_pl-20230427/vision_bundle.mjs",
+      "bytes": 156135,
+      "sha256": "9d5fc9ef74b22329cf9aa88dc543956d192b8c254210b187271614713eb5b10c",
+      "source": "https://www.npmjs.com/package/@mediapipe/tasks-vision/v/1.1.0 (vision_bundle.mjs)"
     },
     {
       "name": "vision_wasm_internal.js",
-      "path": "vendor/mediapipe/tv-1.1.1_fd-20260311_fl-20230503_pl-20230427/vision_wasm_internal.js",
-      "bytes": 334128,
-      "sha256": "6522286aa32dd93eff17c3da002b0649516f87abfec7a80b5bfe5c9625caa5f8",
-      "source": "https://www.npmjs.com/package/@mediapipe/tasks-vision/v/1.1.1 (wasm/vision_wasm_internal.js)"
+      "path": "vendor/mediapipe/tv-1.1.0_fd-20260311_fl-20230503_pl-20230427/vision_wasm_internal.js",
+      "bytes": 335393,
+      "sha256": "7c652617b5bef832f42878ce8c5f752b0724bca6054e4bc1013a37d4b1949723",
+      "source": "https://www.npmjs.com/package/@mediapipe/tasks-vision/v/1.1.0 (wasm/vision_wasm_internal.js)"
     },
     {
       "name": "vision_wasm_internal.wasm",
-      "path": "vendor/mediapipe/tv-1.1.1_fd-20260311_fl-20230503_pl-20230427/vision_wasm_internal.wasm",
-      "bytes": 13519922,
-      "sha256": "0e101a010e262ef8e78f22e3c95b60a9705fd06962753c9acd6356d9fb56b7bd",
-      "source": "https://www.npmjs.com/package/@mediapipe/tasks-vision/v/1.1.1 (wasm/vision_wasm_internal.wasm)"
+      "path": "vendor/mediapipe/tv-1.1.0_fd-20260311_fl-20230503_pl-20230427/vision_wasm_internal.wasm",
+      "bytes": 12997248,
+      "sha256": "782eda3ec1f414fdb4f1d66a8b59093eb4d5ab437e06117796abf05962d68eef",
+      "source": "https://www.npmjs.com/package/@mediapipe/tasks-vision/v/1.1.0 (wasm/vision_wasm_internal.wasm)"
     },
     {
       "name": "blaze_face_full_range.tflite",
-      "path": "vendor/mediapipe/tv-1.1.1_fd-20260311_fl-20230503_pl-20230427/blaze_face_full_range.tflite",
+      "path": "vendor/mediapipe/tv-1.1.0_fd-20260311_fl-20230503_pl-20230427/blaze_face_full_range.tflite",
       "bytes": 1083786,
       "sha256": "3698b18f063835bc609069ef052228fbe86d9c9a6dc8dcb7c7c2d69aed2b181b",
       "source": "https://storage.googleapis.com/mediapipe-models/face_detector/blaze_face_full_range/float16/latest/blaze_face_full_range.tflite"
     },
     {
       "name": "face_landmarker.task",
-      "path": "vendor/mediapipe/tv-1.1.1_fd-20260311_fl-20230503_pl-20230427/face_landmarker.task",
+      "path": "vendor/mediapipe/tv-1.1.0_fd-20260311_fl-20230503_pl-20230427/face_landmarker.task",
       "bytes": 3758596,
       "sha256": "64184e229b263107bc2b804c6625db1341ff2bb731874b0bcc2fe6544e0bc9ff",
       "source": "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/latest/face_landmarker.task"
     },
     {
       "name": "pose_landmarker_lite.task",
-      "path": "vendor/mediapipe/tv-1.1.1_fd-20260311_fl-20230503_pl-20230427/pose_landmarker_lite.task",
+      "path": "vendor/mediapipe/tv-1.1.0_fd-20260311_fl-20230503_pl-20230427/pose_landmarker_lite.task",
       "bytes": 5777746,
       "sha256": "59929e1d1ee95287735ddd833b19cf4ac46d29bc7afddbbf6753c459690d574a",
       "source": "https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/latest/pose_landmarker_lite.task"
