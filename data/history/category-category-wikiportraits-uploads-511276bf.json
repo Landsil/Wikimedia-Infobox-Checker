@@ -2,19 +2,19 @@
   "schema": 1,
   "algoVersion": 3,
   "identity": "category|Category:WikiPortraits uploads",
-  "asOf": "2026-10-19T09:58:22.816Z",
+  "asOf": "2026-10-26T09:22:04.139Z",
   "input": {
     "type": "category",
     "title": "Category:WikiPortraits uploads"
   },
   "type": "category",
   "count": 3,
-  "addedThrough": "2026-10-19T08:53:24Z",
+  "addedThrough": "2026-10-26T06:47:51Z",
   "exclude": [
     "Category:WikiPortraits photos of animals"
   ],
   "uncapped": true,
-  "scanned": 126819,
+  "scanned": 127749,
   "pending": [],
   "done": [
     "fr:Laurène Marx",
@@ -9059,7 +9059,76 @@
     "tr:Sude Kale",
     "en:Sutapa Basu",
     "en:Ursula Rani Sarma",
-    "tr:İrem Çor"
+    "tr:İrem Çor",
+    "en:Wang Xingxing",
+    "en:Ailee",
+    "en:Killagramz",
+    "pl:Grzegorz Dębowski",
+    "en:Jacqueline Lentzou",
+    "en:Judith Godrèche",
+    "en:Putri Marino",
+    "en:Weber Yang",
+    "en:Sam Irvin",
+    "en:Babak Anvari",
+    "en:David Harewood",
+    "en:Emily Fairn",
+    "en:Leo Reich",
+    "en:Olive Gray",
+    "en:Safia Oakley-Green",
+    "en:Sean Delaney (actor)",
+    "en:Callie Crossley",
+    "en:Christopher Castellani",
+    "en:Elizabeth Searle",
+    "en:Kate Brown (historian)",
+    "en:Lance Olsen",
+    "en:Manoush Zomorodi",
+    "en:Michael Lowenthal",
+    "en:Norm Feuti",
+    "en:Priya Parmar",
+    "en:Renée Watson (author)",
+    "en:Roopika Risam",
+    "en:Yiyun Li",
+    "en:Cheslin Kolbe",
+    "en:M. Evelina Galang",
+    "en:Randy Ribay",
+    "en:Ellen Datlow",
+    "en:Nick Mamatas",
+    "en:Robert Olen Butler",
+    "en:Stephen Jones (author)",
+    "en:Danny Ocean (singer)",
+    "en:Wayne Diamond",
+    "en:Dušan Alimpijević",
+    "en:Austin Wiley",
+    "en:Duane Washington Jr.",
+    "en:Joel Parra",
+    "en:Juan Núñez (basketball)",
+    "en:Jurica Žuža",
+    "en:MarJon Beauchamp",
+    "en:Rokas Jokubaitis",
+    "en:Tobias Jensen",
+    "en:David Zima",
+    "en:Jindřich Trpišovský",
+    "en:Harriet Herbig-Matten",
+    "en:Frédéric Dusart",
+    "es:Nuria Ibáñez",
+    "de:Djibril M’Bengue",
+    "de:Dominik Claus",
+    "de:Hartmut Mayerhoffer",
+    "de:Jonáš Josef",
+    "de:Lukas Wucherpfennig",
+    "de:Moritz Strosack",
+    "en:Chloe Malle",
+    "en:Clark Gregg",
+    "en:Dominic Fumusa",
+    "en:Ilana Levine",
+    "en:Janel Moloney",
+    "en:Jon Tenney",
+    "en:Leslie Urdang",
+    "en:Marcelo Zarvos",
+    "en:Scott Caan",
+    "en:Scott Wittman",
+    "en:Tom Broecker",
+    "en:Charlotte Cho"
   ],
   "people": [
     {
@@ -13237,11 +13306,16 @@
       "article": "Zhou Xun",
       "label": "Zhou Xun",
       "qid": "Q198030",
-      "topRev": 1380962821,
+      "topRev": 1381007133,
       "more": false,
-      "lead": "File:Zhou Xun at the 31st Busan International Film Festival.jpg",
-      "outside": true,
+      "lead": "File:Zhou Xun portrait at TIFF 2026.jpg",
       "timeline": [
+        {
+          "file": "File:Zhou Xun portrait at TIFF 2026.jpg",
+          "rev": 1381007133,
+          "ts": "2026-10-19T11:39:49Z",
+          "user": "~2026-56105-73"
+        },
         {
           "file": "File:Zhou Xun at the 31st Busan International Film Festival.jpg",
           "rev": 1380962821,
@@ -13253,12 +13327,6 @@
           "rev": 1380932072,
           "ts": "2026-10-18T21:33:47Z",
           "user": "Northern Moonlight"
-        },
-        {
-          "file": "File:Zhou Xun (周迅) at the 29th Shanghai Television Festival Magnolia Awards on June 28, 2024.png",
-          "rev": 1377446169,
-          "ts": "2026-09-29T12:18:26Z",
-          "user": "DangNgH6464"
         }
       ]
     },
@@ -18814,27 +18882,28 @@
       "article": "Ilya Khrzhanovsky",
       "label": "Ilya Khrzhanovsky",
       "qid": "Q4501358",
-      "topRev": 1379346067,
+      "topRev": 1381009222,
       "more": false,
-      "lead": "File:Ilya Khrzhanovsky at Venice Film Festival 2026.jpg",
+      "lead": "File:Ilya Khrzhanovsky on the set of DAU.png",
+      "outside": true,
       "timeline": [
         {
-          "file": "File:Ilya Khrzhanovsky at Venice Film Festival 2026.jpg",
-          "rev": 1379346067,
-          "ts": "2026-10-09T11:30:38Z",
+          "file": "File:Ilya Khrzhanovsky on the set of DAU.png",
+          "rev": 1381009222,
+          "ts": "2026-10-19T12:04:29Z",
           "user": "Leftorrightway"
+        },
+        {
+          "file": "File:Ilya Khrzhanovsky at Venice Film Festival 2026.jpg",
+          "rev": 1380852365,
+          "ts": "2026-10-18T10:09:43Z",
+          "user": "PrimeBOT"
         },
         {
           "file": "File:Ilya Khrzhanovsky on the set of DAU.png",
           "rev": 1373829383,
           "ts": "2026-09-08T04:45:32Z",
           "user": "FlammableBot"
-        },
-        {
-          "file": "File:The Director of Russian Film ‘4’ Ilya Kharzhanovsky interacting with the Press at the 36th International Film Festival of India – 2005 in Panaji, Goa on November 27, 2005.jpg",
-          "rev": 1351675561,
-          "ts": "2026-04-29T12:41:34Z",
-          "user": "01 wikiwriter"
         }
       ]
     },
@@ -19500,10 +19569,16 @@
       "article": "Ethan Juan",
       "label": "Ethan Juan",
       "qid": "Q706649",
-      "topRev": 1377955105,
+      "topRev": 1381033422,
       "more": false,
-      "lead": "File:Ethan Juan at the 83rd Venice International Film Festival-21 (cropped).jpg",
+      "lead": "File:Ethan Juan at 83rd Venice International Film Festival-21 (cropped).jpg",
       "timeline": [
+        {
+          "file": "File:Ethan Juan at 83rd Venice International Film Festival-21 (cropped).jpg",
+          "rev": 1381033422,
+          "ts": "2026-10-19T15:58:09Z",
+          "user": "~2026-54798-13"
+        },
         {
           "file": "File:Ethan Juan at the 83rd Venice International Film Festival-21 (cropped).jpg",
           "rev": 1377955105,
@@ -19515,12 +19590,6 @@
           "rev": 1376795958,
           "ts": "2026-09-26T07:14:56Z",
           "user": "Cavarrone"
-        },
-        {
-          "file": "File:Ethan Juan (阮經天) in May 2025.png",
-          "rev": 1364397052,
-          "ts": "2026-07-16T07:42:58Z",
-          "user": "Cyfal"
         }
       ]
     },
@@ -23756,10 +23825,17 @@
       "article": "Theda Daniels-Race",
       "label": "Theda Daniels-Race",
       "qid": "Q97155788",
-      "topRev": 1378807558,
+      "topRev": 1382021168,
       "more": false,
-      "lead": "File:Theda Daniels-Race Dragon Con September 4 2026 2481.jpg",
+      "lead": "File:Daniels-Race, Theda.jpg",
+      "outside": true,
       "timeline": [
+        {
+          "file": "File:Daniels-Race, Theda.jpg",
+          "rev": 1382021168,
+          "ts": "2026-10-26T02:23:55Z",
+          "user": "Sumanuil"
+        },
         {
           "file": "File:Theda Daniels-Race Dragon Con September 4 2026 2481.jpg",
           "rev": 1378807558,
@@ -37117,11 +37193,16 @@
       "article": "Elizabeth Tulloch",
       "label": "Elizabeth Tulloch",
       "qid": "Q596626",
-      "topRev": 1380736278,
+      "topRev": 1381040440,
       "more": false,
-      "lead": "File:Bitsie Tulloch photograph by Gage Skidmore.jpg",
-      "outside": true,
+      "lead": "File:Elizabeth Tulloch at San Diego Comic Con 2026-1.jpg",
       "timeline": [
+        {
+          "file": "File:Elizabeth Tulloch at San Diego Comic Con 2026-1.jpg",
+          "rev": 1381040440,
+          "ts": "2026-10-19T16:53:38Z",
+          "user": "Npgeek73"
+        },
         {
           "file": "File:Bitsie Tulloch photograph by Gage Skidmore.jpg",
           "rev": 1380736278,
@@ -37133,12 +37214,6 @@
           "rev": 1379793858,
           "ts": "2026-10-12T00:11:57Z",
           "user": "Sofia Greta fangirl"
-        },
-        {
-          "file": "File:Elizabeth Tulloch by Gage Skidmore 2.jpg",
-          "rev": 1379248285,
-          "ts": "2026-10-08T21:12:40Z",
-          "user": "Glane23"
         }
       ]
     },
@@ -37309,27 +37384,27 @@
       "article": "Keke Palmer",
       "label": "Keke Palmer",
       "qid": "Q273044",
-      "topRev": 1378994333,
+      "topRev": 1381986483,
       "more": false,
-      "lead": "File:Keke Palmer at San Diego Comic Con 2026-1.jpg",
+      "lead": "File:Keke Palmer at Essence Festival of Culture 2025 cropped.jpg",
       "timeline": [
         {
+          "file": "File:Keke Palmer at Essence Festival of Culture 2025 cropped.jpg",
+          "rev": 1381986483,
+          "ts": "2026-10-25T22:47:36Z",
+          "user": "CipherSleuth"
+        },
+        {
           "file": "File:Keke Palmer at San Diego Comic Con 2026-1.jpg",
-          "rev": 1378994333,
-          "ts": "2026-10-07T07:27:24Z",
-          "user": "GreenC bot"
+          "rev": 1380381529,
+          "ts": "2026-10-15T12:05:25Z",
+          "user": "Binksternet"
         },
         {
           "file": "File:Keke Palmer at Essence Festival of Culture 2025 cropped.jpg",
           "rev": 1369782730,
           "ts": "2026-08-17T03:27:27Z",
           "user": "Ser Amantio di Nicolao"
-        },
-        {
-          "file": "File:Keke Palmer at San Diego Comic Con 2026-1.jpg",
-          "rev": 1369235172,
-          "ts": "2026-08-13T18:23:57Z",
-          "user": "Smallestredboy"
         }
       ]
     },
@@ -41006,28 +41081,27 @@
       "article": "Sofia Camara",
       "label": "Sofia Camara",
       "qid": "Q135766417",
-      "topRev": 1379934092,
+      "topRev": 1381240765,
       "more": false,
-      "lead": "File:Sofia Camara Berlin.jpg",
-      "outside": true,
+      "lead": "File:Sofia Camara at 2026 Montreux Jazz Festival (cropped).jpg",
       "timeline": [
         {
+          "file": "File:Sofia Camara at 2026 Montreux Jazz Festival (cropped).jpg",
+          "rev": 1381240765,
+          "ts": "2026-10-20T22:52:36Z",
+          "user": "EGilham"
+        },
+        {
           "file": "File:Sofia Camara Berlin.jpg",
-          "rev": 1379934092,
-          "ts": "2026-10-12T19:49:56Z",
-          "user": "Ontourwithme"
+          "rev": 1380624266,
+          "ts": "2026-10-16T22:20:57Z",
+          "user": "Eihel"
         },
         {
           "file": "File:Sofia Camara at the 2026 Montreux Jazz Festival - Upright.png",
           "rev": 1377038383,
           "ts": "2026-09-27T16:19:39Z",
           "user": "~2026-50901-93"
-        },
-        {
-          "file": "File:Sofia camera.jpg",
-          "rev": 1320356283,
-          "ts": "2025-11-04T05:21:43Z",
-          "user": "Athome0123"
         }
       ]
     },
@@ -44212,28 +44286,27 @@
       "article": "Sienna Spiro",
       "label": "Sienna Spiro",
       "qid": "Q131631266",
-      "topRev": 1380931352,
+      "topRev": 1381769901,
       "more": false,
-      "lead": "File:Sienna Spiro 2025.jpg",
-      "outside": true,
+      "lead": "File:Sienna Spiro at 2026 Montreux Jazz Festival 05 (cropped).jpg",
       "timeline": [
         {
+          "file": "File:Sienna Spiro at 2026 Montreux Jazz Festival 05 (cropped).jpg",
+          "rev": 1381769901,
+          "ts": "2026-10-24T18:10:52Z",
+          "user": "קריצ'ר"
+        },
+        {
           "file": "File:Sienna Spiro 2025.jpg",
-          "rev": 1380931352,
-          "ts": "2026-10-18T21:27:18Z",
-          "user": "~2026-55998-89"
+          "rev": 1381167784,
+          "ts": "2026-10-20T12:07:16Z",
+          "user": "Skyversay"
         },
         {
           "file": "File:Sienna Spiro at 2026 Montreux Jazz Festival 05 (cropped).jpg",
           "rev": 1380858085,
           "ts": "2026-10-18T11:14:39Z",
           "user": "Skyversay"
-        },
-        {
-          "file": "File:Sienna Spiro 2025.jpg",
-          "rev": 1377366481,
-          "ts": "2026-09-29T02:44:52Z",
-          "user": "MusicLover"
         }
       ]
     },
@@ -46098,28 +46171,28 @@
       "article": "Jared Padalecki",
       "label": "Jared Padalecki",
       "qid": "Q215757",
-      "topRev": 1380966721,
+      "topRev": 1381567539,
       "more": false,
-      "lead": "File:Jared Padalecki at MEGACON Orlando 2025.png",
+      "lead": "File:Jared Padalecki at Creation Entertainment in Orlando 2026.jpg",
       "outside": true,
       "timeline": [
         {
+          "file": "File:Jared Padalecki at Creation Entertainment in Orlando 2026.jpg",
+          "rev": 1381567539,
+          "ts": "2026-10-23T10:58:58Z",
+          "user": "Biagio2103"
+        },
+        {
           "file": "File:Jared Padalecki at MEGACON Orlando 2025.png",
-          "rev": 1380966721,
-          "ts": "2026-10-19T03:19:06Z",
+          "rev": 1381565058,
+          "ts": "2026-10-23T10:27:52Z",
           "user": "Emiya1980"
         },
         {
           "file": "File:Jared Padalecki at Creation Entertainment in Orlando 2026.jpg",
-          "rev": 1380579556,
-          "ts": "2026-10-16T16:33:34Z",
-          "user": "Fiction Fanatic III"
-        },
-        {
-          "file": "File:Jared Padalecki at MEGACON Orlando 2025.png",
-          "rev": 1378628742,
-          "ts": "2026-10-05T09:19:15Z",
-          "user": "Fleedre"
+          "rev": 1381218951,
+          "ts": "2026-10-20T19:33:03Z",
+          "user": "Biagio2103"
         }
       ]
     },
@@ -50983,10 +51056,17 @@
       "article": "Manoj Pramanik",
       "label": "Manoj Pramanik",
       "qid": "Q104829934",
-      "topRev": 1375586634,
+      "topRev": 1382013800,
       "more": false,
-      "lead": "File:Manoj Pramanik at 2026 Shanghai International Film Festival 01 (cropped).jpg",
+      "lead": "File:Manojkumarpramanik.jpg",
+      "outside": true,
       "timeline": [
+        {
+          "file": "File:Manojkumarpramanik.jpg",
+          "rev": 1382013800,
+          "ts": "2026-10-26T01:30:27Z",
+          "user": "MSK"
+        },
         {
           "file": "File:Manoj Pramanik at 2026 Shanghai International Film Festival 01 (cropped).jpg",
           "rev": 1375586634,
@@ -58251,7 +58331,7 @@
       "qid": "Q188492",
       "topRev": 1379769058,
       "more": false,
-      "lead": "File:Seth MacFarlane - NBTVF 2026-3.jpg",
+      "lead": "File:Seth MacFarlane - NBTVF 2026-3 (cropped).jpg",
       "timeline": [
         {
           "file": "File:Seth MacFarlane - NBTVF 2026-3.jpg",
@@ -64751,26 +64831,27 @@
       "article": "Tilda Swinton",
       "label": "Tilda Swinton",
       "qid": "Q200534",
-      "topRev": 1379796409,
+      "topRev": 1381862066,
       "more": false,
-      "lead": "File:Tilda Swinton at Cannes Film Festival 02 (cropped).jpg",
+      "lead": "File:Tilda Swinton at Berlinale 2025-2.jpg",
+      "outside": true,
       "timeline": [
         {
+          "file": "File:Tilda Swinton at Berlinale 2025-2.jpg",
+          "rev": 1381862066,
+          "ts": "2026-10-25T07:13:45Z",
+          "user": "JamboDelOeste"
+        },
+        {
           "file": "File:Tilda Swinton at Cannes Film Festival 02 (cropped).jpg",
-          "rev": 1379796409,
-          "ts": "2026-10-12T00:31:44Z",
-          "user": "Count3D"
+          "rev": 1381198578,
+          "ts": "2026-10-20T16:48:11Z",
+          "user": "The One I Left"
         },
         {
           "file": "File:Tilda Swinton at Cannes Film Festival 07 (cropped30526).jpg",
           "rev": 1356902005,
           "ts": "2026-05-30T14:54:47Z",
-          "user": "Renamed user 1f8ccfb5491d5c19844ccd15f751de44"
-        },
-        {
-          "file": "File:Tilda Swinton at Cannes Film Festival 07 (cropped) (cropped) (cropped).jpg",
-          "rev": 1356604799,
-          "ts": "2026-05-28T19:51:57Z",
           "user": "Renamed user 1f8ccfb5491d5c19844ccd15f751de44"
         }
       ]
@@ -65976,11 +66057,17 @@
       "article": "Daniel Radcliffe",
       "label": "Daniel Radcliffe",
       "qid": "Q38119",
-      "topRev": 1380370067,
-      "more": true,
-      "lead": null,
+      "topRev": 1381175919,
+      "more": false,
+      "lead": "File:DanielRadcliffe.jpg",
       "outside": true,
       "timeline": [
+        {
+          "file": "File:DanielRadcliffe.jpg",
+          "rev": 1381175919,
+          "ts": "2026-10-20T13:30:37Z",
+          "user": "Amit.li0"
+        },
         {
           "file": "File:DanielRadcliffe-byPhilipRomano.jpg",
           "rev": 1380370067,
@@ -66238,10 +66325,16 @@
       "article": "Mario Cantone",
       "label": "Mario Cantone",
       "qid": "Q1321626",
-      "topRev": 1378545015,
+      "topRev": 1381580240,
       "more": false,
-      "lead": "File:MarioCantone-byPhilipRomano.jpg",
+      "lead": "File:MarioCantone-byPhilipRomano2.jpg",
       "timeline": [
+        {
+          "file": "File:MarioCantone-byPhilipRomano2.jpg",
+          "rev": 1381580240,
+          "ts": "2026-10-23T13:26:57Z",
+          "user": "Fleedre"
+        },
         {
           "file": "File:MarioCantone-byPhilipRomano.jpg",
           "rev": 1378545015,
@@ -66253,12 +66346,6 @@
           "rev": 1377343628,
           "ts": "2026-09-29T01:04:53Z",
           "user": "~2026-46949-03"
-        },
-        {
-          "file": "File:MarioCantone-byPhilipRomano.jpg",
-          "rev": 1376613981,
-          "ts": "2026-09-25T05:13:36Z",
-          "user": "NJZombie"
         }
       ]
     },
@@ -71219,15 +71306,16 @@
       "article": "Katherine Devlin",
       "label": "Katherine Devlin",
       "qid": "Q119654589",
-      "topRev": 1377400633,
+      "topRev": 1381793503,
       "more": false,
-      "lead": "File:Katherine Devlin at BAFTAs 2026 03.jpg",
+      "lead": null,
+      "outside": true,
       "timeline": [
         {
           "file": "File:Katherine Devlin at BAFTAs 2026 03.jpg",
-          "rev": 1377400633,
-          "ts": "2026-09-29T05:34:22Z",
-          "user": "Hildreth gazzard"
+          "rev": 1380417480,
+          "ts": "2026-10-15T16:20:42Z",
+          "user": "Fort esc"
         },
         {
           "file": "File:Katherine Devlin NY paparazzi.jpg",
@@ -75064,8 +75152,7 @@
       "qid": "Q2629192",
       "topRev": 1380367830,
       "more": true,
-      "lead": null,
-      "outside": true,
+      "lead": "File:Pat Noonan NYCFC v Cincinnati 22 Apr 26-83 (cropped).jpg",
       "timeline": [
         {
           "file": "File:Pat Noonan NYCFC v Cincinnati 22 Apr 26-83 (cropped).jpg",
@@ -80219,27 +80306,27 @@
       "article": "Celia Rose Gooding",
       "label": "Celia Rose Gooding",
       "qid": "Q100702045",
-      "topRev": 1377287976,
+      "topRev": 1381339593,
       "more": false,
-      "lead": "File:Celia Rose Gooding Dragon Con September 6 2026 0957.JPG",
+      "lead": "File:CeliaRoseGooding-byPhilipRomano.jpg",
       "timeline": [
         {
+          "file": "File:CeliaRoseGooding-byPhilipRomano.jpg",
+          "rev": 1381339593,
+          "ts": "2026-10-21T19:08:25Z",
+          "user": "~2026-56406-34"
+        },
+        {
           "file": "File:Celia Rose Gooding Dragon Con September 6 2026 0957.JPG",
-          "rev": 1377287976,
-          "ts": "2026-09-28T18:37:35Z",
-          "user": "Npgeek73"
+          "rev": 1381320669,
+          "ts": "2026-10-21T16:14:33Z",
+          "user": "PaulLim11"
         },
         {
           "file": "File:CeliaRoseGooding-byPhilipRomano.jpg",
-          "rev": 1374287232,
-          "ts": "2026-09-11T01:48:34Z",
-          "user": "GreenC bot"
-        },
-        {
-          "file": "File:Celia Gooding JLP 2019.jpg",
-          "rev": 1341133085,
-          "ts": "2026-03-01T17:11:55Z",
-          "user": "LaffyTaffer"
+          "rev": 1381287365,
+          "ts": "2026-10-21T09:39:06Z",
+          "user": "~2026-56155-38"
         }
       ]
     },
@@ -82108,27 +82195,27 @@
       "article": "Renato Veiga",
       "label": "Renato Veiga",
       "qid": "Q116700351",
-      "topRev": 1380840521,
+      "topRev": 1381781098,
       "more": false,
-      "lead": "File:Renato Veiga Croatia v Portugal 2 July 2026-185.jpg",
+      "lead": "File:Renato Veiga USMNT v Portugal Mar 31 2026-20.jpg",
       "timeline": [
         {
+          "file": "File:Renato Veiga USMNT v Portugal Mar 31 2026-20.jpg",
+          "rev": 1381781098,
+          "ts": "2026-10-24T19:45:34Z",
+          "user": "7ijkuo"
+        },
+        {
           "file": "File:Renato Veiga Croatia v Portugal 2 July 2026-185.jpg",
-          "rev": 1380840521,
-          "ts": "2026-10-18T07:34:50Z",
-          "user": "Hulamda"
+          "rev": 1381233842,
+          "ts": "2026-10-20T21:42:39Z",
+          "user": "7ijkuo"
         },
         {
           "file": "File:Renato Veiga USMNT v Portugal Mar 31 2026-20.jpg",
           "rev": 1378691460,
           "ts": "2026-10-05T18:23:25Z",
           "user": "Amenademm"
-        },
-        {
-          "file": "File:RenatoVeiga.jpg",
-          "rev": 1268805278,
-          "ts": "2025-01-11T17:09:21Z",
-          "user": "Chelsdog"
         }
       ]
     },
@@ -82329,7 +82416,7 @@
       "qid": "Q1279993",
       "topRev": 1378536566,
       "more": false,
-      "lead": "File:Ebon Moss-Bachrach at the 2026 New York Film Festival (2).jpg",
+      "lead": "File:Ebon Moss-Bachrach at the 2026 New York Film Festival (2) (cropped).jpg",
       "timeline": [
         {
           "file": "File:Ebon Moss-Bachrach at the 2026 New York Film Festival (2).jpg",
@@ -83167,7 +83254,7 @@
       "qid": "Q42415490",
       "topRev": 1350728201,
       "more": true,
-      "lead": "File:Giorgia Whigham at WonderCon 2026.jpg",
+      "lead": "File:Giorgia Whigham at WonderCon 2026 (cropped).jpg",
       "timeline": [
         {
           "file": "File:Giorgia Whigham at WonderCon 2026.jpg",
@@ -84407,8 +84494,7 @@
       "qid": "Q97746697",
       "topRev": 1380364832,
       "more": false,
-      "lead": null,
-      "outside": true,
+      "lead": "File:Emma Peuhkurinen 1 (cropped).jpg",
       "timeline": [
         {
           "file": "File:Emma Peuhkurinen 1 (cropped).jpg",
@@ -84775,10 +84861,16 @@
       "article": "Devin Lynch",
       "label": "Devin Lynch",
       "qid": "Q138857823",
-      "topRev": 1375502046,
+      "topRev": 1382040630,
       "more": false,
-      "lead": "File:Devin Lynch Gotham v Denver Mar 25 2026-67 (cropped).jpg",
+      "lead": "File:Devin Lynch Gotham v Denver Mar 25 2026-33.jpg",
       "timeline": [
+        {
+          "file": "File:Devin Lynch Gotham v Denver Mar 25 2026-33.jpg",
+          "rev": 1382040630,
+          "ts": "2026-10-26T05:20:52Z",
+          "user": "24Anonymous"
+        },
         {
           "file": "File:Devin Lynch Gotham v Denver Mar 25 2026-67 (cropped).jpg",
           "rev": 1375502046,
@@ -87962,7 +88054,8 @@
       "qid": "Q82987370",
       "topRev": 1379363188,
       "more": false,
-      "lead": "File:Jhedli van Briesies.jpg",
+      "lead": "File:Jhedli van Briesies (cropped).jpg",
+      "outside": true,
       "timeline": [
         {
           "file": "File:Jhedli van Briesies.jpg",
@@ -87980,6 +88073,7 @@
       "topRev": 1343185716,
       "more": false,
       "lead": "File:Joshua van Heerden.jpg",
+      "outside": true,
       "timeline": [
         {
           "file": "File:Joshua van Heerden.jpg",
@@ -97045,27 +97139,27 @@
       "article": "Amanda Seyfried",
       "label": "Amanda Seyfried",
       "qid": "Q189226",
-      "topRev": 1379961892,
+      "topRev": 1381666502,
       "more": false,
-      "lead": "File:Amanda Seyfried at the 2025 Toronto International Film Festival. 02 (cropped).jpg",
+      "lead": "File:Amanda Seyfried at the 83rd Venice International Film Festival.jpg",
       "timeline": [
         {
+          "file": "File:Amanda Seyfried at the 83rd Venice International Film Festival.jpg",
+          "rev": 1381666502,
+          "ts": "2026-10-24T00:41:17Z",
+          "user": "CipherSleuth"
+        },
+        {
           "file": "File:Amanda Seyfried at the 2025 Toronto International Film Festival. 02 (cropped).jpg",
-          "rev": 1379961892,
-          "ts": "2026-10-12T23:35:45Z",
-          "user": "Bender the Bot"
+          "rev": 1381022961,
+          "ts": "2026-10-19T14:27:05Z",
+          "user": "Guz13"
         },
         {
           "file": "File:Amanda Seyfried at the 83rd Venice International Film Festival.jpg",
           "rev": 1376720154,
           "ts": "2026-09-25T21:32:03Z",
           "user": "Sunrea0"
-        },
-        {
-          "file": "File:Amanda Seyfried Venice Film Festival 2.jpg",
-          "rev": 1374233629,
-          "ts": "2026-09-10T18:17:15Z",
-          "user": "Wolfgang Schulze"
         }
       ]
     },
@@ -98354,10 +98448,16 @@
       "article": "Bella Ramsey",
       "label": "Bella Ramsey",
       "qid": "Q24891605",
-      "topRev": 1380038428,
+      "topRev": 1381835816,
       "more": true,
-      "lead": "File:Bella Ramsey-3066 (cropped).jpg",
+      "lead": "File:Bella Ramsey in 2026 02 (cropped).jpg",
       "timeline": [
+        {
+          "file": "File:Bella Ramsey in 2026 02 (cropped).jpg",
+          "rev": 1381835816,
+          "ts": "2026-10-25T02:36:24Z",
+          "user": "SoulSurvivor97"
+        },
         {
           "file": "File:Bella Ramsey-3066 (cropped).jpg",
           "rev": 1380038428,
@@ -100614,10 +100714,11 @@
       "qid": "Q4773982",
       "topRev": 72051218,
       "more": false,
-      "lead": "File:Ini Massez (2026).png",
+      "lead": "File:Ini Massez (2026) A.jpg",
+      "outside": true,
       "timeline": [
         {
-          "file": "File:Ini Massez (2026).png",
+          "file": "File:Ini Massez (2026) A.jpg",
           "rev": null,
           "ts": null,
           "user": null
@@ -103598,8 +103699,7 @@
       "qid": "Q3805729",
       "topRev": 1380370058,
       "more": false,
-      "lead": null,
-      "outside": true,
+      "lead": "File:Jackie Tohn at WWD Style Awards 2026.jpg",
       "timeline": [
         {
           "file": "File:Jackie Tohn at WWD Style Awards 2026.jpg",
@@ -103686,7 +103786,7 @@
       "qid": "Q20752077",
       "topRev": 1379551476,
       "more": false,
-      "lead": "File:McKenna Grace at WWD Style Awards 2026 (cropped).jpg",
+      "lead": "File:McKenna Grace at WWD Style Awards 2026.jpg",
       "timeline": [
         {
           "file": "File:McKenna Grace at WWD Style Awards 2026 (cropped).jpg",
@@ -106041,27 +106141,28 @@
       "article": "Janet Currie",
       "label": "Janet Currie",
       "qid": "Q1682653",
-      "topRev": 1378981092,
+      "topRev": 1381930410,
       "more": false,
-      "lead": "File:ASSA 2026 - Janet Currie 02 (cropped).jpg",
+      "lead": null,
+      "outside": true,
       "timeline": [
         {
           "file": "File:ASSA 2026 - Janet Currie 02 (cropped).jpg",
-          "rev": 1378981092,
-          "ts": "2026-10-07T05:08:01Z",
-          "user": "YSSYguy"
+          "rev": 1380835525,
+          "ts": "2026-10-18T06:33:41Z",
+          "user": "AFBorchert"
         },
         {
-          "file": "File:Janet Currie.jpg",
-          "rev": 1371684170,
-          "ts": "2026-08-27T21:29:26Z",
-          "user": "Tacyarg"
+          "file": "File:Janet Currie Princeton.jpg",
+          "rev": 1380829260,
+          "ts": "2026-10-18T05:14:03Z",
+          "user": "Willy1754"
         },
         {
           "file": "File:ASSA 2026 - Janet Currie 02 (cropped).jpg",
-          "rev": 1333756035,
-          "ts": "2026-01-19T15:51:35Z",
-          "user": "Xuthoria"
+          "rev": 1380238441,
+          "ts": "2026-10-14T16:24:11Z",
+          "user": "Bender the Bot"
         }
       ]
     },
@@ -112968,10 +113069,16 @@
       "article": "Jay Armstrong Johnson",
       "label": "Jay Armstrong Johnson",
       "qid": "Q21207227",
-      "topRev": 1377908945,
+      "topRev": 1381274212,
       "more": false,
-      "lead": "File:JayArmstrongJohnson-byPhilipRomano.jpg",
+      "lead": "File:JayArmstrongJohnson-byPhilipRomano2.jpg",
       "timeline": [
+        {
+          "file": "File:JayArmstrongJohnson-byPhilipRomano2.jpg",
+          "rev": 1381274212,
+          "ts": "2026-10-21T06:22:17Z",
+          "user": "PhilipRomano"
+        },
         {
           "file": "File:JayArmstrongJohnson-byPhilipRomano.jpg",
           "rev": 1377908945,
@@ -112983,12 +113090,6 @@
           "rev": 1310163888,
           "ts": "2025-09-08T01:41:53Z",
           "user": "Stonecold415"
-        },
-        {
-          "file": "File:Jay Armstrong Johnson.jpg",
-          "rev": 1020635064,
-          "ts": "2021-04-30T05:47:23Z",
-          "user": "Divertissement"
         }
       ]
     },
@@ -118217,27 +118318,28 @@
       "article": "Hugh Jackman",
       "label": "Q129591",
       "qid": "Q129591",
-      "topRev": 1374946142,
+      "topRev": 1382036844,
       "more": false,
-      "lead": "File:Hugh Jackman Is This Thing On-68 (cropped).jpg",
+      "lead": "File:Hugh Jackman by Gage Skidmore 3.jpg",
+      "outside": true,
       "timeline": [
         {
+          "file": "File:Hugh Jackman by Gage Skidmore 3.jpg",
+          "rev": 1382036844,
+          "ts": "2026-10-26T04:31:55Z",
+          "user": "GünniX"
+        },
+        {
           "file": "File:Hugh Jackman Is This Thing On-68 (cropped).jpg",
-          "rev": 1374946142,
-          "ts": "2026-09-15T00:20:17Z",
-          "user": "JJMC89 bot III"
+          "rev": 1381346115,
+          "ts": "2026-10-21T20:01:24Z",
+          "user": "Mliv717"
         },
         {
           "file": "File:Hugh Jackman by Gage Skidmore 3.jpg",
           "rev": 1367952198,
           "ts": "2026-08-06T04:17:48Z",
           "user": "WaterExplorer"
-        },
-        {
-          "file": "File:Hugh Jackman Is This Thing On-68 (cropped).jpg",
-          "rev": 1330274341,
-          "ts": "2025-12-30T12:52:07Z",
-          "user": "Spectritus"
         }
       ]
     },
@@ -124224,27 +124326,28 @@
       "article": "Ivy Wolk",
       "label": "Ivy Wolk",
       "qid": "Q125429069",
-      "topRev": 1379767591,
+      "topRev": 1382056309,
       "more": false,
-      "lead": "File:Ivy Wolk.jpg",
+      "lead": "File:Ivy Wolk at The Stand New York City January 2025.jpg",
+      "outside": true,
       "timeline": [
+        {
+          "file": "File:Ivy Wolk at The Stand New York City January 2025.jpg",
+          "rev": 1382056309,
+          "ts": "2026-10-26T08:55:24Z",
+          "user": "Damonyn2"
+        },
+        {
+          "file": "File:Ivy Wolk at 2025 Toronto International Film Festival (cropped).jpg",
+          "rev": 1381064239,
+          "ts": "2026-10-19T19:49:48Z",
+          "user": "~2026-56039-80"
+        },
         {
           "file": "File:Ivy Wolk.jpg",
           "rev": 1379767591,
           "ts": "2026-10-11T21:00:46Z",
           "user": "~2026-54733-89"
-        },
-        {
-          "file": "File:Ivy Wolk at 2025 Toronto International Film Festival.jpg",
-          "rev": 1373075833,
-          "ts": "2026-09-03T22:56:30Z",
-          "user": "Granty00"
-        },
-        {
-          "file": "File:Ivy Wolk.jpg",
-          "rev": 1358727608,
-          "ts": "2026-06-10T15:28:39Z",
-          "user": "~2026-24086-09"
         }
       ]
     },
@@ -125280,10 +125383,16 @@
       "article": "Matt Rogers (comedian)",
       "label": "Matt Rogers",
       "qid": "Q102338984",
-      "topRev": 1378466903,
+      "topRev": 1381273772,
       "more": true,
-      "lead": "File:MattRogers-byPhilipRomano.jpg",
+      "lead": "File:MattRogers-byPhilipRomano2.jpg",
       "timeline": [
+        {
+          "file": "File:MattRogers-byPhilipRomano2.jpg",
+          "rev": 1381273772,
+          "ts": "2026-10-21T06:15:16Z",
+          "user": "PhilipRomano"
+        },
         {
           "file": "File:MattRogers-byPhilipRomano.jpg",
           "rev": 1378466903,
@@ -125366,27 +125475,27 @@
       "article": "Sydney Lemmon",
       "label": "Sydney Lemmon",
       "qid": "Q97667780",
-      "topRev": 1357308762,
+      "topRev": 1381952369,
       "more": false,
-      "lead": "File:SydneyLemmon-ColorTheories-byPhilipRomano.jpg",
+      "lead": "File:Sydney Lemmon 2025 (cropped).jpg",
       "timeline": [
         {
-          "file": "File:SydneyLemmon-ColorTheories-byPhilipRomano.jpg",
-          "rev": 1357308762,
-          "ts": "2026-06-01T22:37:44Z",
-          "user": "PrimeBOT"
+          "file": "File:Sydney Lemmon 2025 (cropped).jpg",
+          "rev": 1381952369,
+          "ts": "2026-10-25T20:09:55Z",
+          "user": "The One I Left"
         },
         {
-          "file": "File:SydneyLemmon-byPhilipRomano2.jpg",
-          "rev": 1306996933,
-          "ts": "2025-08-20T22:51:18Z",
-          "user": "Ken Gallager"
+          "file": "File:SydneyLemmon-byPhilipRomano9.jpg",
+          "rev": 1381923043,
+          "ts": "2026-10-25T17:04:51Z",
+          "user": "Arjayay"
         },
         {
-          "file": "File:SydneyLemmon-byPhilipRomano.jpg",
-          "rev": 1291892577,
-          "ts": "2025-05-24T01:09:39Z",
-          "user": "47.230.130.142"
+          "file": "File:Sydney Lemmon on Sidewalks Entertainment.jpg",
+          "rev": 1381894559,
+          "ts": "2026-10-25T13:36:59Z",
+          "user": "~2026-56977-52"
         }
       ]
     },
@@ -130438,8 +130547,7 @@
       "qid": "Q1058161",
       "topRev": 1371806696,
       "more": false,
-      "lead": null,
-      "outside": true,
+      "lead": "File:Mara Venier at 82nd Venice International Film Festival (1 of 1).jpg",
       "timeline": [
         {
           "file": "File:Mara Venier at 82nd Venice International Film Festival (1 of 1).jpg",
@@ -134838,10 +134946,17 @@
       "article": "Chloë Sevigny",
       "label": "Chloë Sevigny",
       "qid": "Q235870",
-      "topRev": 1375943001,
+      "topRev": 1381836097,
       "more": false,
-      "lead": "File:Chloe Sevigny 2025 Venice Film Festival.jpg",
+      "lead": "File:Chloë Sevigny Cannes 2019.jpg",
+      "outside": true,
       "timeline": [
+        {
+          "file": "File:Chloë Sevigny Cannes 2019.jpg",
+          "rev": 1381836097,
+          "ts": "2026-10-25T02:39:33Z",
+          "user": "StarInsane135"
+        },
         {
           "file": "File:Chloe Sevigny 2025 Venice Film Festival.jpg",
           "rev": 1375943001,
@@ -134853,12 +134968,6 @@
           "rev": 1311780778,
           "ts": "2025-09-16T21:41:13Z",
           "user": "Mondebleu"
-        },
-        {
-          "file": "File:Chloë Sevigny Cannes 2019 (crop).jpg",
-          "rev": 1251076326,
-          "ts": "2024-10-14T07:59:25Z",
-          "user": "FMSky"
         }
       ]
     },
@@ -137070,15 +137179,22 @@
       "article": "Kristen Bell",
       "label": "Kristen Bell",
       "qid": "Q178882",
-      "topRev": 1379373560,
-      "more": true,
-      "lead": "File:Kristen Bell at Televerse 2025.jpg",
+      "topRev": 1381862697,
+      "more": false,
+      "lead": "File:Kristen Bell Empire State.jpg",
+      "outside": true,
       "timeline": [
         {
+          "file": "File:Kristen Bell Empire State.jpg",
+          "rev": 1381862697,
+          "ts": "2026-10-25T07:21:10Z",
+          "user": "ProfSamBJones"
+        },
+        {
           "file": "File:Kristen Bell at Televerse 2025.jpg",
-          "rev": 1379373560,
-          "ts": "2026-10-09T16:02:17Z",
-          "user": "GiofanniRahman"
+          "rev": 1380854402,
+          "ts": "2026-10-18T10:27:30Z",
+          "user": "~2026-55748-46"
         },
         {
           "file": "File:Kristen Bell Paris Fashion Week Spring Summer 2020 (cropped).jpg",
@@ -138399,7 +138515,8 @@
       "qid": "Q111146926",
       "topRev": 173040376,
       "more": false,
-      "lead": "File:Miguel Ángel Jiménez at the 78th Locarno Film Festival 01.jpg",
+      "lead": null,
+      "outside": true,
       "timeline": [
         {
           "file": "File:Miguel Ángel Jiménez at the 78th Locarno Film Festival 01.jpg",
@@ -143037,8 +143154,7 @@
       "qid": "Q50738324",
       "topRev": 1380364362,
       "more": false,
-      "lead": null,
-      "outside": true,
+      "lead": "File:Tom Pearce CF Montreal NYCFC 6.28.25-056 (cropped).jpg",
       "timeline": [
         {
           "file": "File:Tom Pearce CF Montreal NYCFC 6.28.25-056 (cropped).jpg",
@@ -146467,10 +146583,17 @@
       "article": "Craig Wedren",
       "label": "Craig Wedren",
       "qid": "Q5181581",
-      "topRev": 1373702904,
-      "more": true,
-      "lead": "File:Craig Wedren The State-59 (cropped).jpg",
+      "topRev": 1381214439,
+      "more": false,
+      "lead": "File:Craig Wedren performing with Middle Aged Dad Jam Band at Rockaway Beach NY, 20 July 2025.jpg",
+      "outside": true,
       "timeline": [
+        {
+          "file": "File:Craig Wedren performing with Middle Aged Dad Jam Band at Rockaway Beach NY, 20 July 2025.jpg",
+          "rev": 1381214439,
+          "ts": "2026-10-20T18:56:32Z",
+          "user": "AddisonByAddisonRaeFan"
+        },
         {
           "file": "File:Craig Wedren The State-59 (cropped).jpg",
           "rev": 1373702904,
@@ -149348,8 +149471,7 @@
       "qid": "Q99557502",
       "topRev": 1370979202,
       "more": false,
-      "lead": null,
-      "outside": true,
+      "lead": "File:Serge Ngoma Red Bull Atlanta 5.31.25-48.jpg",
       "timeline": [
         {
           "file": "File:Serge Ngoma Red Bull Atlanta 5.31.25-48.jpg",
@@ -155553,7 +155675,7 @@
       "qid": "Q55080956",
       "topRev": 1379893818,
       "more": false,
-      "lead": "File:Anna Delvey 2026.jpg",
+      "lead": "File:Anna Delvey 2026 (cropped).jpg",
       "outside": true,
       "timeline": [
         {
@@ -169060,10 +169182,17 @@
       "article": "Elijah Wood",
       "label": "Elijah Wood",
       "qid": "Q483771",
-      "topRev": 1374095240,
+      "topRev": 1381196326,
       "more": false,
-      "lead": "File:Elijah Wood at the 2025 Sundance Film Festival (cropped)2.jpg",
+      "lead": "File:Elijah Wood (55223197178) (cropped).jpg",
+      "outside": true,
       "timeline": [
+        {
+          "file": "File:Elijah Wood (55223197178) (cropped).jpg",
+          "rev": 1381196326,
+          "ts": "2026-10-20T16:32:16Z",
+          "user": "Amit.li0"
+        },
         {
           "file": "File:Elijah Wood at the 2025 Sundance Film Festival (cropped)2.jpg",
           "rev": 1374095240,
@@ -169075,12 +169204,6 @@
           "rev": 1308417621,
           "ts": "2025-08-29T10:07:51Z",
           "user": "ClueBot NG"
-        },
-        {
-          "file": "File:Elijah Wood at the 2025 Sundance Film Festival (cropped).jpg",
-          "rev": 1305155652,
-          "ts": "2025-08-10T10:59:25Z",
-          "user": "Ernsanchez00"
         }
       ]
     },
@@ -174897,8 +175020,7 @@
       "qid": "Q105007708",
       "topRev": 1371795513,
       "more": false,
-      "lead": null,
-      "outside": true,
+      "lead": "File:Adarsh Gourav at the 2024 Toronto International Film Festival (cropped).jpg",
       "timeline": [
         {
           "file": "File:Adarsh Gourav at the 2024 Toronto International Film Festival (cropped).jpg",
@@ -175468,8 +175590,7 @@
       "qid": "Q528527",
       "topRev": 1380376566,
       "more": true,
-      "lead": null,
-      "outside": true,
+      "lead": "File:Campbell Scott at the 2024 Toronto International Film Festival (cropped).jpg",
       "timeline": [
         {
           "file": "File:Campbell Scott at the 2024 Toronto International Film Festival (cropped).jpg",
@@ -175849,10 +175970,16 @@
       "article": "Ellie Bamber",
       "label": "Ellie Bamber",
       "qid": "Q22683508",
-      "topRev": 1377299131,
+      "topRev": 1381400821,
       "more": false,
-      "lead": "File:Ellie Bamber at the 2024 Toronto International Film Festival 4 (cropped).jpg",
+      "lead": "File:Ellie Bamber 01.jpg",
       "timeline": [
+        {
+          "file": "File:Ellie Bamber 01.jpg",
+          "rev": 1381400821,
+          "ts": "2026-10-22T05:43:44Z",
+          "user": "Cody Fearless-Lee"
+        },
         {
           "file": "File:Ellie Bamber at the 2024 Toronto International Film Festival 4 (cropped).jpg",
           "rev": 1377299131,
@@ -175864,12 +175991,6 @@
           "rev": 1307406423,
           "ts": "2025-08-23T11:49:11Z",
           "user": "Pancakeswithbutterr"
-        },
-        {
-          "file": "File:Ellie Bamber at the 2024 Toronto International Film Festival 4 (cropped).jpg",
-          "rev": 1301678807,
-          "ts": "2025-07-21T04:23:32Z",
-          "user": "GreenC bot"
         }
       ]
     },
@@ -177985,27 +178106,27 @@
       "article": "Florence Pugh",
       "label": "Florence Pugh",
       "qid": "Q22277803",
-      "topRev": 1379922723,
+      "topRev": 1381272418,
       "more": false,
-      "lead": "File:Florence Pugh at the 2024 Toronto International Film Festival 13 (cropped 2 – color adjusted).jpg",
+      "lead": "File:Florence Pugh 2026.jpg",
       "timeline": [
         {
-          "file": "File:Florence Pugh at the 2024 Toronto International Film Festival 13 (cropped 2 – color adjusted).jpg",
-          "rev": 1379922723,
-          "ts": "2026-10-12T18:15:46Z",
-          "user": "DrOrinScrivello"
+          "file": "File:Florence Pugh 2026.jpg",
+          "rev": 1381272418,
+          "ts": "2026-10-21T05:51:09Z",
+          "user": "Humza Rashed"
         },
         {
-          "file": "File:Actress Florence Pugh - Thunderbolts - L.A. Premiere (cropped).jpg",
-          "rev": 1367146324,
-          "ts": "2026-08-01T08:00:20Z",
-          "user": "BHARATHP2001"
+          "file": "File:Florence Pugh in 2026 (cropped).jpg",
+          "rev": 1381181614,
+          "ts": "2026-10-20T14:22:24Z",
+          "user": "Marlyrocks"
         },
         {
           "file": "File:Florence Pugh at the 2024 Toronto International Film Festival 13 (cropped 2 – color adjusted).jpg",
-          "rev": 1366782012,
-          "ts": "2026-07-30T04:50:08Z",
-          "user": "OceanHok"
+          "rev": 1380556803,
+          "ts": "2026-10-16T13:28:23Z",
+          "user": "DonBeroni"
         }
       ]
     },
@@ -181445,16 +181566,21 @@
       "article": "Cameron Winter",
       "label": "Cameron Winter",
       "qid": "Q134691738",
-      "topRev": 1380982558,
-      "more": true,
-      "lead": null,
-      "outside": true,
+      "topRev": 1381457288,
+      "more": false,
+      "lead": "File:Cameron Winter with Geese, Boston 2024 (cropped2).jpg",
       "timeline": [
         {
+          "file": "File:Cameron Winter with Geese, Boston 2024 (cropped2).jpg",
+          "rev": 1381457288,
+          "ts": "2026-10-22T17:09:08Z",
+          "user": "Ezéchiel Péquay"
+        },
+        {
           "file": "File:Cameron Winter at Carnegie Hall.jpg",
-          "rev": 1380982558,
-          "ts": "2026-10-19T06:41:37Z",
-          "user": "Youknowmyname657"
+          "rev": 1381160292,
+          "ts": "2026-10-20T10:41:51Z",
+          "user": "Skyversay"
         },
         {
           "file": "File:Cameron Winter with Geese, Boston 2024 (cropped2).jpg",
@@ -181469,28 +181595,28 @@
       "article": "Emily Green (musician)",
       "label": "Emily Green",
       "qid": "Q138663447",
-      "topRev": 1380788959,
+      "topRev": 1381644348,
       "more": false,
-      "lead": "File:E Green Geese 2025.png",
+      "lead": "File:Emily Green 2026 Norway.jpg",
       "outside": true,
       "timeline": [
         {
+          "file": "File:Emily Green 2026 Norway.jpg",
+          "rev": 1381644348,
+          "ts": "2026-10-23T21:23:34Z",
+          "user": "~2026-53402-49"
+        },
+        {
           "file": "File:E Green Geese 2025.png",
-          "rev": 1380788959,
-          "ts": "2026-10-17T22:15:44Z",
-          "user": "Ezéchiel Péquay"
+          "rev": 1381625318,
+          "ts": "2026-10-23T19:16:56Z",
+          "user": "~2026-53402-49"
         },
         {
           "file": "File:Geese Boston 2024 Emily Green (cropped).jpg",
           "rev": 1380508235,
           "ts": "2026-10-16T04:16:26Z",
           "user": "~2026-55411-40"
-        },
-        {
-          "file": "File:E Green Geese 2025.png",
-          "rev": 1363679449,
-          "ts": "2026-07-11T17:26:53Z",
-          "user": "Fionaphilia"
         }
       ]
     },
@@ -192140,8 +192266,7 @@
       "qid": "Q11999576",
       "topRev": 1370629677,
       "more": false,
-      "lead": null,
-      "outside": true,
+      "lead": "File:Sara Johnsen at the 2024 Toronto International Film Festival (cropped).jpg",
       "timeline": [
         {
           "file": "File:Sara Johnsen at the 2024 Toronto International Film Festival (cropped).jpg",
@@ -193350,27 +193475,27 @@
       "article": "Sertaç Şanlı",
       "label": "Sertaç Şanlı",
       "qid": "Q7455467",
-      "topRev": 1379600162,
+      "topRev": 1381011449,
       "more": false,
-      "lead": "File:Sertaç Şanlı 5 Türkiye 20250823 (2) (cropped).jpg",
+      "lead": "File:Sertaç Şanlı 5 Fenerbahçe Basketbol TBSL 20261004 (3).JPG",
       "timeline": [
         {
+          "file": "File:Sertaç Şanlı 5 Fenerbahçe Basketbol TBSL 20261004 (3).JPG",
+          "rev": 1381011449,
+          "ts": "2026-10-19T12:28:18Z",
+          "user": "Enigmationn"
+        },
+        {
           "file": "File:Sertaç Şanlı 5 Türkiye 20250823 (2) (cropped).jpg",
-          "rev": 1379600162,
-          "ts": "2026-10-10T22:34:23Z",
-          "user": "PrimeBOT"
+          "rev": 1380463467,
+          "ts": "2026-10-15T21:18:38Z",
+          "user": "Orhan12310"
         },
         {
           "file": "File:Sertaç Şanlı 5 Fenerbahçe Basketbol EuroLeague 20241015 (2).jpg",
           "rev": 1299934022,
           "ts": "2025-07-11T07:43:30Z",
           "user": "2A02:587:8104:48A2:8918:C6A5:EFA6:B622"
-        },
-        {
-          "file": "File:Sertaç Şanlı 5 Fenerbahçe Basketball 20230926 (1) (cropped).jpg",
-          "rev": 1249490021,
-          "ts": "2024-10-05T05:39:54Z",
-          "user": "Raphael1256"
         }
       ]
     },
@@ -194468,27 +194593,27 @@
       "article": "Carsen Edwards",
       "label": "Carsen Edwards",
       "qid": "Q32076468",
-      "topRev": 1366284139,
+      "topRev": 1381497681,
       "more": false,
-      "lead": "File:Carsen Edwards 3 Virtus Pallacanestro Bologna Euroleague 20251125 (9).jpg",
+      "lead": "File:Carsen Edwards 3 BC Žalgiris EuroLeague 20261013 (5).JPG",
       "timeline": [
         {
+          "file": "File:Carsen Edwards 3 BC Žalgiris EuroLeague 20261013 (5).JPG",
+          "rev": 1381497681,
+          "ts": "2026-10-22T22:31:10Z",
+          "user": "CalDoesIt"
+        },
+        {
           "file": "File:Carsen Edwards 3 Virtus Pallacanestro Bologna Euroleague 20251125 (9).jpg",
-          "rev": 1366284139,
-          "ts": "2026-07-27T04:25:38Z",
-          "user": "Staryu"
+          "rev": 1381293409,
+          "ts": "2026-10-21T11:16:57Z",
+          "user": "~2026-55864-61"
         },
         {
           "file": "File:2025-01-05 ALBA Berlin gegen FC Bayern München (Basketball-Bundesliga 2024-25) by Sandro Halank–108.jpg",
           "rev": 1318664756,
           "ts": "2025-10-25T07:40:35Z",
           "user": "WikiOriginal-9"
-        },
-        {
-          "file": "File:Carsen Edwards 3 FC Bayern München (Basketball) 20241112 (2) (cropped).jpg",
-          "rev": 1263392682,
-          "ts": "2024-12-16T11:54:20Z",
-          "user": "QEnigma"
         }
       ]
     },
@@ -194589,10 +194714,16 @@
       "article": "Corey Davis Jr.",
       "label": "Corey Davis Jr.",
       "qid": "Q62743869",
-      "topRev": 1378589260,
+      "topRev": 1381695282,
       "more": false,
-      "lead": "File:Corey Davis Jr. 5 Niners Chemnitz EuroCup 20251015 (2) (cropped).jpg",
+      "lead": "File:Corey Davis Jr. 5 BC Roma Eurocup 20260930 (4).JPG",
       "timeline": [
+        {
+          "file": "File:Corey Davis Jr. 5 BC Roma Eurocup 20260930 (4).JPG",
+          "rev": 1381695282,
+          "ts": "2026-10-24T05:13:13Z",
+          "user": "Zafer"
+        },
         {
           "file": "File:Corey Davis Jr. 5 Niners Chemnitz EuroCup 20251015 (2) (cropped).jpg",
           "rev": 1378589260,
@@ -197024,10 +197155,16 @@
       "article": "Nico Mannion",
       "label": "Nico Mannion",
       "qid": "Q28839789",
-      "topRev": 1379171238,
-      "more": true,
-      "lead": "File:Nico Mannion 1 Olimpia Milan Euroleague 20260320 (1) (cropped).jpg",
+      "topRev": 1381695069,
+      "more": false,
+      "lead": "File:Nico Mannion 1 BC Roma Eurocup 20260930 (5).JPG",
       "timeline": [
+        {
+          "file": "File:Nico Mannion 1 BC Roma Eurocup 20260930 (5).JPG",
+          "rev": 1381695069,
+          "ts": "2026-10-24T05:10:00Z",
+          "user": "Zafer"
+        },
         {
           "file": "File:Nico Mannion 1 Olimpia Milan Euroleague 20260320 (1) (cropped).jpg",
           "rev": 1379171238,
@@ -202812,28 +202949,27 @@
       "article": "Thomas Bangalter",
       "label": "Q471656",
       "qid": "Q471656",
-      "topRev": 1380985890,
+      "topRev": 1381037358,
       "more": false,
-      "lead": "File:ThomasBangalter028 (Cropped).jpg",
-      "outside": true,
+      "lead": "File:Thomas Bangalter at 82nd Venice International Film Festival-2 (cropped).jpg",
       "timeline": [
         {
+          "file": "File:Thomas Bangalter at 82nd Venice International Film Festival-2 (cropped).jpg",
+          "rev": 1381037358,
+          "ts": "2026-10-19T16:30:25Z",
+          "user": "TheBeastSystem"
+        },
+        {
           "file": "File:ThomasBangalter028 (Cropped).jpg",
-          "rev": 1380985890,
-          "ts": "2026-10-19T07:16:04Z",
-          "user": "RussBot"
+          "rev": 1380994901,
+          "ts": "2026-10-19T09:20:22Z",
+          "user": "Jhsounds"
         },
         {
           "file": "File:Thomas Bangalter at 82nd Venice International Film Festival-2 (cropped).jpg",
           "rev": 1380783032,
           "ts": "2026-10-17T21:25:09Z",
           "user": "Jibblesnark86"
-        },
-        {
-          "file": "File:ThomasBangalter028 (Cropped).jpg",
-          "rev": 1357365066,
-          "ts": "2026-06-02T05:54:38Z",
-          "user": "~2026-32637-52"
         }
       ]
     },
@@ -209101,10 +209237,16 @@
       "article": "Saliou Niang",
       "label": "Saliou Niang",
       "qid": "Q130381991",
-      "topRev": 1379938220,
+      "topRev": 1381570905,
       "more": false,
-      "lead": "File:Saliou Niang 7 Virtus Pallacanestro Bologna Euroleague 20251125 (1).jpg",
+      "lead": "File:Saliou Niang 7 Virtus Pallacanestro Bologna Euroleague 20251125 (4).jpg",
       "timeline": [
+        {
+          "file": "File:Saliou Niang 7 Virtus Pallacanestro Bologna Euroleague 20251125 (4).jpg",
+          "rev": 1381570905,
+          "ts": "2026-10-23T11:41:10Z",
+          "user": "Sportsagentsam"
+        },
         {
           "file": "File:Saliou Niang 7 Virtus Pallacanestro Bologna Euroleague 20251125 (1).jpg",
           "rev": 1379938220,
@@ -209116,12 +209258,6 @@
           "rev": 1377677146,
           "ts": "2026-09-30T14:24:17Z",
           "user": "Lion89384"
-        },
-        {
-          "file": "File:Saliou Niang 7 Virtus Pallacanestro Bologna Euroleague 20251125 (5) (cropped).jpg",
-          "rev": 1377588878,
-          "ts": "2026-09-30T02:35:12Z",
-          "user": "Centurion Seraph"
         }
       ]
     },
@@ -217936,9 +218072,10 @@
       "article": "Ariel Gore",
       "label": "Ariel Gore",
       "qid": "Q4790416",
-      "topRev": 1380167264,
+      "topRev": 1381081189,
       "more": false,
-      "lead": "File:Ariel Gore at 2026 AWP.jpg",
+      "lead": null,
+      "outside": true,
       "timeline": [
         {
           "file": "File:Ariel Gore at 2026 AWP.jpg",
@@ -219141,12 +219278,1587 @@
           "user": null
         }
       ]
+    },
+    {
+      "lang": "en",
+      "article": "Wang Xingxing",
+      "label": "Wang Xingxing",
+      "qid": "Q132794691",
+      "topRev": 1381433183,
+      "more": false,
+      "lead": "File:Unitree World Physical AI Conference 2026 - Wang Xingxing 07.jpg",
+      "timeline": [
+        {
+          "file": "File:Unitree World Physical AI Conference 2026 - Wang Xingxing 07.jpg",
+          "rev": 1381433183,
+          "ts": "2026-10-22T13:13:19Z",
+          "user": "Xuthoria"
+        },
+        {
+          "file": "File:Wang Xingxing at the World Economic Forum's 16th Annual Meeting of the New Champions in Tianjin, China.png",
+          "rev": 1367949731,
+          "ts": "2026-08-06T03:55:32Z",
+          "user": "Allenkong11"
+        },
+        {
+          "file": "File:Wang Xingxing at Summer Davos 2025.webp",
+          "rev": 1316644877,
+          "ts": "2025-10-13T18:10:46Z",
+          "user": "Avelociraptor"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Ailee",
+      "label": "Ailee",
+      "qid": "Q487391",
+      "topRev": 1381537743,
+      "more": false,
+      "lead": "File:Ailee at Korea Expo Los Angeles 2026-1.jpg",
+      "timeline": [
+        {
+          "file": "File:Ailee at Korea Expo Los Angeles 2026-1.jpg",
+          "rev": 1381537743,
+          "ts": "2026-10-23T04:23:30Z",
+          "user": "PaulLim11"
+        },
+        {
+          "file": "File:Ailee in January 2026.png",
+          "rev": 1379989367,
+          "ts": "2026-10-13T02:59:34Z",
+          "user": "JJMC89 bot III"
+        },
+        {
+          "file": "File:Ailee Veiled Cup 1.jpg",
+          "rev": 1332018141,
+          "ts": "2026-01-09T12:41:48Z",
+          "user": "Lori155"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Killagramz",
+      "label": "Killagramz",
+      "qid": "Q47092201",
+      "topRev": 1381825997,
+      "more": false,
+      "lead": "File:Killagramz at Korea Expo Los Angeles 2026-1.jpg",
+      "timeline": [
+        {
+          "file": "File:Killagramz at Korea Expo Los Angeles 2026-1.jpg",
+          "rev": 1381825997,
+          "ts": "2026-10-25T01:15:11Z",
+          "user": "PaulLim11"
+        }
+      ]
+    },
+    {
+      "lang": "pl",
+      "article": "Grzegorz Dębowski",
+      "label": "Grzegorz Dębowski",
+      "qid": "Q130297513",
+      "topRev": 81035059,
+      "more": false,
+      "lead": "File:Grzegorz Dębowski at the 2026 Busan International Film Festival. 02.jpg",
+      "timeline": [
+        {
+          "file": "File:Grzegorz Dębowski at the 2026 Busan International Film Festival. 02.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Jacqueline Lentzou",
+      "label": "Jacqueline Lentzou",
+      "qid": "Q107093561",
+      "topRev": 1381344932,
+      "more": false,
+      "lead": "File:Jacqueline Lentzou at the 2026 Busan International Film Festival.jpg",
+      "timeline": [
+        {
+          "file": "File:Jacqueline Lentzou at the 2026 Busan International Film Festival.jpg",
+          "rev": 1381344932,
+          "ts": "2026-10-21T19:53:36Z",
+          "user": "Mellamelina"
+        },
+        {
+          "file": "File:Jacqueline Lentzou Vienna Shorts 2017 e (cropped).jpg",
+          "rev": 1374611995,
+          "ts": "2026-09-13T03:04:43Z",
+          "user": "Mellamelina"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Judith Godrèche",
+      "label": "Judith Godrèche",
+      "qid": "Q267542",
+      "topRev": 1381344586,
+      "more": true,
+      "lead": "File:Judith Godrèche at the 2026 Busan International Film Festival 01.jpg",
+      "timeline": [
+        {
+          "file": "File:Judith Godrèche at the 2026 Busan International Film Festival 01.jpg",
+          "rev": 1381344586,
+          "ts": "2026-10-21T19:51:24Z",
+          "user": "Sumanuil"
+        },
+        {
+          "file": "File:Judith Godrèche 2007.jpg",
+          "rev": 1372663357,
+          "ts": "2026-09-01T18:05:42Z",
+          "user": "HardScience"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Putri Marino",
+      "label": "Putri Marino",
+      "qid": "Q31173764",
+      "topRev": 1381344670,
+      "more": false,
+      "lead": "File:Putri Marino at the 2026 Busan International Film Festival. 01.jpg",
+      "timeline": [
+        {
+          "file": "File:Putri Marino at the 2026 Busan International Film Festival. 01.jpg",
+          "rev": 1381344670,
+          "ts": "2026-10-21T19:52:11Z",
+          "user": "Sumanuil"
+        },
+        {
+          "file": "File:Putri Marino, GoGirl! TV 2017.png",
+          "rev": 1372483420,
+          "ts": "2026-08-31T23:51:10Z",
+          "user": "DreamRimmer bot III"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Weber Yang",
+      "label": "Weber Yang",
+      "qid": "Q9081121",
+      "topRev": 1381344881,
+      "more": false,
+      "lead": "File:Weber Yang at the 2026 Busan International Film Festival.jpg",
+      "timeline": [
+        {
+          "file": "File:Weber Yang at the 2026 Busan International Film Festival.jpg",
+          "rev": 1381344881,
+          "ts": "2026-10-21T19:53:13Z",
+          "user": "Sumanuil"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Sam Irvin",
+      "label": "Sam Irvin",
+      "qid": "Q3470501",
+      "topRev": 1381265580,
+      "more": false,
+      "lead": "File:Sam Irvin Alza Colleen Sturtevant Photography.jpg",
+      "timeline": [
+        {
+          "file": "File:Sam Irvin Alza Colleen Sturtevant Photography.jpg",
+          "rev": 1381265580,
+          "ts": "2026-10-21T04:02:59Z",
+          "user": "Colleen Sturtevant"
+        },
+        {
+          "file": "File:Sam Irvin, Director-Producer-Screenwriter-Author-Journalist-Educator.jpg",
+          "rev": 1344259595,
+          "ts": "2026-03-19T09:19:26Z",
+          "user": "Film1972"
+        },
+        {
+          "file": "File:am Irvin, Director-Producer-Screenwriter-Author-Journalist-Educator.jpg",
+          "rev": 701188191,
+          "ts": "2016-01-23T01:23:01Z",
+          "user": "187.74.62.74"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Babak Anvari",
+      "label": "Babak Anvari",
+      "qid": "Q28888391",
+      "topRev": 1381284632,
+      "more": false,
+      "lead": "File:Babak Anvari.jpg",
+      "timeline": [
+        {
+          "file": "File:Babak Anvari.jpg",
+          "rev": 1381284632,
+          "ts": "2026-10-21T08:58:56Z",
+          "user": "Starklinson"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "David Harewood",
+      "label": "David Harewood",
+      "qid": "Q3018042",
+      "topRev": 1381091102,
+      "more": false,
+      "lead": "File:David Harewood in 2026.jpg",
+      "timeline": [
+        {
+          "file": "File:David Harewood in 2026.jpg",
+          "rev": 1381091102,
+          "ts": "2026-10-19T23:58:23Z",
+          "user": "Sumanuil"
+        },
+        {
+          "file": "File:David Harewood Soccer Aid for UNICEF 2024.jpg",
+          "rev": 1380939584,
+          "ts": "2026-10-18T22:50:11Z",
+          "user": "Keith-264"
+        },
+        {
+          "file": "File:David Harewood 2015.jpg",
+          "rev": 1244844845,
+          "ts": "2024-09-09T14:58:23Z",
+          "user": "Citation bot"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Emily Fairn",
+      "label": "Emily Fairn",
+      "qid": "Q120089721",
+      "topRev": 1381094044,
+      "more": false,
+      "lead": "File:Emily Fairn.jpg",
+      "timeline": [
+        {
+          "file": "File:Emily Fairn.jpg",
+          "rev": 1381094044,
+          "ts": "2026-10-20T00:25:37Z",
+          "user": "JuniperChill"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Leo Reich",
+      "label": "Leo Reich",
+      "qid": "Q125179295",
+      "topRev": 1381101632,
+      "more": false,
+      "lead": "File:Leo Reich.jpg",
+      "timeline": [
+        {
+          "file": "File:Leo Reich.jpg",
+          "rev": 1381101632,
+          "ts": "2026-10-20T01:17:03Z",
+          "user": "Zinnober9"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Olive Gray",
+      "label": "Olive Gray",
+      "qid": "Q7088056",
+      "topRev": 1381101545,
+      "more": false,
+      "lead": "File:Olive Gray.jpg",
+      "timeline": [
+        {
+          "file": "File:Olive Gray.jpg",
+          "rev": 1381101545,
+          "ts": "2026-10-20T01:16:24Z",
+          "user": "Zinnober9"
+        },
+        {
+          "file": "File:Olive Gray at the premiere of Teen Spirit, 2018 Toronto Film Festival (44028940884) (cropped).jpg",
+          "rev": 1378866147,
+          "ts": "2026-10-06T16:20:19Z",
+          "user": "MapReader"
+        },
+        {
+          "file": "File:Olivia Grant at the premiere of Teen Spirit, 2018 Toronto Film Festival (44028940884) (cropped).jpg",
+          "rev": 1119474637,
+          "ts": "2022-11-01T19:59:57Z",
+          "user": "Sasjackson"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Safia Oakley-Green",
+      "label": "Safia Oakley-Green",
+      "qid": "Q115781184",
+      "topRev": 1381418936,
+      "more": false,
+      "lead": "File:Safia Oakley-Green.jpg",
+      "timeline": [
+        {
+          "file": "File:Safia Oakley-Green.jpg",
+          "rev": 1381418936,
+          "ts": "2026-10-22T09:54:23Z",
+          "user": "Marlyrocks"
+        },
+        {
+          "file": "File:It Gets Worse Cast & Crew at BFI LFF 2026 (cropped Safia Oakley-Green).jpg",
+          "rev": 1381409159,
+          "ts": "2026-10-22T07:42:32Z",
+          "user": "Starklinson"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Sean Delaney (actor)",
+      "label": "Sean Delaney",
+      "qid": "Q111831017",
+      "topRev": 1381419026,
+      "more": false,
+      "lead": "File:Sean Delaney (actor).jpg",
+      "timeline": [
+        {
+          "file": "File:Sean Delaney (actor).jpg",
+          "rev": 1381419026,
+          "ts": "2026-10-22T09:56:11Z",
+          "user": "Marlyrocks"
+        },
+        {
+          "file": "File:It Gets Worse Cast & Crew at BFI LFF 2026 (cropped Sean Delaney).jpg",
+          "rev": 1381409103,
+          "ts": "2026-10-22T07:41:27Z",
+          "user": "Starklinson"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Callie Crossley",
+      "label": "Callie Crossley",
+      "qid": "Q4411087",
+      "topRev": 1381027443,
+      "more": false,
+      "lead": "File:Callie Crossley at BBF 2026 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Callie Crossley at BBF 2026 (cropped).jpg",
+          "rev": 1381027443,
+          "ts": "2026-10-19T15:06:56Z",
+          "user": "ThadeusOfNazereth"
+        },
+        {
+          "file": "File:Callie Crossley.jpg",
+          "rev": 1372294154,
+          "ts": "2026-08-31T04:11:43Z",
+          "user": "DreamRimmer bot III"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Christopher Castellani",
+      "label": "Christopher Castellani",
+      "qid": "Q5112073",
+      "topRev": 1381026867,
+      "more": false,
+      "lead": "File:Christopher Castellani BBF 2026 1 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Christopher Castellani BBF 2026 1 (cropped).jpg",
+          "rev": 1381026867,
+          "ts": "2026-10-19T15:01:02Z",
+          "user": "ThadeusOfNazereth"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Elizabeth Searle",
+      "label": "Elizabeth Searle",
+      "qid": "Q5363484",
+      "topRev": 1381028036,
+      "more": false,
+      "lead": "File:Elizabeth Searle at BBF 2026 1 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Elizabeth Searle at BBF 2026 1 (cropped).jpg",
+          "rev": 1381028036,
+          "ts": "2026-10-19T15:12:09Z",
+          "user": "ThadeusOfNazereth"
+        },
+        {
+          "file": "File:Elizabethsearle4.jpg",
+          "rev": 853834146,
+          "ts": "2018-08-07T07:12:33Z",
+          "user": "John of Reading"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Kate Brown (historian)",
+      "label": "Kate Brown",
+      "qid": "Q16727692",
+      "topRev": 1381028409,
+      "more": false,
+      "lead": "File:Kate Brown at BBF 2026 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Kate Brown at BBF 2026 (cropped).jpg",
+          "rev": 1381028409,
+          "ts": "2026-10-19T15:15:35Z",
+          "user": "ThadeusOfNazereth"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Lance Olsen",
+      "label": "Lance Olsen",
+      "qid": "Q6483502",
+      "topRev": 1381029790,
+      "more": false,
+      "lead": "File:Lance Olsen at BBF 2026 1 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Lance Olsen at BBF 2026 1 (cropped).jpg",
+          "rev": 1381029790,
+          "ts": "2026-10-19T15:27:06Z",
+          "user": "ThadeusOfNazereth"
+        },
+        {
+          "file": "File:Lance Olsen (cropped).jpg",
+          "rev": 1374592677,
+          "ts": "2026-09-13T00:25:07Z",
+          "user": "~2026-49246-50"
+        },
+        {
+          "file": "File:14479-Lance Olsen-visiting author-2814 (15168130003).jpg",
+          "rev": 1233172096,
+          "ts": "2024-07-07T17:27:53Z",
+          "user": "JB Hoang Tam 2"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Manoush Zomorodi",
+      "label": "Manoush Zomorodi",
+      "qid": "Q41571330",
+      "topRev": 1381027770,
+      "more": false,
+      "lead": "File:Manoush Zomorodi at BBF 2026 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Manoush Zomorodi at BBF 2026 (cropped).jpg",
+          "rev": 1381027770,
+          "ts": "2026-10-19T15:10:05Z",
+          "user": "ThadeusOfNazereth"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Michael Lowenthal",
+      "label": "Michael Lowenthal",
+      "qid": "Q6832333",
+      "topRev": 1381029099,
+      "more": false,
+      "lead": "File:Michael Lowenthal at BBF 2026.jpg",
+      "timeline": [
+        {
+          "file": "File:Michael Lowenthal at BBF 2026.jpg",
+          "rev": 1381029099,
+          "ts": "2026-10-19T15:21:25Z",
+          "user": "ThadeusOfNazereth"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Norm Feuti",
+      "label": "Norm Feuti",
+      "qid": "Q15454694",
+      "topRev": 1381028986,
+      "more": false,
+      "lead": "File:Norm Feuti at BBF 2026 2 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Norm Feuti at BBF 2026 2 (cropped).jpg",
+          "rev": 1381028986,
+          "ts": "2026-10-19T15:20:24Z",
+          "user": "ThadeusOfNazereth"
+        },
+        {
+          "file": "File:NormFeuti.png",
+          "rev": 1361361390,
+          "ts": "2026-06-27T13:06:42Z",
+          "user": "Rofraja"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Priya Parmar",
+      "label": "Priya Parmar",
+      "qid": "Q137780523",
+      "topRev": 1381029670,
+      "more": false,
+      "lead": "File:Priya Parmar at BBF 2026 1 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Priya Parmar at BBF 2026 1 (cropped).jpg",
+          "rev": 1381029670,
+          "ts": "2026-10-19T15:26:13Z",
+          "user": "ThadeusOfNazereth"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Renée Watson (author)",
+      "label": "Renée Watson",
+      "qid": "Q59304524",
+      "topRev": 1381033356,
+      "more": false,
+      "lead": "File:Renée Watson at BBF 2026 2 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Renée Watson at BBF 2026 2 (cropped).jpg",
+          "rev": 1381033356,
+          "ts": "2026-10-19T15:57:39Z",
+          "user": "Escape Orbit"
+        },
+        {
+          "file": "File:Renée Watson 2019.jpg",
+          "rev": 1380928237,
+          "ts": "2026-10-18T20:59:31Z",
+          "user": "Escape Orbit"
+        },
+        {
+          "file": "File:Renée Watson.jpg",
+          "rev": 921327305,
+          "ts": "2019-10-15T03:58:49Z",
+          "user": "Monkbot"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Roopika Risam",
+      "label": "Roopika Risam",
+      "qid": "Q59159764",
+      "topRev": 1381029901,
+      "more": false,
+      "lead": "File:Roopika Risam at BBF 2026 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Roopika Risam at BBF 2026 (cropped).jpg",
+          "rev": 1381029901,
+          "ts": "2026-10-19T15:28:03Z",
+          "user": "ThadeusOfNazereth"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Yiyun Li",
+      "label": "Yiyun Li",
+      "qid": "Q460088",
+      "topRev": 1381746241,
+      "more": true,
+      "lead": "File:Yiyun Li at BBF 2026 2 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Yiyun Li at BBF 2026 2 (cropped).jpg",
+          "rev": 1381746241,
+          "ts": "2026-10-24T14:43:57Z",
+          "user": "Hemiauchenia"
+        },
+        {
+          "file": "File:Yiyun Li.png",
+          "rev": 1379307174,
+          "ts": "2026-10-09T03:46:08Z",
+          "user": "Oaklandmyhome"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Cheslin Kolbe",
+      "label": "Cheslin Kolbe",
+      "qid": "Q16235526",
+      "topRev": 1381575132,
+      "more": false,
+      "lead": "File:Cheslin Kolbe Headshot at autobiography launch.jpg",
+      "timeline": [
+        {
+          "file": "File:Cheslin Kolbe Headshot at autobiography launch.jpg",
+          "rev": 1381575132,
+          "ts": "2026-10-23T12:29:59Z",
+          "user": "EGilham"
+        },
+        {
+          "file": "File:Cheslin Kolbe Book Launch-22.jpg",
+          "rev": 1381574670,
+          "ts": "2026-10-23T12:24:13Z",
+          "user": "EGilham"
+        },
+        {
+          "file": "File:Cheslin Kolbe 2022.jpg",
+          "rev": 1378653078,
+          "ts": "2026-10-05T13:33:13Z",
+          "user": "Em-mustapha"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "M. Evelina Galang",
+      "label": "M. Evelina Galang",
+      "qid": "Q18619023",
+      "topRev": 1381220070,
+      "more": false,
+      "lead": "File:M. Evelina Galang at FilBookFest 2026.jpg",
+      "timeline": [
+        {
+          "file": "File:M. Evelina Galang at FilBookFest 2026.jpg",
+          "rev": 1381220070,
+          "ts": "2026-10-20T19:42:24Z",
+          "user": "Rosiestep"
+        },
+        {
+          "file": "File:M. Evelina Galang.jpg",
+          "rev": 633615670,
+          "ts": "2014-11-13T03:01:33Z",
+          "user": "Gobonobo"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Randy Ribay",
+      "label": "Randy Ribay",
+      "qid": "Q106616364",
+      "topRev": 1381213032,
+      "more": false,
+      "lead": "File:Randy Ribay at FilBookFest 2026 01 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Randy Ribay at FilBookFest 2026 01 (cropped).jpg",
+          "rev": 1381213032,
+          "ts": "2026-10-20T18:44:20Z",
+          "user": "Rosiestep"
+        },
+        {
+          "file": "File:Randy Ribay 8220458.jpg",
+          "rev": 1381081590,
+          "ts": "2026-10-19T22:22:49Z",
+          "user": "Rosiestep"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Ellen Datlow",
+      "label": "Ellen Datlow",
+      "qid": "Q1810264",
+      "topRev": 1381838480,
+      "more": true,
+      "lead": "File:Ellen Datlow at World Fantasy Convention 2026.jpg",
+      "timeline": [
+        {
+          "file": "File:Ellen Datlow at World Fantasy Convention 2026.jpg",
+          "rev": 1381838480,
+          "ts": "2026-10-25T03:02:21Z",
+          "user": "Revirvlkodlaku"
+        },
+        {
+          "file": "File:Ellen Datlow, at the Hugo Awards Ceremony, Worldcon, Helsinki.jpg",
+          "rev": 1378890710,
+          "ts": "2026-10-06T19:25:12Z",
+          "user": "Martin IIIa"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Nick Mamatas",
+      "label": "Nick Mamatas",
+      "qid": "Q7027498",
+      "topRev": 1381788115,
+      "more": true,
+      "lead": "File:Nick Mamatas at World Fantasy Convention 2026.jpg",
+      "timeline": [
+        {
+          "file": "File:Nick Mamatas at World Fantasy Convention 2026.jpg",
+          "rev": 1381788115,
+          "ts": "2026-10-24T20:40:35Z",
+          "user": "Rosiestep"
+        },
+        {
+          "file": "File:Nick Mamatas.jpg",
+          "rev": 1371378169,
+          "ts": "2026-08-26T03:40:31Z",
+          "user": "ZackBot"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Robert Olen Butler",
+      "label": "Robert Olen Butler",
+      "qid": "Q503497",
+      "topRev": 1381785110,
+      "more": false,
+      "lead": "File:Robert Olen Butler at World Fantasy Convention 2026.jpg",
+      "timeline": [
+        {
+          "file": "File:Robert Olen Butler at World Fantasy Convention 2026.jpg",
+          "rev": 1381785110,
+          "ts": "2026-10-24T20:19:45Z",
+          "user": "Rosiestep"
+        },
+        {
+          "file": "File:Robert Olen Butler 2016.jpg",
+          "rev": 1370122654,
+          "ts": "2026-08-19T06:36:49Z",
+          "user": "Ser Amantio di Nicolao"
+        },
+        {
+          "file": "File:Robert olen butler 2009.jpg",
+          "rev": 741194736,
+          "ts": "2016-09-26T00:28:03Z",
+          "user": "Nv8200pa"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Stephen Jones (author)",
+      "label": "Stephen Jones",
+      "qid": "Q4160428",
+      "topRev": 1381796571,
+      "more": false,
+      "lead": "File:Stephen Jones at World Fantasy Convention 2026.jpg",
+      "timeline": [
+        {
+          "file": "File:Stephen Jones at World Fantasy Convention 2026.jpg",
+          "rev": 1381796571,
+          "ts": "2026-10-24T21:26:35Z",
+          "user": "Rosiestep"
+        },
+        {
+          "file": "File:Stephen Jones.jpg",
+          "rev": 1379912137,
+          "ts": "2026-10-12T16:49:47Z",
+          "user": "John of Reading"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Danny Ocean (singer)",
+      "label": "Danny Ocean",
+      "qid": "Q30031434",
+      "topRev": 1381383580,
+      "more": false,
+      "lead": "File:Danny Ocean at 2026 Montreux Jazz Festival 03.jpg",
+      "timeline": [
+        {
+          "file": "File:Danny Ocean at 2026 Montreux Jazz Festival 03.jpg",
+          "rev": 1381383580,
+          "ts": "2026-10-22T02:22:35Z",
+          "user": "RMCD bot"
+        },
+        {
+          "file": "File:Danny Ocean in Chile 2025.jpg",
+          "rev": 1380632736,
+          "ts": "2026-10-16T23:40:17Z",
+          "user": "N4cho10988"
+        },
+        {
+          "file": "File:Danny Ocean Live in Chicago.jpg",
+          "rev": 1370438293,
+          "ts": "2026-08-21T03:21:53Z",
+          "user": "CarlosJesusQr"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Wayne Diamond",
+      "label": "Wayne Diamond",
+      "qid": "Q107238283",
+      "topRev": 1381083334,
+      "more": false,
+      "lead": "File:Wayne Diamond at Alza.jpg",
+      "timeline": [
+        {
+          "file": "File:Wayne Diamond at Alza.jpg",
+          "rev": 1381083334,
+          "ts": "2026-10-19T22:40:22Z",
+          "user": "Colleen Sturtevant"
+        },
+        {
+          "file": "File:Wayne Diamond.jpg",
+          "rev": 1358040328,
+          "ts": "2026-06-06T05:08:30Z",
+          "user": "Bringingthewood"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Dušan Alimpijević",
+      "label": "Dušan Alimpijević",
+      "qid": "Q33129735",
+      "topRev": 1381164220,
+      "more": false,
+      "lead": "File:Dušan Alimpijević Beşiktaş MB TBPC 20260922 (1) (cropped).JPG",
+      "timeline": [
+        {
+          "file": "File:Dušan Alimpijević Beşiktaş MB TBPC 20260922 (1) (cropped).JPG",
+          "rev": 1381164220,
+          "ts": "2026-10-20T11:27:43Z",
+          "user": "Zafer"
+        },
+        {
+          "file": "File:Dušan Alimpijević Beşiktaş 20241011 (2) (cropped).jpg",
+          "rev": 1379193947,
+          "ts": "2026-10-08T13:36:32Z",
+          "user": "Bis-Serjetà?"
+        },
+        {
+          "file": "File:Dušan Alimpijević KK Crvena zvezda 20171219.jpg",
+          "rev": 1231086494,
+          "ts": "2024-06-26T11:23:18Z",
+          "user": "178.221.57.101"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Austin Wiley",
+      "label": "Austin Wiley",
+      "qid": "Q32862543",
+      "topRev": 1381821092,
+      "more": false,
+      "lead": "File:Austin Wiley 50 FC Bayern München (Basketball) EuroLeague 20261016 (1).JPG",
+      "timeline": [
+        {
+          "file": "File:Austin Wiley 50 FC Bayern München (Basketball) EuroLeague 20261016 (1).JPG",
+          "rev": 1381821092,
+          "ts": "2026-10-25T00:37:17Z",
+          "user": "Ataozzy"
+        },
+        {
+          "file": "File:Austin Wiley (cropped).jpg",
+          "rev": 1376984269,
+          "ts": "2026-09-27T07:04:21Z",
+          "user": "MiaSanMiaRossoneri"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Duane Washington Jr.",
+      "label": "Duane Washington Jr.",
+      "qid": "Q100949112",
+      "topRev": 1381797446,
+      "more": false,
+      "lead": "File:Duane Washington Jr. 4 FC Bayern München (Basketball) EuroLeague 20261016 (4).JPG",
+      "timeline": [
+        {
+          "file": "File:Duane Washington Jr. 4 FC Bayern München (Basketball) EuroLeague 20261016 (4).JPG",
+          "rev": 1381797446,
+          "ts": "2026-10-24T21:32:21Z",
+          "user": "Zafer"
+        },
+        {
+          "file": "File:Duane Washington Jr. 4 KK Partizan EuroLeague 20241101 (1) (cropped).jpg",
+          "rev": 1380582114,
+          "ts": "2026-10-16T16:54:06Z",
+          "user": "Orhan12310"
+        },
+        {
+          "file": "File:Duane Washington Jr..jpg",
+          "rev": 1255288744,
+          "ts": "2024-11-04T03:38:02Z",
+          "user": "WikiOriginal-9"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Joel Parra",
+      "label": "Joel Parra López",
+      "qid": "Q44974283",
+      "topRev": 1380995947,
+      "more": false,
+      "lead": "File:Joel Parra 44 FC Barcelona (basketball) Euroleague 20261002 (1) (cropped).JPG",
+      "timeline": [
+        {
+          "file": "File:Joel Parra 44 FC Barcelona (basketball) Euroleague 20261002 (1) (cropped).JPG",
+          "rev": 1380995947,
+          "ts": "2026-10-19T09:33:36Z",
+          "user": "Zafer"
+        },
+        {
+          "file": "File:2025-03-07 ALBA Berlin gegen FC Barcelona Bàsquet (EuroLeague 2024-25) by Sandro Halank–006.jpg",
+          "rev": 1363460799,
+          "ts": "2026-07-10T09:13:04Z",
+          "user": "ArnauC37"
+        },
+        {
+          "file": "File:CJB 19 20 4 JOEL PARRA DGL 5411.jpg",
+          "rev": 1277112117,
+          "ts": "2025-02-22T18:56:01Z",
+          "user": "Zyxw"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Juan Núñez (basketball)",
+      "label": "Juan Núñez",
+      "qid": "Q102833655",
+      "topRev": 1380996328,
+      "more": false,
+      "lead": "File:Juan Núñez (basketball player) 17 FC Barcelona (basketball) Euroleague 20261002 (3) (cropped).JPG",
+      "timeline": [
+        {
+          "file": "File:Juan Núñez (basketball player) 17 FC Barcelona (basketball) Euroleague 20261002 (3) (cropped).JPG",
+          "rev": 1380996328,
+          "ts": "2026-10-19T09:39:29Z",
+          "user": "Zafer"
+        },
+        {
+          "file": "File:2023-05-19 ALBA Berlin gegen ratiopharm Ulm (Play-off-Viertelfinale 3, Basketball-Bundesliga 2022-23) by Sandro Halank–026.jpg",
+          "rev": 1379924937,
+          "ts": "2026-10-12T18:34:25Z",
+          "user": "Orhan12310"
+        },
+        {
+          "file": "File:Juan Núñez FC Barcelona 2024.jpg",
+          "rev": 1277989478,
+          "ts": "2025-02-27T21:59:39Z",
+          "user": "Oozora Subaru"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Jurica Žuža",
+      "label": "Jurica Žuža",
+      "qid": "Q3811394",
+      "topRev": 1380996674,
+      "more": false,
+      "lead": "File:Jurica Žuža FC Barcelona (basketball) Euroleague 20261002 (1) (cropped).JPG",
+      "timeline": [
+        {
+          "file": "File:Jurica Žuža FC Barcelona (basketball) Euroleague 20261002 (1) (cropped).JPG",
+          "rev": 1380996674,
+          "ts": "2026-10-19T09:45:20Z",
+          "user": "Zafer"
+        },
+        {
+          "file": "File:Jurica Zuza by Augustas Didzgalvis.jpg",
+          "rev": 1368192383,
+          "ts": "2026-08-07T15:49:37Z",
+          "user": "ArnauC37"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "MarJon Beauchamp",
+      "label": "MarJon Beauchamp",
+      "qid": "Q66071852",
+      "topRev": 1381795853,
+      "more": false,
+      "lead": "File:MarJon Beauchamp 3 FC Bayern München (Basketball) EuroLeague 20261016 (5).JPG",
+      "timeline": [
+        {
+          "file": "File:MarJon Beauchamp 3 FC Bayern München (Basketball) EuroLeague 20261016 (5).JPG",
+          "rev": 1381795853,
+          "ts": "2026-10-24T21:21:48Z",
+          "user": "Zafer"
+        },
+        {
+          "file": "File:MarJon Beauchamp.png",
+          "rev": 1380581981,
+          "ts": "2026-10-16T16:52:59Z",
+          "user": "Orhan12310"
+        },
+        {
+          "file": "File:MarJon Beauchamp Ignite 21 Showcase.jpg",
+          "rev": 1061319644,
+          "ts": "2021-12-21T00:45:32Z",
+          "user": "XiNevett"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Rokas Jokubaitis",
+      "label": "Rokas Jokubaitis",
+      "qid": "Q47158953",
+      "topRev": 1381963455,
+      "more": false,
+      "lead": "File:Rokas Jokubaitis 20261016.JPG",
+      "timeline": [
+        {
+          "file": "File:Rokas Jokubaitis 20261016.JPG",
+          "rev": 1381963455,
+          "ts": "2026-10-25T20:55:33Z",
+          "user": "Zafer"
+        },
+        {
+          "file": "File:2022-03-22 ALBA Berlin gegen FC Barcelona Bàsquet (EuroLeague 2021-22) by Sandro Halank–028.jpg",
+          "rev": 1376984100,
+          "ts": "2026-09-27T07:01:45Z",
+          "user": "MiaSanMiaRossoneri"
+        },
+        {
+          "file": "File:Rokas Jokubaitis by Augustas Didzgalvis.jpg",
+          "rev": 1273558917,
+          "ts": "2025-02-02T22:51:50Z",
+          "user": "Jevansen"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Tobias Jensen",
+      "label": "Tobias Jensen",
+      "qid": "Q115311228",
+      "topRev": 1382050179,
+      "more": false,
+      "lead": "File:Tobias Jensen 20261016 (1).JPG",
+      "timeline": [
+        {
+          "file": "File:Tobias Jensen 20261016 (1).JPG",
+          "rev": 1382050179,
+          "ts": "2026-10-26T07:30:58Z",
+          "user": "Zafer"
+        },
+        {
+          "file": "File:2023-10-07 ratiopharm Ulm gegen ALBA Berlin (Basketball-Bundesliga 2023-24) by Sandro Halank–060.jpg",
+          "rev": 1376983810,
+          "ts": "2026-09-27T06:58:13Z",
+          "user": "MiaSanMiaRossoneri"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "David Zima",
+      "label": "David Zima",
+      "qid": "Q84312754",
+      "topRev": 1381255291,
+      "more": false,
+      "lead": "File:David Zima SK Slavia Prague 20261019 (2).JPG",
+      "timeline": [
+        {
+          "file": "File:David Zima SK Slavia Prague 20261019 (2).JPG",
+          "rev": 1381255291,
+          "ts": "2026-10-21T01:49:20Z",
+          "user": "~2026-56244-24"
+        },
+        {
+          "file": "File:David Zima CZE-KUW 2021-11-11 (cropped).jpg",
+          "rev": 1380180675,
+          "ts": "2026-10-14T07:06:52Z",
+          "user": "~2026-55092-64"
+        },
+        {
+          "file": "File:Lens - Torino FC (02-08-2023) 44 (cropped).jpg",
+          "rev": 1346014287,
+          "ts": "2026-03-29T12:42:55Z",
+          "user": "~2026-19453-84"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Jindřich Trpišovský",
+      "label": "Jindřich Trpišovský",
+      "qid": "Q20303124",
+      "topRev": 1381903832,
+      "more": true,
+      "lead": "File:Jindřich Trpišovský SK Slavia Prague 20261019 (2) (cropped).JPG",
+      "timeline": [
+        {
+          "file": "File:Jindřich Trpišovský SK Slavia Prague 20261019 (2) (cropped).JPG",
+          "rev": 1381903832,
+          "ts": "2026-10-25T14:53:50Z",
+          "user": "Saintandy7"
+        },
+        {
+          "file": "File:Jindřich Trpišovský, Ze-SL18 (7).jpg",
+          "rev": 1380755043,
+          "ts": "2026-10-17T17:40:07Z",
+          "user": "Saintandy7"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Harriet Herbig-Matten",
+      "label": "Harriet Herbig-Matten",
+      "qid": "Q41735481",
+      "topRev": 1381028690,
+      "more": false,
+      "lead": "File:Harriet Herbig-Matten bei den Internationalen Filmfestspielen Berlin 2026-1155.jpg",
+      "timeline": [
+        {
+          "file": "File:Harriet Herbig-Matten bei den Internationalen Filmfestspielen Berlin 2026-1155.jpg",
+          "rev": 1381028690,
+          "ts": "2026-10-19T15:17:51Z",
+          "user": "Seewolf"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Frédéric Dusart",
+      "label": "Frédéric Dusart",
+      "qid": "Q3089787",
+      "topRev": 1381791791,
+      "more": false,
+      "lead": "File:Frédéric Dusart Belgium 20260906 (1) (cropped).JPG",
+      "timeline": [
+        {
+          "file": "File:Frédéric Dusart Belgium 20260906 (1) (cropped).JPG",
+          "rev": 1381791791,
+          "ts": "2026-10-24T20:58:18Z",
+          "user": "Ozanozan"
+        },
+        {
+          "file": "File:20131005 - Open LFB - Villeneuve d'Ascq-Basket Landes 091.jpg",
+          "rev": 1380994529,
+          "ts": "2026-10-19T09:16:02Z",
+          "user": "Zafer"
+        }
+      ]
+    },
+    {
+      "lang": "es",
+      "article": "Nuria Ibáñez",
+      "label": "Nuria Ibáñez",
+      "qid": "Q107024913",
+      "topRev": 172297325,
+      "more": false,
+      "lead": "File:Málaga Film Festival 2026 - Nuria Ibañez - 2.jpg",
+      "timeline": [
+        {
+          "file": "File:Málaga Film Festival 2026 - Nuria Ibañez - 2.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "de",
+      "article": "Djibril M’Bengue",
+      "label": "Djibril M’Bengue",
+      "qid": "Q21973771",
+      "topRev": 271539233,
+      "more": false,
+      "lead": "File:2026-10-22 Djibril M Bengue by mroptimax.jpg",
+      "timeline": [
+        {
+          "file": "File:2026-10-22 Djibril M Bengue by mroptimax.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "de",
+      "article": "Dominik Claus",
+      "label": "Dominik Claus",
+      "qid": "Q129929019",
+      "topRev": 271539288,
+      "more": false,
+      "lead": "File:2026-10-22 Dominik Claus by mroptimax.jpg",
+      "timeline": [
+        {
+          "file": "File:2026-10-22 Dominik Claus by mroptimax.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "de",
+      "article": "Hartmut Mayerhoffer",
+      "label": "Hartmut Mayerhoffer",
+      "qid": "Q62571549",
+      "topRev": 271539297,
+      "more": false,
+      "lead": "File:2026-10-22 Hartmut Mayerhoffer by mroptimax.jpg",
+      "timeline": [
+        {
+          "file": "File:2026-10-22 Hartmut Mayerhoffer by mroptimax.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "de",
+      "article": "Jonáš Josef",
+      "label": "Jonáš Josef",
+      "qid": "Q137557231",
+      "topRev": 271539322,
+      "more": false,
+      "lead": "File:2026-10-22 Jonas Josef by mroptimax.jpg",
+      "timeline": [
+        {
+          "file": "File:2026-10-22 Jonas Josef by mroptimax.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "de",
+      "article": "Lukas Wucherpfennig",
+      "label": "Lukas Wucherpfennig",
+      "qid": "Q18335088",
+      "topRev": 271539377,
+      "more": false,
+      "lead": "File:2026-10-22 Lukas Wucherpfennig by mroptimax.jpg",
+      "timeline": [
+        {
+          "file": "File:2026-10-22 Lukas Wucherpfennig by mroptimax.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "de",
+      "article": "Moritz Strosack",
+      "label": "Moritz Strosack",
+      "qid": "Q120753463",
+      "topRev": 271539356,
+      "more": false,
+      "lead": "File:2026-10-22 Moritz Strosack by mroptimax.jpg",
+      "timeline": [
+        {
+          "file": "File:2026-10-22 Moritz Strosack by mroptimax.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Chloe Malle",
+      "label": "Chloe Malle",
+      "qid": "Q136047706",
+      "topRev": 1381276018,
+      "more": false,
+      "lead": "File:ChloeMalle-byPhilipRomano2.jpg",
+      "timeline": [
+        {
+          "file": "File:ChloeMalle-byPhilipRomano2.jpg",
+          "rev": 1381276018,
+          "ts": "2026-10-21T06:53:59Z",
+          "user": "PhilipRomano"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Clark Gregg",
+      "label": "Clark Gregg",
+      "qid": "Q113206",
+      "topRev": 1381273815,
+      "more": false,
+      "lead": "File:ClarkGregg-byPhilipRomano.jpg",
+      "timeline": [
+        {
+          "file": "File:ClarkGregg-byPhilipRomano.jpg",
+          "rev": 1381273815,
+          "ts": "2026-10-21T06:15:48Z",
+          "user": "PhilipRomano"
+        },
+        {
+          "file": "File:Clark Gregg Photo Op GalaxyCon Raleigh 2025.jpg",
+          "rev": 1379006510,
+          "ts": "2026-10-07T09:41:20Z",
+          "user": "~2026-53962-04"
+        },
+        {
+          "file": "File:Clark Gregg by Gage Skidmore 2.jpg",
+          "rev": 1306620987,
+          "ts": "2025-08-18T19:58:28Z",
+          "user": "Buh6173"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Dominic Fumusa",
+      "label": "Dominic Fumusa",
+      "qid": "Q80925",
+      "topRev": 1381274180,
+      "more": false,
+      "lead": "File:DominicFumusa-byPhilipRomano.jpg",
+      "timeline": [
+        {
+          "file": "File:DominicFumusa-byPhilipRomano.jpg",
+          "rev": 1381274180,
+          "ts": "2026-10-21T06:21:41Z",
+          "user": "PhilipRomano"
+        },
+        {
+          "file": "File:Dominic Fumusa (cropped).jpg",
+          "rev": 1372341653,
+          "ts": "2026-08-31T09:38:18Z",
+          "user": "DreamRimmer bot III"
+        },
+        {
+          "file": "File:Replace this image male.svg",
+          "rev": 439367200,
+          "ts": "2011-07-14T02:44:36Z",
+          "user": "Falcon8765"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Ilana Levine",
+      "label": "Ilana Levine",
+      "qid": "Q5997056",
+      "topRev": 1381274157,
+      "more": false,
+      "lead": "File:IlanaLevine-byPhilipRomano.jpg",
+      "timeline": [
+        {
+          "file": "File:IlanaLevine-byPhilipRomano.jpg",
+          "rev": 1381274157,
+          "ts": "2026-10-21T06:21:15Z",
+          "user": "PhilipRomano"
+        },
+        {
+          "file": "File:replace this image female.svg",
+          "rev": 405262104,
+          "ts": "2011-01-01T02:46:09Z",
+          "user": "Yobot"
+        },
+        {
+          "file": "File:replace this image.svg",
+          "rev": 185266377,
+          "ts": "2008-01-18T19:50:10Z",
+          "user": "Alaibot"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Janel Moloney",
+      "label": "Janel Moloney",
+      "qid": "Q114447",
+      "topRev": 1381273676,
+      "more": false,
+      "lead": "File:JanelMoloney-byPhilipRomano.jpg",
+      "timeline": [
+        {
+          "file": "File:JanelMoloney-byPhilipRomano.jpg",
+          "rev": 1381273676,
+          "ts": "2026-10-21T06:13:45Z",
+          "user": "PhilipRomano"
+        },
+        {
+          "file": "File:Janel Moloney (15087095697) (cropped).jpg",
+          "rev": 1378544860,
+          "ts": "2026-10-04T23:33:58Z",
+          "user": "PrimeBOT"
+        },
+        {
+          "file": "File:Equidae Equus africanus asinus.jpg",
+          "rev": 1163029733,
+          "ts": "2023-07-02T14:44:12Z",
+          "user": "84.15.185.115"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Jon Tenney",
+      "label": "Jon Tenney",
+      "qid": "Q1321988",
+      "topRev": 1381274074,
+      "more": true,
+      "lead": "File:JonTenney-byPhilipRomano.jpg",
+      "timeline": [
+        {
+          "file": "File:JonTenney-byPhilipRomano.jpg",
+          "rev": 1381274074,
+          "ts": "2026-10-21T06:19:52Z",
+          "user": "PhilipRomano"
+        },
+        {
+          "file": "File:Jon Tenney (cropped).jpg",
+          "rev": 1372559230,
+          "ts": "2026-09-01T06:41:50Z",
+          "user": "Overcoat51"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Leslie Urdang",
+      "label": "Leslie Urdang",
+      "qid": "Q6531191",
+      "topRev": 1381273963,
+      "more": false,
+      "lead": "File:LeslieUrdang-byPhilipRomano.jpg",
+      "timeline": [
+        {
+          "file": "File:LeslieUrdang-byPhilipRomano.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Marcelo Zarvos",
+      "label": "Marcelo Zarvos",
+      "qid": "Q1338827",
+      "topRev": 1381273699,
+      "more": false,
+      "lead": "File:MarceloZarvos-byPhilipRomano.jpg",
+      "timeline": [
+        {
+          "file": "File:MarceloZarvos-byPhilipRomano.jpg",
+          "rev": 1381273699,
+          "ts": "2026-10-21T06:14:10Z",
+          "user": "PhilipRomano"
+        },
+        {
+          "file": "File:Marcelo Zarvos.jpg",
+          "rev": 1319395732,
+          "ts": "2025-10-29T15:20:21Z",
+          "user": "Arjayay"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Scott Caan",
+      "label": "Scott Caan",
+      "qid": "Q314673",
+      "topRev": 1381273723,
+      "more": true,
+      "lead": "File:ScottCaan-byPhilipRomano.jpg",
+      "timeline": [
+        {
+          "file": "File:ScottCaan-byPhilipRomano.jpg",
+          "rev": 1381273723,
+          "ts": "2026-10-21T06:14:35Z",
+          "user": "PhilipRomano"
+        },
+        {
+          "file": "File:Scott-Caan.jpg",
+          "rev": 1380527877,
+          "ts": "2026-10-16T07:30:04Z",
+          "user": "~2026-55623-03"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Scott Wittman",
+      "label": "Scott Wittman",
+      "qid": "Q4022358",
+      "topRev": 1381274104,
+      "more": false,
+      "lead": "File:ScottWittman-byPhilipRomano.jpg",
+      "timeline": [
+        {
+          "file": "File:ScottWittman-byPhilipRomano.jpg",
+          "rev": 1381274104,
+          "ts": "2026-10-21T06:20:14Z",
+          "user": "PhilipRomano"
+        },
+        {
+          "file": "File:Scott Wittman.jpg",
+          "rev": 1360636555,
+          "ts": "2026-06-22T18:28:59Z",
+          "user": "Twixister"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Tom Broecker",
+      "label": "Tom Broecker",
+      "qid": "Q7815072",
+      "topRev": 1381274127,
+      "more": false,
+      "lead": "File:TomBroecker-byPhilipRomano.jpg",
+      "timeline": [
+        {
+          "file": "File:TomBroecker-byPhilipRomano.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Charlotte Cho",
+      "label": "Charlotte Cho",
+      "qid": "Q27449769",
+      "topRev": 1381537877,
+      "more": false,
+      "lead": "File:Charlotte Cho at Korea Expo Los Angeles 2026.jpg",
+      "timeline": [
+        {
+          "file": "File:Charlotte Cho at Korea Expo Los Angeles 2026.jpg",
+          "rev": 1381537877,
+          "ts": "2026-10-23T04:24:32Z",
+          "user": "PaulLim11"
+        },
+        {
+          "file": "File:Charlotte Cho.png",
+          "rev": 994724178,
+          "ts": "2020-12-17T06:06:48Z",
+          "user": "Toadboy123"
+        }
+      ]
     }
   ],
   "depth": 4,
   "bg": {
     "lastFull": "2026-10-19T09:58:22.816Z",
-    "lastRun": "2026-10-19T09:58:22.816Z",
+    "lastRun": "2026-10-26T09:22:04.139Z",
     "lastMode": "new"
   }
 }
