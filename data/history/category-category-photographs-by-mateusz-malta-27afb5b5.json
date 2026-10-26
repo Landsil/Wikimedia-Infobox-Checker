@@ -2,16 +2,16 @@
   "schema": 1,
   "algoVersion": 3,
   "identity": "category|Category:Photographs by Mateusz Malta",
-  "asOf": "2026-10-19T08:50:34.170Z",
+  "asOf": "2026-10-26T09:12:08.835Z",
   "input": {
     "type": "category",
     "title": "Category:Photographs by Mateusz Malta"
   },
   "type": "category",
   "count": 3,
-  "addedThrough": "2026-10-19T07:39:03Z",
+  "addedThrough": "2026-10-26T07:53:19Z",
   "uncapped": true,
-  "scanned": 271,
+  "scanned": 280,
   "pending": [],
   "done": [
     "en:Alasdair Beckett-King",
@@ -60,7 +60,11 @@
     "en:Dave Benett",
     "en:John Sackville (actor)",
     "en:Leo Suter",
-    "en:Marli Siu"
+    "en:Marli Siu",
+    "en:Bella Ramsey",
+    "en:Ellie Bamber",
+    "en:Fran Scott",
+    "en:Matt Parker"
   ],
   "people": [
     {
@@ -1138,12 +1142,104 @@
           "user": "WikiPedant"
         }
       ]
+    },
+    {
+      "lang": "en",
+      "article": "Bella Ramsey",
+      "label": "Bella Ramsey",
+      "qid": "Q24891605",
+      "topRev": 1381835816,
+      "more": true,
+      "lead": "File:Bella Ramsey in 2026 02 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Bella Ramsey in 2026 02 (cropped).jpg",
+          "rev": 1381835816,
+          "ts": "2026-10-25T02:36:24Z",
+          "user": "SoulSurvivor97"
+        },
+        {
+          "file": "File:Bella Ramsey-3066 (cropped).jpg",
+          "rev": 1380038428,
+          "ts": "2026-10-13T11:55:38Z",
+          "user": "Crp74"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Ellie Bamber",
+      "label": "Ellie Bamber",
+      "qid": "Q22683508",
+      "topRev": 1381400821,
+      "more": false,
+      "lead": "File:Ellie Bamber 01.jpg",
+      "timeline": [
+        {
+          "file": "File:Ellie Bamber 01.jpg",
+          "rev": 1381400821,
+          "ts": "2026-10-22T05:43:44Z",
+          "user": "Cody Fearless-Lee"
+        },
+        {
+          "file": "File:Ellie Bamber at the 2024 Toronto International Film Festival 4 (cropped).jpg",
+          "rev": 1377299131,
+          "ts": "2026-09-28T19:48:20Z",
+          "user": "Starklinson"
+        },
+        {
+          "file": "File:Ellie Bamber at the 2024 Toronto International Film Festival 2 (cropped).jpg",
+          "rev": 1307406423,
+          "ts": "2025-08-23T11:49:11Z",
+          "user": "Pancakeswithbutterr"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Fran Scott",
+      "label": "Fran Scott",
+      "qid": "Q33190306",
+      "topRev": 1382052059,
+      "more": false,
+      "lead": "File:Fran Scott 01.jpg",
+      "timeline": [
+        {
+          "file": "File:Fran Scott 01.jpg",
+          "rev": 1382052059,
+          "ts": "2026-10-26T07:58:27Z",
+          "user": "Landsil"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Matt Parker",
+      "label": "Matt Parker",
+      "qid": "Q21063802",
+      "topRev": 1382051811,
+      "more": true,
+      "lead": "File:Matt Parker 02.jpg",
+      "timeline": [
+        {
+          "file": "File:Matt Parker 02.jpg",
+          "rev": 1382051811,
+          "ts": "2026-10-26T07:55:03Z",
+          "user": "Landsil"
+        },
+        {
+          "file": "File:Matt Parker at Nine lessons and Carols for Godless People.jpg",
+          "rev": 1376531703,
+          "ts": "2026-09-24T18:53:16Z",
+          "user": "DanielRigal"
+        }
+      ]
     }
   ],
   "depth": 1,
   "bg": {
     "lastFull": "2026-10-13T15:22:37.720Z",
-    "lastRun": "2026-10-19T08:50:34.170Z",
+    "lastRun": "2026-10-26T09:12:08.835Z",
     "lastMode": "new"
   }
 }
