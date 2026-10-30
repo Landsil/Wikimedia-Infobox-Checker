@@ -690,24 +690,56 @@ decline:
   enough to contain a neighbour's photograph, which makes "the face in the middle"
   untrue.
 
-Both methods are sized from **the document's own grid**, not from fractions of
-the page. That was the second mistake, and it was mine: tuned on a two-column
-programme, a `SAME_COLUMN` of 0.12 page-widths is wider than a column in a
-four-column cast sheet, and a 0.22 half-width handed the model a crop two columns
-across — so it saw a neighbour's portrait and caption, and one person's name came
-back for three different faces. `gridPitch()` measures the spacing between
-captions across a row and between rows, from the page's own text. On a
-four-column cast sheet it reports a 390px column pitch and a 511px row pitch, and
-the model's crop drops from 792×1050 to 390×546 — one cell. On the two-column
-programme it reports 795px and the crop is unchanged. Nothing is hardcoded, so
-neither layout is privileged.
+### The layout is learned, not assumed
 
-`namesOn()` collects the candidate list: every name-shaped line on the page.
-`captionFor()` computes the positional second opinion. It takes the page's text
-runs with their rendered boxes (`page.getTextContent()`, mapped through the
-viewport transform), groups them into lines, and for each face picks the nearest
-line below it that sits in the same column and reads like a name. Four rules,
-each one measured rather than guessed:
+Everything below used to be a guess hardcoded from the first document that worked,
+and each guess broke on the second one. What replaced them rests on one
+observation: **a document is laid out consistently**, so whatever holds for one
+photograph holds for the rest, and the page can simply be asked.
+
+**The grid comes from the text's own baselines.** `gridPitch()` groups lines into
+bands and takes the median gap between their centres: 390px on a four-column cast
+sheet, 795px on a two-column programme. Two earlier units were measured failing:
+
+- *Fractions of the page.* A `SAME_COLUMN` of 0.12 page-widths is itself wider
+  than a column in a four-column sheet, so every caption window straddled its
+  left-hand neighbour and — ties on a shared baseline resolving leftmost-first —
+  every name came back one cell to the left. The same unit gave the model a crop
+  two columns across, and one person's name came back for three different faces.
+- *The faces.* Measuring the pitch off the photographs instead seemed obviously
+  better and was worse. A face sits at a different height inside each photograph,
+  so nine portraits in three rows grouped into **five** pseudo-rows and the column
+  gap came out as 1174px against a true 390px. That reproduced the original
+  left-shift exactly, which is how it was caught.
+
+**Which line is the name comes from repetition.** `looksLikeName()` — two or more
+capitalised words, no digits — is gone. It dropped mononyms (*Zendaya*), every
+name with a lowercase particle (*Ludwig van Beethoven*, *Hassan al-Banna*,
+*Catherine de Medici*) and every uncased script, so a Japanese programme produced
+no names whatever; and it cheerfully accepted *EXECUTIVE PRODUCER* and *Director
+of Photography* as people. Instead: roles repeat down a page — CAST, CAST, CAST,
+PRODUCER — and names do not. For each line of the caption, the share of distinct
+values across every face on the page is measured, and the most distinct line is
+the name. No wordlist, no language, no case. It handles a role printed *above* the
+name for free.
+
+**Which side the captions are on is also learned.** Captions were assumed to be
+below, so a page with names beside the photographs found nothing at all. All four
+directions are now scored across every face at once and the best wins: coverage ×
+how distinct its most name-like line is. A heading above a row of photographs is
+the same text for all of them, so "above" scores badly wherever the captions are
+really below. With a single photograph there is no repetition to judge by, so the
+nearest caption wins instead.
+
+The one assumption left is that a caption is near its photograph, in a consistent
+place, with consistently-structured lines.
+
+`namesOn()` then returns exactly the names this page's own layout yields — which
+is the closed list the model chooses from, so it holds no headings and no job
+titles. `captionFor()` is the positional second opinion. Both work off the page's
+text runs with their rendered boxes (`page.getTextContent()`, mapped through the
+viewport transform), grouped into lines. Four further rules, each measured rather
+than guessed:
 
 - **A wide horizontal gap splits a line.** Captions in a grid share a baseline
   across columns, so grouping purely by baseline produced the single line
@@ -718,23 +750,34 @@ each one measured rather than guessed:
   box clips the start of the name — "Adam Pearson" came back as "earson". The
   window is therefore at least 12% of the page width to each side, and only has
   to *overlap* a line rather than contain it.
-- **How far down to look is a property of the page, not of the face.** In
-  face-heights it lost exactly the people whose faces were small: an 82px face in
-  a tall photograph reached y=1152 while its caption was printed at y=1280, so
-  two of four people on a page were reported as having no caption. The reach is
-  35% of the page height. A generous reach is safe because the *nearest*
-  qualifying line wins, so it cannot steal the row below.
+- **How far to look is a property of the page, not of the face.** In face-heights
+  it lost exactly the people whose faces were small: an 82px face in a tall
+  photograph reached y=1152 while its caption was printed at y=1280, so two of
+  four people on a page were reported as having no caption. The reach is 35% of
+  the page. A generous reach is safe because the *nearest* qualifying line wins,
+  so it cannot steal the row below.
+- **Which side of a face a line sits on is judged by its centre, not its edges.**
+  An edge test discards a caption wider than the photograph above it — "Sharon
+  Duncan-Brewster" reached past her picture and was dropped, leaving only the role
+  printed beneath her.
+- **A caption block is grouped on both axes.** Beside-the-photo layouts are
+  selected by row, so a cell could see the previous cell's lines at the same
+  height and hand back the neighbour's name. Centres rather than edges again,
+  because centred captions of differing widths share a centre and not a left edge.
 - **A line must look like a name** to be taken as one: two or more words, every
   one capitalised, no digits. That is what keeps "Festival Programme 2026" and
   "Guest speaker" out of the name field — the latter is kept as the organisation
   when it follows the name closely enough. The organisation is looked up relative
   to the *name* line rather than the face, because searching the face's reach
   window missed one by three pixels.
-- **The nearest band of captions below, then the one closest to this face.**
-  Taking the first in reading order instead silently prefers the left-hand
-  neighbour whenever two names share a baseline — which is every grid.
+- **The nearest caption, then the line closest to this face.** Taking the first
+  in reading order instead silently prefers the left-hand neighbour whenever two
+  names share a baseline — which is every grid.
 
-Measured on a two-page test programme (2026-10-30, Chrome 156) whose guests are
+Measured on two layouts (2026-10-30, Chrome 156). A **four-column cast sheet**
+of nine people, names and roles centred under each portrait: **9 of 9 names and
+9 of 9 roles correct**, captions found below, column pitch 390px, the model's crop
+429px — one cell. And a two-page **two-column programme** whose guests are
 Anthony Wonke, Ashley Walters, Adam Pearson and Bella Ramsey:
 
 | | Result |
@@ -761,6 +804,24 @@ A face that neither method can name is reported as having no caption, and a page
 with a text layer but no name-shaped line in it is never handed to the free-text
 reader — there is nothing on such a page to attribute, so asking would only
 invent something.
+
+#### What it still will not do
+
+Worth being plain about, since "works on any sensible PDF" is a bigger claim than
+this earns:
+
+- **A scan or a screenshot has no text layer**, so there is nothing to take names
+  from and the model has to read them. Those are marked `unverified`.
+- **The caption has to belong to its photograph.** A legend elsewhere on the page
+  — "clockwise from top left: …" — is not a caption, and nothing here will map it.
+- **A face has to be found** (confidence ≥ 0.5). A portrait the detector misses is
+  a person missing from the roster, and a photograph containing two people yields
+  two entries.
+- **If every caption on a page reads the same**, repetition cannot tell a name
+  from a role and the first line is taken. Two people with the same name on one
+  page collapse into one candidate.
+- **One photograph on a page** leaves nothing to learn from, so the nearest
+  caption is taken on trust.
 
 Scans and screenshots have no text layer at all, so there is no candidate list to
 choose from and the model has to read after all. Those names come back marked
@@ -819,6 +880,7 @@ Chrome 156:
 | `check.html` self-test | **18/18** | EXIF ordering, badge grouping, native `move()`, numbering, filename safety |
 | End-to-end, driving the app | **26/26** | step 1's downloads, the sample shoot, hand-marked badges, the face check, the badge-confirmation gate, filing, the report, the Wikipedia look-up |
 | `groupPhotos` rules (Node) | **18/18** | badges only, people nobody badged, time meaning nothing on its own, a frame with no usable face, mixed badged/unbadged, a shoot with no badge anywhere, faceless frames inventing nobody |
+| Learned layout (Node) | **22/22** | captions below / right / above / left; multi-word job titles not taken for names; a role printed above the name; mononyms, lowercase particles, Japanese, Arabic, Cyrillic, Icelandic; the candidate list holding names only; a heading not taken as a caption; one photo with nothing to learn from; a single column with no measurable pitch |
 
 `check.html` also has panels to run the face comparison, the document roster and
 the badge reading on your own files, which is how each of the findings above was

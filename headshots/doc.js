@@ -252,19 +252,29 @@ const PICK_SIDES = 0.22;            // half-width, as a share of the page width
 const PICK_MARK = "#ff2d55";
 const PICK_MARK_WIDTH = 6;
 
-function pickCut(pageCanvas, box, pitch) {
-  // One column wide where the page says how wide a column is. A crop spanning
-  // two columns puts a neighbour's portrait and caption in front of the model,
-  // and no amount of outlining reliably beats that.
-  const half = pitch && pitch.col ? pitch.col * 0.5
+function pickCut(pageCanvas, box, pitch, layout) {
+  // Roughly one cell, reaching the way the captions actually sit. A crop spanning
+  // two columns puts a neighbour's portrait and caption in front of the model and
+  // no amount of outlining beats that; a crop that reaches only downwards misses
+  // the caption entirely on a page that puts names beside the photographs.
+  //
+  // Slightly wider than one cell (0.55 of the pitch, not 0.5) on purpose: cropped
+  // to exactly the right cell the model can only ever agree with the layout, and
+  // then the cross-check tells you nothing. A little of the neighbour leaves it
+  // able to disagree.
+  const dir = layout ? layout.dir : "below";
+  const colHalf = pitch && pitch.col ? pitch.col * 0.55
     : Math.max(box.width * CUT_SIDES, pageCanvas.width * PICK_SIDES);
-  const down = Math.min(pageCanvas.height * PAGE_REACH,
-    pitch && pitch.row ? pitch.row * 0.9 : Infinity);
-  const cx = box.originX + box.width / 2;
-  const x0 = Math.max(0, cx - half);
-  const x1 = Math.min(pageCanvas.width, cx + half);
-  const y0 = Math.max(0, box.originY - box.height * CUT_ABOVE);
-  const y1 = Math.min(pageCanvas.height, box.originY + box.height + down);
+  const rowHalf = pitch && pitch.row ? pitch.row * 0.55 : box.height * 3;
+  const cx = box.originX + box.width / 2, cy = box.originY + box.height / 2;
+  const pad = box.height * CUT_ABOVE;
+  let x0 = cx - colHalf, x1 = cx + colHalf, y0 = box.originY - pad, y1 = box.originY + box.height + pad;
+  if (dir === "below") y1 = box.originY + box.height + rowHalf * 2;
+  else if (dir === "above") y0 = box.originY - rowHalf * 2;
+  else if (dir === "right") { x1 = cx + colHalf * 2; y0 = cy - rowHalf; y1 = cy + rowHalf; }
+  else { x0 = cx - colHalf * 2; y0 = cy - rowHalf; y1 = cy + rowHalf; }
+  x0 = Math.max(0, x0); x1 = Math.min(pageCanvas.width, x1);
+  y0 = Math.max(0, y0); y1 = Math.min(pageCanvas.height, y1);
   const w = Math.max(1, Math.round(x1 - x0)), h = Math.max(1, Math.round(y1 - y0));
   const c = document.createElement("canvas");
   c.width = w; c.height = h;
@@ -285,80 +295,177 @@ function pickCut(pageCanvas, box, pitch) {
 // three different faces. Measuring the pitch off the page's own captions costs
 // nothing and adapts to any layout.
 const median = xs => { const a = [...xs].sort((x, y) => x - y); return a.length ? a[Math.floor(a.length / 2)] : 0; };
-const centreOf = l => (l.x + l.right) / 2;
+const centreX = l => (l.x + l.right) / 2;
+const centreY = l => l.y + l.h / 2;
 
-function nameBands(items) {
-  const bands = [];
-  for (const l of linesOf(items).filter(l => looksLikeName(l.text)).sort((a, b) => a.y - b.y)) {
-    const b = bands.find(b => Math.abs(b.y - l.y) <= Math.max(4, l.h * 0.8));
-    if (b) b.lines.push(l); else bands.push({ y: l.y, lines: [l] });
-  }
-  return bands;
-}
+const CAPTION_BLOCK = 3;         // line-heights that still belong to one caption
+const DIRS = ["below", "right", "above", "left"];
 
-// Spacing between captions across a row, and between rows. 0 means "cannot tell",
-// which falls back to the page-fraction guesses.
+// A line worth considering at all: page numbers and rules are not captions.
+const plausible = t => t.length > 0 && t.length <= 80 && /[^\s\d.,;:·|\-–—_/()\[\]]/.test(t);
+
+// ---- the document's grid, measured from its own text ----
+// From the text's baselines, not from the photographs. Faces were tried and are
+// not usable for this: a face sits at a different height inside each photograph,
+// so nine portraits in three rows grouped into five pseudo-rows and the column
+// gap came out as 1174px against a true 390px — which put every caption window
+// over its left-hand neighbour and widened the model's crop to three columns.
+// Fractions of the page were no better: 0.12 page-widths is itself wider than a
+// column in a four-column sheet.
+//
+// Lines sharing a baseline across columns give the column pitch directly, and no
+// notion of what a name looks like is involved.
 export function gridPitch(items) {
-  if (!items || !items.length) return { col: 0, row: 0 };
-  const bands = nameBands(items);
+  const lines = linesOf(items || []).filter(l => plausible(l.text));
+  if (lines.length < 2) return { col: 0, row: 0 };
+  const bands = [];
+  for (const l of [...lines].sort((a, b) => a.y - b.y)) {
+    const b = bands.find(b => Math.abs(b.y - l.y) <= Math.max(4, l.h * 0.6));
+    if (b) b.lines.push(l); else bands.push({ y: l.y, h: l.h, lines: [l] });
+  }
   const colGaps = [];
   for (const b of bands) {
-    const cs = b.lines.map(centreOf).sort((x, y) => x - y);
+    const cs = b.lines.map(centreX).sort((x, y) => x - y);
     for (let i = 1; i < cs.length; i++) colGaps.push(cs[i] - cs[i - 1]);
   }
-  const rowGaps = [];
-  for (let i = 1; i < bands.length; i++) rowGaps.push(bands[i].y - bands[i - 1].y);
-  return { col: median(colGaps), row: median(rowGaps) };
+  // Consecutive bands are a mix of lines within one caption and the step to the
+  // next row of them. Only the big gaps are rows.
+  const lineH = median(bands.map(b => b.h)) || 12;
+  const gaps = [];
+  for (let i = 1; i < bands.length; i++) gaps.push(bands[i].y - bands[i - 1].y);
+  return { col: median(colGaps), row: median(gaps.filter(g => g > lineH * 3)) };
 }
 
-// Every name-shaped line on a page — the closed list the model must choose from.
-export function namesOn(items) {
-  if (!items || !items.length) return [];
-  return [...new Set(linesOf(items).filter(l => looksLikeName(l.text)).map(l => l.text))];
-}
-
-// Does a line read like a person's name, rather than a heading or a job title?
-// Two or more words, every one capitalised, no digits.
-const looksLikeName = t => /^[^\d]+$/.test(t) && t.split(/\s+/).filter(Boolean).length >= 2
-  && t.split(/\s+/).filter(Boolean).every(w => /^[\p{Lu}]/u.test(w)) && t.length <= 60;
-
-// The caption belonging to one face: the nearest lines below it that sit in the
-// same column. The name is left-aligned to the photograph while the face is
-// centred in it, so the column window is measured from the face centre outwards
-// and only has to overlap the line, not contain it.
-export function captionFor(items, box, pageWidth, pageHeight, pitch) {
-  if (!items || !items.length) return null;
-  const cx = box.originX + box.width / 2;
-  const p = pitch || gridPitch(items);
-  const half = p.col ? Math.max(box.width * 0.6, p.col * 0.45)
+// ---- learning where the captions are ----
+// Nothing here asks what a name looks like. Requiring two capitalised words and
+// no digits dropped mononyms ("Zendaya"), every name with a lowercase particle
+// ("Ludwig van Beethoven", "Hassan al-Banna") and every uncased script — a
+// Japanese programme yielded no names at all — while happily accepting
+// "EXECUTIVE PRODUCER" and "Director of Photography" as people.
+//
+// Instead the layout is learned from the page, which is sound because a document
+// is laid out consistently: whatever holds for one photograph holds for the rest.
+// Only two things are assumed, and both are language-neutral.
+// The caption block for one face in one direction, in reading order.
+function blockFor(lines, box, dir, pageWidth, pageHeight, pitch) {
+  const cx = box.originX + box.width / 2, cy = box.originY + box.height / 2;
+  const colHalf = pitch.col ? Math.max(box.width * 0.6, pitch.col * 0.45)
     : Math.max(box.width * CUT_SIDES, pageWidth * SAME_COLUMN);
-  const below = box.originY + box.height * 0.6;
-  // How far down to look is a property of the page, not of the face. Measuring it
-  // in face-heights lost the small faces: an 82px face in a tall photograph gave
-  // a reach of 1152px while its caption was printed at 1280px, so two of four
-  // people on a test page were reported as having no caption at all.
-  const reach = Math.max(box.height * 4, (pageHeight || pageWidth * 1.41) * PAGE_REACH);
-  // A line counts as this face's column if its centre is within half a pitch, or
-  // if it spans the face horizontally — which covers a caption wider than its own
-  // cell as well as one left-aligned under a centred face.
-  const lines = linesOf(items).sort((a, b) => a.y - b.y || a.x - b.x);
-  const off = l => Math.abs(centreOf(l) - cx);
-  const mine = l => off(l) <= half || (l.x <= cx && l.right >= cx);
-  const cands = lines.filter(l => l.y >= below && l.y <= below + reach && looksLikeName(l.text) && mine(l));
-  if (!cands.length) return null;
-  // The nearest band of captions below, then the one closest to this face.
-  // Taking the first in reading order instead silently prefers the left-hand
-  // neighbour whenever two names share a baseline, which is every grid.
-  const firstY = Math.min(...cands.map(l => l.y));
-  const band = cands.filter(l => l.y <= firstY + l.h * 1.5);
-  const nameLine = band.reduce((best, l) => (off(l) < off(best) ? l : best));
-  const after = lines.find(l => l.y > nameLine.y && l.y < nameLine.y + nameLine.h * 3
-                                && mine(l) && !looksLikeName(l.text));
-  return { name: nameLine.text, organisation: after ? after.text : "" };
+  const rowHalf = pitch.row ? Math.max(box.height * 0.6, pitch.row * 0.45)
+    : box.height * 1.2;
+  const reachY = Math.max(box.height * 4, pageHeight * PAGE_REACH);
+  const reachX = Math.max(box.width * 4, pageWidth * PAGE_REACH);
+  const sameCol = l => Math.abs(centreX(l) - cx) <= colHalf || (l.x <= cx && l.right >= cx);
+  const sameRow = l => Math.abs(centreY(l) - cy) <= rowHalf || (l.y <= cy && l.y + l.h >= cy);
+  // Which side of the face a line sits on is judged by its centre, not its edges.
+  // An edge test discards a caption wider than the photograph it belongs to —
+  // "Sharon Duncan-Brewster" reached past the picture and was dropped, leaving
+  // only the role beneath it.
+  let pool, dist;
+  if (dir === "below") {
+    dist = l => centreY(l) - cy;
+    pool = lines.filter(l => dist(l) > 0 && dist(l) <= box.height / 2 + reachY && sameCol(l));
+  } else if (dir === "above") {
+    dist = l => cy - centreY(l);
+    pool = lines.filter(l => dist(l) > 0 && dist(l) <= box.height / 2 + reachY && sameCol(l));
+  } else if (dir === "right") {
+    dist = l => centreX(l) - cx;
+    pool = lines.filter(l => dist(l) > 0 && dist(l) <= box.width / 2 + reachX && sameRow(l));
+  } else {
+    dist = l => cx - centreX(l);
+    pool = lines.filter(l => dist(l) > 0 && dist(l) <= box.width / 2 + reachX && sameRow(l));
+  }
+  pool = pool.filter(l => plausible(l.text));
+  if (!pool.length) return [];
+  pool.sort((a, b) => dist(a) - dist(b));
+  // The nearest line, plus whatever is stacked with it: a caption is a little
+  // block of lines, not one line.
+  //
+  // Grouped on both axes. Beside-the-photo layouts are selected by row, so a
+  // cell could see the previous cell's lines at the same height and, sorted by
+  // position, hand back the neighbour's name. Centres rather than edges, because
+  // centred captions of different widths share a centre and not a left edge.
+  const first = pool[0];
+  const spread = Math.max(first.h * 6, (pitch.col || 0) * 0.4);
+  return pool.filter(l => Math.abs(l.y - first.y) <= first.h * CAPTION_BLOCK
+                          && Math.abs(centreX(l) - centreX(first)) <= spread)
+             .sort((a, b) => a.y - b.y || a.x - b.x);
 }
 
-// A cut-out around one face, reaching `below` face-heights beneath it and at
-// least `minHalf` of the page width to either side.
+// Where this page keeps its captions, and which line of one is the name.
+//
+// Direction is scored across every face at once: the right direction finds a
+// caption for most faces and finds a *different* one for each. A heading above a
+// row of photographs is the same text for all of them, so "above" scores badly
+// wherever the captions are really below.
+//
+// Which line is the name then falls out of repetition, which is the whole gift of
+// a consistently laid-out document: roles repeat down a page — CAST, CAST, CAST,
+// PRODUCER — and names do not. No wordlist, no language, no case.
+export function learnLayout(items, boxes, pageWidth, pageHeight, pitch) {
+  const lines = linesOf(items || []);
+  const list = (boxes || []).filter(Boolean);
+  if (!lines.length || !list.length) return null;
+
+  // Which line of a caption carries the name, and how name-like that line is
+  // across the whole page. Roles repeat, names do not.
+  const slots = blocks => {
+    const depth = Math.max(0, ...blocks.map(b => b.length));
+    let slot = 0, unique = null;
+    for (let i = 0; i < depth; i++) {
+      const vals = blocks.map(b => b[i]).filter(Boolean).map(l => l.text);
+      if (vals.length < 2) continue;                  // one sample proves nothing
+      const u = new Set(vals).size / vals.length;
+      if (unique === null || u > unique) { unique = u; slot = i; }   // ties keep the earlier line
+    }
+    return { slot, unique };
+  };
+
+  let best = null;
+  for (const dir of DIRS) {
+    const blocks = list.map(b => blockFor(lines, b, dir, pageWidth, pageHeight, pitch));
+    const found = blocks.filter(b => b.length);
+    if (!found.length) continue;
+    const { slot, unique } = slots(blocks);
+    // Scored on how well the direction yields a uniquely-valued line across every
+    // face — not on its *first* line. Scoring the first line punished the right
+    // answer whenever a role was printed above the name, since every caption then
+    // begins with the same word.
+    const score = (found.length / list.length) * (unique === null ? 1 : unique);
+    // With one photograph there is no repetition to judge by, so the nearest
+    // caption wins instead of a direction being assumed.
+    const near = found.reduce((n, b) => n + Math.abs(b[0].y), 0) / found.length;
+    if (!best || score > best.score + 1e-9 || (Math.abs(score - best.score) < 1e-9 && near < best.near))
+      best = { dir, score, near, slot, unique, depth: Math.max(...blocks.map(b => b.length)) };
+  }
+  if (!best) return null;
+  return { dir: best.dir, nameSlot: best.slot, uniqueness: best.unique, score: best.score, depth: best.depth };
+}
+
+// This face's caption, using the layout learned for the page.
+export function captionFor(items, box, pageWidth, pageHeight, pitch, layout) {
+  if (!items || !items.length || !layout) return null;
+  const block = blockFor(linesOf(items), box, layout.dir, pageWidth, pageHeight, pitch || { col: 0, row: 0 });
+  if (!block.length) return null;
+  const i = block[layout.nameSlot] ? layout.nameSlot : 0;
+  return {
+    name: block[i].text,
+    organisation: block.filter((_, j) => j !== i).map(l => l.text).join(" · "),
+  };
+}
+
+// The closed list the model chooses from: the names this page's own layout gives.
+export function namesOn(items, boxes, pageWidth, pageHeight, pitch, layout) {
+  const list = (boxes || []).filter(Boolean);
+  if (!layout || !list.length) return [];
+  const out = [];
+  for (const b of list) {
+    const c = captionFor(items, b, pageWidth, pageHeight, pitch, layout);
+    if (c && c.name) out.push(c.name);
+  }
+  return [...new Set(out)];
+}
+
 function cutOut(pageCanvas, box, [below, minHalf]) {
   const half = Math.max(box.width * CUT_SIDES, pageCanvas.width * minHalf);
   const x0 = Math.max(0, box.originX + box.width / 2 - half);
@@ -393,9 +500,15 @@ export async function rosterFrom(pages, opts = {}) {
   const totalPages = pages.length;
   for (const [pageIndex, page] of pages.entries()) {
     if (onProgress) onProgress({ phase: "faces", page: pageIndex + 1, totalPages });
-    const pitch = gridPitch(texts[pageIndex]);
     const found = (await faces.facesIn(page, { tile: true }))   // pages are large; small portraits need tiling
       .filter(f => f.score >= DOC_FACE_MIN);
+    // Every face first, because the layout is learned from all of them together:
+    // one photograph cannot tell you which direction the captions sit in, nor
+    // which line of a caption is the name.
+    const items = texts[pageIndex];
+    const pitch = gridPitch(items);
+    const layout = learnLayout(items, found.map(f => f.box), page.width, page.height, pitch);
+    const candidates = namesOn(items, found.map(f => f.box), page.width, page.height, pitch, layout);
     let onPage = 0;
     for (const f of found) {
       const entry = {
@@ -406,16 +519,14 @@ export async function rosterFrom(pages, opts = {}) {
         thumb: faceThumb(page, f.box),
         name: "", organisation: "", legible: null,
       };
-      const items = texts[pageIndex];
-      const candidates = namesOn(items);
       if (candidates.length) {
-        // Two independent answers from the same verified vocabulary.
-        const printed = captionFor(items, f.box, page.width, page.height, pitch);
+        // Two answers from the same verified vocabulary.
+        const printed = captionFor(items, f.box, page.width, page.height, pitch, layout);
         let picked = null;
         if (pickName) {
           if (onProgress) onProgress({ phase: "names", page: pageIndex + 1, totalPages,
                                        done: n, index: ++onPage, count: found.length });
-          picked = await pickName(pickCut(page, f.box, pitch), candidates);
+          picked = await pickName(pickCut(page, f.box, pitch, layout), candidates);
         }
         const byModel = picked && picked.name ? picked.name : "";
         const byPlace = printed ? printed.name : "";
@@ -437,9 +548,10 @@ export async function rosterFrom(pages, opts = {}) {
           entry.noCaption = true;
           if (picked && picked.error) entry.error = picked.error;
         }
+        if (layout) entry.layout = layout.dir;
       } else if (items && items.length) {
-        // A text layer with no name-shaped line in it: there is nothing on this
-        // page to attribute, and asking the model to read would only invent one.
+        // A text layer the layout found nothing in: there is nothing on this page
+        // to attribute, and asking the model to read would only invent something.
         entry.source = "document";
         entry.noCaption = true;
       } else if (readName) {
