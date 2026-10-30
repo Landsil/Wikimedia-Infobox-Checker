@@ -36,6 +36,7 @@ A landing hub links to self-contained tool pages; all share one stylesheet.
 | `vendor/mediapipe/` | Our unmodified copy of Google's MediaPipe runtime + two models, with `versions.json` (release id, sizes, SHA-256), `LICENSE`, `NOTICE.md` |
 | `scripts/sync-mediapipe.mjs` | Checks / downloads a newer MediaPipe release (≥ 14 days old upstream) |
 | `.github/workflows/check-mediapipe.yml` | Weekly: a newer release goes to its own branch + a review issue assigned to Landsil |
+| `headshots/` | **Headshots** — installable, offline PWA for an event shoot: badge photos → names → grouped, renamed headshots. Its own scope, worker and storage |
 | `wikiportraits.js` | WikiPortraits photographer badge, shared by `finder.html` and `history.html` (classic script) |
 | `style.css` | Shared styles for all pages |
 
@@ -457,6 +458,96 @@ category (hover: "WikiPortraits contributor").
 - **The categories are the source of truth.** Someone in neither gets no badge.
   (`User:Zafer`, credited on 63 of those 200 photos, is in contributors only —
   the reason contributors was added.)
+
+## Headshots (`headshots/`)
+
+An **installable, offline** tool for filing an event shoot, kept deliberately
+apart from the rest of the site. The photographer shoots a person's badge (or a
+screen showing their details), then that person's headshots, then the next
+person's badge. This reads the folder in capture-time order, reads the names off
+the badge frames with Chrome's built-in model, groups each run of headshots under
+the badge before it, and renames them into a `done` folder.
+
+Why a subdirectory and not one `.html` at the root: a service worker can only
+control its own folder and below, and GitHub Pages cannot send the
+`Service-Worker-Allowed` header that would widen the scope. Living in
+`headshots/` therefore gives it its own worker scope, its own caches and its own
+IndexedDB, so nothing it does can affect the other four pages.
+
+### Files
+
+| File | What |
+| :-- | :-- |
+| `index.html`, `app.js`, `app.css` | The app and its UI wiring |
+| `shoot.js` | Listing a folder, grouping by badge, renaming and moving — DOM-free, so it is testable |
+| `exif.js` | Capture time from a JPEG's EXIF, no dependency; falls back to the file date |
+| `identify.js` | Reading a name off a badge with the Prompt API (Gemini Nano) |
+| `demo.js` | A sample shoot — drawn badges and stand-in portraits, with EXIF spliced in |
+| `db.js` | A key/value corner of IndexedDB, so a shoot survives closing the tab |
+| `sw.js`, `manifest.webmanifest`, `icon-*.png` | PWA shell: offline cache, install metadata, icons |
+| `check.html` | What this browser supports, plus a self-test of the renaming |
+
+### The grouping rule
+
+Photos are sorted by **EXIF `DateTimeOriginal`**, falling back to the file's own
+date for screenshots and PNGs (`captureTime()` reports which was used). Only the
+order matters, so a camera clock that is wrong is harmless.
+
+An identity frame always starts a new person — **including an unreadable one**,
+because the photographer has moved on, so the frames after it must never be filed
+under the previous person; it simply asks for a name. Photos before the first
+badge cannot be attributed and are left where they are, as is any person still
+without a name.
+
+Filing writes `<Name> 01.jpg`, `<Name> 02.jpg`, … into `done/`, with the badge
+frame as `<Name> - badge.jpg`. Numbering continues past whatever is already
+there, so a second sitting for the same person cannot overwrite the first.
+`safeName()` strips the characters no filesystem will take, and the trailing dots
+Windows silently drops. Moving uses `FileSystemHandle.move()` (Chrome 102+); the
+fallback copies, checks the copy's byte count, and only then removes the
+original, so a failed write cannot lose a photo.
+
+### What it needs, and what it does not
+
+- **Chrome or Edge on desktop.** `showDirectoryPicker` is Chrome 86+/Edge only —
+  **not Firefox, not Safari**, on any platform (browser-compat-data, checked
+  2026-10-30). `FileSystemHandle.move()` does exist in Firefox 111 and Safari
+  15.2, but only for the browser's private storage, which cannot reach a real
+  folder, so it does not help.
+- **Chrome 148+** for the built-in model (`LanguageModel`; Edge 138 only behind a
+  flag, no mobile at all). Per Google's requirements: Windows 10/11, macOS 13+,
+  Linux or Chromebook Plus; 22 GB free on the Chrome profile's volume; >4 GB VRAM
+  or 16 GB RAM with 4+ cores. The model is Chrome's, downloaded once on first
+  use — we ship nothing. Output is constrained with `responseConstraint`
+  (JSON Schema, Chrome 137+) so the answer is parsed, not interpreted.
+- **Without the model it still works**: mark the badge frames by hand in step 3
+  and type the names. The requirement is reported on the page, not hidden.
+- **Nothing is uploaded.** Chrome's own documentation states no data is sent to
+  Google or any third party when using the model. The single network call is the
+  Wikipedia look-up in the report, behind a button, which sends only the names —
+  and reports which of those articles have **no photo**, which is the point of the
+  rest of this site.
+- **It reads what is written on a badge.** It does not recognise faces and does
+  not identify anyone from their appearance, matching the promise on the score page.
+
+### Trying and testing it
+
+**Try with sample photos** builds a shoot in the browser's private storage — two
+drawn badges with real text and six stand-in portraits, each with EXIF spliced in
+— so every step including the renaming can be exercised without going near a real
+photo. It also works in Firefox and Safari, which otherwise cannot pick a folder.
+
+`check.html` reports what the browser supports and runs an 18-assertion self-test
+of the pipeline against that private storage: EXIF ordering, grouping, the native
+`move()`, numbering continuation, and filename safety. Measured 2026-10-30 in
+Chrome 156: all 18 pass, plus 17 end-to-end assertions driving the app itself
+through the sample shoot to renamed files and a Wikipedia verdict.
+
+**Not yet verified by the maintainer's own run:** the badge reading itself. macOS
+privacy protection blocks reading the Chrome profile from a shell, and headless
+test profiles report the model as `downloadable` rather than sharing the
+downloaded one, so `identify()` is written to the documented API and is checked
+with the "Badge reading" panel on `check.html`.
 
 ## Trial photo score (`score.html`)
 

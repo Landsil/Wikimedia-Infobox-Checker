@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Headshots — checks</title>
+<link rel="stylesheet" href="../style.css?v=13">
+<link rel="stylesheet" href="app.css?v=1">
+</head>
+<body>
+<header>
+  <div class="titlebar">
+    <h1><a href="../index.html" class="home-link">Wikimedia</a> › <a href="./" class="home-link">Headshots</a> › Checks</h1>
+  </div>
+  <p class="lead">What this browser can do, and a self-test of the renaming that
+  runs on throwaway files in the browser's own private storage — your photos are
+  never touched.</p>
+</header>
+<main class="wide">
+  <h2 class="section-head">This browser</h2>
+  <div id="env" class="meta"></div>
+
+  <h2 class="section-head">Self-test: reading, ordering, renaming, moving</h2>
+  <p class="lead">Builds eight small JPEGs with real EXIF capture times in private
+  storage, runs the full pipeline with stand-in names, and checks every result.</p>
+  <button type="button" id="run_selftest">Run self-test</button>
+  <pre id="selftest" class="log"></pre>
+
+  <h2 class="section-head">Badge reading (Gemini Nano)</h2>
+  <p class="lead">Pick a photo of a badge, a name card or a screenshot showing
+  someone's details. Nothing leaves the device.</p>
+  <input type="file" id="badge_file" accept="image/*">
+  <button type="button" id="run_badge" disabled>Read it</button>
+  <div id="badge_out" class="meta"></div>
+  <div id="badge_preview"></div>
+</main>
+<footer>
+  <a href="https://github.com/Landsil/Wikimedia-Infobox-Checker" target="_blank"
+     rel="noopener">Wikimedia-Infobox-Checker on GitHub</a>
+</footer>
+<script type="module">
+import { captureTime, exifDate } from "./exif.js";
+import { listPhotos, groupPhotos, applyGroups, safeName, stemFor, DONE_DIR } from "./shoot.js";
+import { nanoPresent, nanoAvailability, createSession, identify, forModel, ANALYSIS_EDGE } from "./identify.js";
+import { withExif } from "./demo.js";
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g,
+  c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const row = (k, v, warn) => `<div class="row"><span class="k">${esc(k)}</span><span class="v${warn ? " warn" : ""}">${v}</span></div>`;
+
+// ---- environment ----
+(async function env() {
+  const ua = navigator.userAgent;
+  const chrome = /Chrom(e|ium)\/(\d+)/.exec(ua);
+  const edge = /Edg\/(\d+)/.exec(ua);
+  const fsa = typeof window.showDirectoryPicker === "function";
+  // Chrome can take a few seconds to answer availability(), so everything that
+  // is known synchronously is shown first and that one line fills in after.
+  const render = avail => {
+    const ok = ["available", "downloadable", "downloading"].includes(avail);
+    $("env").innerHTML =
+        row("Browser", esc(edge ? `Edge ${edge[1]}` : chrome ? `Chrome/Chromium ${chrome[2]}` : "not Chrome or Edge"), !chrome)
+      + row("Folder access (showDirectoryPicker)", fsa ? "yes" : "no — Chrome or Edge on desktop is required", !fsa)
+      + row("Rename in place (FileSystemHandle.move)", "checked by the self-test below")
+      + row("Secure context", window.isSecureContext ? "yes" : "no — the file APIs need HTTPS or localhost", !window.isSecureContext)
+      + row("Built-in model (LanguageModel)", nanoPresent() ? "present" : "absent — needs Chrome 148+ on desktop", !nanoPresent())
+      + row("Model availability (image input)", esc(avail), avail !== "checking…" && !ok)
+      + row("Private storage (OPFS)", navigator.storage && navigator.storage.getDirectory ? "yes" : "no", !(navigator.storage && navigator.storage.getDirectory));
+  };
+  render("checking…");
+  $("run_badge").disabled = !nanoPresent();
+  let avail;
+  try { avail = await nanoAvailability(); } catch (err) { avail = `error: ${err.name}: ${err.message}`; }
+  render(avail);
+})();
+
+// ---- self-test ----
+async function tinyJpeg(label) {
+  const c = document.createElement("canvas"); c.width = 80; c.height = 60;
+  const g = c.getContext("2d");
+  g.fillStyle = "#456"; g.fillRect(0, 0, 80, 60);
+  g.fillStyle = "#fff"; g.font = "12px sans-serif"; g.fillText(label, 6, 34);
+  const blob = await new Promise(r => c.toBlob(r, "image/jpeg", 0.8));
+  return blob.arrayBuffer();
+}
+async function writeFixture(dir, name, dateStr, label) {
+  const bytes = withExif(await tinyJpeg(label), dateStr);
+  const h = await dir.getFileHandle(name, { create: true });
+  const w = await h.createWritable(); await w.write(bytes); await w.close();
+}
+async function names(dir) {
+  const out = [];
+  for await (const e of dir.values()) out.push(e.name + (e.kind === "directory" ? "/" : ""));
+  return out.sort();
+}
+
+$("run_selftest").addEventListener("click", async () => {
+  const out = $("selftest"); out.textContent = ""; $("run_selftest").disabled = true;
+  let pass = 0, fail = 0;
+  const log = s => { out.textContent += s + "\n"; };
+  const ok = (cond, what, detail) => {
+    if (cond) { pass++; log(`  PASS  ${what}`); }
+    else { fail++; log(`  FAIL  ${what}${detail ? " — " + detail : ""}`); }
+  };
+  try {
+    const root = await navigator.storage.getDirectory();
+    try { await root.removeEntry("selftest", { recursive: true }); } catch (_) { /* first run */ }
+    const dir = await root.getDirectoryHandle("selftest", { create: true });
+
+    log("1. Building fixtures in private storage");
+    const plan = [
+      ["stray.jpg", "2026:10:09 13:50:00", "stray"],
+      ["badge-a.jpg", "2026:10:09 14:00:00", "badge A"],
+      ["a1.jpg", "2026:10:09 14:00:30", "a1"],
+      ["a2.jpg", "2026:10:09 14:01:00", "a2"],
+      ["a3.jpg", "2026:10:09 14:01:30", "a3"],
+      ["badge-b.jpg", "2026:10:09 14:05:00", "badge B"],
+      ["b1.jpg", "2026:10:09 14:05:30", "b1"],
+      ["b2.jpg", "2026:10:09 14:06:00", "b2"],
+    ];
+    // Written out of order on purpose, so the ordering test means something.
+    for (const [n, d, l] of [...plan].reverse()) await writeFixture(dir, n, d, l);
+    ok((await names(dir)).length === 8, "8 fixtures written");
+
+    log("2. Reading and ordering by EXIF capture time");
+    const photos = await listPhotos(dir);
+    ok(photos.length === 8, "8 photos listed", `got ${photos.length}`);
+    ok(photos.every(p => p.time.source === "EXIF"), "every capture time came from EXIF",
+       photos.filter(p => p.time.source !== "EXIF").map(p => p.name).join(", "));
+    const order = photos.map(p => p.name).join(" ");
+    const want = "stray.jpg badge-a.jpg a1.jpg a2.jpg a3.jpg badge-b.jpg b1.jpg b2.jpg";
+    ok(order === want, "sorted oldest first", `got: ${order}`);
+
+    log("3. Grouping by the badge that precedes each person");
+    for (const p of photos) {
+      if (p.name === "badge-a.jpg") p.id = { kind: "identity", full_name: "Ada Lovelace", given_name: "Ada", family_name: "Lovelace", organisation: "", legible: true };
+      else if (p.name === "badge-b.jpg") p.id = { kind: "identity", full_name: "Grace Hopper", given_name: "Grace", family_name: "Hopper", organisation: "", legible: true };
+      else p.id = { kind: "portrait" };
+    }
+    const { groups, leading } = groupPhotos(photos);
+    ok(leading.length === 1 && leading[0].name === "stray.jpg", "the photo before the first badge is left unassigned");
+    ok(groups.length === 2, "two people found", `got ${groups.length}`);
+    ok(groups[0].person && groups[0].person.full_name === "Ada Lovelace" && groups[0].shots.length === 3,
+       "Ada Lovelace has her 3 headshots", JSON.stringify(groups[0].shots.map(p => p.name)));
+    ok(groups[1].person && groups[1].person.full_name === "Grace Hopper" && groups[1].shots.length === 2,
+       "Grace Hopper has her 2 headshots", JSON.stringify(groups[1].shots.map(p => p.name)));
+
+    log("4. Renaming and moving into done/");
+    const logRows = await applyGroups(dir, groups, { includeBadges: true });
+    ok(logRows.every(r => r.ok), "every file moved without error",
+       logRows.filter(r => !r.ok).map(r => r.from + ": " + r.error).join("; "));
+    ok(logRows.some(r => r.how === "moved"), `used the native move() — reported "${logRows[0] && logRows[0].how}"`);
+    const done = await dir.getDirectoryHandle(DONE_DIR);
+    const got = await names(done);
+    const expected = ["Ada Lovelace - badge.jpg", "Ada Lovelace 01.jpg", "Ada Lovelace 02.jpg",
+                      "Ada Lovelace 03.jpg", "Grace Hopper - badge.jpg", "Grace Hopper 01.jpg", "Grace Hopper 02.jpg"];
+    ok(JSON.stringify(got) === JSON.stringify(expected), "done/ holds exactly the renamed files", JSON.stringify(got));
+    const left = await names(dir);
+    ok(JSON.stringify(left) === JSON.stringify(["done/", "stray.jpg"]),
+       "only the unassigned photo is left in the folder", JSON.stringify(left));
+
+    log("5. A second session for the same people keeps numbering on");
+    for (const [n, d, l] of [["badge-a.jpg", "2026:10:09 15:00:00", "badge A"], ["a9.jpg", "2026:10:09 15:00:30", "a9"]])
+      await writeFixture(dir, n, d, l);
+    const more = await listPhotos(dir);
+    for (const p of more) p.id = p.name === "badge-a.jpg"
+      ? { kind: "identity", full_name: "Ada Lovelace", given_name: "Ada", family_name: "Lovelace", organisation: "", legible: true }
+      : { kind: "portrait" };
+    await applyGroups(dir, groupPhotos(more).groups, { includeBadges: false });
+    const got2 = await names(done);
+    ok(got2.includes("Ada Lovelace 04.jpg"), "the new photo became 04, overwriting nothing", JSON.stringify(got2));
+    ok(got2.includes("Ada Lovelace 01.jpg"), "the earlier photos are still there");
+
+    log("6. Filename safety");
+    ok(safeName('An/na: "Smith" <x>|?') === "An-na- -Smith- -x---", "illegal characters replaced",
+       JSON.stringify(safeName('An/na: "Smith" <x>|?')));
+    ok(safeName("   ") === "unnamed", "an empty name never yields an empty filename");
+    ok(safeName("Trailing dots...") === "Trailing dots", "trailing dots removed (Windows strips them)");
+    ok(stemFor({ given_name: "Ada", family_name: "Lovelace" }) === "Ada Lovelace", "stem falls back to given + family name");
+
+    log(`\n${fail === 0 ? "ALL PASS" : "FAILURES"} — ${pass} passed, ${fail} failed`);
+  } catch (err) {
+    log(`\nERROR ${err.name}: ${err.message}\n${err.stack || ""}`);
+  } finally {
+    $("run_selftest").disabled = false;
+  }
+});
+
+// ---- badge reading ----
+let session = null;
+$("run_badge").addEventListener("click", async () => {
+  const f = $("badge_file").files && $("badge_file").files[0];
+  const out = $("badge_out");
+  if (!f) { out.innerHTML = row("Result", "Pick an image first.", true); return; }
+  $("run_badge").disabled = true;
+  out.innerHTML = row("Result", "Preparing the model…");
+  try {
+    if (!session) session = await createSession(p => { out.innerHTML = row("Result", `Downloading the model… ${Math.round(p * 100)}%`); });
+    out.innerHTML = row("Result", "Reading…");
+    const canvas = await forModel(f);
+    $("badge_preview").innerHTML = "";
+    canvas.style.maxWidth = "320px"; canvas.style.height = "auto";
+    $("badge_preview").append(canvas);
+    const t0 = performance.now();
+    const r = await identify(session, canvas);
+    const ms = Math.round(performance.now() - t0);
+    out.innerHTML = row("Image given to the model", `${canvas.width}×${canvas.height} (long edge ${ANALYSIS_EDGE})`)
+      + row("Took", `${ms} ms`)
+      + row("Kind", esc(r.kind), r.kind !== "identity")
+      + row("Name read", esc(r.full_name) || "—", !r.full_name)
+      + row("Given / family", `${esc(r.given_name) || "—"} / ${esc(r.family_name) || "—"}`)
+      + row("Organisation", esc(r.organisation) || "—")
+      + row("Legible", r.legible === false ? "no" : "yes", r.legible === false)
+      + (r.error ? row("Error", esc(r.error), true) : "")
+      + row("Raw", `<code>${esc(JSON.stringify(r))}</code>`);
+  } catch (err) {
+    out.innerHTML = row("Result", esc(`${err.name}: ${err.message}`), true);
+  } finally {
+    $("run_badge").disabled = false;
+  }
+});
+</script>
+</body>
+</html>

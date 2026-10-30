@@ -1,0 +1,65 @@
+/* Headshots PWA — styles on top of the site's shared style.css. */
+
+/* Steps down the page, each a panel that only lights up when it is usable. */
+.step { background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+        padding: 14px 16px; margin: 0 0 14px; }
+.step[hidden] { display: none; }
+.step.waiting { opacity: .55; }
+.step-head { display: flex; align-items: center; gap: 10px; margin: 0 0 8px; }
+.step-no { flex: none; width: 24px; height: 24px; border-radius: 50%; background: var(--accent);
+           color: var(--accent-ink); font-size: 13px; font-weight: 700; display: grid; place-items: center; }
+.step.waiting .step-no { background: #cbd2d9; }
+.step.done .step-no { background: var(--new); }
+.step-head h2 { margin: 0; font-size: 16px; }
+.step-note { color: var(--muted); font-size: 13px; margin: 0 0 10px; }
+
+/* Blocking requirements (wrong browser, no model) are stated, not hidden. */
+.blocker { background: #fdecec; border: 1px solid #f3b4b4; color: #b91c1c;
+           border-radius: 8px; padding: 10px 12px; margin: 0 0 12px; font-size: 13px; }
+.blocker.warn { background: #fdf3e6; border-color: #f0d9b5; color: #9a5b00; }
+.blocker p { margin: 0 0 6px; }
+.blocker p:last-child { margin: 0; }
+
+/* Private, offline, on-device — said once, plainly, at the top. */
+.privacy { background: #eef6ec; border: 1px solid #cbe6cf; color: #276749;
+           border-radius: 8px; padding: 10px 12px; margin: 0 0 14px; font-size: 13px; }
+
+.bar { height: 6px; background: #e8ecf1; border-radius: 999px; overflow: hidden; margin: 8px 0; }
+.bar > i { display: block; height: 100%; background: var(--accent); width: 0; transition: width .2s; }
+
+.log { background: #f3f5f8; border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px;
+       font-size: 12px; line-height: 1.5; max-height: 420px; overflow: auto; white-space: pre-wrap; }
+
+/* One card per person: their badge shot, then their headshots. */
+.person { background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+          padding: 12px 14px; margin: 0 0 12px; }
+.person.unnamed { border-color: #f0d9b5; background: #fffdf8; }
+.person-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
+.person-head input { width: auto; min-width: 220px; font-weight: 600; }
+.person-head .count { color: var(--muted); font-size: 13px; }
+.shots { display: flex; flex-wrap: wrap; gap: 8px; }
+.shot { width: 104px; font-size: 11px; color: var(--muted); }
+.shot img { width: 104px; height: 104px; object-fit: cover; border-radius: 6px; background: #eef0f3;
+            display: block; border: 2px solid transparent; }
+.shot.is-badge img { border-color: var(--accent); }
+.shot .cap { display: block; margin-top: 2px; word-break: break-all; }
+.shot .time { color: var(--muted); }
+.shot button { margin-top: 2px; }
+
+/* The scan grid, while the model works through the folder. */
+.scan { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 8px; }
+.scan figure { margin: 0; font-size: 11px; }
+.scan img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 6px; background: #eef0f3;
+            border: 2px solid transparent; }
+.scan .identity img { border-color: var(--accent); }
+.scan .pending img { opacity: .45; }
+.scan figcaption { color: var(--muted); word-break: break-all; }
+
+.report td, .report th { border-bottom: 1px solid var(--line); padding: 6px 10px; text-align: left; font-size: 13px; }
+.report { border-collapse: collapse; width: 100%; max-width: 900px; }
+.report th { font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+/* style.css scopes .warn under .meta, so the report needs its own. */
+.report .warn { color: #b91c1c; font-weight: 600; }
+.report .muted { color: var(--muted); }
+
+.row-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 10px; }

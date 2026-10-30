@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Headshots</title>
+<meta name="description" content="Match event headshots to the people in them from badge photos, rename and file them — entirely on your own device.">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#2b6cb0">
+<link rel="icon" href="icon-192.png" sizes="192x192" type="image/png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<!--
+  Headshots — an installable, offline tool for event photography.
+
+  The photographer shoots a person's badge (or a screen showing their details),
+  then that person's headshots, then the next person's badge. This reads the
+  folder in capture-time order, reads the names off the badge frames with
+  Chrome's built-in Gemini Nano, groups each run of headshots under the badge
+  that precedes it, and renames them into a "done" folder.
+
+  Nothing leaves the device: no uploads, no accounts, no analytics. Its own
+  service worker scope and storage, separate from the rest of the site. The only
+  network step is the optional Wikipedia look-up in the report, behind a button.
+-->
+<link rel="stylesheet" href="../style.css?v=13">
+<link rel="stylesheet" href="app.css?v=1">
+</head>
+<body>
+<header>
+  <div class="titlebar">
+    <h1><a href="../index.html" class="home-link">Wikimedia</a> › Headshots</h1>
+    <span class="titlebar-actions" style="display:flex;gap:8px">
+      <button type="button" id="install" class="secondary" hidden>Install</button>
+      <button type="button" id="about_btn">About</button>
+    </span>
+  </div>
+  <p class="privacy"><strong>Everything stays on this device.</strong> Photos are read
+  from the folder you pick and renamed in place. No upload, no account, nothing
+  sent anywhere — the badge reading uses a model built into Chrome. The one
+  exception is the Wikipedia look-up at the end, which only happens when you
+  press its button.</p>
+  <div id="blockers"></div>
+</header>
+
+<main class="wide">
+  <section class="step" id="step_folder">
+    <div class="step-head"><span class="step-no">1</span><h2>Pick the shoot folder</h2></div>
+    <p class="step-note">The folder of photos straight off the camera. Chrome will
+    ask permission to edit it — that is what lets the photos be renamed in place.</p>
+    <div class="row-actions">
+      <button type="button" id="pick">Choose folder…</button>
+      <button type="button" id="reopen" class="secondary" hidden>Reopen last folder</button>
+      <button type="button" id="demo" class="secondary">Try with sample photos</button>
+    </div>
+    <p class="step-note">The sample shoot is built in this browser's private
+    storage — two drawn badges and six stand-in portraits — so you can try every
+    step, renaming included, without touching a real photo.</p>
+    <div id="folder_info" class="meta"></div>
+  </section>
+
+  <section class="step waiting" id="step_scan">
+    <div class="step-head"><span class="step-no">2</span><h2>Read the badges</h2></div>
+    <p class="step-note">Every photo is shown to the on-device model, which says
+    whether it is a badge or screen with a written name, or a portrait. Results
+    are remembered, so stopping and starting again costs nothing.</p>
+    <div class="row-actions">
+      <button type="button" id="scan" disabled>Read badges</button>
+      <button type="button" id="stop" class="secondary" hidden>Stop</button>
+      <label class="age-filter">from photo
+        <input type="text" id="scan_from" inputmode="numeric" pattern="[0-9]*" value="1"></label>
+    </div>
+    <div class="bar" id="scan_bar" hidden><i></i></div>
+    <div id="scan_info" class="meta"></div>
+    <div class="scan" id="scan_grid"></div>
+  </section>
+
+  <section class="step waiting" id="step_review">
+    <div class="step-head"><span class="step-no">3</span><h2>Check who is who</h2></div>
+    <p class="step-note">One card per person, in the order they were photographed.
+    Correct a name by typing in it. If the model mistook a frame, use
+    <em>badge</em> / <em>not a badge</em> to regroup — the badge frame is outlined
+    in blue.</p>
+    <div id="review_info" class="meta"></div>
+    <div id="review"></div>
+  </section>
+
+  <section class="step waiting" id="step_apply">
+    <div class="step-head"><span class="step-no">4</span><h2>Rename and file</h2></div>
+    <p class="step-note">Named people only. Their photos move into a
+    <code>done</code> folder as <code>Name Surname 01.jpg</code>; anything
+    unnamed, and anything before the first badge, is left exactly where it is.</p>
+    <div class="row-actions">
+      <label class="age-filter"><input type="checkbox" id="keep_badges" checked> also file the badge shots</label>
+      <button type="button" id="apply" disabled>Rename and move…</button>
+    </div>
+    <div class="bar" id="apply_bar" hidden><i></i></div>
+    <div id="apply_info" class="meta"></div>
+    <pre id="apply_log" class="log" hidden></pre>
+  </section>
+
+  <section class="step waiting" id="step_report">
+    <div class="step-head"><span class="step-no">5</span><h2>Report</h2></div>
+    <p class="step-note">Who you photographed, and how many of each. The
+    Wikipedia column is the only thing on this page that uses the network.</p>
+    <div class="row-actions">
+      <button type="button" id="lookup" class="secondary" disabled>Look up on Wikipedia (online)</button>
+      <button type="button" id="copy_report" class="secondary" disabled>Copy as text</button>
+    </div>
+    <div id="report"></div>
+  </section>
+</main>
+
+<div class="overlay" id="about_overlay" hidden>
+  <div class="about" role="dialog" aria-modal="true" aria-labelledby="about_title">
+    <div class="close-row">
+      <h2 id="about_title">About this tool</h2>
+      <button type="button" id="about_close">Close</button>
+    </div>
+    <p>Filing a few hundred event headshots by hand is slow and easy to get wrong.
+    This does the matching from what the photographer already does: shoot the
+    badge, then the person.</p>
+    <h3>How to shoot for it</h3>
+    <ol>
+      <li>Photograph the person's <strong>badge</strong>, name card, or a phone or
+        laptop screen showing their details — one frame is enough.</li>
+      <li>Photograph the <strong>person</strong>, as many frames as you like.</li>
+      <li>Next person: badge, then person. And so on.</li>
+    </ol>
+    <p>Everything between one badge and the next is treated as that person. A
+    badge the model can't read still starts a new person — it just needs a name
+    typing in, so photos never get filed under the person before.</p>
+    <h3>What it needs</h3>
+    <ul>
+      <li><strong>Chrome or Edge on a desktop.</strong> Renaming files in your own
+        folder uses the File System Access API, which Firefox and Safari do not
+        have, on any platform.</li>
+      <li><strong>Chrome 148 or newer</strong> for the built-in model (Edge has it
+        only behind a flag). Per Google's requirements that means Windows 10/11,
+        macOS 13+, Linux or a Chromebook Plus, 22 GB free on the drive holding
+        your Chrome profile, and either more than 4 GB of VRAM or 16 GB of RAM
+        with 4+ cores. There is no mobile support. The model downloads once, on
+        first use, and is Chrome's — not ours.</li>
+      <li>Times come from each photo's <strong>EXIF capture time</strong>, falling
+        back to the file's date for screenshots and PNGs. Only the order matters,
+        so the camera's clock being off is harmless.</li>
+    </ul>
+    <h3>Privacy</h3>
+    <ul>
+      <li>Photos are read from the folder you choose and renamed there. Nothing is
+        uploaded, and the page has no analytics.</li>
+      <li>Names and small thumbnails are kept in this browser's own storage so you
+        can close the tab mid-shoot. <em>Forget this shoot</em> clears them.</li>
+      <li>The model runs on your device; Chrome's documentation states no data is
+        sent to Google or any third party when using it.</li>
+      <li>The Wikipedia look-up sends only the names, and only when you press it.</li>
+    </ul>
+    <h3>Checks</h3>
+    <p><a href="check.html">Open the checks page</a> to see what this browser
+    supports and to self-test the renaming on throwaway files.</p>
+    <h3>Limits</h3>
+    <ul>
+      <li>It reads what is written on a badge. It does not recognise faces, and
+        does not identify anyone from their appearance.</li>
+      <li>Photos before the first badge cannot be attributed and are left alone.</li>
+      <li>This is new. Check the grouping in step 3 before filing.</li>
+    </ul>
+  </div>
+</div>
+
+<footer>
+  <a href="https://github.com/Landsil/Wikimedia-Infobox-Checker" target="_blank"
+     rel="noopener">Wikimedia-Infobox-Checker on GitHub</a>
+  · <a href="check.html">checks</a>
+  · <button type="button" id="forget" class="mini">Forget this shoot</button>
+</footer>
+<script type="module" src="app.js?v=1"></script>
+</body>
+</html>
