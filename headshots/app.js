@@ -98,20 +98,20 @@ function renderSetup() {
     d.status === "ready" ? "" : `<button type="button" id="setup_pdfjs">${d.status === "missing" ? "Download" : "Update"} (${mb(d.bytes || 0)})</button>`);
 
   const [what, cls, detail] = MODEL_WORDS[setup.model] || ["unknown", "bad", `Chrome answered <code>${esc(String(setup.model))}</code>.`];
-  const warm = setup.model === "available" && session;
-  line(cls === "ok" && !warm ? "need" : cls, "Chrome's built-in model",
-    cls !== "ok" ? `${detail} <em>(${what})</em>`
-      : warm ? "Downloaded, and started and ready to use ✓"
-      : "Downloaded, but not started yet. Starting it here means a document or a badge never waits for it.",
-    setup.model === "downloadable" ? `<button type="button" id="setup_model">Download it</button>`
-      : cls === "ok" && !warm ? `<button type="button" id="setup_model">Start it</button>` : "");
+  // Downloaded is set up. Whether a *session* exists was briefly treated as part
+  // of readiness, which was wrong twice over: a session belongs to a page and
+  // cannot survive a refresh, so every reload asked to "start" an already-ready
+  // model, and step 1 could never report itself finished.
+  line(cls, "Chrome's built-in model",
+    cls === "ok" ? "Downloaded and ready ✓" : `${detail} <em>(${what})</em>`,
+    setup.model === "downloadable" ? `<button type="button" id="setup_model">Download it</button>` : "");
 
   $("setup_list").innerHTML = rows.join("");
 
   // The two site downloads and folder access are what the shoot cannot proceed
   // without. The model is advisory: without it badges are marked by hand.
   const ready = canPickFolder && setup.faces.status === "ready" && setup.pdfjs.status === "ready";
-  const modelOk = setup.model === "available" && session;
+  const modelOk = setup.model === "available";
   // Nothing left to do: fold it away rather than leaving a panel of ticks in the
   // way for the rest of the shoot. Anything outstanding keeps it open.
   const settled = ready && (modelOk || ["unavailable", "absent"].includes(setup.model));
@@ -120,12 +120,11 @@ function renderSetup() {
     : !ready ? `${[canPickFolder ? null : "this browser", setup.faces.status === "ready" ? null : "face models",
                    setup.pdfjs.status === "ready" ? null : "PDF reader"].filter(Boolean).length} still to sort out`
       : "the model is not started";
-  if (settled && !$("setup_box").dataset.touched) $("setup_box").open = false;
-  else if (!settled) $("setup_box").open = true;
+  if (!$("setup_box").dataset.touched) $("setup_box").open = !settled;
   stepState("step_setup", ready ? "done" : "");
   stepState("step_folder", ready ? "" : "waiting");
   $("pick").disabled = !canPickFolder;
-  $("setup_all").disabled = ready && (setup.model !== "downloadable") && !(setup.model === "available" && !session);
+  $("setup_all").disabled = ready && setup.model !== "downloadable";
   renderBlockers();
 }
 
@@ -160,10 +159,7 @@ const getPdfjs = () => withSetupProgress("the PDF reader", p => doc.save(p));
 // Downloading is not enough: creating the first session can still fetch, which
 // is why a model "set up" in step 1 was seen downloading again when a document
 // was read. So step 1 also creates the shared session and keeps it.
-const getModel = () => withSetupProgress("Chrome's model", async report => {
-  await downloadModel(f => report(f, 1));
-  await ensureSession(f => report(f, 1));
-});
+const getModel = () => withSetupProgress("Chrome's model", report => downloadModel(f => report(f, 1)));
 
 $("setup_list").addEventListener("click", e => {
   const id = e.target.id;
@@ -174,12 +170,17 @@ $("setup_list").addEventListener("click", e => {
 $("setup_recheck").addEventListener("click", async () => { await readSetup(); renderSetup(); });
 // Opening or closing it by hand is remembered, so a re-check cannot fold it away
 // underneath someone who is reading it.
-$("setup_box").addEventListener("toggle", () => { $("setup_box").dataset.touched = "1"; });
+// Opening it by hand is remembered so a re-check cannot fold it shut underneath
+// someone reading it. Listening for `toggle` instead caught this code's own calls
+// and left it stuck open for good.
+$("setup_box").querySelector("summary").addEventListener("click", () => {
+  $("setup_box").dataset.touched = "1";
+});
 $("setup_all").addEventListener("click", async () => {
   $("setup_all").disabled = true;
   if (setup.faces.status !== "ready") await getFaces();
   if (setup.pdfjs.status !== "ready") await getPdfjs();
-  if (["downloadable", "available"].includes(setup.model) && !session) await getModel();
+  if (setup.model === "downloadable") await getModel();
   $("setup_all").disabled = false;
 });
 
@@ -299,6 +300,7 @@ function scanCell(p, i) {
   const id = p.id || {};
   const cls = id.kind === "identity" ? "identity" : p.id ? "" : "pending";
   const label = id.kind === "identity" ? (id.full_name || "badge — no name read")
+    : id.calledIdentity ? "writing, but no name — not a badge"
     : id.kind === "portrait" ? "portrait" : id.kind === "unreadable" ? "could not read" : p.id ? "other" : "—";
   const tip = id.kind === "identity" ? "Click: this is not a badge" : "Click: mark this a badge";
   return `<figure class="${cls}" data-i="${i}" title="${esc(p.name)} — ${tip}">`
@@ -367,10 +369,13 @@ async function readPhotos() {
     if (keys.length > CACHE_CAP) for (const k of keys.slice(0, keys.length - CACHE_CAP)) delete scanCache[k];
     await store.set("scanCache", scanCache);
     const badges = photos.filter(p => p.id && p.id.kind === "identity").length;
+    const demoted = photos.filter(p => p.id && p.id.calledIdentity).length;
     $("scan_info").innerHTML =
         row("Read by the model", `${read}`) + row("Remembered from before", `${fromCache}`)
       + (failed ? row("Could not be read", `${failed}`, true) : "")
       + row("Badges found", `${badges}`, badges === 0)
+      + (demoted ? row("Looked like writing but gave no name",
+          `${demoted} — treated as portraits. Click one to make it a badge.`) : "")
       + (stopping ? row("Stopped", "part-way — reopen the folder to carry on") : "");
     await embedFaces();
     renderReview();
@@ -476,23 +481,17 @@ function renderReview() {
       <div class="shots">${leading.map(p => shotCell(p, false)).join("")}</div></div>` : "";
   $("review").innerHTML = lead + cards || `<p class="none">Nothing to show yet.</p>`;
 
-  // Nothing is filed until the badges have been looked at. The grouping rests on
-  // them, badges are only a suggestion, and not everyone has one — so this is a
-  // deliberate stop rather than a formality.
-  const checked = $("badges_ok").checked;
-  const canApply = named > 0 && checked;
+  // Filing used to be gated behind a tick-box confirming the people were right.
+  // It was removed: everything in this step is already a review, the button says
+  // what it will do, and nothing it does is irreversible — so the box asked for a
+  // promise rather than preventing a mistake.
+  const canApply = named > 0;
   $("apply").disabled = !canApply;
-  // Its own element: writing this into apply_info would wipe the result of a
-  // filing that has already happened.
-  $("apply_gate").innerHTML = named > 0 && !checked
-    ? row("Waiting on you", "Tick <em>I have checked the people above and they are right</em> in step 4 before anything is renamed.", true)
-    : "";
   stepState("step_review", groups.length ? "done" : "");
   if (canApply) stepState("step_apply", "");
   renderReport();
 }
 
-$("badges_ok").addEventListener("change", renderReview);
 
 // Typing a name belongs to that group's badge frame, so regrouping keeps it.
 $("review").addEventListener("input", e => {

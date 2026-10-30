@@ -556,8 +556,18 @@ The first three are hard requirements for a shoot and gate step 2. The model is
 **advisory**: some devices genuinely cannot run it, and without it badges are
 marked by hand and names typed, which the blocker at the top of the page says
 plainly. Triggering Chrome's download needs a user gesture, so `downloadModel()`
-creates a session purely to start the fetch and destroys it again, after which
-step 1 opens the long-lived one.
+creates a session purely to start the fetch and destroys it again.
+
+**Downloaded is set up.** Whether a live session exists was briefly treated as
+part of readiness, which was wrong twice over: a session belongs to a page and
+cannot survive a refresh, so every reload asked to "start" an already-ready model
+and step 1 could never report itself finished. A session is created on first
+actual use, which fetches nothing once availability is `"available"`.
+
+Step 1 folds to its own heading once there is nothing left to do. Opening it by
+hand is remembered — but only a real click counts: listening for `toggle` caught
+this code's own calls to `.open`, marked the panel as touched on the first render,
+and left it stuck open permanently.
 
 ### The grouping rule
 
@@ -565,9 +575,20 @@ Photos are sorted by **EXIF `DateTimeOriginal`**, falling back to the file's own
 date for screenshots and PNGs (`captureTime()` reports which was used). Only the
 order matters, so a camera clock that is wrong is harmless.
 
-An identity frame always starts a new person — **including an unreadable one**,
-because the photographer has moved on, so the frames after it must never be filed
-under the previous person; it simply asks for a name.
+**A badge has to carry a name the model actually read off it.** The model's own
+classification was trusted, and on a real shoot it called almost every photograph
+an identity frame — unsurprisingly, since event portraits nearly all have writing
+in them: sponsor backdrops, step-and-repeat banners, signage, worn lanyards.
+Every false badge starts a new person, so the grouping collapsed to roughly one
+person per photograph. A frame whose subject really is someone's name yields that
+name; one that does not is treated as a portrait and labelled *"writing, but no
+name — not a badge"*, so it can be promoted by hand in one click. The count of
+demotions is reported.
+
+That gives up the earlier rule where an unreadable badge still started a new
+person. It was the wrong side of the trade: a missed badge merges two people and
+is now caught by the change of face, whereas a false badge shatters the whole
+shoot.
 
 **Badges are not guaranteed, so they cannot be the only thing that separates
 people.** Plenty of subjects are photographed without one, and a badge can be
@@ -597,9 +618,12 @@ Finding the badges is **not a step**. It is not a decision anyone has to make, s
 it runs as part of reading the folder, in the same pass that embeds every face —
 nothing to press, and no progress to babysit. Correcting a badge belongs where
 you look at people, so *badge* / *not a badge* lives in the review and regroups
-immediately. Filing stays blocked until *"I have checked the people above and
-they are right"* is ticked: a deliberate stop, since the whole grouping rests on
-it.
+immediately.
+
+Filing is not gated behind a confirmation. A tick-box asking you to confirm the
+people were right was added and removed: the whole step is already a review, the
+button says what it will do, and nothing it does is irreversible — so the box
+asked for a promise instead of preventing a mistake.
 
 Photos before the first person cannot be attributed and are left where they are,
 as is any person still without a name.
@@ -902,8 +926,9 @@ Chrome 156:
 | Suite | Assertions | Covers |
 | :-- | :-- | :-- |
 | `check.html` self-test | **18/18** | EXIF ordering, badge grouping, native `move()`, numbering, filename safety |
-| End-to-end, driving the app | **26/26** | step 1's downloads, the sample shoot, hand-marked badges, the face check, the badge-confirmation gate, filing, the report, the Wikipedia look-up |
+| End-to-end, driving the app | **24/24** | step 1's downloads, the sample shoot, hand-marked badges, the face check, the badge-confirmation gate, filing, the report, the Wikipedia look-up |
 | `groupPhotos` rules (Node) | **18/18** | badges only, people nobody badged, time meaning nothing on its own, a frame with no usable face, mixed badged/unbadged, a shoot with no badge anywhere, faceless frames inventing nobody |
+| Badge classification (Node) | **15/15** | a real badge kept; a portrait against a backdrop demoted; an invented name dropped and not a badge; an unverifiable claim demoted; portraits and other frames untouched; a name split across fields; accents and case; unparseable and thrown answers never badges |
 | Learned layout (Node) | **22/22** | captions below / right / above / left; multi-word job titles not taken for names; a role printed above the name; mononyms, lowercase particles, Japanese, Arabic, Cyrillic, Icelandic; the candidate list holding names only; a heading not taken as a caption; one photo with nothing to learn from; a single column with no measurable pitch |
 
 `check.html` also has panels to run the face comparison, the document roster and

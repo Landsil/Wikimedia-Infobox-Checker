@@ -35,10 +35,17 @@ const SCHEMA = {
 const PROMPT = [
   "Look at this photograph and decide which of three things it is.",
   "",
-  '"identity" — it shows a person\'s WRITTEN name: a conference badge, lanyard, ID card,',
-  "name card, delegate list, printed sheet, or a phone or computer screen showing their details.",
-  '"portrait" — it is a photograph OF a person, with no written name to read.',
+  '"identity" — the SUBJECT of the photograph is a person\'s written name: a close-up of a',
+  "conference badge, lanyard, ID card, name card, delegate list, printed sheet, or a phone or",
+  "computer screen showing their details. The writing is what the photograph is of.",
+  '"portrait" — it is a photograph OF a person.',
   '"other" — anything else.',
+  "",
+  "Most photographs at an event are portraits, and nearly all of them have writing somewhere:",
+  "sponsor backdrops, step-and-repeat banners, signage, logos, lanyards worn around a neck,",
+  "badges pinned to clothing. None of that makes a photograph an \"identity\" — a portrait with",
+  "a banner behind it, or a visible badge being worn, is still a \"portrait\". Choose \"identity\"",
+  "only when someone has deliberately photographed the writing in order to record a name.",
   "",
   "If it is \"identity\", copy the person's name exactly as printed, keeping accents and",
   "capitalisation. Put the first name in given_name and the last name in family_name, and the",
@@ -262,14 +269,31 @@ export async function identify(session, imageSource) {
     const textSeen = clean(r.text_seen);
     const support = name ? nameSupport(name, textSeen) : "ok";
     const ok = support === "ok";
+    let kind = ["identity", "portrait", "other"].includes(r.kind) ? r.kind : "other";
+    // A badge claim has to be backed by a name actually read off the frame.
+    //
+    // The model's answer alone was trusted here, and on a real shoot it called
+    // almost every photograph an identity frame — unsurprisingly, since event
+    // portraits nearly all have writing in them (backdrops, signage, worn
+    // lanyards). Every false badge starts a new person, so the grouping
+    // collapsed into one person per photograph.
+    //
+    // A frame whose subject really is someone's name yields that name. One that
+    // does not is a portrait, and said so below for anyone who wants to overrule
+    // it by hand. This gives up the old behaviour where an unreadable badge still
+    // started a person; a change of face now covers that, and it is the far
+    // cheaper mistake of the two.
+    const unnamed = kind === "identity" && !(ok && name);
+    if (unnamed) kind = "portrait";
     return {
-      kind: ["identity", "portrait", "other"].includes(r.kind) ? r.kind : "other",
+      kind,
       full_name: ok ? name : "",
       given_name: ok ? given : "",
       family_name: ok ? family : "",
       organisation: clean(r.organisation),
       text_seen: textSeen,
       legible: ok && r.legible !== false,
+      ...(unnamed ? { calledIdentity: true } : {}),
       ...(ok ? {} : { rejected: support === "invented"
         ? `"${name}" is not in the text the model read`
         : `"${name}" could not be checked — the model read back no text` }),

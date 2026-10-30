@@ -95,9 +95,6 @@
 .setup-detail { font-size: 0.9em; color: #555; }
 .setup-do { flex: 0 0 auto; }
 
-/* The badge check is a required stop, so it reads as one. */
-.confirm-line { display: block; margin-top: 12px; padding: 10px 12px; border-radius: 6px;
-                background: #f4f6f8; border: 1px solid #d6dbe1; font-weight: 600; }
 .scan figure { cursor: pointer; }
 
 /* Step 1 is only interesting until it is done, so it folds to its own heading.
