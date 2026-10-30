@@ -657,9 +657,11 @@ Two details of what the model is shown matter, and both came from watching it
 decline:
 
 - **Its crop is measured against the page, not the face**, for the same reason
-  the positional reach is. On the first run it answered `(none)` for the two
-  smallest faces — correctly, since their crops stopped short of the caption. The
-  enum had done its job: with nothing to read it declined instead of inventing.
+  the positional reach is. Before that, it answered `(none)` for the two smallest
+  faces — correctly, since their crops stopped short of the caption. The enum had
+  done its job: with nothing to read it declined instead of inventing. Widening
+  the crop fixed the case it was aimed at, and the 82px face it had abstained on
+  is now matched.
 - **The face being asked about is outlined in the crop**, and the prompt refers to
   that outline. A crop generous enough to contain the caption is also generous
   enough to contain a neighbour's photograph, which makes "the face in the middle"
@@ -694,11 +696,24 @@ each one measured rather than guessed:
   to the *name* line rather than the face, because searching the face's reach
   window missed one by three pixels.
 
-Measured on a two-page test programme (2026-10-30, Chrome 156): **4 of 4 faces
-matched to the right name and organisation** — Anthony Wonke, Ashley Walters,
-Adam Pearson, Bella Ramsey — in 69 ms, with no model loaded at all. The two
-spurious low-confidence detections inside the event photographs are dropped by a
-0.5 confidence floor, which a printed portrait comfortably clears.
+Measured on a two-page test programme (2026-10-30, Chrome 156) whose guests are
+Anthony Wonke, Ashley Walters, Adam Pearson and Bella Ramsey:
+
+| | Result |
+| :-- | :-- |
+| Names correct | **4 of 4**, with their organisations |
+| Invented names | **0** |
+| Model and layout agreed | 3 of 4 |
+| Resolved by the layout alone | 1 of 4 — the model answered `(none)` |
+| Positional matching alone, no model | 4 of 4 in 69 ms |
+
+The one abstention is not a crop problem: that face is 154px and its caption is
+well inside the crop, so the model is simply unsure there and the second opinion
+covers it. That is the arrangement working as intended rather than a fault —
+neither method has to be right every time for the pair to be.
+
+The two spurious low-confidence detections inside the event photographs are
+dropped by a 0.5 confidence floor, which a printed portrait comfortably clears.
 
 A face that neither method can name is reported as having no caption, and a page
 with a text layer but no name-shaped line in it is never handed to the free-text
