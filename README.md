@@ -808,6 +808,16 @@ than guessed:
   An edge test discards a caption wider than the photograph above it — "Sharon
   Duncan-Brewster" reached past her picture and was dropped, leaving only the role
   printed beneath her.
+- **A name that wraps is one entry.** A long surname on a second line was landing
+  in the field below it: "Sharon Duncan-Brewster" came out as "Sharon" with
+  "Duncan-Brewster" filed as the organisation. Lines in the same font, tightly
+  stacked, whose text appears only once on the page are joined — and joined
+  without a space after a hyphen, since the break falls inside the name. The font
+  alone is not enough (a document setting name and role in one font would have the
+  role swallowed); the one-off test is what distinguishes half a name from a role,
+  because a role repeats down the page. Merging before the slot analysis also
+  keeps the slots aligned: otherwise one wrapped name shifts that person's role
+  into a different slot from everyone else's.
 - **A caption block is grouped on both axes.** Beside-the-photo layouts are
   selected by row, so a cell could see the previous cell's lines at the same
   height and hand back the neighbour's name. Centres rather than edges again,
@@ -821,6 +831,15 @@ than guessed:
 - **The nearest caption, then the line closest to this face.** Taking the first
   in reading order instead silently prefers the left-hand neighbour whenever two
   names share a baseline — which is every grid.
+
+Print-to-photo matching was measured before trusting it, since the 0.55 threshold
+was calibrated photo-to-photo and a roster compares a *rendered PDF portrait*
+against a *camera photo*. On nine printed portraits against the four source
+photographs: same person **0.679–0.816** (mean 0.775), different people
+**0.151–0.518**, 9 of 9 correct with 0.55 sitting in the gap. (A first run
+appeared to show the opposite — same-person mean *below* different-person mean —
+because `rosterFrom` returns faces biggest-first, not in cell order, so the
+pairing was wrong. The names, not the order, say who is who.)
 
 Measured on two layouts (2026-10-30, Chrome 156). A **four-column cast sheet**
 of nine people, names and roles centred under each portrait: **9 of 9 names and
@@ -929,7 +948,7 @@ Chrome 156:
 | End-to-end, driving the app | **24/24** | step 1's downloads, the sample shoot, hand-marked badges, the face check, the badge-confirmation gate, filing, the report, the Wikipedia look-up |
 | `groupPhotos` rules (Node) | **18/18** | badges only, people nobody badged, time meaning nothing on its own, a frame with no usable face, mixed badged/unbadged, a shoot with no badge anywhere, faceless frames inventing nobody |
 | Badge classification (Node) | **15/15** | a real badge kept; a portrait against a backdrop demoted; an invented name dropped and not a badge; an unverifiable claim demoted; portraits and other frames untouched; a name split across fields; accents and case; unparseable and thrown answers never badges |
-| Learned layout (Node) | **22/22** | captions below / right / above / left; multi-word job titles not taken for names; a role printed above the name; mononyms, lowercase particles, Japanese, Arabic, Cyrillic, Icelandic; the candidate list holding names only; a heading not taken as a caption; one photo with nothing to learn from; a single column with no measurable pitch |
+| Learned layout (Node) | **26/26** | captions below / right / above / left; multi-word job titles not taken for names; a role printed above the name; mononyms, lowercase particles, Japanese, Arabic, Cyrillic, Icelandic; the candidate list holding names only; a heading not taken as a caption; one photo with nothing to learn from; a single column with no measurable pitch |
 
 `check.html` also has panels to run the face comparison, the document roster and
 the badge reading on your own files, which is how each of the findings above was

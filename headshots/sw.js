@@ -6,7 +6,7 @@
 //
 // Bump CACHE whenever the shipped files change, so an installed copy updates.
 
-const CACHE = "headshots-v7";
+const CACHE = "headshots-v8";
 
 // Everything needed to open and use the app with no network. The shared
 // stylesheet lives one level up; a worker may cache any URL its pages request,

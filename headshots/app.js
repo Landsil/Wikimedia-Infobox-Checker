@@ -344,6 +344,10 @@ async function readPhotos() {
       renderReview();
       return;
     }
+    // Opened here, not in step 1: a session belongs to a page, so one warmed on
+    // a previous load is gone. Leaving this out meant `identify(null, …)` for
+    // every photo, which came back "unreadable" for the whole shoot.
+    await ensureSession();
     for (let i = 0; i < photos.length; i++) {
       if (stopping) break;
       const p = photos[i];
@@ -387,9 +391,17 @@ async function readPhotos() {
   }
 }
 
+let faceStatus = null;      // what the last face pass managed, for the review to report
+
 // Every photo's face, once, so the grouping can tell one subject from the next.
 async function embedFaces() {
-  if (!(await faceState())) return;
+  // Without this the grouping silently falls back to badges alone — and with
+  // badges now needing a readable name, that can mean a whole shoot arriving as
+  // one person with nothing on screen to say why.
+  if (!(await faceState())) {
+    faceStatus = { ok: false, why: "the face models are not set up — finish step 1" };
+    return;
+  }
   const bar = $("scan_bar").firstElementChild;
   const todo = photos.filter(p => !faceVecs.has(p.name));
   if (!todo.length) return;
@@ -403,6 +415,8 @@ async function embedFaces() {
       faceVecs.set(p.name, f ? { vector: f.vector, score: f.score } : null);
     } catch (_) { faceVecs.set(p.name, null); }
   }
+  const withFace = photos.filter(p => faceVecs.get(p.name)).length;
+  faceStatus = { ok: true, withFace, total: photos.length, stopped: stopping };
 }
 
 // What begins a person nobody badged: a face, and then a different face.
@@ -455,8 +469,18 @@ function renderReview() {
   const named = groups.filter(g => g.person).length;
   const unnamed = groups.length - named;
   const filing = groups.filter(g => g.person).reduce((n, g) => n + g.shots.length, 0);
+  // How people were separated, because "everyone is one person" is otherwise
+  // indistinguishable from a face pass that never ran.
+  const faceLine = !faceStatus
+    ? row("Faces", "not compared yet", true)
+    : !faceStatus.ok
+      ? row("Faces not compared", `${faceStatus.why}. People can only be separated by a badge until then.`, true)
+      : row("Faces compared", `${faceStatus.withFace} of ${faceStatus.total} photo(s) had a face`
+          + (faceStatus.withFace === 0 ? " — so nothing could be separated by face" : ""),
+        faceStatus.withFace === 0);
   $("review_info").innerHTML =
       row("People found", `${groups.length}`, groups.length === 0)
+    + faceLine
     + (unnamed ? row("Still need a name", `${unnamed}`, true) : "")
     + row("Photos that will be filed", `${filing}`)
     + (leading.length ? row("Before the first badge", `${leading.length} — left alone`, true) : "")

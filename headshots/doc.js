@@ -193,7 +193,10 @@ async function textBoxes(lib, page, viewport) {
     if (!it.str || !it.str.trim()) continue;
     const tx = lib.Util.transform(viewport.transform, it.transform);
     const h = Math.hypot(tx[2], tx[3]) || Math.abs(tx[3]) || 1;
-    out.push({ str: it.str, x: tx[4], y: tx[5] - h, w: (it.width || 0) * viewport.scale, h });
+    // fontName comes along because it is what tells a wrapped name from the line
+    // under it: "Sharon" / "Duncan-Brewster" are the same font, the role beneath
+    // them is not.
+    out.push({ str: it.str, x: tx[4], y: tx[5] - h, w: (it.width || 0) * viewport.scale, h, font: it.fontName });
   }
   return out.length ? out : null;
 }
@@ -226,6 +229,7 @@ export function linesOf(items) {
         right: Math.max(...run.map(p => p.x + p.w)),
         y: Math.min(...run.map(p => p.y)),
         h: Math.max(...run.map(p => p.h)),
+        font: run[0].font,
       });
       run = [];
     };
@@ -347,7 +351,7 @@ export function gridPitch(items) {
 // is laid out consistently: whatever holds for one photograph holds for the rest.
 // Only two things are assumed, and both are language-neutral.
 // The caption block for one face in one direction, in reading order.
-function blockFor(lines, box, dir, pageWidth, pageHeight, pitch) {
+function blockFor(lines, box, dir, pageWidth, pageHeight, pitch, freq) {
   const cx = box.originX + box.width / 2, cy = box.originY + box.height / 2;
   const colHalf = pitch.col ? Math.max(box.width * 0.6, pitch.col * 0.45)
     : Math.max(box.width * CUT_SIDES, pageWidth * SAME_COLUMN);
@@ -387,9 +391,35 @@ function blockFor(lines, box, dir, pageWidth, pageHeight, pitch) {
   // centred captions of different widths share a centre and not a left edge.
   const first = pool[0];
   const spread = Math.max(first.h * 6, (pitch.col || 0) * 0.4);
-  return pool.filter(l => Math.abs(l.y - first.y) <= first.h * CAPTION_BLOCK
-                          && Math.abs(centreX(l) - centreX(first)) <= spread)
-             .sort((a, b) => a.y - b.y || a.x - b.x);
+  const block = pool.filter(l => Math.abs(l.y - first.y) <= first.h * CAPTION_BLOCK
+                                 && Math.abs(centreX(l) - centreX(first)) <= spread)
+                    .sort((a, b) => a.y - b.y || a.x - b.x);
+  // A long name wraps, and the second half was landing in the field below it —
+  // "Sharon Duncan-Brewster" came out as "Sharon" with "Duncan-Brewster" filed as
+  // the organisation. Lines set in the same font and stacked tightly are one
+  // entry, which is also what keeps the slots lined up across the page: without
+  // it, one wrapped name shifts that person's role into a different slot from
+  // everybody else's.
+  const merged = [];
+  for (const l of block) {
+    const prev = merged[merged.length - 1];
+    // Same font, tightly stacked, and the text appears only once on the page.
+    // The font alone is not enough: a document that sets the name and the role
+    // in one font would have the role swallowed into the name. A role repeats
+    // down the page — CAST, CAST, CAST — and half a name does not.
+    const continues = prev && prev.font && l.font && prev.font === l.font
+      && l.y - (prev.y + prev.h) <= l.h * 1.2
+      && (!freq || (freq.get(l.text) || 0) <= 1);
+    if (continues) {
+      // No space after a hyphen: the break falls inside "Duncan-Brewster", and
+      // also inside any ordinary hyphenated word split across two lines.
+      prev.text += (/-$/.test(prev.text) ? "" : " ") + l.text;
+      prev.h = (l.y + l.h) - prev.y;
+      prev.x = Math.min(prev.x, l.x);
+      prev.right = Math.max(prev.right, l.right);
+    } else merged.push({ ...l });
+  }
+  return merged;
 }
 
 // Where this page keeps its captions, and which line of one is the name.
@@ -402,10 +432,19 @@ function blockFor(lines, box, dir, pageWidth, pageHeight, pitch) {
 // Which line is the name then falls out of repetition, which is the whole gift of
 // a consistently laid-out document: roles repeat down a page — CAST, CAST, CAST,
 // PRODUCER — and names do not. No wordlist, no language, no case.
+// How often each line's text appears on the page: what separates a repeated
+// field from a one-off, with no idea of what either means.
+function textFreq(lines) {
+  const m = new Map();
+  for (const l of lines) m.set(l.text, (m.get(l.text) || 0) + 1);
+  return m;
+}
+
 export function learnLayout(items, boxes, pageWidth, pageHeight, pitch) {
   const lines = linesOf(items || []);
   const list = (boxes || []).filter(Boolean);
   if (!lines.length || !list.length) return null;
+  const freq = textFreq(lines);
 
   // Which line of a caption carries the name, and how name-like that line is
   // across the whole page. Roles repeat, names do not.
@@ -423,7 +462,7 @@ export function learnLayout(items, boxes, pageWidth, pageHeight, pitch) {
 
   let best = null;
   for (const dir of DIRS) {
-    const blocks = list.map(b => blockFor(lines, b, dir, pageWidth, pageHeight, pitch));
+    const blocks = list.map(b => blockFor(lines, b, dir, pageWidth, pageHeight, pitch, freq));
     const found = blocks.filter(b => b.length);
     if (!found.length) continue;
     const { slot, unique } = slots(blocks);
@@ -445,7 +484,8 @@ export function learnLayout(items, boxes, pageWidth, pageHeight, pitch) {
 // This face's caption, using the layout learned for the page.
 export function captionFor(items, box, pageWidth, pageHeight, pitch, layout) {
   if (!items || !items.length || !layout) return null;
-  const block = blockFor(linesOf(items), box, layout.dir, pageWidth, pageHeight, pitch || { col: 0, row: 0 });
+  const all = linesOf(items);
+  const block = blockFor(all, box, layout.dir, pageWidth, pageHeight, pitch || { col: 0, row: 0 }, textFreq(all));
   if (!block.length) return null;
   const i = block[layout.nameSlot] ? layout.nameSlot : 0;
   return {
