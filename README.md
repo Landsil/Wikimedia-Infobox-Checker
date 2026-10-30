@@ -482,6 +482,7 @@ IndexedDB, so nothing it does can affect the other four pages.
 | `shoot.js` | Listing a folder, grouping by badge, renaming and moving — DOM-free, so it is testable |
 | `exif.js` | Capture time from a JPEG's EXIF, no dependency; falls back to the file date |
 | `identify.js` | Reading a name off a badge with the Prompt API (Gemini Nano) |
+| `faces.js` | Checking a run of headshots really is one person: face crop → embedding → cosine similarity |
 | `demo.js` | A sample shoot — drawn badges and stand-in portraits, with EXIF spliced in |
 | `db.js` | A key/value corner of IndexedDB, so a shoot survives closing the tab |
 | `sw.js`, `manifest.webmanifest`, `icon-*.png` | PWA shell: offline cache, install metadata, icons |
@@ -506,6 +507,43 @@ there, so a second sitting for the same person cannot overwrite the first.
 Windows silently drops. Moving uses `FileSystemHandle.move()` (Chrome 102+); the
 fallback copies, checks the copy's byte count, and only then removes the
 original, so a failed write cannot lose a photo.
+
+### The face check
+
+Time order says which badge a photo follows; it cannot say whether the person
+changed. **Check the faces match** crops the biggest face in each headshot,
+turns it into a vector with MediaPipe's `ImageEmbedder` (MobileNet v3 small) and
+compares them by cosine similarity — `ImageEmbedder.cosineSimilarity`, both
+already in the bundle we vendor, so only a 4 MB model was added.
+
+Measured on one event's photos (2026-10-30 — 4 people, 12 photos, same backdrop
+and lighting, i.e. the hard case):
+
+| | pairs | min | mean | max |
+| :-- | :-- | :-- | :-- | :-- |
+| Same person | 12 | **0.61** | 0.77 | 0.97 |
+| Different people | 54 | 0.17 | 0.32 | **0.48** |
+
+No overlap, so `SAME_MIN` = **0.55** sits in the gap; run through `faces.js`
+itself it classified all 66 pairs correctly. Each photo is scored by its *mean*
+similarity to the others in its group, so one odd frame cannot drag the group
+down, and two groups whose most typical photos score ≥ 0.55 are flagged as
+"possibly the same person — one badge may have been missed".
+
+It **flags, never decides**: nothing is regrouped or filed on the strength of a
+face. The thinnest margin is the group-photo case (0.61 against 0.48), where the
+biggest face may not be the subject. A photo with no detectable face is reported
+as such, not treated as a mismatch, and a manual regroup clears the scores rather
+than showing stale ones.
+
+These are generic image embeddings, not face recognition. They answer "do these
+two crops look alike", only within one shoot, and no identity is stored or
+matched against any database — the promise on the score page still holds.
+
+The ~19 MB this needs (runtime, face detector, embedder — not the landmark or
+pose models) is downloaded from this site on request, SHA-256 checked, and kept
+in this app's own Cache Storage. `check.html` has a panel to run the comparison
+on your own photos and see whether 0.55 separates them.
 
 ### What it needs, and what it does not
 
@@ -656,6 +694,13 @@ Landmarker of 2023-04-27). The weekly workflow
 `main`: a newer release goes to branch `mediapipe-update/<release>` and an issue
 assigned to Landsil links the comparison. Merging it updates the site; visitors
 then see *out of date* until they press Update.
+
+**Never automatically backwards.** `upgradeReason()` proposes a release only when
+the runtime version is strictly newer (semver) or a model is newer or newly added.
+Comparing release ids for mere inequality once let the weekly run "update"
+1.1.1 → **1.1.0** (issue #2, 2026-10-21): 1.1.0 had just become the newest
+release old enough to pass the 14-day bar, so it looked like a change. An
+explicit `--version` may still move either way, deliberately.
 
 **Taking a specific version now:** *Run workflow* with **version** (e.g.
 `1.1.1`) skips the minimum age for the runtime only — an explicit choice, noted

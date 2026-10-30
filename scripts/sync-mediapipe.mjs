@@ -39,6 +39,11 @@ const MODELS = {
   // Full-range BlazeFace: finds faces further from the camera (up to ~5 m) —
   // the first pass, before the landmarker reads the face from a crop.
   face_detector_full_range: "https://storage.googleapis.com/mediapipe-models/face_detector/blaze_face_full_range/float16/latest/blaze_face_full_range.tflite",
+  // Generic image embeddings, used on a tight face crop to tell whether two
+  // photos show the same person. Measured on one event's photos (2026-10-30):
+  // same person 0.61-0.97, different people 0.17-0.48 — separated, but close
+  // enough in group shots that it warns rather than decides.
+  image_embedder: "https://storage.googleapis.com/mediapipe-models/image_embedder/mobilenet_v3_small/float32/latest/mobilenet_v3_small.tflite",
   face_landmarker: "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/latest/face_landmarker.task",
   pose_landmarker_lite: "https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/latest/pose_landmarker_lite.task",
 };
@@ -84,7 +89,30 @@ async function modelState() {
 const stamp = m => ymd(m.last_modified).replace(/-/g, "");
 const releaseId = (rt, models) =>
   `tv-${rt.version}_fd-${stamp(models.face_detector_full_range)}`
+  + `_ie-${stamp(models.image_embedder)}`
   + `_fl-${stamp(models.face_landmarker)}_pl-${stamp(models.pose_landmarker_lite)}`;
+
+// Only ever move forward. Comparing release ids for mere inequality once let the
+// weekly run "update" 1.1.1 -> 1.1.0 (issue #2, 2026-10-21): 1.1.0 became the
+// newest release old enough to pass MIN_AGE_DAYS, so it looked like a change.
+const cmpVer = (a, b) => {
+  const pa = String(a).split(".").map(Number), pb = String(b).split(".").map(Number);
+  for (let i = 0; i < 3; i++) if ((pa[i] || 0) !== (pb[i] || 0)) return (pa[i] || 0) - (pb[i] || 0);
+  return 0;
+};
+function upgradeReason(current, rt, models) {
+  if (!current) return "nothing vendored yet";
+  const v = cmpVer(rt.version, current.runtime.version);
+  if (v > 0) return `runtime ${current.runtime.version} -> ${rt.version}`;
+  if (v < 0) return null;                       // older runtime: never automatically
+  for (const [name, m] of Object.entries(models)) {
+    const was = (current.models || {})[name];
+    if (!was) return `model added: ${name}`;
+    if (Date.parse(m.last_modified) > Date.parse(was.last_modified))
+      return `model newer: ${name} (${ymd(was.last_modified)} -> ${ymd(m.last_modified)})`;
+  }
+  return null;
+}
 
 const current = existsSync(MANIFEST) ? JSON.parse(await readFile(MANIFEST, "utf8")) : null;
 const rt = await pickRuntime();
@@ -95,8 +123,15 @@ const release = releaseId(rt, models);
 console.log(`current release: ${current ? current.release : "(none)"}`);
 console.log(`upstream:        ${release}  (runtime ${rt.version}${rt.explicit ? " — requested explicitly, minimum age skipped" : ""}, published ${ymd(rt.published)}; newest upstream ${rt.newest_upstream}, ${ymd(rt.newest_upstream_published)})`);
 if (tooNewModel) console.log(`note: ${tooNewModel[0]} changed upstream less than ${MIN_AGE_DAYS} days ago — waiting.`);
-const changed = !current || (current.release !== release && !tooNewModel);
-console.log(changed ? "→ a newer release is available" : "→ up to date");
+// An explicit --version is a deliberate choice, so it may move either way.
+const reason = upgradeReason(current, rt, models);
+const changed = rt.explicit
+  ? (!current || current.release !== release)
+  : (!!reason && !tooNewModel);
+if (changed) console.log(`→ a newer release is available (${rt.explicit ? "requested explicitly" : reason})`);
+else if (current && !reason && !rt.explicit && cmpVer(rt.version, current.runtime.version) < 0)
+  console.log(`→ staying on ${current.runtime.version}: the newest release old enough to vet is ${rt.version}, which is older`);
+else console.log("→ up to date");
 if (process.env.GITHUB_OUTPUT) await writeFile(process.env.GITHUB_OUTPUT,
   `changed=${changed && sync ? 1 : 0}\nrelease=${release}\nprevious=${current ? current.release : ""}\nexplicit=${rt.explicit ? 1 : 0}\n`, { flag: "a" });
 if (!sync || !changed) process.exit(0);

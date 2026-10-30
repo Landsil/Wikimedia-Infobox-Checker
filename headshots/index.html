@@ -80,6 +80,13 @@
     Correct a name by typing in it. If the model mistook a frame, use
     <em>badge</em> / <em>not a badge</em> to regroup — the badge frame is outlined
     in blue.</p>
+    <div class="row-actions">
+      <button type="button" id="face_check" class="secondary">Check the faces match</button>
+      <span class="step-note" style="margin:0">Compares each person's headshots with
+      one another, so a missed badge shows up as a face that does not belong. It
+      only flags photos for you to look at — it never regroups or files anything.</span>
+    </div>
+    <div id="face_state" class="lib-state" hidden></div>
     <div id="review_info" class="meta"></div>
     <div id="review"></div>
   </section>
@@ -159,8 +166,16 @@
     supports and to self-test the renaming on throwaway files.</p>
     <h3>Limits</h3>
     <ul>
-      <li>It reads what is written on a badge. It does not recognise faces, and
-        does not identify anyone from their appearance.</li>
+      <li>It reads what is written on a badge to get a name. It never identifies
+        anyone from their appearance, and matches nothing against any database
+        of people.</li>
+      <li><strong>The face check</strong> only asks "do these photos look like the
+        same person?", within one shoot, to catch a missed badge. Measured on one
+        event's photos: same person 0.61–0.97, different people 0.17–0.48, so a
+        score under 0.55 is flagged. The margin is thinnest in group shots, where
+        the biggest face may not be the subject — which is why it flags rather
+        than decides. It needs about 19 MB of MediaPipe, downloaded from this site
+        once, with every file checked against its SHA-256.</li>
       <li>Photos before the first badge cannot be attributed and are left alone.</li>
       <li>This is new. Check the grouping in step 3 before filing.</li>
     </ul>

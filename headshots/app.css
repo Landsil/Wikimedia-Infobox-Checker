@@ -42,6 +42,9 @@
 .shot img { width: 104px; height: 104px; object-fit: cover; border-radius: 6px; background: #eef0f3;
             display: block; border: 2px solid transparent; }
 .shot.is-badge img { border-color: var(--accent); }
+.shot.face-flag img { border-color: #b91c1c; }
+.shot .face { display: block; color: var(--muted); }
+.shot.face-flag .face { color: #b91c1c; font-weight: 600; }
 .shot .cap { display: block; margin-top: 2px; word-break: break-all; }
 .shot .time { color: var(--muted); }
 .shot button { margin-top: 2px; }

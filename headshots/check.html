@@ -26,6 +26,16 @@
   <button type="button" id="run_selftest">Run self-test</button>
   <pre id="selftest" class="log"></pre>
 
+  <h2 class="section-head">Face comparison</h2>
+  <p class="lead">Pick several photos — two or more of the same person, and some of
+  other people. Every pair is scored, so you can see whether the threshold of
+  <code>0.55</code> actually separates them on your own pictures. Nothing leaves
+  the device.</p>
+  <div id="face_state" class="lib-state"></div>
+  <input type="file" id="face_files" accept="image/*" multiple>
+  <button type="button" id="run_faces">Compare</button>
+  <pre id="faces_out" class="log"></pre>
+
   <h2 class="section-head">Badge reading (Gemini Nano)</h2>
   <p class="lead">Pick a photo of a badge, a name card or a screenshot showing
   someone's details. Nothing leaves the device.</p>
@@ -42,6 +52,7 @@
 import { captureTime, exifDate } from "./exif.js";
 import { listPhotos, groupPhotos, applyGroups, safeName, stemFor, DONE_DIR } from "./shoot.js";
 import { nanoPresent, nanoAvailability, createSession, identify, forModel, ANALYSIS_EDGE } from "./identify.js";
+import * as faces from "./faces.js";
 import { withExif } from "./demo.js";
 
 const $ = id => document.getElementById(id);
@@ -185,6 +196,70 @@ $("run_selftest").addEventListener("click", async () => {
   } finally {
     $("run_selftest").disabled = false;
   }
+});
+
+// ---- face comparison ----
+async function showFaceState() {
+  const st = await faces.state();
+  const el = $("face_state");
+  if (st.status === "ready") { el.className = "lib-state ok"; el.innerHTML = `Face models saved (<code>${esc(st.release)}</code>, ${(st.bytes / 1e6).toFixed(1)} MB) ✓`; return true; }
+  el.className = st.status === "missing" ? "lib-state need" : "lib-state bad";
+  el.innerHTML = `${st.status === "missing" ? "Not saved yet" : `Out of date (${esc(st.old.join(", "))})`}. `
+    + `<button type="button" id="face_get">${st.status === "missing" ? "Download" : "Update"} (${(st.bytes / 1e6).toFixed(1)} MB)</button>`;
+  return false;
+}
+showFaceState();
+$("face_state").addEventListener("click", async e => {
+  if (e.target && e.target.id === "face_get") {
+    e.target.disabled = true;
+    try {
+      await faces.save((done, total, name) => { $("face_state").innerHTML = `Downloading ${esc(name)}… ${(done / 1e6).toFixed(1)} of ${(total / 1e6).toFixed(1)} MB`; });
+      await showFaceState();
+    } catch (err) { $("face_state").className = "lib-state bad"; $("face_state").innerHTML = esc(err.message); }
+  }
+});
+$("run_faces").addEventListener("click", async () => {
+  const files = [...($("face_files").files || [])];
+  const out = $("faces_out");
+  out.textContent = "";
+  const log = t => { out.textContent += t + "\n"; };
+  if (files.length < 2) { log("Pick at least two images."); return; }
+  if (!(await showFaceState())) { log("Download the face models first."); return; }
+  $("run_faces").disabled = true;
+  try {
+    await faces.load();
+    const recs = [];
+    for (const [i, f] of files.entries()) {
+      out.textContent = `Reading ${i + 1} of ${files.length}…\n`;
+      const face = await faces.faceOf(f);
+      if (!face) { recs.push({ name: f.name, face: null }); continue; }
+      recs.push({ name: f.name, face });
+    }
+    out.textContent = "";
+    const ok = recs.filter(r => r.face);
+    log(`${ok.length} of ${recs.length} images gave a face`);
+    for (const r of recs) if (!r.face) log(`  no face: ${r.name}`);
+    log("");
+    const short = n => n.replace(/\.[a-z]+$/i, "").slice(0, 24).padEnd(24);
+    log("                             " + ok.map((_, i) => String(i).padStart(5)).join(""));
+    ok.forEach((r, i) => {
+      const cells = ok.map((s, j) => i === j ? "  -  " : faces.similarity(r.face.vector, s.face.vector).toFixed(2).padStart(5)).join("");
+      log(`${String(i).padStart(2)} ${short(r.name)}${cells}`);
+    });
+    const all = [];
+    for (let i = 0; i < ok.length; i++) for (let j = i + 1; j < ok.length; j++)
+      all.push({ i, j, v: faces.similarity(ok[i].face.vector, ok[j].face.vector) });
+    const same = all.filter(x => x.v >= faces.SAME_MIN), diff = all.filter(x => x.v < faces.SAME_MIN);
+    log("");
+    log(`threshold ${faces.SAME_MIN}: ${same.length} pair(s) judged the same person, ${diff.length} judged different`);
+    if (same.length) log(`  closest same pair    : ${Math.min(...same.map(x => x.v)).toFixed(3)}`);
+    if (diff.length) log(`  closest different    : ${Math.max(...diff.map(x => x.v)).toFixed(3)}`);
+    log("");
+    log("FACES DONE");
+  } catch (err) {
+    log(`ERROR ${err.name}: ${err.message}`);
+    log("FACES DONE");
+  } finally { $("run_faces").disabled = false; }
 });
 
 // ---- badge reading ----

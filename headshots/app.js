@@ -6,6 +6,7 @@ import { listPhotos, groupPhotos, applyGroups, people, stemFor, DONE_DIR } from 
 import { nanoPresent, nanoAvailability, createSession, identify, forModel } from "./identify.js";
 import * as store from "./db.js";
 import { buildDemoShoot } from "./demo.js";
+import * as faces from "./faces.js";
 
 const THUMB = 160;             // review thumbnails, in pixels
 const CACHE_CAP = 5000;        // remembered scan results before the oldest are dropped
@@ -15,6 +16,7 @@ const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g,
   c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const row = (k, v, warn) => `<div class="row"><span class="k">${esc(k)}</span><span class="v${warn ? " warn" : ""}">${v}</span></div>`;
 const hhmm = iso => (iso || "").slice(11, 16);
+const mb = n => `${(n / 1e6).toFixed(1)} MB`;
 
 // ---- state ----
 let dir = null;          // the chosen folder
@@ -25,6 +27,7 @@ let scanCache = {};      // "name|bytes|ms" -> identification, remembered betwee
 let stopping = false;
 let lastLog = null;
 let filedPeople = [];    // accumulated across filings; the report is about these
+let faceWarnings = [];   // groups that look like the same person as another group
 
 const cacheKey = p => `${p.name}|${p.bytes}|${p.time.ms}`;
 
@@ -225,7 +228,12 @@ $("stop").addEventListener("click", () => { stopping = true; });
 // ---- step 3: check who is who ----
 let grouped = { groups: [], leading: [] };
 
+function clearFaceCheck() {
+  for (const p of photos) { delete p.faceScore; delete p.faceFlag; delete p.faceNone; }
+  faceWarnings = [];
+}
 const setIdentity = (p, on) => {
+  clearFaceCheck();
   p.id = on
     ? { kind: "identity", full_name: "", given_name: "", family_name: "", organisation: "", legible: true, manual: true }
     : { kind: "portrait", manual: true };
@@ -233,9 +241,11 @@ const setIdentity = (p, on) => {
 };
 
 function shotCell(p, isBadge) {
-  return `<div class="shot${isBadge ? " is-badge" : ""}">`
+  return `<div class="shot${isBadge ? " is-badge" : ""}${p.faceFlag ? " face-flag" : ""}">`
     + `<img src="${thumbs.get(p.name) || ""}" alt="" title="${esc(p.name)}">`
     + `<span class="cap">${esc(p.name)}</span><span class="time">${hhmm(p.time.local)}</span>`
+    + (p.faceNone ? `<span class="face">no face found</span>`
+       : p.faceScore != null ? `<span class="face">face ${p.faceScore.toFixed(2)}${p.faceFlag ? " — check" : ""}</span>` : "")
     + `<button type="button" class="mini mark" data-name="${esc(p.name)}" data-on="${isBadge ? "0" : "1"}">`
     + `${isBadge ? "not a badge" : "badge"}</button></div>`;
 }
@@ -249,7 +259,9 @@ function renderReview() {
       row("People found", `${groups.length}`, groups.length === 0)
     + (unnamed ? row("Still need a name", `${unnamed}`, true) : "")
     + row("Photos that will be filed", `${filing}`)
-    + (leading.length ? row("Before the first badge", `${leading.length} — left alone`, true) : "");
+    + (leading.length ? row("Before the first badge", `${leading.length} — left alone`, true) : "")
+    + (photos.some(p => p.faceFlag) ? row("Faces to check", `${photos.filter(p => p.faceFlag).length} photo(s) do not look like the rest of their group`, true) : "")
+    + faceWarnings.map(w => row("Possibly the same person", esc(w), true)).join("");
 
   const cards = groups.map((g, gi) => {
     const name = g.person ? stemFor(g.person) : "";
@@ -297,6 +309,93 @@ $("review").addEventListener("click", e => {
   setIdentity(p, b.dataset.on === "1");
   store.set("scanCache", scanCache);
   renderReview();
+});
+
+// ---- the face check (optional, step 3) ----
+async function faceState() {
+  const st = await faces.state();
+  const el = $("face_state");
+  el.hidden = false;
+  if (st.status === "ready") {
+    el.className = "lib-state ok";
+    el.innerHTML = `Face models saved (<code>${esc(st.release)}</code>, ${mb(st.bytes)}) ✓`;
+  } else if (st.status === "missing") {
+    el.className = "lib-state need";
+    el.innerHTML = `The face check needs ${mb(st.bytes)} of MediaPipe from this site, kept in this browser. `
+      + `<button type="button" id="face_get">Download (${mb(st.bytes)})</button>`;
+  } else {
+    el.className = "lib-state bad";
+    el.innerHTML = `Your saved face models (<code>${esc(st.old.join(", "))}</code>) are out of date — the current ones are `
+      + `<code>${esc(st.release)}</code>. <button type="button" id="face_get">Update (${mb(st.bytes)})</button>`;
+  }
+  return st.status === "ready";
+}
+async function runFaceCheck() {
+  const btn = $("face_check");
+  btn.disabled = true;
+  try {
+    if (!(await faceState())) return;
+    $("face_state").className = "lib-state";
+    $("face_state").innerHTML = "Loading the face models…";
+    await faces.load();
+    clearFaceCheck();
+    const named = grouped.groups.filter(g => g.person);
+    let n = 0;
+    const total = named.reduce((t, g) => t + g.shots.length, 0);
+    const refs = [];
+    for (const g of named) {
+      const items = [];
+      for (const p of g.shots) {
+        $("face_state").innerHTML = `Comparing faces… ${++n} of ${total}`;
+        try {
+          const face = await faces.faceOf(await p.handle.getFile());
+          if (face) items.push({ key: p.name, face, photo: p });
+          else p.faceNone = true;
+        } catch (err) { p.faceNone = true; }
+      }
+      const res = faces.checkGroup(items);
+      for (const it of items) {
+        const s = res.scores.get(it.key);
+        if (s != null) { it.photo.faceScore = s; it.photo.faceFlag = s < faces.SAME_MIN; }
+      }
+      if (res.reference) refs.push({ name: stemFor(g.person), vector: res.reference.face.vector });
+    }
+    // Two different people's groups scoring alike usually means a badge was missed
+    // and one person was shot twice under two names.
+    for (let i = 0; i < refs.length; i++)
+      for (let j = i + 1; j < refs.length; j++) {
+        const sim = faces.similarity(refs[i].vector, refs[j].vector);
+        if (sim >= faces.SAME_MIN)
+          faceWarnings.push(`${refs[i].name} and ${refs[j].name} look alike (${sim.toFixed(2)}) — one badge may have been missed`);
+      }
+    const flagged = photos.filter(p => p.faceFlag).length;
+    const noFace = photos.filter(p => p.faceNone).length;
+    $("face_state").className = flagged || faceWarnings.length ? "lib-state bad" : "lib-state ok";
+    $("face_state").innerHTML = `Compared ${total} photo(s): ${flagged} to check, ${faceWarnings.length} group warning(s)`
+      + (noFace ? `, ${noFace} with no face found` : "") + ".";
+    renderReview();
+  } catch (err) {
+    $("face_state").className = "lib-state bad";
+    $("face_state").innerHTML = esc(`${err.name}: ${err.message}`);
+  } finally {
+    btn.disabled = false;
+  }
+}
+$("face_check").addEventListener("click", runFaceCheck);
+$("face_state").addEventListener("click", async e => {
+  if (e.target && e.target.id === "face_get") {
+    e.target.disabled = true;
+    try {
+      await faces.save((done, total, name) => {
+        $("face_state").innerHTML = `Downloading ${esc(name)}… ${mb(done)} of ${mb(total)}`;
+      });
+      await faceState();
+      runFaceCheck();
+    } catch (err) {
+      $("face_state").className = "lib-state bad";
+      $("face_state").innerHTML = esc(`Download failed: ${err.message}`);
+    }
+  }
 });
 
 // ---- step 4: rename and file ----

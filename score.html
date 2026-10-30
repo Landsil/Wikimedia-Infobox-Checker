@@ -299,6 +299,12 @@ const wpArticleUrl = (lang, t) => `https://${lang}.wikipedia.org/wiki/${encodeUR
 // Saved copy of MediaPipe (Cache Storage), checked against versions.json
 // ===================================================================
 let manifest = null;              // vendor/mediapipe/versions.json
+// The files this page uses. The release also carries an image embedder for the
+// Headshots tool, which is no use here and so is never downloaded.
+const NEEDED_FILES = ["vision_bundle.mjs", "vision_wasm_internal.js", "vision_wasm_internal.wasm",
+  "blaze_face_full_range.tflite", "face_landmarker.task", "pose_landmarker_lite.task"];
+const neededFiles = () => manifest.files.filter(f => NEEDED_FILES.includes(f.name));
+const neededBytes = () => neededFiles().reduce((n, f) => n + f.bytes, 0);
 let mp = null, detector = null, face = null, faceLow = null, pose = null;   // runtime + models
 const cacheName = () => CACHE_PREFIX + manifest.release;
 const TYPES = { mjs: "text/javascript", js: "text/javascript", wasm: "application/wasm", task: "application/octet-stream" };
@@ -310,14 +316,14 @@ async function sha256Hex(buf) {
 // "ready" | "missing" | { outdated: [old release ids] }
 async function libraryState() {
   manifest = await (await fetch(VENDOR + "versions.json", { cache: "no-store" })).json();
-  $("lib_size").textContent = `${mb(manifest.total_bytes)} (runtime ${manifest.runtime.version} + ${manifest.files.length - 3} models)`;
+  $("lib_size").textContent = `${mb(neededBytes())} (runtime ${manifest.runtime.version} + ${neededFiles().length - 3} models)`;
   const ours = (await caches.keys()).filter(k => k.startsWith(CACHE_PREFIX));
   if (ours.includes(cacheName())) {
     const c = await caches.open(cacheName());
     const saved = await c.match("versions.json");
     const savedManifest = saved ? await saved.json() : null;
-    const complete = savedManifest && JSON.stringify(savedManifest.files) === JSON.stringify(manifest.files)
-      && (await Promise.all(manifest.files.map(f => c.match(f.path)))).every(Boolean);
+    const complete = savedManifest && savedManifest.release === manifest.release
+      && (await Promise.all(neededFiles().map(f => c.match(f.path)))).every(Boolean);
     if (complete) return "ready";
   }
   const old = ours.filter(k => k !== cacheName()).map(k => k.slice(CACHE_PREFIX.length));
@@ -330,8 +336,8 @@ async function saveLibraries() {
   await caches.delete(name);
   const c = await caches.open(name);
   let done = 0;
-  for (const f of manifest.files) {
-    setLibState(`Downloading ${f.name}… (${mb(done)} of ${mb(manifest.total_bytes)})`, "busy");
+  for (const f of neededFiles()) {
+    setLibState(`Downloading ${f.name}… (${mb(done)} of ${mb(neededBytes())})`, "busy");
     const r = await fetch(f.path, { cache: "no-store" });
     if (!r.ok) throw new Error(`${f.name}: HTTP ${r.status}`);
     const buf = await r.arrayBuffer();
@@ -389,11 +395,11 @@ async function refreshLibState() {
     setLibState(`Saved in your browser: release <code>${esc(manifest.release)}</code> ✓ `
       + `<button type="button" class="mini" id="lib_remove">Remove</button>`, "ok");
   } else if (st === "missing") {
-    setLibState(`Not saved yet. <button type="button" id="lib_agree">Agree and download (${mb(manifest.total_bytes)})</button>`, "need");
+    setLibState(`Not saved yet. <button type="button" id="lib_agree">Agree and download (${mb(neededBytes())})</button>`, "need");
   } else {
     setLibState(`Your saved copy (<code>${esc(st.outdated.join(", "))}</code>) is <strong>out of date</strong> — the current one is `
       + `<code>${esc(manifest.release)}</code>. Scoring is off until you update. `
-      + `<button type="button" id="lib_update">Update (${mb(manifest.total_bytes)})</button> `
+      + `<button type="button" id="lib_update">Update (${mb(neededBytes())})</button> `
       + `<button type="button" class="mini" id="lib_remove">Remove</button>`, "bad");
   }
 }
