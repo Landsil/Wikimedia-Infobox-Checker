@@ -82,3 +82,20 @@
 .roster-item.unverified { border-left: 3px solid #b8860b; }
 .meta-line.warn { color: #8a6100; }
 .meta-line.good { color: #2a6b2a; }
+
+/* Step 1: one row per dependency, so the whole picture is visible at a glance
+   rather than discovered one interruption at a time. */
+.setup-list { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+.setup-row { display: flex; gap: 12px; align-items: flex-start; justify-content: space-between;
+             padding: 10px 12px; border: 1px solid #d6dbe1; border-left-width: 4px; border-radius: 6px; }
+.setup-row.ok { border-left-color: #2a6b2a; }
+.setup-row.need { border-left-color: #b8860b; }
+.setup-row.bad { border-left-color: #a12b2b; }
+.setup-what { display: flex; flex-direction: column; gap: 2px; }
+.setup-detail { font-size: 0.9em; color: #555; }
+.setup-do { flex: 0 0 auto; }
+
+/* The badge check is a required stop, so it reads as one. */
+.confirm-line { display: block; margin-top: 12px; padding: 10px 12px; border-radius: 6px;
+                background: #f4f6f8; border: 1px solid #d6dbe1; font-weight: 600; }
+.scan figure { cursor: pointer; }

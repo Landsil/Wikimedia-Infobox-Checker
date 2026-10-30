@@ -47,18 +47,32 @@ const hasName = id => !!(id && id.kind === "identity" && id.legible !== false &&
 // someone else, so the frames after it must not be filed under the last person.
 // Photos before the first identity frame can't be attributed and come back in
 // `leading`, left alone.
-export function groupPhotos(photos) {
+// Badges are not guaranteed. Plenty of people are photographed without one, so a
+// badge cannot be the only thing that starts a new person — relying on it alone
+// merged everyone after an unbadged person into whoever came before them.
+//
+// A new person therefore starts at a badge, or after a gap in the capture times
+// longer than `gapMs`. A photographer walking one subject off and the next one on
+// leaves exactly that gap; consecutive frames of one person do not. The gap is
+// the operator's to set, because it is a property of how they work, and the face
+// check afterwards flags any group that still holds more than one person.
+export function groupPhotos(photos, { gapMs = 120000 } = {}) {
   const groups = [];
   const leading = [];
-  let current = null;
+  let current = null, prev = null;
+  const start = (badge) => {
+    current = { badge: badge || null, person: badge && hasName(badge.id) ? { ...badge.id } : null, shots: [] };
+    groups.push(current);
+  };
   for (const p of photos) {
     const isIdentity = p.id && p.id.kind === "identity";
-    if (isIdentity) {
-      current = { badge: p, person: hasName(p.id) ? { ...p.id } : null, shots: [] };
-      groups.push(current);
-      continue;
-    }
+    if (isIdentity) { start(p); prev = p; continue; }
+    const gap = prev && gapMs > 0 ? p.time.ms - prev.time.ms : 0;
+    // A gap only splits once a person is under way; before the first badge there
+    // is nobody to split from.
+    if (current && gap > gapMs) start(null);
     if (current) current.shots.push(p); else leading.push(p);
+    prev = p;
   }
   return { groups, leading };
 }

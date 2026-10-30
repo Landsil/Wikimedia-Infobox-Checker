@@ -43,64 +43,85 @@
 </header>
 
 <main class="wide">
-  <section class="step" id="step_folder">
-    <div class="step-head"><span class="step-no">1</span><h2>Pick the shoot folder</h2></div>
+  <section class="step" id="step_setup">
+    <div class="step-head"><span class="step-no">1</span><h2>Set up this device</h2></div>
+    <p class="step-note">Everything this needs is settled here, before you start, so
+    nothing interrupts you halfway through a shoot. The two downloads come from this
+    site and are kept in this browser; the model belongs to Chrome. Do this once on
+    each machine — after that the tool works offline.</p>
+    <div class="row-actions">
+      <button type="button" id="setup_all">Set everything up</button>
+      <button type="button" id="setup_recheck" class="secondary">Check again</button>
+    </div>
+    <div class="bar" id="setup_bar" hidden><i></i></div>
+    <div id="setup_list" class="setup-list"></div>
+  </section>
+
+  <section class="step waiting" id="step_folder">
+    <div class="step-head"><span class="step-no">2</span><h2>Pick the shoot folder</h2></div>
     <p class="step-note">The folder of photos straight off the camera. Chrome will
     ask permission to edit it — that is what lets the photos be renamed in place.</p>
     <div class="row-actions">
       <button type="button" id="pick">Choose folder…</button>
       <button type="button" id="reopen" class="secondary" hidden>Reopen last folder</button>
-      <button type="button" id="demo" class="secondary">Try with sample photos</button>
+      <button type="button" id="sample" class="secondary" hidden>Sample shoot (testing)</button>
     </div>
-    <p class="step-note">The sample shoot is built in this browser's private
-    storage — two drawn badges and six stand-in portraits — so you can try every
-    step, renaming included, without touching a real photo.</p>
     <div id="folder_info" class="meta"></div>
   </section>
 
-  <section class="step" id="step_doc">
-    <div class="step-head"><span class="step-no">2</span><h2>Add a programme or delegate list</h2>
+  <section class="step waiting" id="step_doc">
+    <div class="step-head"><span class="step-no">3</span><h2>Add a programme or delegate list</h2>
       <span class="count">optional</span></div>
     <p class="step-note">A PDF, a screenshot, or exported pages — anything that puts
     photographs next to printed names. Every face is found and the name printed with
     it is picked up, giving a list of people this shoot can be matched against. That
     covers a missed badge, and shoots with no badges at all.</p>
-    <p class="step-note"><strong>In a PDF the names are read from the document's own
-    text</strong>, so they are exact and no model is used. A scan or a screenshot has
-    no text to read, so there the on-device model has to guess them — those are marked
-    <em>read by the model — check it</em> and should be read through before you rely on
-    them. The model has been caught returning confident, completely invented names.</p>
-    <div id="pdfjs_state" class="lib-state" hidden></div>
+    <p class="step-note"><strong>The model does the matching; it is not allowed to
+    invent a name.</strong> The names themselves are taken from the document's own
+    text, exactly as printed, and the model is then shown each face and asked which
+    of <em>those</em> names belongs to it — it can only pick from the list or say
+    nobody. Position is worked out separately as a cross-check, and any face where
+    the two disagree is flagged for you. A scan or screenshot has no text to take
+    names from, so there the model has to read them and they are marked
+    <em>unverified</em>.</p>
     <div class="row-actions">
       <input type="file" id="doc_files" accept="application/pdf,image/*" multiple>
       <button type="button" id="doc_read" disabled>Read the document</button>
     </div>
     <p class="step-note">PDFs are rendered on this device. Only embedded fonts are
     available, so if a page comes out garbled, export it as an image and add that
-    instead — bearing in mind an image's names are guessed, not read.</p>
+    instead — bearing in mind an image's names are read by the model, not taken from
+    the page, so they need checking.</p>
     <div class="bar" id="doc_bar" hidden><i></i></div>
     <div id="doc_info" class="meta"></div>
     <div id="roster" class="roster"></div>
   </section>
 
   <section class="step waiting" id="step_scan">
-    <div class="step-head"><span class="step-no">3</span><h2>Read the badges</h2></div>
+    <div class="step-head"><span class="step-no">4</span><h2>Find the badges</h2></div>
     <p class="step-note">Every photo is shown to the on-device model, which says
-    whether it is a badge or screen with a written name, or a portrait. Results
-    are remembered, so stopping and starting again costs nothing.</p>
+    whether it is a badge or a screen with a written name, or a portrait of someone.
+    Already-read photos are remembered, so stopping and starting again costs nothing.</p>
+    <p class="step-note"><strong>Badges are a suggestion, and you have to check them.</strong>
+    Not everyone will have one — some people are photographed without a badge, and
+    some badges are unreadable. <strong>Click any photo to mark it a badge or not.</strong>
+    A badge frame is outlined in blue and starts a new person; where there is no badge,
+    a gap in the shooting times starts one instead.</p>
     <div class="row-actions">
-      <button type="button" id="scan" disabled>Read badges</button>
+      <button type="button" id="scan" disabled>Read the photos</button>
       <button type="button" id="stop" class="secondary" hidden>Stop</button>
-      <label class="age-filter">from photo
-        <input type="text" id="scan_from" inputmode="numeric" pattern="[0-9]*" value="1"></label>
+      <label class="age-filter">new person after a gap of
+        <input type="text" id="gap_mins" inputmode="decimal" value="2"> min</label>
     </div>
     <div class="bar" id="scan_bar" hidden><i></i></div>
     <div id="scan_info" class="meta"></div>
     <div class="scan" id="scan_grid"></div>
+    <label class="confirm-line"><input type="checkbox" id="badges_ok">
+      I have looked through these and the badges are right</label>
   </section>
 
   <section class="step waiting" id="step_review">
-    <div class="step-head"><span class="step-no">4</span><h2>Check who is who</h2></div>
+    <div class="step-head"><span class="step-no">5</span><h2>Check who is who</h2></div>
     <p class="step-note">One card per person, in the order they were photographed.
     Correct a name by typing in it. If the model mistook a frame, use
     <em>badge</em> / <em>not a badge</em> to regroup — the badge frame is outlined
@@ -118,7 +139,7 @@
   </section>
 
   <section class="step waiting" id="step_apply">
-    <div class="step-head"><span class="step-no">5</span><h2>Rename and file</h2></div>
+    <div class="step-head"><span class="step-no">6</span><h2>Rename and file</h2></div>
     <p class="step-note">Named people only. Their photos move into a
     <code>done</code> folder as <code>Name Surname 01.jpg</code>; anything
     unnamed, and anything before the first badge, is left exactly where it is.</p>
@@ -126,13 +147,14 @@
       <label class="age-filter"><input type="checkbox" id="keep_badges" checked> also file the badge shots</label>
       <button type="button" id="apply" disabled>Rename and move…</button>
     </div>
+    <div id="apply_gate" class="meta"></div>
     <div class="bar" id="apply_bar" hidden><i></i></div>
     <div id="apply_info" class="meta"></div>
     <pre id="apply_log" class="log" hidden></pre>
   </section>
 
   <section class="step waiting" id="step_report">
-    <div class="step-head"><span class="step-no">6</span><h2>Report</h2></div>
+    <div class="step-head"><span class="step-no">7</span><h2>Report</h2></div>
     <p class="step-note">Who you photographed, and how many of each. The
     Wikipedia column is the only thing on this page that uses the network.</p>
     <div class="row-actions">
@@ -162,14 +184,24 @@
     <p>Everything between one badge and the next is treated as that person. A
     badge the model can't read still starts a new person — it just needs a name
     typing in, so photos never get filed under the person before.</p>
+    <p><strong>Badges are optional.</strong> Some people will be shot without one.
+    Where no badge separates two people, a gap in the capture times does; the gap
+    is yours to set in step 4, and the face check in step 5 flags a group that
+    holds more than one person. Nothing is filed until you have confirmed the
+    badges and the grouping.</p>
     <h3>Using a programme instead of badges</h3>
     <p>If you have a PDF or screenshot pairing photographs with names, add it in
-    step 2. Each face on the page is found and the name printed with it is read,
-    giving a list of people. <em>Name them from the document</em> in step 4 then
-    matches anyone still unnamed by comparing faces — so a shoot with no badges
-    at all can still be filed. It proposes names and shows the score; you confirm
-    them. PDF pages are rendered on this device with Mozilla's pdf.js from our
-    vendored copy (1.7 MB, downloaded once on request); images need no download.</p>
+    step 3. Each face on the page is found, and the name that goes with it is
+    settled in two independent ways: the names are taken verbatim from the
+    document's own text, and the on-device model is shown each face and asked
+    which of those names it belongs to, picking from that list only. Where the
+    model's answer and the printed position disagree, the face is flagged for you
+    rather than guessed at.</p>
+    <p><em>Name them from the document</em> in step 5 then matches anyone still
+    unnamed by comparing faces, so a shoot with no badges at all can still be
+    filed. It proposes and shows its score; you confirm. PDF pages are rendered on
+    this device with Mozilla's pdf.js from our vendored copy; images need no
+    download.</p>
 
     <h3>What it needs</h3>
     <ul>
@@ -177,7 +209,9 @@
         folder uses the File System Access API, which Firefox and Safari do not
         have, on any platform.</li>
       <li><strong>Chrome 148 or newer</strong> for the built-in model (Edge has it
-        only behind a flag). Per Google's requirements that means Windows 10/11,
+        only behind a flag). Step 1 checks for it and offers to fetch it, so you
+        find out before a shoot rather than during one.
+        Per Google's requirements that means Windows 10/11,
         macOS 13+, Linux or a Chromebook Plus, 22 GB free on the drive holding
         your Chrome profile, and either more than 4 GB of VRAM or 16 GB of RAM
         with 4+ cores. There is no mobile support. The model downloads once, on
@@ -211,8 +245,10 @@
         the biggest face may not be the subject — which is why it flags rather
         than decides. It needs about 19 MB of MediaPipe, downloaded from this site
         once, with every file checked against its SHA-256.</li>
-      <li>Photos before the first badge cannot be attributed and are left alone.</li>
-      <li>This is new. Check the grouping in step 3 before filing.</li>
+      <li>Photos before the first badge, or before the first gap, have nobody to
+        attribute them to until you name them — they are left alone.</li>
+      <li>This is new. Check the badges in step 4 and the grouping in step 5
+        before filing.</li>
     </ul>
   </div>
 </div>

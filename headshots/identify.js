@@ -67,6 +67,22 @@ export async function nanoAvailability() {
   }
 }
 
+// Trigger Chrome's one-time model download without doing any work with it, so a
+// machine can be set up before a shoot instead of stalling in the middle of one.
+// Must be called from a user gesture. Resolves to the availability afterwards.
+export async function downloadModel(onProgress) {
+  if (!nanoPresent()) throw new Error("This browser has no built-in model (needs Chrome 148+ on desktop).");
+  const before = await nanoAvailability();
+  if (before === "unavailable")
+    throw new Error("Chrome reports the built-in model as unavailable on this device — see the requirements in About.");
+  const session = await LanguageModel.create({
+    expectedInputs: [{ type: "image" }],
+    monitor: m => m.addEventListener("downloadprogress", e => onProgress && onProgress(e.loaded)),
+  });
+  session.destroy();                      // the download is what we wanted, not the session
+  return nanoAvailability();
+}
+
 // One session, reused for every photo in a scan. `onProgress(fraction)` reports
 // the model download, which happens only on a machine that doesn't have it yet.
 // Must be called from a user gesture when the model still needs downloading.
@@ -181,6 +197,52 @@ export async function readCaption(session, imageSource) {
     };
   } catch (err) {
     return { legible: false, error: `${err.name}: ${err.message}` };
+  }
+}
+
+// Choosing which of a known set of names belongs to a face.
+//
+// This is the only way the model is allowed near a document's names. It is given
+// the names already taken verbatim from the page and must answer with one of
+// them, or with "" for nobody: the schema's enum makes any other answer
+// unrepresentable, so the invention that made free-text reading useless cannot
+// happen here. The model is doing what it is actually good at — deciding which
+// caption goes with which face — while the strings stay the document's.
+const PICK_PROMPT = [
+  "This is a cut-out from a printed programme, delegate list or web page. It shows one or",
+  "more photographs together with some printed text. Exactly one face is outlined in a",
+  "bright pink rectangle.",
+  "",
+  "You are given the names printed on this page. Decide which one belongs to the person",
+  "whose face is inside the pink rectangle — normally the name printed directly beneath or",
+  "beside their photograph. Ignore every other face in the cut-out.",
+  "",
+  "Answer with that name exactly as it appears in the list. If the name of the outlined",
+  "person is not in the list, or you cannot tell which of the names is theirs, answer with an",
+  "empty string. Do not pick a name just because it is nearby, and never pick one because you",
+  "recognise the person — only the name printed with this photograph counts.",
+].join("\n");
+
+export async function pickName(session, imageSource, candidates) {
+  const list = [...new Set(candidates.map(clean).filter(Boolean))];
+  if (!list.length) return { name: "", reason: "no names on the page" };
+  try {
+    const answer = await session.prompt(
+      [{ role: "user", content: [
+        { type: "text", value: `${PICK_PROMPT}\n\nNames printed on this page:\n${list.map(n => `- ${n}`).join("\n")}` },
+        { type: "image", value: imageSource }] }],
+      { responseConstraint: {
+          type: "object", additionalProperties: false, required: ["name"],
+          properties: { name: { type: "string", enum: [...list, ""] } } } });
+    let r;
+    try { r = JSON.parse(answer); }
+    catch (_) { return { name: "", error: "model did not return JSON" }; }
+    const name = clean(r.name);
+    // Belt and braces: the enum should make this impossible, but a name that is
+    // not on the list is dropped rather than trusted.
+    return list.includes(name) ? { name } : { name: "", reason: "answer was not one of the printed names" };
+  } catch (err) {
+    return { name: "", error: `${err.name}: ${err.message}` };
   }
 }
 

@@ -3,7 +3,7 @@
 // their own (see check.html).
 
 import { listPhotos, groupPhotos, applyGroups, people, stemFor, DONE_DIR } from "./shoot.js";
-import { nanoPresent, nanoAvailability, createSession, identify, readCaption, forModel } from "./identify.js";
+import { nanoPresent, nanoAvailability, createSession, downloadModel, identify, readCaption, pickName, forModel } from "./identify.js";
 import * as store from "./db.js";
 import { buildDemoShoot } from "./demo.js";
 import * as faces from "./faces.js";
@@ -38,36 +38,127 @@ function stepState(id, state) {            // "waiting" | "" | "done"
   el.classList.toggle("done", state === "done");
 }
 
-// ---- requirements ----
-// Stated up front rather than failing later. No folder access is fatal; no
-// model only costs the automatic reading — badges can still be marked by hand.
+// ---- step 1: setup ----
+// Every dependency is settled here, before a folder is even chosen. Discovering
+// mid-shoot that a 19 MB download or Chrome's model is missing is exactly the
+// interruption this step exists to prevent, so nothing below asks for a download
+// of its own.
 let canPickFolder = false;
-async function checkRequirements() {
+let setup = null;          // last known state of each dependency
+
+async function readSetup() {
   canPickFolder = typeof window.showDirectoryPicker === "function";
-  $("pick").disabled = !canPickFolder;
-  $("scan").disabled = true;
-  renderBlockers(null);                       // what is known at once
-  const avail = nanoPresent() ? await nanoAvailability() : "absent";
-  renderBlockers(avail);                      // Chrome can take seconds to answer
+  const [f, d] = await Promise.all([
+    faces.state().catch(err => ({ status: "error", error: err.message, bytes: 0 })),
+    doc.state().catch(err => ({ status: "error", error: err.message, bytes: 0 })),
+  ]);
+  // Chrome can take seconds to answer, so the rest is shown first.
+  const model = nanoPresent() ? await nanoAvailability() : "absent";
+  setup = { faces: f, pdfjs: d, model };
+  return setup;
 }
 
-// `avail` null means the model check is still running, so say nothing about it yet.
-function renderBlockers(avail) {
-  const modelUsable = avail === null || ["available", "downloadable", "downloading"].includes(avail);
+const MODEL_WORDS = {
+  available: ["ready", "ok", "Downloaded and ready ✓"],
+  downloading: ["being downloaded", "need", "Chrome is downloading it now — this step can wait."],
+  downloadable: ["not downloaded", "need", "Chrome has it but has not downloaded it yet. It is Chrome's download, not ours: about 2 GB, once per machine."],
+  unavailable: ["unavailable", "bad", "Chrome reports it as unavailable on this device. See <em>What it needs</em> in About — usually free disk space, RAM or VRAM."],
+  absent: ["not in this browser", "bad", "This browser has no built-in model. It needs Chrome 148+ on a desktop; Edge has it only behind a flag."],
+};
+
+function renderSetup() {
+  if (!setup) { $("setup_list").innerHTML = row("Checking", "…"); return; }
+  const rows = [];
+  const line = (cls, title, detail, button) =>
+    rows.push(`<div class="setup-row ${cls}"><div class="setup-what"><strong>${title}</strong>
+      <span class="setup-detail">${detail}</span></div>
+      <div class="setup-do">${button || ""}</div></div>`);
+
+  line(canPickFolder ? "ok" : "bad", "Renaming files in your folder",
+    canPickFolder ? "Supported by this browser ✓"
+      : "Not supported here. Renaming needs the File System Access API, which only Chrome and Edge have, on desktop — Firefox and Safari have it on no platform.");
+
+  const f = setup.faces;
+  line(f.status === "ready" ? "ok" : f.status === "missing" ? "need" : "bad",
+    `Face models — ${mb(f.bytes || 0)}`,
+    f.status === "ready" ? `Saved in this browser (<code>${esc(f.release || "")}</code>) ✓`
+      : f.status === "missing" ? "Needed to find faces, compare them, and read a programme. Comes from this site and is checked against its SHA-256."
+      : f.status === "error" ? `Could not be checked: ${esc(f.error || "")}`
+      : `Your saved copy (<code>${esc((f.old || []).join(", "))}</code>) is out of date; the current one is <code>${esc(f.release || "")}</code>.`,
+    f.status === "ready" ? "" : `<button type="button" id="setup_faces">${f.status === "missing" ? "Download" : "Update"} (${mb(f.bytes || 0)})</button>`);
+
+  const d = setup.pdfjs;
+  line(d.status === "ready" ? "ok" : d.status === "missing" ? "need" : "bad",
+    `PDF reader — ${mb(d.bytes || 0)}`,
+    d.status === "ready" ? `Saved in this browser (pdf.js <code>${esc(d.version || "")}</code>) ✓`
+      : d.status === "missing" ? "Needed only to read a PDF programme. Mozilla's pdf.js, from this site, checked against its SHA-256."
+      : d.status === "error" ? `Could not be checked: ${esc(d.error || "")}`
+      : `Your saved copy is out of date; the current one is <code>${esc(d.version || "")}</code>.`,
+    d.status === "ready" ? "" : `<button type="button" id="setup_pdfjs">${d.status === "missing" ? "Download" : "Update"} (${mb(d.bytes || 0)})</button>`);
+
+  const [what, cls, detail] = MODEL_WORDS[setup.model] || ["unknown", "bad", `Chrome answered <code>${esc(String(setup.model))}</code>.`];
+  line(cls, "Chrome's built-in model",
+    `${detail}${cls === "ok" ? "" : ` <em>(${what})</em>`}`,
+    setup.model === "downloadable" ? `<button type="button" id="setup_model">Download it</button>` : "");
+
+  $("setup_list").innerHTML = rows.join("");
+
+  // The two site downloads and folder access are what the shoot cannot proceed
+  // without. The model is advisory: without it badges are marked by hand.
+  const ready = canPickFolder && setup.faces.status === "ready" && setup.pdfjs.status === "ready";
+  stepState("step_setup", ready ? "done" : "");
+  stepState("step_folder", ready ? "" : "waiting");
+  $("pick").disabled = !canPickFolder;
+  $("setup_all").disabled = ready && setup.model !== "downloadable";
+  renderBlockers();
+}
+
+function renderBlockers() {
   const out = [];
   if (!canPickFolder) out.push(`<div class="blocker"><p><strong>This browser cannot rename files in your folder.</strong>
-    Renaming needs the File System Access API, which only Chrome and Edge have, on desktop.
-    Firefox and Safari do not support it on any platform.</p>
-    <p>You can still look around, but step 1 will not work here.</p></div>`);
-  if (!modelUsable) out.push(`<div class="blocker warn"><p><strong>No built-in model in this browser${
-    String(avail).startsWith("error") ? ` (${esc(avail)})` : ""}.</strong> Badges will not be read automatically.</p>
-    <p>It needs Chrome 148 or newer on a desktop, with the hardware listed in About.
-    Everything else still works: mark the badge frames yourself in step 3 and type the names.</p></div>`);
-  else if (avail === "downloadable") out.push(`<div class="blocker warn"><p><strong>Chrome has not downloaded
-    the model yet.</strong> The first scan will fetch it, once. It is Chrome's download, not ours, and
-    needs a connection and free disk space — see About.</p></div>`);
+    Renaming needs the File System Access API, which only Chrome and Edge have, on desktop.</p>
+    <p>You can look around, but the filing step will not work here.</p></div>`);
+  if (setup && ["unavailable", "absent"].includes(setup.model))
+    out.push(`<div class="blocker warn"><p><strong>No usable built-in model on this device.</strong>
+      Badges will not be read for you, and a programme's names cannot be matched to faces automatically.</p>
+      <p>Everything else still works: mark the badge frames yourself in step 4 and type the names.</p></div>`);
   $("blockers").innerHTML = out.join("");
 }
+
+async function withSetupProgress(label, fn) {
+  const bar = $("setup_bar"); bar.hidden = false;
+  const fill = bar.firstElementChild;
+  fill.style.width = "0%";
+  try {
+    await fn((done, total) => { fill.style.width = `${Math.round((done / Math.max(1, total)) * 100)}%`; });
+  } catch (err) {
+    $("setup_list").innerHTML += row(`Could not get ${label}`, esc(`${err.name}: ${err.message}`), true);
+  } finally {
+    bar.hidden = true;
+    await readSetup(); renderSetup();
+  }
+}
+
+const getFaces = () => withSetupProgress("the face models", p => faces.save(p));
+const getPdfjs = () => withSetupProgress("the PDF reader", p => doc.save(p));
+const getModel = () => withSetupProgress("Chrome's model", async report => {
+  await downloadModel(f => report(f, 1));
+});
+
+$("setup_list").addEventListener("click", e => {
+  const id = e.target.id;
+  if (id === "setup_faces") getFaces();
+  else if (id === "setup_pdfjs") getPdfjs();
+  else if (id === "setup_model") getModel();
+});
+$("setup_recheck").addEventListener("click", async () => { await readSetup(); renderSetup(); });
+$("setup_all").addEventListener("click", async () => {
+  $("setup_all").disabled = true;
+  if (setup.faces.status !== "ready") await getFaces();
+  if (setup.pdfjs.status !== "ready") await getPdfjs();
+  if (setup.model === "downloadable") await getModel();
+  $("setup_all").disabled = false;
+});
 
 // ---- step 1: the folder ----
 async function useDirectory(handle, isDemo = false) {
@@ -102,7 +193,7 @@ async function useDirectory(handle, isDemo = false) {
   $("folder_info").innerHTML = base;
   stepState("step_folder", "done"); stepState("step_scan", "");
   $("scan").disabled = !nanoPresent();
-  $("scan_from").value = "1";
+
   // Only a real folder is worth remembering; the sample is rebuilt on demand.
   if (!isDemo) try { await store.set("lastDir", handle); } catch (_) { /* some builds refuse to clone handles */ }
   // Anything already identified on a previous visit is reused straight away.
@@ -120,8 +211,11 @@ $("pick").addEventListener("click", async () => {
     if (err.name !== "AbortError") $("folder_info").innerHTML = row("Could not open that folder", esc(`${err.name}: ${err.message}`), true);
   }
 });
-$("demo").addEventListener("click", async () => {
-  const btn = $("demo"), orig = btn.textContent;
+// Only reachable with ?sample=1. It exists so the whole pipeline, renaming
+// included, can be driven end to end in a test without a camera or a real folder.
+if (new URLSearchParams(location.search).get("sample") === "1") $("sample").hidden = false;
+$("sample").addEventListener("click", async () => {
+  const btn = $("sample"), orig = btn.textContent;
   btn.disabled = true;
   try {
     $("folder_info").innerHTML = row("Sample shoot", "Building it in private storage…");
@@ -173,7 +267,8 @@ function scanCell(p, i) {
   const cls = id.kind === "identity" ? "identity" : p.id ? "" : "pending";
   const label = id.kind === "identity" ? (id.full_name || "badge — no name read")
     : id.kind === "portrait" ? "portrait" : id.kind === "unreadable" ? "could not read" : p.id ? "other" : "—";
-  return `<figure class="${cls}" data-i="${i}">`
+  const tip = id.kind === "identity" ? "Click: this is not a badge" : "Click: mark this a badge";
+  return `<figure class="${cls}" data-i="${i}" title="${esc(p.name)} — ${tip}">`
     + `<img src="${thumbs.get(p.name) || ""}" alt="">`
     + `<figcaption>${hhmm(p.time.local)} ${esc(label)}</figcaption></figure>`;
 }
@@ -181,15 +276,27 @@ function renderScanGrid() {
   $("scan_grid").innerHTML = photos.map(scanCell).join("");
 }
 
+// Checking the badges is required, so correcting one has to be possible right
+// here rather than only later in the review.
+$("scan_grid").addEventListener("click", e => {
+  const fig = e.target.closest("figure[data-i]");
+  if (!fig) return;
+  const p = photos[+fig.dataset.i];
+  if (!p) return;
+  setIdentity(p, !(p.id && p.id.kind === "identity"));
+  renderScanGrid();
+  renderReview();
+});
+
 $("scan").addEventListener("click", async () => {
-  const from = Math.max(1, Math.min(photos.length, parseInt($("scan_from").value, 10) || 1));
+
   stopping = false;
   $("scan").disabled = true; $("stop").hidden = false; $("scan_bar").hidden = false;
   const bar = $("scan_bar").firstElementChild;
   let read = 0, fromCache = 0, failed = 0;
   try {
     await ensureSession(p => { $("scan_info").innerHTML = row("Model", `Downloading… ${Math.round(p * 100)}%`); });
-    for (let i = from - 1; i < photos.length; i++) {
+    for (let i = 0; i < photos.length; i++) {
       if (stopping) break;
       const p = photos[i];
       bar.style.width = `${Math.round(((i + 1) / photos.length) * 100)}%`;
@@ -255,8 +362,15 @@ function shotCell(p, isBadge) {
     + `<button type="button" class="mini mark" data-name="${esc(p.name)}" data-on="${isBadge ? "0" : "1"}">`
     + `${isBadge ? "not a badge" : "badge"}</button></div>`;
 }
+// Minutes in the box, in milliseconds. 0 or blank turns gap-splitting off, so a
+// shoot where every person really does have a badge behaves as it did before.
+function gapMs() {
+  const mins = parseFloat($("gap_mins").value);
+  return Number.isFinite(mins) && mins > 0 ? Math.round(mins * 60000) : 0;
+}
+
 function renderReview() {
-  grouped = groupPhotos(photos);
+  grouped = groupPhotos(photos, { gapMs: gapMs() });
   const { groups, leading } = grouped;
   const named = groups.filter(g => g.person).length;
   const unnamed = groups.length - named;
@@ -287,12 +401,24 @@ function renderReview() {
       <div class="shots">${leading.map(p => shotCell(p, false)).join("")}</div></div>` : "";
   $("review").innerHTML = lead + cards || `<p class="none">Nothing to show yet.</p>`;
 
-  const canApply = named > 0;
+  // Nothing is filed until the badges have been looked at. The grouping rests on
+  // them, badges are only a suggestion, and not everyone has one — so this is a
+  // deliberate stop rather than a formality.
+  const checked = $("badges_ok").checked;
+  const canApply = named > 0 && checked;
   $("apply").disabled = !canApply;
+  // Its own element: writing this into apply_info would wipe the result of a
+  // filing that has already happened.
+  $("apply_gate").innerHTML = named > 0 && !checked
+    ? row("Waiting on you", "Tick <em>I have looked through these and the badges are right</em> in step 4 before anything is renamed.", true)
+    : "";
   stepState("step_review", groups.length ? "done" : "");
   if (canApply) stepState("step_apply", "");
   renderReport();
 }
+
+$("gap_mins").addEventListener("change", () => { clearFaceCheck(); renderReview(); });
+$("badges_ok").addEventListener("change", renderReview);
 
 // Typing a name belongs to that group's badge frame, so regrouping keeps it.
 $("review").addEventListener("input", e => {
@@ -320,23 +446,16 @@ $("review").addEventListener("click", e => {
 // ---- faces: vectors, the same-person check, and matching to a document ----
 let faceVecs = new Map();   // photo name -> { vector, score }, or null when no face was found
 
+// Readiness only. Downloads belong to step 1, so a missing model here sends you
+// back there rather than starting a 19 MB fetch in the middle of the work.
 async function faceState() {
   const st = await faces.state();
-  const el = $("face_state");
-  el.hidden = false;
-  if (st.status === "ready") {
-    el.className = "lib-state ok";
-    el.innerHTML = `Face models saved (<code>${esc(st.release)}</code>, ${mb(st.bytes)}) ✓`;
-  } else if (st.status === "missing") {
-    el.className = "lib-state need";
-    el.innerHTML = `The face check needs ${mb(st.bytes)} of MediaPipe from this site, kept in this browser. `
-      + `<button type="button" id="face_get">Download (${mb(st.bytes)})</button>`;
-  } else {
-    el.className = "lib-state bad";
-    el.innerHTML = `Your saved face models (<code>${esc(st.old.join(", "))}</code>) are out of date — the current ones are `
-      + `<code>${esc(st.release)}</code>. <button type="button" id="face_get">Update (${mb(st.bytes)})</button>`;
-  }
-  return st.status === "ready";
+  if (st.status === "ready") { $("face_state").hidden = true; return true; }
+  $("face_state").hidden = false;
+  $("face_state").className = "lib-state need";
+  $("face_state").innerHTML = `The face models are not set up on this device. `
+    + `Finish <a href="#step_setup">step 1</a> first (${mb(st.bytes)}).`;
+  return false;
 }
 
 // Embed the biggest face in each headshot, skipping any already done.
@@ -404,20 +523,7 @@ async function runFaceCheck() {
   }
 }
 $("face_check").addEventListener("click", runFaceCheck);
-$("face_state").addEventListener("click", async e => {
-  if (!e.target || e.target.id !== "face_get") return;
-  e.target.disabled = true;
-  try {
-    await faces.save((done, total, name) => {
-      $("face_state").innerHTML = `Downloading ${esc(name)}… ${mb(done)} of ${mb(total)}`;
-    });
-    await faceState();
-    runFaceCheck();
-  } catch (err) {
-    $("face_state").className = "lib-state bad";
-    $("face_state").innerHTML = esc(`Download failed: ${err.message}`);
-  }
-});
+
 
 // ---- step 2: a programme or delegate list ----
 let roster = [];
@@ -428,66 +534,71 @@ $("doc_files").addEventListener("change", () => {
 
 async function pdfjsState() {
   const st = await doc.state();
-  const el = $("pdfjs_state");
-  el.hidden = false;
-  if (st.status === "ready") {
-    el.className = "lib-state ok";
-    el.innerHTML = `pdf.js saved (<code>${esc(st.version)}</code>, ${mb(st.bytes)}) ✓`;
-  } else {
-    el.className = st.status === "missing" ? "lib-state need" : "lib-state bad";
-    el.innerHTML = `${st.status === "missing" ? "Reading a PDF needs" : "Your saved pdf.js is out of date —"} `
-      + `${mb(st.bytes)} of Mozilla's pdf.js from this site. `
-      + `<button type="button" id="pdfjs_get">${st.status === "missing" ? "Download" : "Update"} (${mb(st.bytes)})</button>`;
-  }
-  return st.status === "ready";
+  if (st.status === "ready") return true;
+  $("doc_info").innerHTML = row("Not set up",
+    `Reading a PDF needs the PDF reader from <a href="#step_setup">step 1</a> (${mb(st.bytes)}).`, true);
+  return false;
 }
-$("pdfjs_state").addEventListener("click", async e => {
-  if (!e.target || e.target.id !== "pdfjs_get") return;
-  e.target.disabled = true;
-  try {
-    await doc.save((done, total, name) => {
-      $("pdfjs_state").innerHTML = `Downloading ${esc(name)}… ${mb(done)} of ${mb(total)}`;
-    });
-    await pdfjsState();
-    readDocuments();
-  } catch (err) {
-    $("pdfjs_state").className = "lib-state bad";
-    $("pdfjs_state").innerHTML = esc(`Download failed: ${err.message}`);
-  }
-});
 
 // Where a name came from decides how much it can be trusted, so it is always on
 // screen. A name printed in the document is the document's own text; a name from
 // the model is a suggestion that has been measured being confidently wrong.
-const PROVENANCE = {
-  "pdf-text": { label: "printed in the document", trust: "ok" },
-  "model": { label: "read by the model — check it", trust: "check" },
-};
+// How a name was arrived at, worst to best. Both of the middle two take the
+// string from the document, so neither can be invented — but only the top one
+// has been confirmed twice, and saying so is more use than a flat "from the
+// document" on every card.
+function nameNote(r) {
+  if (!r.name) return null;
+  if (r.disputed) return { cls: "warn", text: `${r.disputed} — both are printed on the page` };
+  if (r.unverified) return { cls: "warn", text: "read by the model from an image — check it" };
+  if (r.agreed) return { cls: "good", text: "model and layout agree ✓" };
+  if (r.byModel) return { cls: "", text: "the model matched it; the layout found no name here" };
+  if (r.byPlace) return { cls: "", text: "matched by where it is printed; the model was unsure" };
+  return { cls: "", text: "printed in the document" };
+}
 
 function renderRoster() {
   const named = roster.filter(r => r.name).length;
-  const printed = roster.filter(r => r.name && r.source === "pdf-text").length;
+  const agreed = roster.filter(r => r.agreed).length;
+  const disputed = roster.filter(r => r.disputed).length;
+  const oneWay = roster.filter(r => r.name && r.source === "document" && !r.agreed && !r.disputed).length;
   const guessed = roster.filter(r => r.name && r.unverified).length;
   $("doc_info").innerHTML =
       row("Faces found", `${roster.length}`, roster.length === 0)
     + row("With a name", `${named}`, named === 0 && roster.length > 0)
-    + (printed ? row("Taken from the page text", `${printed} — exact`) : "")
-    + (guessed ? row("Guessed by the model", `${guessed} — please check each one`, true) : "")
-    + (roster.length ? row("Next", "Correct any name by typing in it, then use “Name them from the document” in step 4.") : "");
+    + (agreed ? row("Model and layout agree", `${agreed}`) : "")
+    + (oneWay ? row("Only one of the two found a name", `${oneWay}`) : "")
+    + (disputed ? row("They disagree", `${disputed} — pick the right one`, true) : "")
+    + (guessed ? row("Read by the model, unverified", `${guessed} — please check each one`, true) : "")
+    + (roster.length ? row("Next", "Correct any name by typing in it, then use “Name them from the document” in step 5.") : "");
   $("roster").innerHTML = roster.map((r, i) => {
-    const p = r.name ? PROVENANCE[r.source] : null;
-    return `<div class="roster-item${r.name ? "" : " unreadable"}${r.unverified ? " unverified" : ""}">
+    const n = nameNote(r);
+    const note = n ? `<div class="meta-line ${n.cls}">${esc(n.text)}</div>` : "";
+    const alt = r.disputed && r.byPlace
+      ? `<button type="button" class="mini use-other" data-i="${i}">use “${esc(r.byPlace)}”</button>` : "";
+    return `<div class="roster-item${r.name ? "" : " unreadable"}${r.unverified || r.disputed ? " unverified" : ""}">
       <img src="${r.thumb}" alt="">
       <div class="who">
         <input type="text" class="roster-name" data-i="${i}" value="${esc(r.name)}"
                placeholder="${r.noCaption ? "no name printed for this face — type it"
                              : r.legible === false ? "no name read — type it" : "name"}">
         <div class="meta-line">page ${r.page} · face ${r.score.toFixed(2)}${r.organisation ? " · " + esc(r.organisation) : ""}</div>
-        ${p ? `<div class="meta-line ${p.trust === "check" ? "warn" : "good"}">${p.label}</div>` : ""}
+        ${note}${alt}
       </div></div>`;
   }).join("");
   if ($("name_from_doc")) $("name_from_doc").hidden = named === 0;
 }
+// Resolving a disagreement by taking the layout's answer instead.
+$("roster").addEventListener("click", e => {
+  const b = e.target.closest(".use-other");
+  if (!b) return;
+  const r = roster[+b.dataset.i];
+  if (!r) return;
+  r.name = r.byPlace;
+  delete r.disputed;
+  r.agreed = true;
+  renderRoster();
+});
 $("roster").addEventListener("input", e => {
   const el = e.target.closest(".roster-name");
   if (!el) return;
@@ -520,6 +631,19 @@ async function readDocuments() {
       }
       return sessErr ? { legible: false, error: sessErr.message } : readCaption(sess, canvas);
     };
+    // The picker is the normal path: it only ever chooses between names already
+    // taken from the page, so it cannot contribute a name of its own.
+    const picker = !nanoPresent() ? null : async (canvas, candidates) => {
+      if (!sess && !sessErr) {
+        try {
+          sess = await ensureSession(f => { $("doc_info").innerHTML = row("Model", `Downloading… ${Math.round(f * 100)}%`); });
+        } catch (err) {
+          sessErr = err;
+          $("doc_info").innerHTML = row("Matching", `the model is unavailable (${esc(err.message)}) — falling back to the printed layout`, true);
+        }
+      }
+      return sessErr ? { name: "" } : pickName(sess, canvas, candidates);
+    };
     roster = [];
     for (const [fi, file] of files.entries()) {
       $("doc_info").innerHTML = row("Reading", `${esc(file.name)} (${fi + 1} of ${files.length})`);
@@ -528,16 +652,21 @@ async function readDocuments() {
         $("doc_info").innerHTML = row("Rendering", `${esc(file.name)} — page ${n} of ${total}`);
       });
       const pages = out.pages;
-      const found = await doc.rosterFrom(pages, reader, st => {
-        $("doc_info").innerHTML = row(st.phase === "faces" ? "Finding faces" : "Reading names",
-          `${esc(file.name)} — page ${st.page} of ${st.totalPages}${st.done ? `, ${st.done} face(s)` : ""}`);
-      }, out.texts);
+      const found = await doc.rosterFrom(pages, {
+        texts: out.texts,
+        readName: reader,                      // only reached by a page with no text layer
+        pickName: picker,                      // chooses among that page's printed names
+        onProgress: st => {
+          $("doc_info").innerHTML = row(st.phase === "faces" ? "Finding faces" : "Matching names to faces",
+            `${esc(file.name)} — page ${st.page} of ${st.totalPages}${st.done ? `, ${st.done} face(s)` : ""}`);
+        },
+      });
       for (const r of found) roster.push({ ...r, key: `${fi}-${r.key}`, file: file.name });
       if (out.truncated)
         $("doc_info").innerHTML += row("Note", `only the first ${pages.length} of ${out.numPages} pages were read`, true);
     }
     if (!reader && roster.length)
-      roster.forEach(r => { if (r.source !== "pdf-text") r.legible = false; });
+      roster.forEach(r => { if (r.source !== "document") r.legible = false; });
     stepState("step_doc", roster.length ? "done" : "");
     renderRoster();
   } catch (err) {
@@ -735,7 +864,8 @@ $("install").addEventListener("click", async () => {
     navigator.serviceWorker.register("sw.js")
       .catch(err => console.warn("headshots: offline use unavailable —", err));
   }
-  checkRequirements();                        // not awaited: the model check is slow
+  renderSetup();                              // "checking…" until the slow model answer lands
+  readSetup().then(renderSetup);
   try {
     scanCache = (await store.get("scanCache")) || {};
     if (await store.get("lastDir")) $("reopen").hidden = false;

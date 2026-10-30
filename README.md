@@ -472,9 +472,11 @@ the badge before it, and renames them into a `done` folder.
 
 A document can be dropped in first (a programme, delegate list or press pack).
 Each person in it becomes a roster entry carrying a face, so a headshot whose
-badge was missed can be named by matching faces rather than by typing. Names in a
-PDF are taken from the document's **own text layer**, not from a model — see
-*Building a roster from a document* below for the measurement that forced that.
+badge was missed can be named by matching faces rather than by typing.
+
+Everything the tool needs is settled in **step 1** before a folder is chosen —
+the two site downloads and Chrome's own model are checked and fetched there, so
+nothing interrupts a shoot halfway through.
 
 Why a subdirectory and not one `.html` at the root: a service worker can only
 control its own folder and below, and GitHub Pages cannot send the
@@ -486,16 +488,44 @@ IndexedDB, so nothing it does can affect the other four pages.
 
 | File | What |
 | :-- | :-- |
-| `index.html`, `app.js`, `app.css` | The app and its UI wiring |
+| `index.html`, `app.js`, `app.css` | The app and its UI wiring, including step 1's dependency checks |
 | `shoot.js` | Listing a folder, grouping by badge, renaming and moving — DOM-free, so it is testable |
 | `exif.js` | Capture time from a JPEG's EXIF, no dependency; falls back to the file date |
 | `identify.js` | Reading a name off a badge with the Prompt API (Gemini Nano) |
 | `faces.js` | Checking a run of headshots really is one person: face crop → embedding → cosine similarity |
 | `doc.js` | Building a roster from a document: PDF → page images + text layer → faces → the name printed with each |
-| `demo.js` | A sample shoot — drawn badges and stand-in portraits, with EXIF spliced in |
+| `demo.js` | A sample shoot for testing — drawn badges and stand-in portraits, with EXIF spliced in. Reachable at `index.html?sample=1`, and used for `check.html`'s fixtures |
 | `db.js` | A key/value corner of IndexedDB, so a shoot survives closing the tab |
 | `sw.js`, `manifest.webmanifest`, `icon-*.png` | PWA shell: offline cache, install metadata, icons |
 | `check.html` | What this browser supports, plus a self-test of the renaming |
+
+### Step 1: everything settled in advance
+
+Dependencies used to be fetched where they were first needed, which meant a
+19 MB MediaPipe download appearing at the *face check*, a 1.7 MB pdf.js download
+appearing when a PDF was dropped in, and Chrome's model downloading on the first
+badge scan. That is three interruptions in the middle of the work, and the last
+one could fail on a machine that had never been checked.
+
+Step 1 now reports all of it at once and fetches it on request, so a machine can
+be prepared before an event rather than during one:
+
+| | Size | Needed for |
+| :-- | :-- | :-- |
+| Renaming files in your folder | — | a browser capability, not a download |
+| Face models (MediaPipe runtime, detector, embedder) | 19.2 MB | finding and comparing faces, reading a programme |
+| PDF reader (Mozilla's pdf.js) | 1.72 MB | reading a PDF programme |
+| Chrome's built-in model | Chrome's own (~2 GB) | reading badges, matching names to faces |
+
+*Set everything up* does the three in sequence; each row also has its own button,
+and *Check again* re-reads the state. Nothing downstream asks for a download any
+more — a missing dependency there links back to step 1 instead.
+
+The first three are hard requirements for a shoot and gate step 2. The model is
+**advisory**: some devices genuinely cannot run it, and without it badges are
+marked by hand and names typed, which the blocker at the top of the page says
+plainly. Triggering Chrome's download needs a user gesture, so `downloadModel()`
+creates a session purely to start the fetch and destroys it again.
 
 ### The grouping rule
 
@@ -505,9 +535,27 @@ order matters, so a camera clock that is wrong is harmless.
 
 An identity frame always starts a new person — **including an unreadable one**,
 because the photographer has moved on, so the frames after it must never be filed
-under the previous person; it simply asks for a name. Photos before the first
-badge cannot be attributed and are left where they are, as is any person still
-without a name.
+under the previous person; it simply asks for a name.
+
+**Badges are not guaranteed, so they cannot be the only thing that separates
+people.** Plenty of subjects are photographed without one, and a badge can be
+unreadable or simply missed. Relying on badges alone merged everyone after an
+unbadged person into whoever came before them. So a new person starts at a badge
+**or** after a gap in the capture times longer than the operator's setting
+(default 2 minutes): walking one subject off and the next one on leaves exactly
+that gap, while consecutive frames of one person do not. The gap is the
+operator's to set because it is a property of how they work, and `gapMs: 0`
+restores badge-only behaviour. A gap before the first person does not invent one —
+there is nobody yet to split from.
+
+Badges are a **suggestion that has to be checked**. Step 4 shows every photo,
+any of which can be clicked to mark it a badge or not, and filing stays blocked
+until *"I have looked through these and the badges are right"* is ticked. That is
+a deliberate stop, not a formality: the whole grouping rests on it. The face
+check in step 5 then flags any group that still holds more than one person.
+
+Photos before the first badge or gap cannot be attributed and are left where they
+are, as is any person still without a name.
 
 Filing writes `<Name> 01.jpg`, `<Name> 02.jpg`, … into `done/`, with the badge
 frame as `<Name> - badge.jpg`. Numbering continues past whatever is already
@@ -565,11 +613,20 @@ Each page is rendered to an image by Mozilla's pdf.js (our vendored copy), every
 face on it is found, and the name printed with that face is attached to it. Images
 and screenshots are accepted too and used as a single page.
 
-**Names come from the PDF's own text layer, not from a model.** This is the whole
-reason the step can be trusted, and it was not the first design. Reading the
-caption with Chrome's built-in model was tried and measured failing three
-different ways on one test programme whose real guests were Anthony Wonke, Ashley
-Walters, Adam Pearson and Bella Ramsey:
+Two different jobs are involved here, and conflating them is what went wrong
+first:
+
+| | Done by | Why |
+| :-- | :-- | :-- |
+| **Where the words are** | the PDF's own text layer | verbatim, exact, free, unfakeable |
+| **Which face they belong to** | the on-device model | it is a judgement about a picture, which is what a model is for |
+
+The model does the matching, and **cannot contribute a name of its own**: it is
+given the page's names as a closed list and a response schema whose `enum`
+admits nothing else, so an invented name is unrepresentable rather than merely
+discouraged. That matters because free-text reading was measured failing three
+ways on one test programme whose real guests were Anthony Wonke, Ashley Walters,
+Adam Pearson and Bella Ramsey:
 
 | Attempt | Result |
 | :-- | :-- |
@@ -582,11 +639,35 @@ every word of the name must appear in the model's own transcription of the
 image; once the model wrote the transcription to match the name it had invented,
 the guard passed every hallucination. **A model's output cannot be audited
 against the same model's output** — it had only ever worked by luck, when the
-model happened to leave the transcription honest. The text layer can audit it,
-because it is the document's own bytes.
+model happened to leave the transcription honest.
 
-So `captionFor()` matches text to faces by position instead. It takes the page's
-text runs with their rendered boxes (`page.getTextContent()`, mapped through the
+The conclusion was not "don't use the model", it was "don't let it supply the
+strings". Asked to *choose* among names the document itself prints, it has
+nothing to invent with, and the enum enforces that in the protocol rather than
+in a check afterwards.
+
+Position is still worked out, independently, as a second opinion. The two
+normally agree; where they disagree the face is **flagged for a human** with both
+candidates offered, rather than resolved silently. Because both answers come from
+the page's own text, a disagreement is only ever about *which* printed name is
+right — never about a fabricated one. Each card says which way its name was
+arrived at, because "both methods agree" is worth more than either alone.
+
+Two details of what the model is shown matter, and both came from watching it
+decline:
+
+- **Its crop is measured against the page, not the face**, for the same reason
+  the positional reach is. On the first run it answered `(none)` for the two
+  smallest faces — correctly, since their crops stopped short of the caption. The
+  enum had done its job: with nothing to read it declined instead of inventing.
+- **The face being asked about is outlined in the crop**, and the prompt refers to
+  that outline. A crop generous enough to contain the caption is also generous
+  enough to contain a neighbour's photograph, which makes "the face in the middle"
+  untrue.
+
+`namesOn()` collects the candidate list: every name-shaped line on the page.
+`captionFor()` computes the positional second opinion. It takes the page's text
+runs with their rendered boxes (`page.getTextContent()`, mapped through the
 viewport transform), groups them into lines, and for each face picks the nearest
 line below it that sits in the same column and reads like a name. Four rules,
 each one measured rather than guessed:
@@ -619,14 +700,16 @@ Adam Pearson, Bella Ramsey — in 69 ms, with no model loaded at all. The two
 spurious low-confidence detections inside the event photographs are dropped by a
 0.5 confidence floor, which a printed portrait comfortably clears.
 
-A face with no caption anywhere near it is reported as having none. The model is
-**not** consulted as a fallback on a page that has a text layer, because a page
-whose text we can read and which still has no name for this face genuinely has
-no name for it; asking would only invent one.
+A face that neither method can name is reported as having no caption, and a page
+with a text layer but no name-shaped line in it is never handed to the free-text
+reader — there is nothing on such a page to attribute, so asking would only
+invent something.
 
-Scans and screenshots have no text layer, and there the model is the only option.
-Those names are returned marked `unverified` and have to be confirmed by hand —
-the finding above is exactly why they are not treated as facts.
+Scans and screenshots have no text layer at all, so there is no candidate list to
+choose from and the model has to read after all. Those names come back marked
+`unverified`, render as *"read by the model — check it"*, and step 2 says on the
+page that the model has been caught inventing names. The finding above is exactly
+why they are not treated as facts.
 
 Face detection on a page needed its own fix. The detector scales whatever it is
 given down to its own small input, so a portrait that is small within a big page
@@ -647,30 +730,42 @@ overlapping tiles (760px, 25% overlap) and de-duplicates by box overlap.
   or 16 GB RAM with 4+ cores. The model is Chrome's, downloaded once on first
   use — we ship nothing. Output is constrained with `responseConstraint`
   (JSON Schema, Chrome 137+) so the answer is parsed, not interpreted.
-- **Without the model it still works**: mark the badge frames by hand in step 3
-  and type the names. The requirement is reported on the page, not hidden.
+- **Without the model it still works**: mark the badge frames by hand in step 4
+  and type the names. Step 1 says so before you start, rather than failing later.
 - **Nothing is uploaded.** Chrome's own documentation states no data is sent to
   Google or any third party when using the model. The single network call is the
   Wikipedia look-up in the report, behind a button, which sends only the names —
   and reports which of those articles have **no photo**, which is the point of the
   rest of this site.
-- **It reads what is written on a badge.** It does not recognise faces and does
-  not identify anyone from their appearance, matching the promise on the score page.
+- **It reads what is written on a badge, and picks between names a document
+  already prints.** It does not recognise faces and does not identify anyone from
+  their appearance, matching the promise on the score page. Face comparison is
+  only ever used to ask whether two photos in the same job look like the same
+  person.
 
 ### Trying and testing it
 
-**Try with sample photos** builds a shoot in the browser's private storage — two
-drawn badges with real text and six stand-in portraits, each with EXIF spliced in
-— so every step including the renaming can be exercised without going near a real
-photo. It also works in Firefox and Safari, which otherwise cannot pick a folder.
+The sample shoot — two drawn badges with real text and six stand-in portraits,
+each with EXIF spliced in — builds in the browser's private storage, so every
+step including the renaming can be exercised without going near a real photo. It
+is **a testing hook, not a feature**: the button only appears at
+`index.html?sample=1`, because it was clutter in a tool whose users have their
+own photos. `check.html` uses the same builder for its fixtures.
 
 `check.html` reports what the browser supports and runs an 18-assertion self-test
 of the pipeline against that private storage: EXIF ordering, grouping, the native
 `move()`, numbering continuation, and filename safety. Measured 2026-10-30 in
-Chrome 156: **all 18 pass**, plus **20 end-to-end assertions** driving the app
-itself through the sample shoot to renamed files and a Wikipedia verdict. It also
-has panels to run the face comparison, the document roster and the badge reading
-on your own files, which is how each of the findings above was measured.
+Chrome 156:
+
+| Suite | Assertions | Covers |
+| :-- | :-- | :-- |
+| `check.html` self-test | **18/18** | EXIF ordering, badge grouping, native `move()`, numbering, filename safety |
+| End-to-end, driving the app | **26/26** | step 1's downloads, the sample shoot, hand-marked badges, the face check, the badge-confirmation gate, filing, the report, the Wikipedia look-up |
+| `groupPhotos` gap rules (Node) | **12/12** | badges only, gaps only, mixed badged/unbadged, a gap before the first person, gap splitting off |
+
+`check.html` also has panels to run the face comparison, the document roster and
+the badge reading on your own files, which is how each of the findings above was
+measured.
 
 **The model has now been run** (2026-10-30, Chrome 156, a headless test profile
 that downloaded it) and the result changed the design. Asked to read names off

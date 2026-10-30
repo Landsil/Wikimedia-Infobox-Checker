@@ -62,7 +62,7 @@
 <script type="module">
 import { captureTime, exifDate } from "./exif.js";
 import { listPhotos, groupPhotos, applyGroups, safeName, stemFor, DONE_DIR } from "./shoot.js";
-import { nanoPresent, nanoAvailability, createSession, identify, readCaption as identifyCaption, forModel, ANALYSIS_EDGE } from "./identify.js";
+import { nanoPresent, nanoAvailability, createSession, identify, readCaption as identifyCaption, pickName, forModel, ANALYSIS_EDGE } from "./identify.js";
 import * as faces from "./faces.js";
 import * as doc from "./doc.js";
 import { withExif } from "./demo.js";
@@ -314,6 +314,13 @@ $("run_doc").addEventListener("click", async () => {
       }
       return sessErr ? { legible: false, error: sessErr.message } : identifyCaption(session, c);
     };
+    const picker = !nanoPresent() ? null : async (c, candidates) => {
+      if (!session && !sessErr) {
+        try { session = await createSession(f => { out.textContent = `Downloading the model… ${Math.round(f * 100)}%\n`; }); }
+        catch (err) { sessErr = err; log(`names cannot be matched: ${err.message}`); }
+      }
+      return sessErr ? { name: "" } : pickName(session, c, candidates);
+    };
     if (!nanoPresent()) log("no built-in model in this browser — faces only, names blank");
     const all = [];
     for (const f of files) {
@@ -325,16 +332,22 @@ $("run_doc").addEventListener("click", async () => {
       out.textContent = out.textContent.replace(/\n  rendering.*$/, "");
       log(`  ${pages.length} page(s) rendered, ${pages[0].width}x${pages[0].height}px, in ${Math.round(performance.now() - t0)} ms`);
       if (res.truncated) log(`  (only the first ${pages.length} of ${res.numPages} pages)`);
-      const found = await doc.rosterFrom(pages, reader, st => {
-        out.textContent = out.textContent.replace(/\n  working.*$/, "") + `\n  working: ${st.phase} page ${st.page}/${st.totalPages}`;
-      }, texts);
+      log(`  candidate names: ${texts.map((t, i) => `page ${i + 1} [${doc.namesOn(t).join(" | ")}]`).join("; ")}`);
+      const found = await doc.rosterFrom(pages, {
+        texts, readName: reader, pickName: picker,
+        onProgress: st => {
+          out.textContent = out.textContent.replace(/\n  working.*$/, "") + `\n  working: ${st.phase} page ${st.page}/${st.totalPages}`;
+        },
+      });
       out.textContent = out.textContent.replace(/\n  working.*$/, "");
       log(`  ${found.length} face(s) found`);
       for (const r of found) {
         log(`    page ${r.page} face ${r.score.toFixed(2)}  name: ${r.name || "(none read)"}`
           + `${r.organisation ? "  org: " + r.organisation : ""}`
-          + `  [${r.source || "?"}${r.unverified ? ", UNVERIFIED" : ""}${r.noCaption ? ", no caption on the page" : ""}]`
-          + `${r.tried ? `  (cut-out ${r.tried}x)` : ""}`);
+          + `  [${r.source || "?"}${r.agreed ? ", agreed" : ""}${r.unverified ? ", UNVERIFIED" : ""}`
+          + `${r.noCaption ? ", no caption on the page" : ""}]`
+          + `${r.disputed ? `\n      DISPUTED: ${r.disputed}` : ""}`
+          + `${r.byModel || r.byPlace ? `\n      model: ${r.byModel || "(none)"}   layout: ${r.byPlace || "(none)"}` : ""}`);
         if (r.rejected) log(`      REJECTED: ${r.rejected}`);
         if (r.textSeen) log(`      text read: ${JSON.stringify(r.textSeen.slice(0, 150))}`);
         if (r.error) log(`      error: ${r.error}`);

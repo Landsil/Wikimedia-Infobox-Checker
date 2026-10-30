@@ -6,19 +6,30 @@
 // vector, so a headshot with no badge can still be matched to a name — by
 // comparing faces within this one job, never against any database.
 //
-// Names come from the PDF's own text layer wherever there is one, matched to a
-// face by position. That is the whole reason this is trustworthy. Asking the
-// model to read the caption instead was measured doing something much worse than
-// failing: given a cut-out that did not actually contain the caption, it returned
-// four confident, completely invented names — "Denzel Washington", "Steve
-// McQueen", "Stephen Fry", "Emerald Fennell" for a page whose real guests were
-// Anthony Wonke, Ashley Walters, Adam Pearson and Bella Ramsey — and, asked to
-// transcribe what it had read, invented a transcription agreeing with each name.
-// A check against the same model call therefore cannot catch this. The text layer
-// can, because it is the document's own bytes.
+// The two jobs here are deliberately separated, because conflating them is what
+// went wrong first.
 //
-// Scans and screenshots have no text layer, so there the model is the only option.
-// Those names are returned marked `unverified` and must be confirmed by a human.
+//   Where the words are  — the PDF's own text layer. Verbatim, exact, free.
+//   Which face they go with — the model, choosing from exactly those words.
+//
+// Asking the model to *read* the caption was measured doing something worse than
+// failing: given a cut-out that did not contain the caption, it returned four
+// confident, invented names — "Denzel Washington", "Steve McQueen", "Stephen
+// Fry", "Emerald Fennell" for a page whose real guests were Anthony Wonke, Ashley
+// Walters, Adam Pearson and Bella Ramsey — and, asked to transcribe what it had
+// read, invented a transcription agreeing with each name. A check against the
+// same model call cannot catch that.
+//
+// Deciding *which* printed name belongs to a face is a different question, and
+// one the model is good at. It is asked with the page's names as a closed list
+// and a schema whose enum admits nothing else, so invention is unrepresentable
+// rather than merely discouraged. Position is worked out independently and the
+// two are compared: they normally agree, and a disagreement is flagged for a
+// human instead of being resolved silently. Both answers are the document's own
+// text either way, so a disagreement is about which name, never a made-up one.
+//
+// Scans and screenshots have no text layer, so there the model has to read after
+// all. Those names are returned marked `unverified`.
 //
 // PDFs are rendered with Mozilla's pdf.js from our vendored copy; images are used
 // as they are, so a screenshot or an exported page needs no download at all.
@@ -228,6 +239,45 @@ export function linesOf(items) {
   return out.sort((a, b) => a.y - b.y || a.x - b.x);
 }
 
+// The cut-out shown to the picker. Measured against the page, for the same reason
+// captionFor() is: in face-heights, a small face's crop stopped short of its
+// caption and the model — correctly — answered "none" rather than guess. It
+// declined on two of four faces on the test page for exactly that reason.
+//
+// A crop generous enough to hold the caption can also hold a neighbour's face, so
+// the one being asked about is outlined and the prompt refers to the outline.
+// That is more reliable than "the face in the middle", which a tall crop makes
+// untrue.
+const PICK_SIDES = 0.22;            // half-width, as a share of the page width
+const PICK_MARK = "#ff2d55";
+const PICK_MARK_WIDTH = 6;
+
+function pickCut(pageCanvas, box) {
+  const half = Math.max(box.width * CUT_SIDES, pageCanvas.width * PICK_SIDES);
+  const cx = box.originX + box.width / 2;
+  const x0 = Math.max(0, cx - half);
+  const x1 = Math.min(pageCanvas.width, cx + half);
+  const y0 = Math.max(0, box.originY - box.height * CUT_ABOVE);
+  const y1 = Math.min(pageCanvas.height,
+    box.originY + box.height + pageCanvas.height * PAGE_REACH);
+  const w = Math.max(1, Math.round(x1 - x0)), h = Math.max(1, Math.round(y1 - y0));
+  const c = document.createElement("canvas");
+  c.width = w; c.height = h;
+  const g = c.getContext("2d", { alpha: false });
+  g.drawImage(pageCanvas, x0, y0, w, h, 0, 0, w, h);
+  g.strokeStyle = PICK_MARK;
+  g.lineWidth = PICK_MARK_WIDTH;
+  g.strokeRect(box.originX - x0 - PICK_MARK_WIDTH / 2, box.originY - y0 - PICK_MARK_WIDTH / 2,
+               box.width + PICK_MARK_WIDTH, box.height + PICK_MARK_WIDTH);
+  return c;
+}
+
+// Every name-shaped line on a page — the closed list the model must choose from.
+export function namesOn(items) {
+  if (!items || !items.length) return [];
+  return [...new Set(linesOf(items).filter(l => looksLikeName(l.text)).map(l => l.text))];
+}
+
 // Does a line read like a person's name, rather than a heading or a job title?
 // Two or more words, every one capitalised, no digits.
 const looksLikeName = t => /^[^\d]+$/.test(t) && t.split(/\s+/).filter(Boolean).length >= 2
@@ -288,7 +338,8 @@ function faceThumb(pageCanvas, box, size = 96) {
 // Find every portrait in the rendered pages and read the name printed with it.
 // `readName` is injected (the Nano caption reader) so this module stays testable
 // without a model: pass null and the faces come back unnamed, ready to be typed in.
-export async function rosterFrom(pages, readName, onProgress, texts = []) {
+export async function rosterFrom(pages, opts = {}) {
+  const { readName = null, pickName = null, onProgress = null, texts = [] } = opts;
   await faces.load();
   const out = [];
   let n = 0;
@@ -306,18 +357,40 @@ export async function rosterFrom(pages, readName, onProgress, texts = []) {
         thumb: faceThumb(page, f.box),
         name: "", organisation: "", legible: null,
       };
-      // The document's own text, where it has any: exact, free and unfakeable.
-      const printed = captionFor(texts[pageIndex], f.box, page.width, page.height);
-      if (printed) {
-        entry.name = printed.name;
-        entry.organisation = printed.organisation;
-        entry.legible = true;
-        entry.source = "pdf-text";
-      } else if (texts[pageIndex] && texts[pageIndex].length) {
-        // There is a text layer and nothing matched this face, so there is
-        // genuinely no caption for it. Guessing with the model here would only
-        // invent one.
-        entry.source = "pdf-text";
+      const items = texts[pageIndex];
+      const candidates = namesOn(items);
+      if (candidates.length) {
+        // Two independent answers from the same verified vocabulary.
+        const printed = captionFor(items, f.box, page.width, page.height);
+        let picked = null;
+        if (pickName) {
+          if (onProgress) onProgress({ phase: "names", page: pageIndex + 1, totalPages, done: n });
+          picked = await pickName(pickCut(page, f.box), candidates);
+        }
+        const byModel = picked && picked.name ? picked.name : "";
+        const byPlace = printed ? printed.name : "";
+        entry.byModel = byModel;
+        entry.byPlace = byPlace;
+        entry.organisation = printed ? printed.organisation : "";
+        entry.source = "document";
+        if (byModel && byPlace && byModel !== byPlace) {
+          // Both are printed on the page, so this is a question of which — never
+          // of a fabricated name. A human decides.
+          entry.name = byModel;
+          entry.disputed = `the model says ${byModel}, the layout says ${byPlace}`;
+          entry.legible = true;
+        } else if (byModel || byPlace) {
+          entry.name = byModel || byPlace;
+          entry.agreed = !!(byModel && byPlace);
+          entry.legible = true;
+        } else {
+          entry.noCaption = true;
+          if (picked && picked.error) entry.error = picked.error;
+        }
+      } else if (items && items.length) {
+        // A text layer with no name-shaped line in it: there is nothing on this
+        // page to attribute, and asking the model to read would only invent one.
+        entry.source = "document";
         entry.noCaption = true;
       } else if (readName) {
         // Widen the cut-out until a name survives the transcription check. The
