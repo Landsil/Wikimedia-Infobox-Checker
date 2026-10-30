@@ -252,14 +252,19 @@ const PICK_SIDES = 0.22;            // half-width, as a share of the page width
 const PICK_MARK = "#ff2d55";
 const PICK_MARK_WIDTH = 6;
 
-function pickCut(pageCanvas, box) {
-  const half = Math.max(box.width * CUT_SIDES, pageCanvas.width * PICK_SIDES);
+function pickCut(pageCanvas, box, pitch) {
+  // One column wide where the page says how wide a column is. A crop spanning
+  // two columns puts a neighbour's portrait and caption in front of the model,
+  // and no amount of outlining reliably beats that.
+  const half = pitch && pitch.col ? pitch.col * 0.5
+    : Math.max(box.width * CUT_SIDES, pageCanvas.width * PICK_SIDES);
+  const down = Math.min(pageCanvas.height * PAGE_REACH,
+    pitch && pitch.row ? pitch.row * 0.9 : Infinity);
   const cx = box.originX + box.width / 2;
   const x0 = Math.max(0, cx - half);
   const x1 = Math.min(pageCanvas.width, cx + half);
   const y0 = Math.max(0, box.originY - box.height * CUT_ABOVE);
-  const y1 = Math.min(pageCanvas.height,
-    box.originY + box.height + pageCanvas.height * PAGE_REACH);
+  const y1 = Math.min(pageCanvas.height, box.originY + box.height + down);
   const w = Math.max(1, Math.round(x1 - x0)), h = Math.max(1, Math.round(y1 - y0));
   const c = document.createElement("canvas");
   c.width = w; c.height = h;
@@ -270,6 +275,40 @@ function pickCut(pageCanvas, box) {
   g.strokeRect(box.originX - x0 - PICK_MARK_WIDTH / 2, box.originY - y0 - PICK_MARK_WIDTH / 2,
                box.width + PICK_MARK_WIDTH, box.height + PICK_MARK_WIDTH);
   return c;
+}
+
+// ---- the document's own grid ----
+// Fractions of the page were the wrong unit. Tuned on a two-column programme,
+// SAME_COLUMN = 0.12 of the page width is wider than a column in a four-column
+// cast sheet, so the window straddled the neighbour; and a 0.22 half-width gave
+// the model a crop two columns wide, which is how one person's name came back for
+// three different faces. Measuring the pitch off the page's own captions costs
+// nothing and adapts to any layout.
+const median = xs => { const a = [...xs].sort((x, y) => x - y); return a.length ? a[Math.floor(a.length / 2)] : 0; };
+const centreOf = l => (l.x + l.right) / 2;
+
+function nameBands(items) {
+  const bands = [];
+  for (const l of linesOf(items).filter(l => looksLikeName(l.text)).sort((a, b) => a.y - b.y)) {
+    const b = bands.find(b => Math.abs(b.y - l.y) <= Math.max(4, l.h * 0.8));
+    if (b) b.lines.push(l); else bands.push({ y: l.y, lines: [l] });
+  }
+  return bands;
+}
+
+// Spacing between captions across a row, and between rows. 0 means "cannot tell",
+// which falls back to the page-fraction guesses.
+export function gridPitch(items) {
+  if (!items || !items.length) return { col: 0, row: 0 };
+  const bands = nameBands(items);
+  const colGaps = [];
+  for (const b of bands) {
+    const cs = b.lines.map(centreOf).sort((x, y) => x - y);
+    for (let i = 1; i < cs.length; i++) colGaps.push(cs[i] - cs[i - 1]);
+  }
+  const rowGaps = [];
+  for (let i = 1; i < bands.length; i++) rowGaps.push(bands[i].y - bands[i - 1].y);
+  return { col: median(colGaps), row: median(rowGaps) };
 }
 
 // Every name-shaped line on a page — the closed list the model must choose from.
@@ -287,27 +326,35 @@ const looksLikeName = t => /^[^\d]+$/.test(t) && t.split(/\s+/).filter(Boolean).
 // same column. The name is left-aligned to the photograph while the face is
 // centred in it, so the column window is measured from the face centre outwards
 // and only has to overlap the line, not contain it.
-export function captionFor(items, box, pageWidth, pageHeight) {
+export function captionFor(items, box, pageWidth, pageHeight, pitch) {
   if (!items || !items.length) return null;
   const cx = box.originX + box.width / 2;
-  const half = Math.max(box.width * CUT_SIDES, pageWidth * SAME_COLUMN);
+  const p = pitch || gridPitch(items);
+  const half = p.col ? Math.max(box.width * 0.6, p.col * 0.45)
+    : Math.max(box.width * CUT_SIDES, pageWidth * SAME_COLUMN);
   const below = box.originY + box.height * 0.6;
   // How far down to look is a property of the page, not of the face. Measuring it
   // in face-heights lost the small faces: an 82px face in a tall photograph gave
   // a reach of 1152px while its caption was printed at 1280px, so two of four
   // people on a test page were reported as having no caption at all.
   const reach = Math.max(box.height * 4, (pageHeight || pageWidth * 1.41) * PAGE_REACH);
-  // Everything in this column, then the part of it within reach below the face.
-  // The name comes from the second; the line under the name is looked up in the
-  // first, because it belongs to the name rather than to the face — hunting for
-  // it inside the reach window missed a "Guest speaker" line by three pixels.
-  const column = linesOf(items)
-    .filter(l => l.right > cx - half && l.x < cx + half)
-    .sort((a, b) => a.y - b.y);
-  const nameLine = column.find(l => l.y >= below && l.y <= below + reach && looksLikeName(l.text));
-  if (!nameLine) return null;
-  const after = column.find(l => l.y > nameLine.y && l.y < nameLine.y + nameLine.h * 3);
-  return { name: nameLine.text, organisation: after && !looksLikeName(after.text) ? after.text : "" };
+  // A line counts as this face's column if its centre is within half a pitch, or
+  // if it spans the face horizontally — which covers a caption wider than its own
+  // cell as well as one left-aligned under a centred face.
+  const lines = linesOf(items).sort((a, b) => a.y - b.y || a.x - b.x);
+  const off = l => Math.abs(centreOf(l) - cx);
+  const mine = l => off(l) <= half || (l.x <= cx && l.right >= cx);
+  const cands = lines.filter(l => l.y >= below && l.y <= below + reach && looksLikeName(l.text) && mine(l));
+  if (!cands.length) return null;
+  // The nearest band of captions below, then the one closest to this face.
+  // Taking the first in reading order instead silently prefers the left-hand
+  // neighbour whenever two names share a baseline, which is every grid.
+  const firstY = Math.min(...cands.map(l => l.y));
+  const band = cands.filter(l => l.y <= firstY + l.h * 1.5);
+  const nameLine = band.reduce((best, l) => (off(l) < off(best) ? l : best));
+  const after = lines.find(l => l.y > nameLine.y && l.y < nameLine.y + nameLine.h * 3
+                                && mine(l) && !looksLikeName(l.text));
+  return { name: nameLine.text, organisation: after ? after.text : "" };
 }
 
 // A cut-out around one face, reaching `below` face-heights beneath it and at
@@ -346,8 +393,10 @@ export async function rosterFrom(pages, opts = {}) {
   const totalPages = pages.length;
   for (const [pageIndex, page] of pages.entries()) {
     if (onProgress) onProgress({ phase: "faces", page: pageIndex + 1, totalPages });
+    const pitch = gridPitch(texts[pageIndex]);
     const found = (await faces.facesIn(page, { tile: true }))   // pages are large; small portraits need tiling
       .filter(f => f.score >= DOC_FACE_MIN);
+    let onPage = 0;
     for (const f of found) {
       const entry = {
         key: `p${pageIndex + 1}f${++n}`,
@@ -361,11 +410,12 @@ export async function rosterFrom(pages, opts = {}) {
       const candidates = namesOn(items);
       if (candidates.length) {
         // Two independent answers from the same verified vocabulary.
-        const printed = captionFor(items, f.box, page.width, page.height);
+        const printed = captionFor(items, f.box, page.width, page.height, pitch);
         let picked = null;
         if (pickName) {
-          if (onProgress) onProgress({ phase: "names", page: pageIndex + 1, totalPages, done: n });
-          picked = await pickName(pickCut(page, f.box), candidates);
+          if (onProgress) onProgress({ phase: "names", page: pageIndex + 1, totalPages,
+                                       done: n, index: ++onPage, count: found.length });
+          picked = await pickName(pickCut(page, f.box, pitch), candidates);
         }
         const byModel = picked && picked.name ? picked.name : "";
         const byPlace = printed ? printed.name : "";

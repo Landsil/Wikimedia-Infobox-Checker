@@ -65,11 +65,13 @@
       <button type="button" id="pick">Choose folder…</button>
       <button type="button" id="reopen" class="secondary" hidden>Reopen last folder</button>
       <button type="button" id="sample" class="secondary" hidden>Sample shoot (testing)</button>
+      <button type="button" id="stop" class="secondary" hidden>Stop</button>
     </div>
+    <div class="bar" id="scan_bar" hidden><i></i></div>
     <div id="folder_info" class="meta"></div>
   </section>
 
-  <section class="step waiting" id="step_doc">
+  <section class="step" id="step_doc">
     <div class="step-head"><span class="step-no">3</span><h2>Add a programme or delegate list</h2>
       <span class="count">optional</span></div>
     <p class="step-note">A PDF, a screenshot, or exported pages — anything that puts
@@ -97,49 +99,36 @@
     <div id="roster" class="roster"></div>
   </section>
 
-  <section class="step waiting" id="step_scan">
-    <div class="step-head"><span class="step-no">4</span><h2>Find the badges</h2></div>
-    <p class="step-note">Every photo is shown to the on-device model, which says
-    whether it is a badge or a screen with a written name, or a portrait of someone.
-    Already-read photos are remembered, so stopping and starting again costs nothing.</p>
-    <p class="step-note"><strong>Badges are a suggestion, and you have to check them.</strong>
-    Not everyone will have one — some people are photographed without a badge, and
-    some badges are unreadable. <strong>Click any photo to mark it a badge or not.</strong>
-    A badge frame is outlined in blue and starts a new person; where there is no badge,
-    a gap in the shooting times starts one instead.</p>
-    <div class="row-actions">
-      <button type="button" id="scan" disabled>Read the photos</button>
-      <button type="button" id="stop" class="secondary" hidden>Stop</button>
-      <label class="age-filter">new person after a gap of
-        <input type="text" id="gap_mins" inputmode="decimal" value="2"> min</label>
-    </div>
-    <div class="bar" id="scan_bar" hidden><i></i></div>
-    <div id="scan_info" class="meta"></div>
-    <div class="scan" id="scan_grid"></div>
-    <label class="confirm-line"><input type="checkbox" id="badges_ok">
-      I have looked through these and the badges are right</label>
-  </section>
-
   <section class="step waiting" id="step_review">
-    <div class="step-head"><span class="step-no">5</span><h2>Check who is who</h2></div>
-    <p class="step-note">One card per person, in the order they were photographed.
-    Correct a name by typing in it. If the model mistook a frame, use
-    <em>badge</em> / <em>not a badge</em> to regroup — the badge frame is outlined
-    in blue.</p>
+    <div class="step-head"><span class="step-no">4</span><h2>Check who is who</h2></div>
+    <p class="step-note">Reading the folder finds the badges and compares the faces
+    by itself — there is nothing to start. One card per person, in the order they
+    were photographed. Correct a name by typing in it.</p>
+    <p class="step-note">A badge starts a new person and is outlined in blue. Where
+    nobody wore one, a change of face starts the next person instead. If a frame was
+    taken for a badge, or missed as one, use <em>badge</em> / <em>not a badge</em> and
+    the people are worked out again.</p>
     <div class="row-actions">
       <button type="button" id="face_check" class="secondary">Check the faces match</button>
       <button type="button" id="name_from_doc" class="secondary" hidden>Name them from the document</button>
       <span class="step-note" style="margin:0">Compares each person's headshots with
-      one another, so a missed badge shows up as a face that does not belong. It
-      only flags photos for you to look at — it never regroups or files anything.</span>
+      one another, so a face that does not belong shows up. It only flags photos for
+      you to look at — it never regroups or files anything.</span>
     </div>
     <div id="face_state" class="lib-state" hidden></div>
     <div id="review_info" class="meta"></div>
     <div id="review"></div>
+    <details id="scan_detail">
+      <summary>Every photo, and what it was taken for</summary>
+      <div id="scan_info" class="meta"></div>
+      <div class="scan" id="scan_grid"></div>
+    </details>
+    <label class="confirm-line"><input type="checkbox" id="badges_ok">
+      I have checked the people above and they are right</label>
   </section>
 
   <section class="step waiting" id="step_apply">
-    <div class="step-head"><span class="step-no">6</span><h2>Rename and file</h2></div>
+    <div class="step-head"><span class="step-no">5</span><h2>Rename and file</h2></div>
     <p class="step-note">Named people only. Their photos move into a
     <code>done</code> folder as <code>Name Surname 01.jpg</code>; anything
     unnamed, and anything before the first badge, is left exactly where it is.</p>
@@ -154,7 +143,7 @@
   </section>
 
   <section class="step waiting" id="step_report">
-    <div class="step-head"><span class="step-no">7</span><h2>Report</h2></div>
+    <div class="step-head"><span class="step-no">6</span><h2>Report</h2></div>
     <p class="step-note">Who you photographed, and how many of each. The
     Wikipedia column is the only thing on this page that uses the network.</p>
     <div class="row-actions">
@@ -185,10 +174,10 @@
     badge the model can't read still starts a new person — it just needs a name
     typing in, so photos never get filed under the person before.</p>
     <p><strong>Badges are optional.</strong> Some people will be shot without one.
-    Where no badge separates two people, a gap in the capture times does; the gap
-    is yours to set in step 4, and the face check in step 5 flags a group that
-    holds more than one person. Nothing is filed until you have confirmed the
-    badges and the grouping.</p>
+    Where no badge separates two people, a change of face does — the subject
+    changing is the thing actually being detected, so there is no interval to
+    guess at. Reading the folder does all of this by itself. Nothing is filed
+    until you have confirmed the people in step 4.</p>
     <h3>Using a programme instead of badges</h3>
     <p>If you have a PDF or screenshot pairing photographs with names, add it in
     step 3. Each face on the page is found, and the name that goes with it is
@@ -197,7 +186,7 @@
     which of those names it belongs to, picking from that list only. Where the
     model's answer and the printed position disagree, the face is flagged for you
     rather than guessed at.</p>
-    <p><em>Name them from the document</em> in step 5 then matches anyone still
+    <p><em>Name them from the document</em> in step 4 then matches anyone still
     unnamed by comparing faces, so a shoot with no badges at all can still be
     filed. It proposes and shows its score; you confirm. PDF pages are rendered on
     this device with Mozilla's pdf.js from our vendored copy; images need no
@@ -209,8 +198,8 @@
         folder uses the File System Access API, which Firefox and Safari do not
         have, on any platform.</li>
       <li><strong>Chrome 148 or newer</strong> for the built-in model (Edge has it
-        only behind a flag). Step 1 checks for it and offers to fetch it, so you
-        find out before a shoot rather than during one.
+        only behind a flag). Step 1 checks for it, fetches it and warms it up, so
+        you find out before a shoot rather than during one.
         Per Google's requirements that means Windows 10/11,
         macOS 13+, Linux or a Chromebook Plus, 22 GB free on the drive holding
         your Chrome profile, and either more than 4 GB of VRAM or 16 GB of RAM
@@ -245,10 +234,9 @@
         the biggest face may not be the subject — which is why it flags rather
         than decides. It needs about 19 MB of MediaPipe, downloaded from this site
         once, with every file checked against its SHA-256.</li>
-      <li>Photos before the first badge, or before the first gap, have nobody to
-        attribute them to until you name them — they are left alone.</li>
-      <li>This is new. Check the badges in step 4 and the grouping in step 5
-        before filing.</li>
+      <li>Photos before the first person have nobody to attribute them to until
+        you name them — they are left alone.</li>
+      <li>This is new. Check the people in step 4 before filing.</li>
     </ul>
   </div>
 </div>

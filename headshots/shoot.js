@@ -51,28 +51,28 @@ const hasName = id => !!(id && id.kind === "identity" && id.legible !== false &&
 // badge cannot be the only thing that starts a new person — relying on it alone
 // merged everyone after an unbadged person into whoever came before them.
 //
-// A new person therefore starts at a badge, or after a gap in the capture times
-// longer than `gapMs`. A photographer walking one subject off and the next one on
-// leaves exactly that gap; consecutive frames of one person do not. The gap is
-// the operator's to set, because it is a property of how they work, and the face
-// check afterwards flags any group that still holds more than one person.
-export function groupPhotos(photos, { gapMs = 120000 } = {}) {
+// A badge always starts a person. Beyond that, what begins one is supplied by the
+// caller through `startsNew(photo, current)`, where `current` is null when nobody
+// is under way yet. The app passes a face comparison: the subject changing is the
+// thing actually being detected, and asking the operator for a number of minutes
+// was asking them to guess at a proxy for it. Keeping the rule out here leaves
+// this function pure and testable.
+//
+// `current` being null matters. With no rule supplied, a shoot in which nobody
+// wore a badge produced no people at all — every frame fell into `leading`,
+// because only a badge could ever start one.
+export function groupPhotos(photos, { startsNew = null } = {}) {
   const groups = [];
   const leading = [];
-  let current = null, prev = null;
+  let current = null;
   const start = (badge) => {
     current = { badge: badge || null, person: badge && hasName(badge.id) ? { ...badge.id } : null, shots: [] };
     groups.push(current);
   };
   for (const p of photos) {
-    const isIdentity = p.id && p.id.kind === "identity";
-    if (isIdentity) { start(p); prev = p; continue; }
-    const gap = prev && gapMs > 0 ? p.time.ms - prev.time.ms : 0;
-    // A gap only splits once a person is under way; before the first badge there
-    // is nobody to split from.
-    if (current && gap > gapMs) start(null);
+    if (p.id && p.id.kind === "identity") { start(p); continue; }
+    if (startsNew && startsNew(p, current)) start(null);
     if (current) current.shots.push(p); else leading.push(p);
-    prev = p;
   }
   return { groups, leading };
 }

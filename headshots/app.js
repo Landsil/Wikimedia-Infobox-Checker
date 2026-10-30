@@ -97,9 +97,13 @@ function renderSetup() {
     d.status === "ready" ? "" : `<button type="button" id="setup_pdfjs">${d.status === "missing" ? "Download" : "Update"} (${mb(d.bytes || 0)})</button>`);
 
   const [what, cls, detail] = MODEL_WORDS[setup.model] || ["unknown", "bad", `Chrome answered <code>${esc(String(setup.model))}</code>.`];
-  line(cls, "Chrome's built-in model",
-    `${detail}${cls === "ok" ? "" : ` <em>(${what})</em>`}`,
-    setup.model === "downloadable" ? `<button type="button" id="setup_model">Download it</button>` : "");
+  const warm = setup.model === "available" && session;
+  line(cls === "ok" && !warm ? "need" : cls, "Chrome's built-in model",
+    cls !== "ok" ? `${detail} <em>(${what})</em>`
+      : warm ? "Downloaded, and started and ready to use ✓"
+      : "Downloaded, but not started yet. Starting it here means a document or a badge never waits for it.",
+    setup.model === "downloadable" ? `<button type="button" id="setup_model">Download it</button>`
+      : cls === "ok" && !warm ? `<button type="button" id="setup_model">Start it</button>` : "");
 
   $("setup_list").innerHTML = rows.join("");
 
@@ -109,7 +113,7 @@ function renderSetup() {
   stepState("step_setup", ready ? "done" : "");
   stepState("step_folder", ready ? "" : "waiting");
   $("pick").disabled = !canPickFolder;
-  $("setup_all").disabled = ready && setup.model !== "downloadable";
+  $("setup_all").disabled = ready && (setup.model !== "downloadable") && !(setup.model === "available" && !session);
   renderBlockers();
 }
 
@@ -141,8 +145,12 @@ async function withSetupProgress(label, fn) {
 
 const getFaces = () => withSetupProgress("the face models", p => faces.save(p));
 const getPdfjs = () => withSetupProgress("the PDF reader", p => doc.save(p));
+// Downloading is not enough: creating the first session can still fetch, which
+// is why a model "set up" in step 1 was seen downloading again when a document
+// was read. So step 1 also creates the shared session and keeps it.
 const getModel = () => withSetupProgress("Chrome's model", async report => {
   await downloadModel(f => report(f, 1));
+  await ensureSession(f => report(f, 1));
 });
 
 $("setup_list").addEventListener("click", e => {
@@ -156,7 +164,7 @@ $("setup_all").addEventListener("click", async () => {
   $("setup_all").disabled = true;
   if (setup.faces.status !== "ready") await getFaces();
   if (setup.pdfjs.status !== "ready") await getPdfjs();
-  if (setup.model === "downloadable") await getModel();
+  if (["downloadable", "available"].includes(setup.model) && !session) await getModel();
   $("setup_all").disabled = false;
 });
 
@@ -191,8 +199,7 @@ async function useDirectory(handle, isDemo = false) {
       $("folder_info").innerHTML = base + row("Thumbnails", `${i + 1} of ${photos.length}`);
   }
   $("folder_info").innerHTML = base;
-  stepState("step_folder", "done"); stepState("step_scan", "");
-  $("scan").disabled = !nanoPresent();
+  stepState("step_folder", "done");
 
   // Only a real folder is worth remembering; the sample is rebuilt on demand.
   if (!isDemo) try { await store.set("lastDir", handle); } catch (_) { /* some builds refuse to clone handles */ }
@@ -201,6 +208,9 @@ async function useDirectory(handle, isDemo = false) {
   for (const p of photos) { const hit = scanCache[cacheKey(p)]; if (hit) { p.id = hit; known++; } }
   if (known) $("scan_info").innerHTML = row("Remembered", `${known} of ${photos.length} photo(s) were already identified on an earlier visit.`);
   renderReview();
+  // Straight on into finding the badges and comparing the faces. There is nothing
+  // for the operator to decide first, so there is nothing to press.
+  await readPhotos();
 }
 
 $("pick").addEventListener("click", async () => {
@@ -243,10 +253,18 @@ $("reopen").addEventListener("click", async () => {
   }
 });
 
-// One model session, shared by the badge scan and the document caption reader.
+// One model session, shared by the badge pass and the document picker. It is
+// only ever created in step 1, so no later step can start a download.
 async function ensureSession(onProgress) {
   if (!session) session = await createSession(onProgress);
   return session;
+}
+
+// Is the model usable right now without fetching anything?
+async function modelReady() {
+  if (session) return true;
+  if (!nanoPresent()) return false;
+  return (await nanoAvailability()) === "available";
 }
 
 // ---- step 3: read the badges ----
@@ -288,14 +306,27 @@ $("scan_grid").addEventListener("click", e => {
   renderReview();
 });
 
-$("scan").addEventListener("click", async () => {
-
+// Finding the badges is not a decision anyone has to make, so it is not a step of
+// its own any more: it runs as part of reading the folder, and every face is
+// embedded in the same pass because a change of face is what separates two people
+// nobody badged.
+async function readPhotos() {
   stopping = false;
-  $("scan").disabled = true; $("stop").hidden = false; $("scan_bar").hidden = false;
+  $("stop").hidden = false; $("scan_bar").hidden = false;
   const bar = $("scan_bar").firstElementChild;
   let read = 0, fromCache = 0, failed = 0;
   try {
-    await ensureSession(p => { $("scan_info").innerHTML = row("Model", `Downloading… ${Math.round(p * 100)}%`); });
+    // Step 1 owns the model. Starting a session here could set Chrome's multi-
+    // gigabyte download going the moment a folder is opened, which is the thing
+    // step 1 exists to prevent — so if it is not ready, the badges are simply not
+    // read and the faces are compared anyway.
+    if (!(await modelReady())) {
+      $("scan_info").innerHTML = row("Badges not read",
+        `the built-in model is not set up — finish <a href="#step_setup">step 1</a>, or mark the badges yourself below`, true);
+      await embedFaces();
+      renderReview();
+      return;
+    }
     for (let i = 0; i < photos.length; i++) {
       if (stopping) break;
       const p = photos[i];
@@ -325,15 +356,51 @@ $("scan").addEventListener("click", async () => {
         row("Read by the model", `${read}`) + row("Remembered from before", `${fromCache}`)
       + (failed ? row("Could not be read", `${failed}`, true) : "")
       + row("Badges found", `${badges}`, badges === 0)
-      + (stopping ? row("Stopped", `at photo ${Math.min(photos.length, from + read + fromCache)} — change “from photo” and run again to carry on`) : "");
-    stepState("step_scan", "done");
+      + (stopping ? row("Stopped", "part-way — reopen the folder to carry on") : "");
+    await embedFaces();
     renderReview();
   } catch (err) {
-    $("scan_info").innerHTML = row("Could not read the badges", esc(`${err.name}: ${err.message}`), true);
+    $("scan_info").innerHTML = row("Could not read the photos", esc(`${err.name}: ${err.message}`), true);
+    renderReview();
   } finally {
-    $("scan").disabled = false; $("stop").hidden = true;
+    $("stop").hidden = true; $("scan_bar").hidden = true;
   }
-});
+}
+
+// Every photo's face, once, so the grouping can tell one subject from the next.
+async function embedFaces() {
+  if (!(await faceState())) return;
+  const bar = $("scan_bar").firstElementChild;
+  const todo = photos.filter(p => !faceVecs.has(p.name));
+  if (!todo.length) return;
+  let n = 0;
+  for (const p of todo) {
+    if (stopping) break;
+    bar.style.width = `${Math.round((++n / todo.length) * 100)}%`;
+    $("scan_info").innerHTML = row("Comparing faces", `photo ${n} of ${todo.length}`);
+    try {
+      const f = await faces.faceOf(await p.handle.getFile());
+      faceVecs.set(p.name, f ? { vector: f.vector, score: f.score } : null);
+    } catch (_) { faceVecs.set(p.name, null); }
+  }
+}
+
+// What begins a person nobody badged: a face, and then a different face.
+//
+// Compared against the most recent frame in the group that had one, so a single
+// unusable frame does not split somebody in two. A photo with no detectable face
+// never starts a person — that is what keeps test frames, venue shots and the
+// badge photographs themselves from becoming people.
+function faceStartsNew(p, current) {
+  const mine = faceVecs.get(p.name);
+  if (!mine) return false;
+  if (!current) return true;              // first face of a shoot with no badges
+  for (let i = current.shots.length - 1; i >= 0; i--) {
+    const theirs = faceVecs.get(current.shots[i].name);
+    if (theirs) return faces.similarity(mine.vector, theirs.vector) < faces.SAME_MIN;
+  }
+  return false;                           // only the badge so far: this is their first frame
+}
 $("stop").addEventListener("click", () => { stopping = true; });
 
 // ---- step 3: check who is who ----
@@ -362,15 +429,8 @@ function shotCell(p, isBadge) {
     + `<button type="button" class="mini mark" data-name="${esc(p.name)}" data-on="${isBadge ? "0" : "1"}">`
     + `${isBadge ? "not a badge" : "badge"}</button></div>`;
 }
-// Minutes in the box, in milliseconds. 0 or blank turns gap-splitting off, so a
-// shoot where every person really does have a badge behaves as it did before.
-function gapMs() {
-  const mins = parseFloat($("gap_mins").value);
-  return Number.isFinite(mins) && mins > 0 ? Math.round(mins * 60000) : 0;
-}
-
 function renderReview() {
-  grouped = groupPhotos(photos, { gapMs: gapMs() });
+  grouped = groupPhotos(photos, { startsNew: faceStartsNew });
   const { groups, leading } = grouped;
   const named = groups.filter(g => g.person).length;
   const unnamed = groups.length - named;
@@ -410,14 +470,13 @@ function renderReview() {
   // Its own element: writing this into apply_info would wipe the result of a
   // filing that has already happened.
   $("apply_gate").innerHTML = named > 0 && !checked
-    ? row("Waiting on you", "Tick <em>I have looked through these and the badges are right</em> in step 4 before anything is renamed.", true)
+    ? row("Waiting on you", "Tick <em>I have checked the people above and they are right</em> in step 4 before anything is renamed.", true)
     : "";
   stepState("step_review", groups.length ? "done" : "");
   if (canApply) stepState("step_apply", "");
   renderReport();
 }
 
-$("gap_mins").addEventListener("change", () => { clearFaceCheck(); renderReview(); });
 $("badges_ok").addEventListener("change", renderReview);
 
 // Typing a name belongs to that group's badge frame, so regrouping keeps it.
@@ -620,11 +679,11 @@ async function readDocuments() {
     // Built lazily: a PDF with a text layer never needs the model, so it is not
     // downloaded or started unless a page turns out to be a scan.
     let sess = null, sessErr = null;
-    const reader = !nanoPresent() ? null : async canvas => {
+    const reader = async canvas => {
+      if (!(await modelReady())) return { legible: false, error: "the model is not set up" };
       if (!sess && !sessErr) {
-        try {
-          sess = await ensureSession(f => { $("doc_info").innerHTML = row("Model", `Downloading… ${Math.round(f * 100)}%`); });
-        } catch (err) {
+        try { sess = await ensureSession(); }
+        catch (err) {
           sessErr = err;
           $("doc_info").innerHTML = row("Names", `cannot be read automatically (${esc(err.message)}) — type them in`, true);
         }
@@ -633,11 +692,14 @@ async function readDocuments() {
     };
     // The picker is the normal path: it only ever chooses between names already
     // taken from the page, so it cannot contribute a name of its own.
-    const picker = !nanoPresent() ? null : async (canvas, candidates) => {
+    const usable = await modelReady();
+    if (!usable)
+      $("doc_info").innerHTML = row("Matching by layout only",
+        `the built-in model is not set up — finish <a href="#step_setup">step 1</a> to have it match faces to names too`, true);
+    const picker = !usable ? null : async (canvas, candidates) => {
       if (!sess && !sessErr) {
-        try {
-          sess = await ensureSession(f => { $("doc_info").innerHTML = row("Model", `Downloading… ${Math.round(f * 100)}%`); });
-        } catch (err) {
+        try { sess = await ensureSession(); }
+        catch (err) {
           sessErr = err;
           $("doc_info").innerHTML = row("Matching", `the model is unavailable (${esc(err.message)}) — falling back to the printed layout`, true);
         }
@@ -648,7 +710,7 @@ async function readDocuments() {
     for (const [fi, file] of files.entries()) {
       $("doc_info").innerHTML = row("Reading", `${esc(file.name)} (${fi + 1} of ${files.length})`);
       const out = await doc.pageImages(file, (n, total) => {
-        bar.style.width = `${Math.round((n / Math.max(1, total)) * 100)}%`;
+        bar.style.width = `${Math.round(((fi + (n / Math.max(1, total)) * 0.15) / files.length) * 100)}%`;
         $("doc_info").innerHTML = row("Rendering", `${esc(file.name)} — page ${n} of ${total}`);
       });
       const pages = out.pages;
@@ -657,8 +719,14 @@ async function readDocuments() {
         readName: reader,                      // only reached by a page with no text layer
         pickName: picker,                      // chooses among that page's printed names
         onProgress: st => {
+          // Finding faces and matching names are the slow parts; without a share
+          // of the bar the whole read looked frozen on a page of nine people.
+          const within = st.phase === "names" && st.count ? st.index / st.count : 0;
+          const done = ((st.page - 1) + (st.phase === "faces" ? 0.15 : 0.15 + 0.85 * within)) / Math.max(1, st.totalPages);
+          bar.style.width = `${Math.round(((fi + done) / files.length) * 100)}%`;
           $("doc_info").innerHTML = row(st.phase === "faces" ? "Finding faces" : "Matching names to faces",
-            `${esc(file.name)} — page ${st.page} of ${st.totalPages}${st.done ? `, ${st.done} face(s)` : ""}`);
+            `${esc(file.name)} — page ${st.page} of ${st.totalPages}`
+            + (st.phase === "names" && st.count ? `, face ${st.index} of ${st.count}` : ""));
         },
       });
       for (const r of found) roster.push({ ...r, key: `${fi}-${r.key}`, file: file.name });

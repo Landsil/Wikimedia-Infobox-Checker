@@ -518,14 +518,22 @@ be prepared before an event rather than during one:
 | Chrome's built-in model | Chrome's own (~2 GB) | reading badges, matching names to faces |
 
 *Set everything up* does the three in sequence; each row also has its own button,
-and *Check again* re-reads the state. Nothing downstream asks for a download any
-more — a missing dependency there links back to step 1 instead.
+and *Check again* re-reads the state. **Nothing downstream may start a download.**
+Downloading Chrome's model is not sufficient either: creating the first session
+can still fetch, which is why a model "set up" in step 1 was seen downloading
+again when a document was read. Step 1 therefore also *starts* the session and
+keeps it, and every later use asks `modelReady()` — session in hand, or
+availability exactly `"available"` — and quietly does without the model rather
+than fetching it. Opening a folder now runs the badge pass automatically, so this
+matters more than it did: without the rule, picking a folder could have set a
+multi-gigabyte download going.
 
 The first three are hard requirements for a shoot and gate step 2. The model is
 **advisory**: some devices genuinely cannot run it, and without it badges are
 marked by hand and names typed, which the blocker at the top of the page says
 plainly. Triggering Chrome's download needs a user gesture, so `downloadModel()`
-creates a session purely to start the fetch and destroys it again.
+creates a session purely to start the fetch and destroys it again, after which
+step 1 opens the long-lived one.
 
 ### The grouping rule
 
@@ -539,23 +547,38 @@ under the previous person; it simply asks for a name.
 
 **Badges are not guaranteed, so they cannot be the only thing that separates
 people.** Plenty of subjects are photographed without one, and a badge can be
-unreadable or simply missed. Relying on badges alone merged everyone after an
-unbadged person into whoever came before them. So a new person starts at a badge
-**or** after a gap in the capture times longer than the operator's setting
-(default 2 minutes): walking one subject off and the next one on leaves exactly
-that gap, while consecutive frames of one person do not. The gap is the
-operator's to set because it is a property of how they work, and `gapMs: 0`
-restores badge-only behaviour. A gap before the first person does not invent one —
-there is nobody yet to split from.
+unreadable or simply missed. So a new person begins at a badge **or** when the
+face changes: `groupPhotos` takes a `startsNew(photo, current)` predicate and the
+app supplies a face comparison, against the most recent frame in the group that
+had a face so one unusable frame cannot split somebody in two.
 
-Badges are a **suggestion that has to be checked**. Step 4 shows every photo,
-any of which can be clicked to mark it a badge or not, and filing stays blocked
-until *"I have looked through these and the badges are right"* is ticked. That is
-a deliberate stop, not a formality: the whole grouping rests on it. The face
-check in step 5 then flags any group that still holds more than one person.
+A capture-time gap was tried first and was the wrong idea. It asked the operator
+to name a number of minutes as a proxy for the thing actually being detected —
+the subject changing — and nothing about a shoot makes that number knowable in
+advance. The face comparison needs no setting at all.
 
-Photos before the first badge or gap cannot be attributed and are left where they
-are, as is any person still without a name.
+Two cases it has to get right, both now tested:
+
+- **Nobody wore a badge.** `current` being null used to mean no person could
+  begin, so a badge-free shoot produced no people whatever — every frame fell
+  into `leading`. A face with nobody current now starts one.
+- **A frame with no detectable face never starts a person.** That is what keeps
+  test frames, venue shots and the badge photographs themselves out of the
+  people list.
+
+Its honest limit: the first frame after a badge is taken as that badge-holder's,
+because there is nothing yet to compare it against.
+
+Finding the badges is **not a step**. It is not a decision anyone has to make, so
+it runs as part of reading the folder, in the same pass that embeds every face —
+nothing to press, and no progress to babysit. Correcting a badge belongs where
+you look at people, so *badge* / *not a badge* lives in the review and regroups
+immediately. Filing stays blocked until *"I have checked the people above and
+they are right"* is ticked: a deliberate stop, since the whole grouping rests on
+it.
+
+Photos before the first person cannot be attributed and are left where they are,
+as is any person still without a name.
 
 Filing writes `<Name> 01.jpg`, `<Name> 02.jpg`, … into `done/`, with the badge
 frame as `<Name> - badge.jpg`. Numbering continues past whatever is already
@@ -667,6 +690,18 @@ decline:
   enough to contain a neighbour's photograph, which makes "the face in the middle"
   untrue.
 
+Both methods are sized from **the document's own grid**, not from fractions of
+the page. That was the second mistake, and it was mine: tuned on a two-column
+programme, a `SAME_COLUMN` of 0.12 page-widths is wider than a column in a
+four-column cast sheet, and a 0.22 half-width handed the model a crop two columns
+across — so it saw a neighbour's portrait and caption, and one person's name came
+back for three different faces. `gridPitch()` measures the spacing between
+captions across a row and between rows, from the page's own text. On a
+four-column cast sheet it reports a 390px column pitch and a 511px row pitch, and
+the model's crop drops from 792×1050 to 390×546 — one cell. On the two-column
+programme it reports 795px and the crop is unchanged. Nothing is hardcoded, so
+neither layout is privileged.
+
 `namesOn()` collects the candidate list: every name-shaped line on the page.
 `captionFor()` computes the positional second opinion. It takes the page's text
 runs with their rendered boxes (`page.getTextContent()`, mapped through the
@@ -695,6 +730,9 @@ each one measured rather than guessed:
   when it follows the name closely enough. The organisation is looked up relative
   to the *name* line rather than the face, because searching the face's reach
   window missed one by three pixels.
+- **The nearest band of captions below, then the one closest to this face.**
+  Taking the first in reading order instead silently prefers the left-hand
+  neighbour whenever two names share a baseline — which is every grid.
 
 Measured on a two-page test programme (2026-10-30, Chrome 156) whose guests are
 Anthony Wonke, Ashley Walters, Adam Pearson and Bella Ramsey:
@@ -714,6 +752,10 @@ neither method has to be right every time for the pair to be.
 
 The two spurious low-confidence detections inside the event photographs are
 dropped by a 0.5 confidence floor, which a printed portrait comfortably clears.
+
+Reading a document shows real progress. Rendering, finding faces and matching
+names each take a share of the bar, and the name phase reports `face N of M`,
+because on a page of nine people the whole read previously looked frozen.
 
 A face that neither method can name is reported as having no caption, and a page
 with a text layer but no name-shaped line in it is never handed to the free-text
@@ -776,7 +818,7 @@ Chrome 156:
 | :-- | :-- | :-- |
 | `check.html` self-test | **18/18** | EXIF ordering, badge grouping, native `move()`, numbering, filename safety |
 | End-to-end, driving the app | **26/26** | step 1's downloads, the sample shoot, hand-marked badges, the face check, the badge-confirmation gate, filing, the report, the Wikipedia look-up |
-| `groupPhotos` gap rules (Node) | **12/12** | badges only, gaps only, mixed badged/unbadged, a gap before the first person, gap splitting off |
+| `groupPhotos` rules (Node) | **18/18** | badges only, people nobody badged, time meaning nothing on its own, a frame with no usable face, mixed badged/unbadged, a shoot with no badge anywhere, faceless frames inventing nobody |
 
 `check.html` also has panels to run the face comparison, the document roster and
 the badge reading on your own files, which is how each of the findings above was
