@@ -8,6 +8,7 @@ import * as store from "./db.js";
 import { buildDemoShoot } from "./demo.js";
 import * as faces from "./faces.js";
 import * as doc from "./doc.js";
+import { BUILD } from "./build.js";
 
 const THUMB = 160;             // review thumbnails, in pixels
 const CACHE_CAP = 5000;        // remembered scan results before the oldest are dropped
@@ -110,6 +111,17 @@ function renderSetup() {
   // The two site downloads and folder access are what the shoot cannot proceed
   // without. The model is advisory: without it badges are marked by hand.
   const ready = canPickFolder && setup.faces.status === "ready" && setup.pdfjs.status === "ready";
+  const modelOk = setup.model === "available" && session;
+  // Nothing left to do: fold it away rather than leaving a panel of ticks in the
+  // way for the rest of the shoot. Anything outstanding keeps it open.
+  const settled = ready && (modelOk || ["unavailable", "absent"].includes(setup.model));
+  $("setup_count").innerHTML = settled
+    ? (modelOk ? "all set ✓" : "set up, without the model ✓")
+    : !ready ? `${[canPickFolder ? null : "this browser", setup.faces.status === "ready" ? null : "face models",
+                   setup.pdfjs.status === "ready" ? null : "PDF reader"].filter(Boolean).length} still to sort out`
+      : "the model is not started";
+  if (settled && !$("setup_box").dataset.touched) $("setup_box").open = false;
+  else if (!settled) $("setup_box").open = true;
   stepState("step_setup", ready ? "done" : "");
   stepState("step_folder", ready ? "" : "waiting");
   $("pick").disabled = !canPickFolder;
@@ -160,6 +172,9 @@ $("setup_list").addEventListener("click", e => {
   else if (id === "setup_model") getModel();
 });
 $("setup_recheck").addEventListener("click", async () => { await readSetup(); renderSetup(); });
+// Opening or closing it by hand is remembered, so a re-check cannot fold it away
+// underneath someone who is reading it.
+$("setup_box").addEventListener("toggle", () => { $("setup_box").dataset.touched = "1"; });
 $("setup_all").addEventListener("click", async () => {
   $("setup_all").disabled = true;
   if (setup.faces.status !== "ready") await getFaces();
@@ -931,7 +946,18 @@ $("install").addEventListener("click", async () => {
     // Scoped to this folder by where the file sits, so the rest of the site is untouched.
     navigator.serviceWorker.register("sw.js")
       .catch(err => console.warn("headshots: offline use unavailable —", err));
+    // A new worker taking over means the files just changed under this page, so
+    // it is reloaded once rather than left running the previous build. Without
+    // this, a deploy needed two reloads and the first one looked like nothing had
+    // been fixed.
+    let swapped = false;
+    navigator.serviceWorker.addEventListener("controllerchange", () => {
+      if (swapped) return;
+      swapped = true;
+      location.reload();
+    });
   }
+  $("build").textContent = `build ${BUILD}`;
   renderSetup();                              // "checking…" until the slow model answer lands
   readSetup().then(renderSetup);
   try {

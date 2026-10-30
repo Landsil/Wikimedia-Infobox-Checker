@@ -44,17 +44,23 @@
 
 <main class="wide">
   <section class="step" id="step_setup">
-    <div class="step-head"><span class="step-no">1</span><h2>Set up this device</h2></div>
-    <p class="step-note">Everything this needs is settled here, before you start, so
-    nothing interrupts you halfway through a shoot. The two downloads come from this
-    site and are kept in this browser; the model belongs to Chrome. Do this once on
-    each machine — after that the tool works offline.</p>
-    <div class="row-actions">
-      <button type="button" id="setup_all">Set everything up</button>
-      <button type="button" id="setup_recheck" class="secondary">Check again</button>
-    </div>
-    <div class="bar" id="setup_bar" hidden><i></i></div>
-    <div id="setup_list" class="setup-list"></div>
+    <details id="setup_box">
+      <summary class="step-head">
+        <span class="step-no">1</span>
+        <h2>Set up this device</h2>
+        <span class="count" id="setup_count">checking…</span>
+      </summary>
+      <p class="step-note">Everything this needs is settled here, before you start, so
+      nothing interrupts you halfway through a shoot. The two downloads come from this
+      site and are kept in this browser; the model belongs to Chrome. Do this once on
+      each machine — after that the tool works offline.</p>
+      <div class="row-actions">
+        <button type="button" id="setup_all">Set everything up</button>
+        <button type="button" id="setup_recheck" class="secondary">Check again</button>
+      </div>
+      <div class="bar" id="setup_bar" hidden><i></i></div>
+      <div id="setup_list" class="setup-list"></div>
+    </details>
   </section>
 
   <section class="step waiting" id="step_folder">
@@ -249,6 +255,7 @@
      rel="noopener">Wikimedia-Infobox-Checker on GitHub</a>
   · <a href="check.html">checks</a>
   · <button type="button" id="forget" class="mini">Forget this shoot</button>
+  · <span id="build" class="build"></span>
 </footer>
 <script type="module" src="app.js?v=1"></script>
 </body>

@@ -44,6 +44,7 @@
   <div id="pdfjs_state" class="lib-state"></div>
   <input type="file" id="doc_files" accept="application/pdf,image/*" multiple>
   <button type="button" id="run_doc">Read it</button>
+  <label class="age-filter"><input type="checkbox" id="dump"> also list every line of text and where it sits</label>
   <pre id="doc_out" class="log"></pre>
   <div id="doc_roster" class="roster"></div>
 
@@ -55,6 +56,7 @@
   <div id="badge_out" class="meta"></div>
   <div id="badge_preview"></div>
 </main>
+<p class="lead">Build: <span id="build"></span></p>
 <footer>
   <a href="https://github.com/Landsil/Wikimedia-Infobox-Checker" target="_blank"
      rel="noopener">Wikimedia-Infobox-Checker on GitHub</a>
@@ -65,9 +67,12 @@ import { listPhotos, groupPhotos, applyGroups, safeName, stemFor, DONE_DIR } fro
 import { nanoPresent, nanoAvailability, createSession, identify, readCaption as identifyCaption, pickName, forModel, ANALYSIS_EDGE } from "./identify.js";
 import * as faces from "./faces.js";
 import * as doc from "./doc.js";
+import { BUILD } from "./build.js";
 import { withExif } from "./demo.js";
 
 const $ = id => document.getElementById(id);
+const dump = { get checked() { const el = document.getElementById("dump"); return !!(el && el.checked); } };
+document.getElementById("build").textContent = BUILD;
 let session = null;        // one model session, shared by the document and badge panels
 const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g,
   c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -332,7 +337,14 @@ $("run_doc").addEventListener("click", async () => {
       out.textContent = out.textContent.replace(/\n  rendering.*$/, "");
       log(`  ${pages.length} page(s) rendered, ${pages[0].width}x${pages[0].height}px, in ${Math.round(performance.now() - t0)} ms`);
       if (res.truncated) log(`  (only the first ${pages.length} of ${res.numPages} pages)`);
-      log(`  column pitch: ${texts.map((t, i) => `page ${i + 1} ${Math.round(doc.gridPitch(t).col)}px`).join(", ")}`);
+      // Everything needed to diagnose a document remotely, so a page that comes
+      // out wrong can be reported by pasting this instead of sending the file.
+      for (const [i, t] of texts.entries()) {
+        const p = doc.gridPitch(t);
+        log(`  page ${i + 1}: pitch col=${Math.round(p.col)}px row=${Math.round(p.row)}px`);
+        if (dump.checked && t) for (const l of doc.linesOf(t))
+          log(`      x=${Math.round(l.x)}..${Math.round(l.right)} y=${Math.round(l.y)} h=${Math.round(l.h)}  ${JSON.stringify(l.text)}`);
+      }
       const found = await doc.rosterFrom(pages, {
         texts, readName: reader, pickName: picker,
         onProgress: st => {

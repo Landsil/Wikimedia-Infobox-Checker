@@ -6,7 +6,7 @@
 //
 // Bump CACHE whenever the shipped files change, so an installed copy updates.
 
-const CACHE = "headshots-v5";
+const CACHE = "headshots-v6";
 
 // Everything needed to open and use the app with no network. The shared
 // stylesheet lives one level up; a worker may cache any URL its pages request,
@@ -21,6 +21,7 @@ const SHELL = [
   "exif.js",
   "identify.js",
   "db.js",
+  "build.js",
   "faces.js",
   "doc.js",
   "manifest.webmanifest",
@@ -50,6 +51,17 @@ self.addEventListener("activate", event => {
   })());
 });
 
+// Network first, cache only as the offline fallback.
+//
+// This was cache-first with a background refresh, which quietly cost a day of
+// debugging: after a deploy the first load served the previous build and fetched
+// the new one for *next* time, so fixes appeared not to have been made and a
+// stale page was reported as a bug in code that had already been corrected. The
+// app's own files are a few tens of kilobytes, so a round trip when online is
+// nothing against being sure of what you are running.
+//
+// Offline use is unaffected: the fallback below serves the precached copy, and
+// the big downloads (MediaPipe, pdf.js) live in their own Cache Storage, not here.
 self.addEventListener("fetch", event => {
   const req = event.request;
   // Only our own static files. Anything cross-origin — the Wikipedia look-up —
@@ -58,24 +70,14 @@ self.addEventListener("fetch", event => {
 
   event.respondWith((async () => {
     const cache = await caches.open(CACHE);
-    // ignoreSearch, because the pages load assets with ?v= cache-busting.
-    const hit = await cache.match(req, { ignoreSearch: true });
-    if (hit) {
-      // Refresh in the background so the next launch is current.
-      event.waitUntil((async () => {
-        try {
-          const fresh = await fetch(req);
-          if (fresh && fresh.ok) await cache.put(req, fresh.clone());
-        } catch (_) { /* offline: the cached copy stands */ }
-      })());
-      return hit;
-    }
     try {
-      const res = await fetch(req);
-      if (res && res.ok && res.type === "basic") await cache.put(req, res.clone());
-      return res;
+      const fresh = await fetch(req);
+      if (fresh && fresh.ok && fresh.type === "basic") await cache.put(req, fresh.clone());
+      return fresh;
     } catch (err) {
-      // Offline and not cached: serve the app shell for a navigation, else fail.
+      // ignoreSearch, because the pages load assets with ?v= cache-busting.
+      const hit = await cache.match(req, { ignoreSearch: true });
+      if (hit) return hit;
       if (req.mode === "navigate") {
         const shell = await cache.match("index.html", { ignoreSearch: true });
         if (shell) return shell;

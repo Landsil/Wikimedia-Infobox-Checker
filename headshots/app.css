@@ -99,3 +99,15 @@
 .confirm-line { display: block; margin-top: 12px; padding: 10px 12px; border-radius: 6px;
                 background: #f4f6f8; border: 1px solid #d6dbe1; font-weight: 600; }
 .scan figure { cursor: pointer; }
+
+/* Step 1 is only interesting until it is done, so it folds to its own heading.
+   The marker shows the build, because "is this the new code?" was being guessed
+   at from the page's appearance. */
+#setup_box > summary { cursor: pointer; list-style: none; }
+#setup_box > summary::-webkit-details-marker { display: none; }
+#setup_box > summary::after { content: "▸"; margin-left: auto; color: var(--muted); font-size: 12px; }
+#setup_box[open] > summary::after { content: "▾"; }
+#setup_box:not([open]) > summary { margin: 0; }
+.step.done #setup_box:not([open]) { opacity: 1; }
+#setup_count { margin-left: 4px; }
+.build { color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }

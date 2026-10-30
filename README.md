@@ -484,6 +484,30 @@ control its own folder and below, and GitHub Pages cannot send the
 `headshots/` therefore gives it its own worker scope, its own caches and its own
 IndexedDB, so nothing it does can affect the other four pages.
 
+### The worker serves the network first, and the page says which build it is
+
+`sw.js` was cache-first with a background refresh, and that cost a day. After a
+deploy the first load served the **previous** build and fetched the new one for
+next time, so corrected code looked uncorrected: a stale page was reported as a
+bug twice, and the second report was investigated as though it were one. Two
+changes, both about never having to guess again:
+
+- **Network first, cache as the offline fallback.** The app's own files are tens
+  of kilobytes, so a round trip when online costs nothing against being certain
+  what is running. Offline use is untouched — the fallback serves the precached
+  copy, and the big downloads live in their own Cache Storage, not the worker's.
+- **`build.js` holds one string**, shown in the footer and on the checks page, and
+  bumped with every change that reaches a browser. "Is this the new code?" is now
+  answered by reading the page rather than inferred from how it looks.
+
+The page also reloads itself once when a new worker takes over
+(`controllerchange`), because a deploy otherwise needed two reloads and the first
+one looked like nothing had been fixed.
+
+Step 1 folds to its own heading once there is nothing left to do, rather than
+leaving a panel of ticks in the way for the rest of a shoot. Opening or closing it
+by hand is remembered, so a re-check cannot fold it away under someone reading it.
+
 ### Files
 
 | File | What |
