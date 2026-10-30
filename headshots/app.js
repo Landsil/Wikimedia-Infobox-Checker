@@ -3,10 +3,11 @@
 // their own (see check.html).
 
 import { listPhotos, groupPhotos, applyGroups, people, stemFor, DONE_DIR } from "./shoot.js";
-import { nanoPresent, nanoAvailability, createSession, identify, forModel } from "./identify.js";
+import { nanoPresent, nanoAvailability, createSession, identify, readCaption, forModel } from "./identify.js";
 import * as store from "./db.js";
 import { buildDemoShoot } from "./demo.js";
 import * as faces from "./faces.js";
+import * as doc from "./doc.js";
 
 const THUMB = 160;             // review thumbnails, in pixels
 const CACHE_CAP = 5000;        // remembered scan results before the oldest are dropped
@@ -148,7 +149,13 @@ $("reopen").addEventListener("click", async () => {
   }
 });
 
-// ---- step 2: read the badges ----
+// One model session, shared by the badge scan and the document caption reader.
+async function ensureSession(onProgress) {
+  if (!session) session = await createSession(onProgress);
+  return session;
+}
+
+// ---- step 3: read the badges ----
 async function makeThumb(blob) {
   const probe = await createImageBitmap(blob);
   const scale = Math.min(1, THUMB / Math.max(probe.width, probe.height));
@@ -181,10 +188,7 @@ $("scan").addEventListener("click", async () => {
   const bar = $("scan_bar").firstElementChild;
   let read = 0, fromCache = 0, failed = 0;
   try {
-    if (!session) {
-      $("scan_info").innerHTML = row("Model", "Preparing — the first run on a new machine downloads it once.");
-      session = await createSession(p => { $("scan_info").innerHTML = row("Model", `Downloading… ${Math.round(p * 100)}%`); });
-    }
+    await ensureSession(p => { $("scan_info").innerHTML = row("Model", `Downloading… ${Math.round(p * 100)}%`); });
     for (let i = from - 1; i < photos.length; i++) {
       if (stopping) break;
       const p = photos[i];
@@ -232,6 +236,8 @@ function clearFaceCheck() {
   for (const p of photos) { delete p.faceScore; delete p.faceFlag; delete p.faceNone; }
   faceWarnings = [];
 }
+// A photo's vector does not change when the grouping does, so the cache stays —
+// only the scores, which are relative to a group, are thrown away.
 const setIdentity = (p, on) => {
   clearFaceCheck();
   p.id = on
@@ -311,7 +317,9 @@ $("review").addEventListener("click", e => {
   renderReview();
 });
 
-// ---- the face check (optional, step 3) ----
+// ---- faces: vectors, the same-person check, and matching to a document ----
+let faceVecs = new Map();   // photo name -> { vector, score }, or null when no face was found
+
 async function faceState() {
   const st = await faces.state();
   const el = $("face_state");
@@ -330,44 +338,58 @@ async function faceState() {
   }
   return st.status === "ready";
 }
+
+// Embed the biggest face in each headshot, skipping any already done.
+async function ensureFaceVectors(groups, onStep) {
+  await faces.load();
+  const todo = groups.flatMap(g => g.shots).filter(p => !faceVecs.has(p.name));
+  let n = 0;
+  for (const p of todo) {
+    if (onStep) onStep(++n, todo.length);
+    try {
+      const f = await faces.faceOf(await p.handle.getFile());
+      if (f) faceVecs.set(p.name, { vector: f.vector, score: f.score });
+      else { faceVecs.set(p.name, null); p.faceNone = true; }
+    } catch (_) { faceVecs.set(p.name, null); p.faceNone = true; }
+  }
+}
+const groupItems = g => g.shots.filter(p => faceVecs.get(p.name))
+  .map(p => ({ key: p.name, face: faceVecs.get(p.name), photo: p }));
+
 async function runFaceCheck() {
   const btn = $("face_check");
   btn.disabled = true;
   try {
     if (!(await faceState())) return;
+    const named = grouped.groups.filter(g => g.person);
+    if (!named.length) {
+      $("face_state").className = "lib-state";
+      $("face_state").innerHTML = "Nobody is named yet, so there is nothing to compare.";
+      return;
+    }
     $("face_state").className = "lib-state";
     $("face_state").innerHTML = "Loading the face models…";
-    await faces.load();
     clearFaceCheck();
-    const named = grouped.groups.filter(g => g.person);
-    let n = 0;
-    const total = named.reduce((t, g) => t + g.shots.length, 0);
+    await ensureFaceVectors(named, (n, t) => { $("face_state").innerHTML = `Comparing faces… ${n} of ${t}`; });
     const refs = [];
     for (const g of named) {
-      const items = [];
-      for (const p of g.shots) {
-        $("face_state").innerHTML = `Comparing faces… ${++n} of ${total}`;
-        try {
-          const face = await faces.faceOf(await p.handle.getFile());
-          if (face) items.push({ key: p.name, face, photo: p });
-          else p.faceNone = true;
-        } catch (err) { p.faceNone = true; }
-      }
+      const items = groupItems(g);
       const res = faces.checkGroup(items);
       for (const it of items) {
-        const s = res.scores.get(it.key);
-        if (s != null) { it.photo.faceScore = s; it.photo.faceFlag = s < faces.SAME_MIN; }
+        const sc = res.scores.get(it.key);
+        if (sc != null) { it.photo.faceScore = sc; it.photo.faceFlag = sc < faces.SAME_MIN; }
       }
       if (res.reference) refs.push({ name: stemFor(g.person), vector: res.reference.face.vector });
     }
-    // Two different people's groups scoring alike usually means a badge was missed
-    // and one person was shot twice under two names.
+    // Two people's groups looking alike usually means a badge was missed and one
+    // person was shot twice under two names.
     for (let i = 0; i < refs.length; i++)
       for (let j = i + 1; j < refs.length; j++) {
         const sim = faces.similarity(refs[i].vector, refs[j].vector);
         if (sim >= faces.SAME_MIN)
           faceWarnings.push(`${refs[i].name} and ${refs[j].name} look alike (${sim.toFixed(2)}) — one badge may have been missed`);
       }
+    const total = named.reduce((t, g) => t + g.shots.length, 0);
     const flagged = photos.filter(p => p.faceFlag).length;
     const noFace = photos.filter(p => p.faceNone).length;
     $("face_state").className = flagged || faceWarnings.length ? "lib-state bad" : "lib-state ok";
@@ -383,20 +405,195 @@ async function runFaceCheck() {
 }
 $("face_check").addEventListener("click", runFaceCheck);
 $("face_state").addEventListener("click", async e => {
-  if (e.target && e.target.id === "face_get") {
-    e.target.disabled = true;
-    try {
-      await faces.save((done, total, name) => {
-        $("face_state").innerHTML = `Downloading ${esc(name)}… ${mb(done)} of ${mb(total)}`;
-      });
-      await faceState();
-      runFaceCheck();
-    } catch (err) {
-      $("face_state").className = "lib-state bad";
-      $("face_state").innerHTML = esc(`Download failed: ${err.message}`);
-    }
+  if (!e.target || e.target.id !== "face_get") return;
+  e.target.disabled = true;
+  try {
+    await faces.save((done, total, name) => {
+      $("face_state").innerHTML = `Downloading ${esc(name)}… ${mb(done)} of ${mb(total)}`;
+    });
+    await faceState();
+    runFaceCheck();
+  } catch (err) {
+    $("face_state").className = "lib-state bad";
+    $("face_state").innerHTML = esc(`Download failed: ${err.message}`);
   }
 });
+
+// ---- step 2: a programme or delegate list ----
+let roster = [];
+
+$("doc_files").addEventListener("change", () => {
+  $("doc_read").disabled = !($("doc_files").files || []).length;
+});
+
+async function pdfjsState() {
+  const st = await doc.state();
+  const el = $("pdfjs_state");
+  el.hidden = false;
+  if (st.status === "ready") {
+    el.className = "lib-state ok";
+    el.innerHTML = `pdf.js saved (<code>${esc(st.version)}</code>, ${mb(st.bytes)}) ✓`;
+  } else {
+    el.className = st.status === "missing" ? "lib-state need" : "lib-state bad";
+    el.innerHTML = `${st.status === "missing" ? "Reading a PDF needs" : "Your saved pdf.js is out of date —"} `
+      + `${mb(st.bytes)} of Mozilla's pdf.js from this site. `
+      + `<button type="button" id="pdfjs_get">${st.status === "missing" ? "Download" : "Update"} (${mb(st.bytes)})</button>`;
+  }
+  return st.status === "ready";
+}
+$("pdfjs_state").addEventListener("click", async e => {
+  if (!e.target || e.target.id !== "pdfjs_get") return;
+  e.target.disabled = true;
+  try {
+    await doc.save((done, total, name) => {
+      $("pdfjs_state").innerHTML = `Downloading ${esc(name)}… ${mb(done)} of ${mb(total)}`;
+    });
+    await pdfjsState();
+    readDocuments();
+  } catch (err) {
+    $("pdfjs_state").className = "lib-state bad";
+    $("pdfjs_state").innerHTML = esc(`Download failed: ${err.message}`);
+  }
+});
+
+// Where a name came from decides how much it can be trusted, so it is always on
+// screen. A name printed in the document is the document's own text; a name from
+// the model is a suggestion that has been measured being confidently wrong.
+const PROVENANCE = {
+  "pdf-text": { label: "printed in the document", trust: "ok" },
+  "model": { label: "read by the model — check it", trust: "check" },
+};
+
+function renderRoster() {
+  const named = roster.filter(r => r.name).length;
+  const printed = roster.filter(r => r.name && r.source === "pdf-text").length;
+  const guessed = roster.filter(r => r.name && r.unverified).length;
+  $("doc_info").innerHTML =
+      row("Faces found", `${roster.length}`, roster.length === 0)
+    + row("With a name", `${named}`, named === 0 && roster.length > 0)
+    + (printed ? row("Taken from the page text", `${printed} — exact`) : "")
+    + (guessed ? row("Guessed by the model", `${guessed} — please check each one`, true) : "")
+    + (roster.length ? row("Next", "Correct any name by typing in it, then use “Name them from the document” in step 4.") : "");
+  $("roster").innerHTML = roster.map((r, i) => {
+    const p = r.name ? PROVENANCE[r.source] : null;
+    return `<div class="roster-item${r.name ? "" : " unreadable"}${r.unverified ? " unverified" : ""}">
+      <img src="${r.thumb}" alt="">
+      <div class="who">
+        <input type="text" class="roster-name" data-i="${i}" value="${esc(r.name)}"
+               placeholder="${r.noCaption ? "no name printed for this face — type it"
+                             : r.legible === false ? "no name read — type it" : "name"}">
+        <div class="meta-line">page ${r.page} · face ${r.score.toFixed(2)}${r.organisation ? " · " + esc(r.organisation) : ""}</div>
+        ${p ? `<div class="meta-line ${p.trust === "check" ? "warn" : "good"}">${p.label}</div>` : ""}
+      </div></div>`;
+  }).join("");
+  if ($("name_from_doc")) $("name_from_doc").hidden = named === 0;
+}
+$("roster").addEventListener("input", e => {
+  const el = e.target.closest(".roster-name");
+  if (!el) return;
+  roster[+el.dataset.i].name = el.value.trim();
+});
+$("roster").addEventListener("change", () => { renderRoster(); });
+
+async function readDocuments() {
+  const files = [...($("doc_files").files || [])];
+  if (!files.length) return;
+  const btn = $("doc_read");
+  btn.disabled = true;
+  $("doc_bar").hidden = false;
+  const bar = $("doc_bar").firstElementChild;
+  try {
+    if (files.some(doc.isPdf) && !(await pdfjsState())) return;
+    if (!(await faceState())) return;                 // faces are what a roster is built on
+    $("doc_info").innerHTML = row("Reading", "Loading the models…");
+    // Built lazily: a PDF with a text layer never needs the model, so it is not
+    // downloaded or started unless a page turns out to be a scan.
+    let sess = null, sessErr = null;
+    const reader = !nanoPresent() ? null : async canvas => {
+      if (!sess && !sessErr) {
+        try {
+          sess = await ensureSession(f => { $("doc_info").innerHTML = row("Model", `Downloading… ${Math.round(f * 100)}%`); });
+        } catch (err) {
+          sessErr = err;
+          $("doc_info").innerHTML = row("Names", `cannot be read automatically (${esc(err.message)}) — type them in`, true);
+        }
+      }
+      return sessErr ? { legible: false, error: sessErr.message } : readCaption(sess, canvas);
+    };
+    roster = [];
+    for (const [fi, file] of files.entries()) {
+      $("doc_info").innerHTML = row("Reading", `${esc(file.name)} (${fi + 1} of ${files.length})`);
+      const out = await doc.pageImages(file, (n, total) => {
+        bar.style.width = `${Math.round((n / Math.max(1, total)) * 100)}%`;
+        $("doc_info").innerHTML = row("Rendering", `${esc(file.name)} — page ${n} of ${total}`);
+      });
+      const pages = out.pages;
+      const found = await doc.rosterFrom(pages, reader, st => {
+        $("doc_info").innerHTML = row(st.phase === "faces" ? "Finding faces" : "Reading names",
+          `${esc(file.name)} — page ${st.page} of ${st.totalPages}${st.done ? `, ${st.done} face(s)` : ""}`);
+      }, out.texts);
+      for (const r of found) roster.push({ ...r, key: `${fi}-${r.key}`, file: file.name });
+      if (out.truncated)
+        $("doc_info").innerHTML += row("Note", `only the first ${pages.length} of ${out.numPages} pages were read`, true);
+    }
+    if (!reader && roster.length)
+      roster.forEach(r => { if (r.source !== "pdf-text") r.legible = false; });
+    stepState("step_doc", roster.length ? "done" : "");
+    renderRoster();
+  } catch (err) {
+    $("doc_info").innerHTML = row("Could not read the document", esc(`${err.name}: ${err.message}`), true);
+  } finally {
+    btn.disabled = false;
+    $("doc_bar").hidden = true;
+  }
+}
+$("doc_read").addEventListener("click", readDocuments);
+
+// Match anyone still unnamed against the roster, by face. Proposes and shows the
+// score; it never files anything on its own.
+async function nameFromDocument() {
+  const btn = $("name_from_doc");
+  btn.disabled = true;
+  try {
+    const named = roster.filter(r => r.name && r.vector);
+    if (!named.length) { $("face_state").hidden = false; $("face_state").className = "lib-state bad";
+      $("face_state").innerHTML = "No named faces in the document yet."; return; }
+    if (!(await faceState())) return;
+    const targets = grouped.groups.filter(g => !g.person && g.shots.length);
+    if (!targets.length) { $("face_state").className = "lib-state"; $("face_state").innerHTML = "Everyone already has a name."; return; }
+    $("face_state").className = "lib-state";
+    await ensureFaceVectors(targets, (n, t) => { $("face_state").innerHTML = `Comparing faces… ${n} of ${t}`; });
+    let matched = 0;
+    for (const g of targets) {
+      const items = groupItems(g);
+      if (!items.length) continue;
+      const res = faces.checkGroup(items);
+      const ref = res.reference || items[0];
+      const hit = doc.bestMatch(ref.face.vector, named);
+      if (!hit) continue;
+      if (g.badge) {
+        g.badge.id = { ...(g.badge.id || {}), kind: "identity", full_name: hit.entry.name,
+                       given_name: "", family_name: "", organisation: hit.entry.organisation || "",
+                       legible: true, fromDocument: hit.sim };
+        scanCache[cacheKey(g.badge)] = g.badge.id;
+      }
+      matched++;
+      faceWarnings.push(`${hit.entry.name} taken from the document by face (${hit.sim.toFixed(2)}) — please confirm`);
+    }
+    await store.set("scanCache", scanCache);
+    $("face_state").className = matched ? "lib-state bad" : "lib-state";
+    $("face_state").innerHTML = matched
+      ? `Proposed ${matched} name(s) from the document — check each one before filing.`
+      : `No face in the document was close enough (threshold ${faces.SAME_MIN}).`;
+    renderReview();
+  } catch (err) {
+    $("face_state").className = "lib-state bad";
+    $("face_state").innerHTML = esc(`${err.name}: ${err.message}`);
+  } finally {
+    btn.disabled = false;
+  }
+}
+$("name_from_doc").addEventListener("click", nameFromDocument);
 
 // ---- step 4: rename and file ----
 $("apply").addEventListener("click", async () => {

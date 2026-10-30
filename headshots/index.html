@@ -58,8 +58,33 @@
     <div id="folder_info" class="meta"></div>
   </section>
 
+  <section class="step" id="step_doc">
+    <div class="step-head"><span class="step-no">2</span><h2>Add a programme or delegate list</h2>
+      <span class="count">optional</span></div>
+    <p class="step-note">A PDF, a screenshot, or exported pages — anything that puts
+    photographs next to printed names. Every face is found and the name printed with
+    it is picked up, giving a list of people this shoot can be matched against. That
+    covers a missed badge, and shoots with no badges at all.</p>
+    <p class="step-note"><strong>In a PDF the names are read from the document's own
+    text</strong>, so they are exact and no model is used. A scan or a screenshot has
+    no text to read, so there the on-device model has to guess them — those are marked
+    <em>read by the model — check it</em> and should be read through before you rely on
+    them. The model has been caught returning confident, completely invented names.</p>
+    <div id="pdfjs_state" class="lib-state" hidden></div>
+    <div class="row-actions">
+      <input type="file" id="doc_files" accept="application/pdf,image/*" multiple>
+      <button type="button" id="doc_read" disabled>Read the document</button>
+    </div>
+    <p class="step-note">PDFs are rendered on this device. Only embedded fonts are
+    available, so if a page comes out garbled, export it as an image and add that
+    instead — bearing in mind an image's names are guessed, not read.</p>
+    <div class="bar" id="doc_bar" hidden><i></i></div>
+    <div id="doc_info" class="meta"></div>
+    <div id="roster" class="roster"></div>
+  </section>
+
   <section class="step waiting" id="step_scan">
-    <div class="step-head"><span class="step-no">2</span><h2>Read the badges</h2></div>
+    <div class="step-head"><span class="step-no">3</span><h2>Read the badges</h2></div>
     <p class="step-note">Every photo is shown to the on-device model, which says
     whether it is a badge or screen with a written name, or a portrait. Results
     are remembered, so stopping and starting again costs nothing.</p>
@@ -75,13 +100,14 @@
   </section>
 
   <section class="step waiting" id="step_review">
-    <div class="step-head"><span class="step-no">3</span><h2>Check who is who</h2></div>
+    <div class="step-head"><span class="step-no">4</span><h2>Check who is who</h2></div>
     <p class="step-note">One card per person, in the order they were photographed.
     Correct a name by typing in it. If the model mistook a frame, use
     <em>badge</em> / <em>not a badge</em> to regroup — the badge frame is outlined
     in blue.</p>
     <div class="row-actions">
       <button type="button" id="face_check" class="secondary">Check the faces match</button>
+      <button type="button" id="name_from_doc" class="secondary" hidden>Name them from the document</button>
       <span class="step-note" style="margin:0">Compares each person's headshots with
       one another, so a missed badge shows up as a face that does not belong. It
       only flags photos for you to look at — it never regroups or files anything.</span>
@@ -92,7 +118,7 @@
   </section>
 
   <section class="step waiting" id="step_apply">
-    <div class="step-head"><span class="step-no">4</span><h2>Rename and file</h2></div>
+    <div class="step-head"><span class="step-no">5</span><h2>Rename and file</h2></div>
     <p class="step-note">Named people only. Their photos move into a
     <code>done</code> folder as <code>Name Surname 01.jpg</code>; anything
     unnamed, and anything before the first badge, is left exactly where it is.</p>
@@ -106,7 +132,7 @@
   </section>
 
   <section class="step waiting" id="step_report">
-    <div class="step-head"><span class="step-no">5</span><h2>Report</h2></div>
+    <div class="step-head"><span class="step-no">6</span><h2>Report</h2></div>
     <p class="step-note">Who you photographed, and how many of each. The
     Wikipedia column is the only thing on this page that uses the network.</p>
     <div class="row-actions">
@@ -136,6 +162,15 @@
     <p>Everything between one badge and the next is treated as that person. A
     badge the model can't read still starts a new person — it just needs a name
     typing in, so photos never get filed under the person before.</p>
+    <h3>Using a programme instead of badges</h3>
+    <p>If you have a PDF or screenshot pairing photographs with names, add it in
+    step 2. Each face on the page is found and the name printed with it is read,
+    giving a list of people. <em>Name them from the document</em> in step 4 then
+    matches anyone still unnamed by comparing faces — so a shoot with no badges
+    at all can still be filed. It proposes names and shows the score; you confirm
+    them. PDF pages are rendered on this device with Mozilla's pdf.js from our
+    vendored copy (1.7 MB, downloaded once on request); images need no download.</p>
+
     <h3>What it needs</h3>
     <ul>
       <li><strong>Chrome or Edge on a desktop.</strong> Renaming files in your own

@@ -20,9 +20,10 @@ export const ANALYSIS_EDGE = 1280;
 const SCHEMA = {
   type: "object",
   additionalProperties: false,
-  required: ["kind", "full_name", "given_name", "family_name", "organisation", "legible"],
+  required: ["text_seen", "kind", "full_name", "given_name", "family_name", "organisation", "legible"],
   properties: {
     kind: { type: "string", enum: ["identity", "portrait", "other"] },
+    text_seen: { type: "string" },
     full_name: { type: "string" },
     given_name: { type: "string" },
     family_name: { type: "string" },
@@ -45,6 +46,12 @@ const PROMPT = [
   "organisation. Ignore event names, job titles, sponsors and slogans — only the person.",
   "Leave a field as an empty string if it is not shown. Set legible to false if the writing is",
   "too blurred or cut off to read with confidence.",
+  "",
+  "Fill in text_seen FIRST: transcribe every word you can actually read in the image,",
+  "verbatim, before you fill in any other field. Then take the name only from what you just",
+  "transcribed. Do not add anything that is not written there, and never guess a name from the",
+  "person's appearance: if no name is written, leave the name fields empty and set legible to",
+  "false. text_seen must never be empty when there is any writing at all in the image.",
 ].join("\n");
 
 // Is the API present at all (so the UI can explain rather than fail silently)?
@@ -89,6 +96,94 @@ export async function forModel(blob, edge = ANALYSIS_EDGE) {
 
 const clean = s => String(s == null ? "" : s).replace(/\s+/g, " ").trim();
 
+// Accent- and punctuation-insensitive, for checking a name against a transcription.
+const flatten = s => String(s == null ? "" : s).normalize("NFD")
+  .replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+
+// Is the name the model gave actually present in the text it says it read?
+// A model asked to read a name will sometimes supply a famous one instead — on a
+// test programme it returned "Matthew McConaughey", "Jamie Foxx" and "Mark
+// Kermode" for people who were not there. Requiring every part of the name to
+// appear in its own transcription catches that in code rather than trusting the
+// answer.
+//
+// "no" and "cannot tell" are kept apart on purpose. An empty transcription is no
+// evidence either way, and reporting that as an invented name once hid a reading
+// of "Adam Pearson" that was in fact correct.
+function nameSupport(name, textSeen) {
+  const hay = flatten(textSeen);
+  if (!hay) return "unverified";
+  const parts = flatten(name).split(" ").filter(w => w.length >= 2);
+  return parts.length > 0 && parts.every(w => hay.includes(w)) ? "ok" : "invented";
+}
+
+// Reading the caption printed with a portrait in a programme or delegate list.
+// A different job from a badge: the face is already located, and the name sits
+// near it among other text, so the model is told where to look.
+const CAPTION_SCHEMA = {
+  type: "object",
+  additionalProperties: false,
+  required: ["text_seen", "full_name", "given_name", "family_name", "organisation", "legible"],
+  properties: {
+    text_seen: { type: "string" },
+    full_name: { type: "string" },
+    given_name: { type: "string" },
+    family_name: { type: "string" },
+    organisation: { type: "string" },
+    legible: { type: "boolean" },
+  },
+};
+const CAPTION_PROMPT = [
+  "This is a cut-out from a printed programme, delegate list or web page. It shows one",
+  "person's photograph with their name printed beside or beneath it.",
+  "",
+  "Read that person's name exactly as printed, keeping accents and capitalisation. Put the",
+  "first name in given_name, the last name in family_name, and the whole name as printed in",
+  "full_name. Put any company, publication, role or affiliation in organisation.",
+  "",
+  "The name belongs to the person in the photograph — ignore event names, venue names,",
+  "session titles, sponsors, page headings and any other person's name. Leave a field as an",
+  "empty string if it is not shown, and set legible to false if there is no readable name",
+  "for this person or you cannot tell which name is theirs.",
+  "",
+  "Fill in text_seen FIRST: transcribe every word you can actually read in the cut-out,",
+  "verbatim, before you fill in any other field. Then take the name only from what you just",
+  "transcribed. Do not add anything that is not written there, and never guess a name from the",
+  "person's appearance: if no name is printed, leave the name fields empty and set legible to",
+  "false. text_seen must never be empty when there is any writing at all in the cut-out.",
+].join("\n");
+
+// Read the name printed with one portrait. Same contract as identify(): never
+// throws, so one bad cut-out cannot stop a whole document.
+export async function readCaption(session, imageSource) {
+  try {
+    const answer = await session.prompt(
+      [{ role: "user", content: [{ type: "text", value: CAPTION_PROMPT }, { type: "image", value: imageSource }] }],
+      { responseConstraint: CAPTION_SCHEMA });
+    let r;
+    try { r = JSON.parse(answer); }
+    catch (_) { return { legible: false, error: "model did not return JSON", raw: String(answer).slice(0, 200) }; }
+    const given = clean(r.given_name), family = clean(r.family_name);
+    const name = clean(r.full_name) || [given, family].filter(Boolean).join(" ");
+    const textSeen = clean(r.text_seen);
+    const support = name ? nameSupport(name, textSeen) : "ok";
+    const ok = support === "ok";
+    return {
+      full_name: ok ? name : "",
+      given_name: ok ? given : "",
+      family_name: ok ? family : "",
+      organisation: clean(r.organisation),
+      text_seen: textSeen,
+      legible: ok && r.legible !== false,
+      ...(ok ? {} : { rejected: support === "invented"
+        ? `"${name}" is not in the text the model read`
+        : `"${name}" could not be checked — the model read back no text` }),
+    };
+  } catch (err) {
+    return { legible: false, error: `${err.name}: ${err.message}` };
+  }
+}
+
 // Ask the model about one image. Returns the parsed record, or
 // { kind: "unreadable", error } when the model refused or answered unparseably —
 // never a throw, so one odd frame can't stop a whole shoot.
@@ -100,15 +195,22 @@ export async function identify(session, imageSource) {
     let r;
     try { r = JSON.parse(answer); }
     catch (_) { return { kind: "unreadable", error: "model did not return JSON", raw: String(answer).slice(0, 200) }; }
-    const full = clean(r.full_name);
     const given = clean(r.given_name), family = clean(r.family_name);
+    const name = clean(r.full_name) || [given, family].filter(Boolean).join(" ");
+    const textSeen = clean(r.text_seen);
+    const support = name ? nameSupport(name, textSeen) : "ok";
+    const ok = support === "ok";
     return {
       kind: ["identity", "portrait", "other"].includes(r.kind) ? r.kind : "other",
-      full_name: full || [given, family].filter(Boolean).join(" "),
-      given_name: given,
-      family_name: family,
+      full_name: ok ? name : "",
+      given_name: ok ? given : "",
+      family_name: ok ? family : "",
       organisation: clean(r.organisation),
-      legible: r.legible !== false,
+      text_seen: textSeen,
+      legible: ok && r.legible !== false,
+      ...(ok ? {} : { rejected: support === "invented"
+        ? `"${name}" is not in the text the model read`
+        : `"${name}" could not be checked — the model read back no text` }),
     };
   } catch (err) {
     return { kind: "unreadable", error: `${err.name}: ${err.message}` };

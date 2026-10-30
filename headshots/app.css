@@ -65,4 +65,20 @@
 .report .warn { color: #b91c1c; font-weight: 600; }
 .report .muted { color: var(--muted); }
 
+/* The roster read out of a document: a face, and the name printed with it. */
+.roster { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px; margin-top: 10px; }
+.roster-item { border: 1px solid var(--line); border-radius: 8px; padding: 8px; background: var(--panel);
+               display: flex; gap: 8px; align-items: flex-start; }
+.roster-item.unreadable { border-color: #f0d9b5; background: #fffdf8; }
+.roster-item img { width: 56px; height: 56px; object-fit: cover; border-radius: 6px; flex: none; background: #eef0f3; }
+.roster-item .who { min-width: 0; flex: 1; }
+.roster-item input { width: 100%; font-size: 13px; font-weight: 600; }
+.roster-item .meta-line { color: var(--muted); font-size: 11px; margin-top: 2px; word-break: break-word; }
+
 .row-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 10px; }
+
+/* A name the model guessed, rather than one printed in the document. It has been
+   measured being confidently wrong, so it is marked until someone confirms it. */
+.roster-item.unverified { border-left: 3px solid #b8860b; }
+.meta-line.warn { color: #8a6100; }
+.meta-line.good { color: #2a6b2a; }

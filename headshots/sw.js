@@ -6,7 +6,7 @@
 //
 // Bump CACHE whenever the shipped files change, so an installed copy updates.
 
-const CACHE = "headshots-v1";
+const CACHE = "headshots-v2";
 
 // Everything needed to open and use the app with no network. The shared
 // stylesheet lives one level up; a worker may cache any URL its pages request,
@@ -21,6 +21,8 @@ const SHELL = [
   "exif.js",
   "identify.js",
   "db.js",
+  "faces.js",
+  "doc.js",
   "manifest.webmanifest",
   "icon-192.png",
   "icon-512.png",

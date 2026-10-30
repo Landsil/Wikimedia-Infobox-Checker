@@ -36,6 +36,8 @@ A landing hub links to self-contained tool pages; all share one stylesheet.
 | `vendor/mediapipe/` | Our unmodified copy of Google's MediaPipe runtime + two models, with `versions.json` (release id, sizes, SHA-256), `LICENSE`, `NOTICE.md` |
 | `scripts/sync-mediapipe.mjs` | Checks / downloads a newer MediaPipe release (≥ 14 days old upstream) |
 | `.github/workflows/check-mediapipe.yml` | Weekly: a newer release goes to its own branch + a review issue assigned to Landsil |
+| `vendor/pdfjs/` | Our unmodified copy of Mozilla's pdf.js (the two minified ESM builds), with `versions.json`, `LICENSE`, `NOTICE.md` |
+| `scripts/sync-pdfjs.mjs` | Checks / downloads a newer pdf.js release — same rules as the MediaPipe sync |
 | `headshots/` | **Headshots** — installable, offline PWA for an event shoot: badge photos → names → grouped, renamed headshots. Its own scope, worker and storage |
 | `wikiportraits.js` | WikiPortraits photographer badge, shared by `finder.html` and `history.html` (classic script) |
 | `style.css` | Shared styles for all pages |
@@ -468,6 +470,12 @@ person's badge. This reads the folder in capture-time order, reads the names off
 the badge frames with Chrome's built-in model, groups each run of headshots under
 the badge before it, and renames them into a `done` folder.
 
+A document can be dropped in first (a programme, delegate list or press pack).
+Each person in it becomes a roster entry carrying a face, so a headshot whose
+badge was missed can be named by matching faces rather than by typing. Names in a
+PDF are taken from the document's **own text layer**, not from a model — see
+*Building a roster from a document* below for the measurement that forced that.
+
 Why a subdirectory and not one `.html` at the root: a service worker can only
 control its own folder and below, and GitHub Pages cannot send the
 `Service-Worker-Allowed` header that would widen the scope. Living in
@@ -483,6 +491,7 @@ IndexedDB, so nothing it does can affect the other four pages.
 | `exif.js` | Capture time from a JPEG's EXIF, no dependency; falls back to the file date |
 | `identify.js` | Reading a name off a badge with the Prompt API (Gemini Nano) |
 | `faces.js` | Checking a run of headshots really is one person: face crop → embedding → cosine similarity |
+| `doc.js` | Building a roster from a document: PDF → page images + text layer → faces → the name printed with each |
 | `demo.js` | A sample shoot — drawn badges and stand-in portraits, with EXIF spliced in |
 | `db.js` | A key/value corner of IndexedDB, so a shoot survives closing the tab |
 | `sw.js`, `manifest.webmanifest`, `icon-*.png` | PWA shell: offline cache, install metadata, icons |
@@ -545,6 +554,86 @@ pose models) is downloaded from this site on request, SHA-256 checked, and kept
 in this app's own Cache Storage. `check.html` has a panel to run the comparison
 on your own photos and see whether 0.55 separates them.
 
+### Building a roster from a document (optional step 2)
+
+A programme, delegate list or press pack usually pairs each person's photograph
+with their printed name. Dropping one in gives every later step a roster: a
+headshot whose badge was missed can then be matched to a name **by face**,
+without anyone typing a list.
+
+Each page is rendered to an image by Mozilla's pdf.js (our vendored copy), every
+face on it is found, and the name printed with that face is attached to it. Images
+and screenshots are accepted too and used as a single page.
+
+**Names come from the PDF's own text layer, not from a model.** This is the whole
+reason the step can be trusted, and it was not the first design. Reading the
+caption with Chrome's built-in model was tried and measured failing three
+different ways on one test programme whose real guests were Anthony Wonke, Ashley
+Walters, Adam Pearson and Bella Ramsey:
+
+| Attempt | Result |
+| :-- | :-- |
+| Cut-out too short | Read the step-and-repeat banner *inside* the photograph ("BFI LONDON FILM FESTIVAL") and invented four names |
+| Cut-out widened | One correct read, but a **correct** "Adam Pearson" was thrown away because the model returned an empty transcription |
+| Transcription forced first | Invented all four names — "Denzel Washington", "Steve McQueen", "Stephen Fry", "Emerald Fennell" — **and** invented a transcription agreeing with each one |
+
+The third attempt is the one that settled it. The guard was a code check that
+every word of the name must appear in the model's own transcription of the
+image; once the model wrote the transcription to match the name it had invented,
+the guard passed every hallucination. **A model's output cannot be audited
+against the same model's output** — it had only ever worked by luck, when the
+model happened to leave the transcription honest. The text layer can audit it,
+because it is the document's own bytes.
+
+So `captionFor()` matches text to faces by position instead. It takes the page's
+text runs with their rendered boxes (`page.getTextContent()`, mapped through the
+viewport transform), groups them into lines, and for each face picks the nearest
+line below it that sits in the same column and reads like a name. Four rules,
+each one measured rather than guessed:
+
+- **A wide horizontal gap splits a line.** Captions in a grid share a baseline
+  across columns, so grouping purely by baseline produced the single line
+  `"Anthony WonkeAshley Walters"`, which then matched neither face. A gap only has
+  to beat a word space to split, so it is measured against the font height.
+- **The column window is generous sideways.** A caption is left-aligned to the
+  photograph while the face is centred in it, so a window measured off the face
+  box clips the start of the name — "Adam Pearson" came back as "earson". The
+  window is therefore at least 12% of the page width to each side, and only has
+  to *overlap* a line rather than contain it.
+- **How far down to look is a property of the page, not of the face.** In
+  face-heights it lost exactly the people whose faces were small: an 82px face in
+  a tall photograph reached y=1152 while its caption was printed at y=1280, so
+  two of four people on a page were reported as having no caption. The reach is
+  35% of the page height. A generous reach is safe because the *nearest*
+  qualifying line wins, so it cannot steal the row below.
+- **A line must look like a name** to be taken as one: two or more words, every
+  one capitalised, no digits. That is what keeps "Festival Programme 2026" and
+  "Guest speaker" out of the name field — the latter is kept as the organisation
+  when it follows the name closely enough. The organisation is looked up relative
+  to the *name* line rather than the face, because searching the face's reach
+  window missed one by three pixels.
+
+Measured on a two-page test programme (2026-10-30, Chrome 156): **4 of 4 faces
+matched to the right name and organisation** — Anthony Wonke, Ashley Walters,
+Adam Pearson, Bella Ramsey — in 69 ms, with no model loaded at all. The two
+spurious low-confidence detections inside the event photographs are dropped by a
+0.5 confidence floor, which a printed portrait comfortably clears.
+
+A face with no caption anywhere near it is reported as having none. The model is
+**not** consulted as a fallback on a page that has a text layer, because a page
+whose text we can read and which still has no name for this face genuinely has
+no name for it; asking would only invent one.
+
+Scans and screenshots have no text layer, and there the model is the only option.
+Those names are returned marked `unverified` and have to be confirmed by hand —
+the finding above is exactly why they are not treated as facts.
+
+Face detection on a page needed its own fix. The detector scales whatever it is
+given down to its own small input, so a portrait that is small within a big page
+disappears: on a 1801x2548 render a 150px face lands at about 11px, and only 1 of
+4 portraits was found. `facesIn(page, { tile: true })` therefore also searches
+overlapping tiles (760px, 25% overlap) and de-duplicates by box overlap.
+
 ### What it needs, and what it does not
 
 - **Chrome or Edge on desktop.** `showDirectoryPicker` is Chrome 86+/Edge only —
@@ -578,14 +667,30 @@ photo. It also works in Firefox and Safari, which otherwise cannot pick a folder
 `check.html` reports what the browser supports and runs an 18-assertion self-test
 of the pipeline against that private storage: EXIF ordering, grouping, the native
 `move()`, numbering continuation, and filename safety. Measured 2026-10-30 in
-Chrome 156: all 18 pass, plus 17 end-to-end assertions driving the app itself
-through the sample shoot to renamed files and a Wikipedia verdict.
+Chrome 156: **all 18 pass**, plus **20 end-to-end assertions** driving the app
+itself through the sample shoot to renamed files and a Wikipedia verdict. It also
+has panels to run the face comparison, the document roster and the badge reading
+on your own files, which is how each of the findings above was measured.
 
-**Not yet verified by the maintainer's own run:** the badge reading itself. macOS
-privacy protection blocks reading the Chrome profile from a shell, and headless
-test profiles report the model as `downloadable` rather than sharing the
-downloaded one, so `identify()` is written to the documented API and is checked
-with the "Badge reading" panel on `check.html`.
+**The model has now been run** (2026-10-30, Chrome 156, a headless test profile
+that downloaded it) and the result changed the design. Asked to read names off
+portraits it confidently returned famous names that were not on the page, and
+when asked to transcribe what it had read, invented a transcription agreeing with
+them. Details and the three measured rounds are above, under *Building a roster
+from a document*.
+
+What follows from that, and holds for the badge step too:
+
+- **A name from the model is a suggestion, never a fact.** Every one is shown for
+  confirmation before anything is filed under it, and names taken from a PDF's
+  text layer are marked apart from names a model produced.
+- **Checking a model against itself does not work.** The transcription guard in
+  `identify.js` is kept because it does catch the easy case — a name with no
+  supporting text — and it distinguishes "invented" from "could not be checked"
+  so a correct read is not thrown away. It is not relied on.
+- The badge path still has no ground truth to check against, since a badge
+  photograph has no text layer. So badge names are treated the same way:
+  suggestions, confirmed by the photographer in step 4.
 
 ## Trial photo score (`score.html`)
 

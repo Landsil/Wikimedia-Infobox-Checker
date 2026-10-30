@@ -36,6 +36,17 @@
   <button type="button" id="run_faces">Compare</button>
   <pre id="faces_out" class="log"></pre>
 
+  <h2 class="section-head">Document roster (PDF or image)</h2>
+  <p class="lead">Pick a programme, delegate list or screenshot that pairs
+  photographs with names. Every page is rendered here, every face found, and the
+  name printed with each face read if this browser has the model. Nothing leaves
+  the device.</p>
+  <div id="pdfjs_state" class="lib-state"></div>
+  <input type="file" id="doc_files" accept="application/pdf,image/*" multiple>
+  <button type="button" id="run_doc">Read it</button>
+  <pre id="doc_out" class="log"></pre>
+  <div id="doc_roster" class="roster"></div>
+
   <h2 class="section-head">Badge reading (Gemini Nano)</h2>
   <p class="lead">Pick a photo of a badge, a name card or a screenshot showing
   someone's details. Nothing leaves the device.</p>
@@ -51,11 +62,13 @@
 <script type="module">
 import { captureTime, exifDate } from "./exif.js";
 import { listPhotos, groupPhotos, applyGroups, safeName, stemFor, DONE_DIR } from "./shoot.js";
-import { nanoPresent, nanoAvailability, createSession, identify, forModel, ANALYSIS_EDGE } from "./identify.js";
+import { nanoPresent, nanoAvailability, createSession, identify, readCaption as identifyCaption, forModel, ANALYSIS_EDGE } from "./identify.js";
 import * as faces from "./faces.js";
+import * as doc from "./doc.js";
 import { withExif } from "./demo.js";
 
 const $ = id => document.getElementById(id);
+let session = null;        // one model session, shared by the document and badge panels
 const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g,
   c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const row = (k, v, warn) => `<div class="row"><span class="k">${esc(k)}</span><span class="v${warn ? " warn" : ""}">${v}</span></div>`;
@@ -262,8 +275,84 @@ $("run_faces").addEventListener("click", async () => {
   } finally { $("run_faces").disabled = false; }
 });
 
+// ---- document roster ----
+async function showPdfjsState() {
+  const st = await doc.state();
+  const el = $("pdfjs_state");
+  if (st.status === "ready") { el.className = "lib-state ok"; el.innerHTML = `pdf.js saved (<code>${esc(st.version)}</code>, ${(st.bytes / 1e6).toFixed(2)} MB) ✓`; return true; }
+  el.className = st.status === "missing" ? "lib-state need" : "lib-state bad";
+  el.innerHTML = `${st.status === "missing" ? "Not saved yet" : `Out of date (${esc(st.old.join(", "))})`} — needed only for PDFs. `
+    + `<button type="button" id="pdfjs_get">${st.status === "missing" ? "Download" : "Update"} (${(st.bytes / 1e6).toFixed(2)} MB)</button>`;
+  return false;
+}
+showPdfjsState();
+$("pdfjs_state").addEventListener("click", async e => {
+  if (!e.target || e.target.id !== "pdfjs_get") return;
+  e.target.disabled = true;
+  try {
+    await doc.save((d, t, n) => { $("pdfjs_state").innerHTML = `Downloading ${esc(n)}… ${(d / 1e6).toFixed(2)} of ${(t / 1e6).toFixed(2)} MB`; });
+    await showPdfjsState();
+  } catch (err) { $("pdfjs_state").className = "lib-state bad"; $("pdfjs_state").innerHTML = esc(err.message); }
+});
+$("run_doc").addEventListener("click", async () => {
+  const files = [...($("doc_files").files || [])];
+  const out = $("doc_out");
+  out.textContent = ""; $("doc_roster").innerHTML = "";
+  const log = t => { out.textContent += t + "\n"; };
+  if (!files.length) { log("Pick a file first."); return; }
+  $("run_doc").disabled = true;
+  try {
+    if (files.some(doc.isPdf) && !(await showPdfjsState())) { log("Download pdf.js first."); log("DOC DONE"); return; }
+    if (!(await showFaceState())) { log("Download the face models first (section above)."); log("DOC DONE"); return; }
+    // Built on first use: a page with a text layer never reaches the model, so
+    // nothing is downloaded for a normal PDF.
+    let sessErr = null;
+    const reader = !nanoPresent() ? null : async c => {
+      if (!session && !sessErr) {
+        try { session = await createSession(f => { out.textContent = `Downloading the model… ${Math.round(f * 100)}%\n`; }); }
+        catch (err) { sessErr = err; log(`names cannot be read: ${err.message}`); }
+      }
+      return sessErr ? { legible: false, error: sessErr.message } : identifyCaption(session, c);
+    };
+    if (!nanoPresent()) log("no built-in model in this browser — faces only, names blank");
+    const all = [];
+    for (const f of files) {
+      log(`\n${f.name} (${(f.size / 1e6).toFixed(2)} MB, ${doc.isPdf(f) ? "PDF" : f.type || "image"})`);
+      const t0 = performance.now();
+      const res = await doc.pageImages(f, (n, t) => { out.textContent = out.textContent.replace(/\n  rendering.*$/, "") + `\n  rendering page ${n} of ${t}`; });
+      const pages = res.pages, texts = res.texts || [];
+      log(`  text layer: ${texts.map((t, i) => `page ${i + 1} ${t ? t.length + " runs" : "none"}`).join(", ")}`);
+      out.textContent = out.textContent.replace(/\n  rendering.*$/, "");
+      log(`  ${pages.length} page(s) rendered, ${pages[0].width}x${pages[0].height}px, in ${Math.round(performance.now() - t0)} ms`);
+      if (res.truncated) log(`  (only the first ${pages.length} of ${res.numPages} pages)`);
+      const found = await doc.rosterFrom(pages, reader, st => {
+        out.textContent = out.textContent.replace(/\n  working.*$/, "") + `\n  working: ${st.phase} page ${st.page}/${st.totalPages}`;
+      }, texts);
+      out.textContent = out.textContent.replace(/\n  working.*$/, "");
+      log(`  ${found.length} face(s) found`);
+      for (const r of found) {
+        log(`    page ${r.page} face ${r.score.toFixed(2)}  name: ${r.name || "(none read)"}`
+          + `${r.organisation ? "  org: " + r.organisation : ""}`
+          + `  [${r.source || "?"}${r.unverified ? ", UNVERIFIED" : ""}${r.noCaption ? ", no caption on the page" : ""}]`
+          + `${r.tried ? `  (cut-out ${r.tried}x)` : ""}`);
+        if (r.rejected) log(`      REJECTED: ${r.rejected}`);
+        if (r.textSeen) log(`      text read: ${JSON.stringify(r.textSeen.slice(0, 150))}`);
+        if (r.error) log(`      error: ${r.error}`);
+      }
+      all.push(...found);
+    }
+    $("doc_roster").innerHTML = all.map(r => `<div class="roster-item${r.name ? "" : " unreadable"}">
+      <img src="${r.thumb}" alt=""><div class="who"><strong>${esc(r.name) || "(no name read)"}</strong>
+      <div class="meta-line">page ${r.page} · face ${r.score.toFixed(2)}</div></div></div>`).join("");
+    log(`\ntotal: ${all.length} face(s), ${all.filter(r => r.name).length} with a name`);
+    log("DOC DONE");
+  } catch (err) {
+    log(`ERROR ${err.name}: ${err.message}`);
+    log("DOC DONE");
+  } finally { $("run_doc").disabled = false; }
+});
+
 // ---- badge reading ----
-let session = null;
 $("run_badge").addEventListener("click", async () => {
   const f = $("badge_file").files && $("badge_file").files[0];
   const out = $("badge_out");
