@@ -2,7 +2,7 @@
   "schema": 1,
   "algoVersion": 3,
   "identity": "category|Category:Photographs by Mateusz Malta",
-  "asOf": "2026-10-26T09:12:08.835Z",
+  "asOf": "2026-11-01T09:08:12.738Z",
   "input": {
     "type": "category",
     "title": "Category:Photographs by Mateusz Malta"
@@ -64,7 +64,10 @@
     "en:Bella Ramsey",
     "en:Ellie Bamber",
     "en:Fran Scott",
-    "en:Matt Parker"
+    "en:Matt Parker",
+    "en:Eiza González",
+    "de:Joy Gharoro-Akpojotor",
+    "en:Naomi Ackie"
   ],
   "people": [
     {
@@ -1234,12 +1237,87 @@
           "user": "DanielRigal"
         }
       ]
+    },
+    {
+      "lang": "en",
+      "article": "Eiza González",
+      "label": "Eiza Gonzalez",
+      "qid": "Q572761",
+      "topRev": 1381470684,
+      "more": false,
+      "lead": "File:Eiza González at 2026 London Film Festival 01.jpg",
+      "timeline": [
+        {
+          "file": "File:Eiza González at 2026 London Film Festival 01.jpg",
+          "rev": 1381470684,
+          "ts": "2026-10-22T18:58:52Z",
+          "user": "Xcliff06"
+        },
+        {
+          "file": "File:Eiza González - AMC The Grove - Ash.jpg",
+          "rev": 1376379589,
+          "ts": "2026-09-23T20:49:51Z",
+          "user": "Omnipaedista"
+        },
+        {
+          "file": "File:Eiza González entrevista 2022.jpg",
+          "rev": 1311141668,
+          "ts": "2025-09-13T17:23:40Z",
+          "user": "FlightTime"
+        }
+      ]
+    },
+    {
+      "lang": "de",
+      "article": "Joy Gharoro-Akpojotor",
+      "label": "Q136410047",
+      "qid": "Q136410047",
+      "topRev": 271307548,
+      "more": false,
+      "lead": "File:Joy Gharoro-Akpojotor 02.jpg",
+      "timeline": [
+        {
+          "file": "File:Joy Gharoro-Akpojotor 02.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Naomi Ackie",
+      "label": "Naomi Ackie",
+      "qid": "Q47456743",
+      "topRev": 1383099281,
+      "more": false,
+      "lead": "File:Naomi Ackie at 2026 London Film Festival 03.jpg",
+      "timeline": [
+        {
+          "file": "File:Naomi Ackie at 2026 London Film Festival 03.jpg",
+          "rev": 1383099281,
+          "ts": "2026-11-01T00:05:18Z",
+          "user": "Plasticwonder"
+        },
+        {
+          "file": "File:Naomi Ackie at SXSW 2026. 02.jpg",
+          "rev": 1382184797,
+          "ts": "2026-10-27T03:55:14Z",
+          "user": "~2026-57455-97"
+        },
+        {
+          "file": "File:Naomi Ackie.png",
+          "rev": 1350642062,
+          "ts": "2026-04-23T03:11:18Z",
+          "user": "Pacharah"
+        }
+      ]
     }
   ],
   "depth": 1,
   "bg": {
-    "lastFull": "2026-10-13T15:22:37.720Z",
-    "lastRun": "2026-10-26T09:12:08.835Z",
-    "lastMode": "new"
+    "lastFull": "2026-11-01T09:08:12.737Z",
+    "lastRun": "2026-11-01T09:08:12.737Z",
+    "lastMode": "full"
   }
 }
