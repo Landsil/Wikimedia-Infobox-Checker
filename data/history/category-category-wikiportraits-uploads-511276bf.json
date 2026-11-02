@@ -2,19 +2,19 @@
   "schema": 1,
   "algoVersion": 3,
   "identity": "category|Category:WikiPortraits uploads",
-  "asOf": "2026-11-01T09:43:05.418Z",
+  "asOf": "2026-11-02T11:20:01.351Z",
   "input": {
     "type": "category",
     "title": "Category:WikiPortraits uploads"
   },
   "type": "category",
   "count": 3,
-  "addedThrough": "2026-11-01T08:12:36Z",
+  "addedThrough": "2026-11-02T07:07:36Z",
   "exclude": [
     "Category:WikiPortraits photos of animals"
   ],
   "uncapped": true,
-  "scanned": 129191,
+  "scanned": 129253,
   "pending": [],
   "done": [
     "fr:Laurène Marx",
@@ -9278,7 +9278,36 @@
     "en:Dyshawn Pierre",
     "fr:Edina Begić",
     "en:Erik Stevenson",
-    "en:Facundo Campazzo"
+    "en:Facundo Campazzo",
+    "en:Brenda Cooper",
+    "en:Darrell Schweitzer",
+    "en:David D. Levine",
+    "en:Deborah J. Ross",
+    "en:Karen Haber",
+    "en:Tina Connolly",
+    "en:Alberto Abalde",
+    "en:Andrés Feliz",
+    "en:Jaylen Hands",
+    "it:Ema Strunjak",
+    "tr:Katelyn Evans",
+    "tr:Sude Taşbaş",
+    "en:Vanja Ivanović",
+    "en:Joy Frempong",
+    "en:Ágatha Ruiz de la Prada",
+    "tr:Firdevs Kiremitçi",
+    "en:Francesca Michielin",
+    "it:Giovanni Emejuru",
+    "it:Giuseppe Bonito (regista)",
+    "tr:Gizem Mısra Aşçı",
+    "fr:Gérald Ayayi",
+    "en:Götz Aly",
+    "en:Hakim Zziwa",
+    "tr:Hande Naz Sunar",
+    "en:Hannah Wakeford",
+    "en:Hazal Selin Uygur",
+    "en:Iliona",
+    "en:Isabel Webster",
+    "en:Isabelle Bourne"
   ],
   "people": [
     {
@@ -89768,10 +89797,17 @@
       "article": "Terry Matalas",
       "label": "Terry Matalas",
       "qid": "Q64853354",
-      "topRev": 1383164674,
+      "topRev": 1383186520,
       "more": false,
-      "lead": "File:Terry Matalas at 53rd Saturn Awards 2026-01.jpg",
+      "lead": "File:Terry Matalas Photo Op GalaxyCon Austin 2023.jpg",
+      "outside": true,
       "timeline": [
+        {
+          "file": "File:Terry Matalas Photo Op GalaxyCon Austin 2023.jpg",
+          "rev": 1383186520,
+          "ts": "2026-11-01T12:10:00Z",
+          "user": "Nightscream"
+        },
         {
           "file": "File:Terry Matalas at 53rd Saturn Awards 2026-01.jpg",
           "rev": 1383164674,
@@ -89783,12 +89819,6 @@
           "rev": 1380775548,
           "ts": "2026-10-17T20:21:49Z",
           "user": "Retrotechexpert"
-        },
-        {
-          "file": "File:Terry Matalas at 53rd Saturn Awards 2026-01.jpg",
-          "rev": 1380218313,
-          "ts": "2026-10-14T13:43:02Z",
-          "user": "Nightscream"
         }
       ]
     },
@@ -165286,10 +165316,16 @@
       "article": "Bill Adair (journalist)",
       "label": "Bill Adair",
       "qid": "Q18977766",
-      "topRev": 1369258573,
+      "topRev": 1383350283,
       "more": false,
-      "lead": "File:Bill Adair portrait at WikiPortraits Studio at SXSW 2025 03 (cropped).jpg",
+      "lead": "File:Bill Adair at WikiConference North America 2026 (cropped).jpg",
       "timeline": [
+        {
+          "file": "File:Bill Adair at WikiConference North America 2026 (cropped).jpg",
+          "rev": 1383350283,
+          "ts": "2026-11-02T06:47:14Z",
+          "user": "SuperHamster"
+        },
         {
           "file": "File:Bill Adair portrait at WikiPortraits Studio at SXSW 2025 03 (cropped).jpg",
           "rev": 1369258573,
@@ -199275,15 +199311,21 @@
       "article": "Vita Akimova",
       "label": "Vita Akimova",
       "qid": "Q112650425",
-      "topRev": 1369095467,
+      "topRev": 1383263089,
       "more": false,
-      "lead": "File:Vita Akimova 19 U.S. ProVictoria Pallavolo Monza WV CEV WCL 20260107 (1) (cropped).jpg",
+      "lead": "File:Vita Akimova 22 Galatasaray WV TWVL 20261018 (2).JPG",
       "timeline": [
         {
-          "file": "File:Vita Akimova 19 U.S. ProVictoria Pallavolo Monza WV CEV WCL 20260107 (1) (cropped).jpg",
-          "rev": 1369095467,
-          "ts": "2026-08-12T21:37:01Z",
+          "file": "File:Vita Akimova 22 Galatasaray WV TWVL 20261018 (2).JPG",
+          "rev": 1383263089,
+          "ts": "2026-11-01T20:25:36Z",
           "user": "Ozanozan"
+        },
+        {
+          "file": "File:Vita Akimova 19 U.S. ProVictoria Pallavolo Monza WV CEV WCL 20260107 (1) (cropped).jpg",
+          "rev": 1382928924,
+          "ts": "2026-10-31T01:28:11Z",
+          "user": "Zackmann08"
         }
       ]
     },
@@ -219522,7 +219564,7 @@
       "qid": "Q116586551",
       "topRev": 38290398,
       "more": false,
-      "lead": "File:İrem Çor 7 Aras Kargo SK WV TWVC 20260927 (1).JPG",
+      "lead": "File:İrem Çor 7 Aras Kargo SK WV TWVC 20260927 (1) (cropped).JPG",
       "timeline": [
         {
           "file": "File:İrem Çor 7 Aras Kargo SK WV TWVC 20260927 (1).JPG",
@@ -220128,15 +220170,22 @@
       "article": "Yiyun Li",
       "label": "Yiyun Li",
       "qid": "Q460088",
-      "topRev": 1381746241,
-      "more": true,
-      "lead": "File:Yiyun Li at BBF 2026 2 (cropped).jpg",
+      "topRev": 1383308432,
+      "more": false,
+      "lead": "File:Yiyun Li.jpg",
+      "outside": true,
       "timeline": [
         {
+          "file": "File:Yiyun Li.jpg",
+          "rev": 1383308432,
+          "ts": "2026-11-02T01:23:30Z",
+          "user": "Br1nkp1nk"
+        },
+        {
           "file": "File:Yiyun Li at BBF 2026 2 (cropped).jpg",
-          "rev": 1381746241,
-          "ts": "2026-10-24T14:43:57Z",
-          "user": "Hemiauchenia"
+          "rev": 1383114020,
+          "ts": "2026-11-01T01:42:06Z",
+          "user": "Arboliva"
         },
         {
           "file": "File:Yiyun Li.png",
@@ -220226,10 +220275,16 @@
       "article": "Ellen Datlow",
       "label": "Ellen Datlow",
       "qid": "Q1810264",
-      "topRev": 1381838480,
-      "more": true,
-      "lead": "File:Ellen Datlow at World Fantasy Convention 2026.jpg",
+      "topRev": 1383331460,
+      "more": false,
+      "lead": "File:Ellen Datlow at the World Fantasy Convention 2026.jpg",
       "timeline": [
+        {
+          "file": "File:Ellen Datlow at the World Fantasy Convention 2026.jpg",
+          "rev": 1383331460,
+          "ts": "2026-11-02T03:57:41Z",
+          "user": "Revirvlkodlaku"
+        },
         {
           "file": "File:Ellen Datlow at World Fantasy Convention 2026.jpg",
           "rev": 1381838480,
@@ -224324,10 +224379,17 @@
       "article": "Claudia Sheinbaum",
       "label": "Q5771800",
       "qid": "Q5771800",
-      "topRev": 1383041750,
+      "topRev": 1383337948,
       "more": false,
-      "lead": "File:Claudia Sheinbaum Argentina v Spain 19 July 2026-281 (3x4 close up cropped).jpg",
+      "lead": "File:Claudia Sheinbaum (2025) (cropped).jpg",
+      "outside": true,
       "timeline": [
+        {
+          "file": "File:Claudia Sheinbaum (2025) (cropped).jpg",
+          "rev": 1383337948,
+          "ts": "2026-11-02T04:57:35Z",
+          "user": "Enmanuelgac"
+        },
         {
           "file": "File:Claudia Sheinbaum Argentina v Spain 19 July 2026-281 (3x4 close up cropped).jpg",
           "rev": 1383041750,
@@ -224339,12 +224401,6 @@
           "rev": 1382899652,
           "ts": "2026-10-30T22:23:29Z",
           "user": "Enmanuelgac"
-        },
-        {
-          "file": "File:Claudia Sheinbaum in 2025 (3x4 cropped).jpg",
-          "rev": 1380002992,
-          "ts": "2026-10-13T05:18:17Z",
-          "user": "EchoLuminary"
         }
       ]
     },
@@ -224658,6 +224714,607 @@
           "user": "~2026-25102-59"
         }
       ]
+    },
+    {
+      "lang": "en",
+      "article": "Brenda Cooper",
+      "label": "Brenda Cooper",
+      "qid": "Q4960658",
+      "topRev": 1383252048,
+      "more": false,
+      "lead": "File:Brenda Cooper at World Fantasy Convention 2026.jpg",
+      "timeline": [
+        {
+          "file": "File:Brenda Cooper at World Fantasy Convention 2026.jpg",
+          "rev": 1383252048,
+          "ts": "2026-11-01T19:23:47Z",
+          "user": "Rosiestep"
+        },
+        {
+          "file": "File:Brenda Cooper, author.jpg",
+          "rev": 771042598,
+          "ts": "2017-03-19T04:40:50Z",
+          "user": "Janna Silverstein"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Darrell Schweitzer",
+      "label": "Darrell Schweitzer",
+      "qid": "Q4521762",
+      "topRev": 1383270756,
+      "more": true,
+      "lead": "File:Darrell Schweitzer at World Fantasy Convention 2026.jpg",
+      "timeline": [
+        {
+          "file": "File:Darrell Schweitzer at World Fantasy Convention 2026.jpg",
+          "rev": 1383270756,
+          "ts": "2026-11-01T21:16:16Z",
+          "user": "Rosiestep"
+        },
+        {
+          "file": "File:Darrell Schweitzer.jpg",
+          "rev": 1371379556,
+          "ts": "2026-08-26T03:47:13Z",
+          "user": "ZackBot"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "David D. Levine",
+      "label": "David D. Levine",
+      "qid": "Q5232778",
+      "topRev": 1383246108,
+      "more": false,
+      "lead": "File:David D. Levine at World Fantasy Convention 2026.jpg",
+      "timeline": [
+        {
+          "file": "File:David D. Levine at World Fantasy Convention 2026.jpg",
+          "rev": 1383246108,
+          "ts": "2026-11-01T18:56:32Z",
+          "user": "Rosiestep"
+        },
+        {
+          "file": "File:David-D-Levine.jpg",
+          "rev": 1372720515,
+          "ts": "2026-09-01T23:56:01Z",
+          "user": "Xuthoria"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Deborah J. Ross",
+      "label": "Deborah J. Ross",
+      "qid": "Q1419759",
+      "topRev": 1383341712,
+      "more": false,
+      "lead": "File:Deborah J. Ross at World Fantasy Convention 2026.jpg",
+      "timeline": [
+        {
+          "file": "File:Deborah J. Ross at World Fantasy Convention 2026.jpg",
+          "rev": 1383341712,
+          "ts": "2026-11-02T05:33:22Z",
+          "user": "~2026-58224-42"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Karen Haber",
+      "label": "Karen Haber",
+      "qid": "Q6369672",
+      "topRev": 1383239452,
+      "more": false,
+      "lead": "File:Karen Haber at World Fantasy Convention 2026.jpg",
+      "timeline": [
+        {
+          "file": "File:Karen Haber at World Fantasy Convention 2026.jpg",
+          "rev": 1383239452,
+          "ts": "2026-11-01T18:23:24Z",
+          "user": "Rosiestep"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Tina Connolly",
+      "label": "Tina Connolly",
+      "qid": "Q18206053",
+      "topRev": 1383271534,
+      "more": false,
+      "lead": "File:Tina Connolly at World Fantasy Convention 2026.jpg",
+      "timeline": [
+        {
+          "file": "File:Tina Connolly at World Fantasy Convention 2026.jpg",
+          "rev": 1383271534,
+          "ts": "2026-11-01T21:21:41Z",
+          "user": "Rosiestep"
+        },
+        {
+          "file": "File:Event chalkboard at Powell's Cedar Hills.jpg",
+          "rev": 1374588641,
+          "ts": "2026-09-12T23:46:58Z",
+          "user": "ExtremeLanguage"
+        },
+        {
+          "file": "File:Tina Connolly-author-headshot1-color.jpg",
+          "rev": 640348351,
+          "ts": "2014-12-31T06:37:56Z",
+          "user": "206.162.225.86"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Alberto Abalde",
+      "label": "Alberto Abalde",
+      "qid": "Q19845456",
+      "topRev": 1383353227,
+      "more": false,
+      "lead": "File:Alberto Abalde 6 Real Madrid Baloncesto Euroleague 20260929 (1) (cropped).JPG",
+      "timeline": [
+        {
+          "file": "File:Alberto Abalde 6 Real Madrid Baloncesto Euroleague 20260929 (1) (cropped).JPG",
+          "rev": 1383353227,
+          "ts": "2026-11-02T07:09:12Z",
+          "user": "Zafer"
+        },
+        {
+          "file": "File:Alberto Abalde 6 Real Madrid Baloncesto Euroleague 20250206 (5).jpg",
+          "rev": 1375744778,
+          "ts": "2026-09-19T20:01:50Z",
+          "user": "Zdremon"
+        },
+        {
+          "file": "File:Alberto Abalde 6 Valencia Basket EuroLeague 20180201.jpg",
+          "rev": 1291962831,
+          "ts": "2025-05-24T12:24:01Z",
+          "user": "Rikster2"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Andrés Feliz",
+      "label": "Andrés Feliz",
+      "qid": "Q20655659",
+      "topRev": 1383281354,
+      "more": false,
+      "lead": "File:Andrés Feliz 24 Real Madrid Baloncesto Euroleague 20260929 (1) (cropped).JPG",
+      "timeline": [
+        {
+          "file": "File:Andrés Feliz 24 Real Madrid Baloncesto Euroleague 20260929 (1) (cropped).JPG",
+          "rev": 1383281354,
+          "ts": "2026-11-01T22:24:26Z",
+          "user": "Zafer"
+        },
+        {
+          "file": "File:Andrés Feliz 24 Real Madrid Baloncesto Euroleague 20250206 (2).jpg",
+          "rev": 1380369439,
+          "ts": "2026-10-15T09:25:52Z",
+          "user": "Aloulou1919"
+        },
+        {
+          "file": "File:Andres Feliz.jpg",
+          "rev": 1293045644,
+          "ts": "2025-05-30T10:10:17Z",
+          "user": "2A01:CB08:D40:6800:BC1E:A0F1:553D:21C1"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Jaylen Hands",
+      "label": "Jaylen Hands",
+      "qid": "Q30090096",
+      "topRev": 1383196541,
+      "more": true,
+      "lead": "File:Jaylen Hands 50 SIG Strasbourg BCL 20261020 (2) (cropped).JPG",
+      "timeline": [
+        {
+          "file": "File:Jaylen Hands 50 SIG Strasbourg BCL 20261020 (2) (cropped).JPG",
+          "rev": 1383196541,
+          "ts": "2026-11-01T13:34:29Z",
+          "user": "CalDoesIt"
+        },
+        {
+          "file": "File:20170329 MCDAAG Jaylen Hands running it.jpg",
+          "rev": 1376626651,
+          "ts": "2026-09-25T07:52:35Z",
+          "user": "Erincoktem"
+        }
+      ]
+    },
+    {
+      "lang": "it",
+      "article": "Ema Strunjak",
+      "label": "Ema Strunjak",
+      "qid": "Q42216088",
+      "topRev": 152953944,
+      "more": false,
+      "lead": "File:Ema Strunjak 13 İlbank WV TWVL 20261018 (3) (cropped).JPG",
+      "timeline": [
+        {
+          "file": "File:Ema Strunjak 13 İlbank WV TWVL 20261018 (3) (cropped).JPG",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "tr",
+      "article": "Katelyn Evans",
+      "label": "Katelyn Evans",
+      "qid": "Q139714159",
+      "topRev": 38414925,
+      "more": false,
+      "lead": "File:Katelyn Evans 34 Beşiktaş WV TWVL 20261011 (3) (cropped).JPG",
+      "timeline": [
+        {
+          "file": "File:Katelyn Evans 34 Beşiktaş WV TWVL 20261011 (3) (cropped).JPG",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "tr",
+      "article": "Sude Taşbaş",
+      "label": "Sude Taşbaş",
+      "qid": "Q131754657",
+      "topRev": 37464158,
+      "more": false,
+      "lead": "File:Sude Taşbaş 10 Aras Kargo SK WV TWVC 20260927 (2) (cropped).JPG",
+      "timeline": [
+        {
+          "file": "File:Sude Taşbaş 10 Aras Kargo SK WV TWVC 20260927 (2) (cropped).JPG",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Vanja Ivanović",
+      "label": "Vanja Ivanović",
+      "qid": "Q135982019",
+      "topRev": 1382928404,
+      "more": false,
+      "lead": "File:Vanja Ivanović 22 VakıfBank SK WV TWVL 20261003 (1) (cropped).JPG",
+      "timeline": [
+        {
+          "file": "File:Vanja Ivanović 22 VakıfBank SK WV TWVL 20261003 (1) (cropped).JPG",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Joy Frempong",
+      "label": "Joy Frempong",
+      "qid": "Q13479015",
+      "topRev": 1382910558,
+      "more": false,
+      "lead": "File:Festival de Cine Francés 2025 - Joy Frempong-1.jpg",
+      "timeline": [
+        {
+          "file": "File:Festival de Cine Francés 2025 - Joy Frempong-1.jpg",
+          "rev": 1382910558,
+          "ts": "2026-10-30T23:34:03Z",
+          "user": "Bender the Bot"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Ágatha Ruiz de la Prada",
+      "label": "Agatha Ruiz de la Prada",
+      "qid": "Q2736351",
+      "topRev": 1383082369,
+      "more": false,
+      "lead": "File:Festival de Málaga 2024 - Ágatha Ruiz de la Prada (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Festival de Málaga 2024 - Ágatha Ruiz de la Prada (cropped).jpg",
+          "rev": 1383082369,
+          "ts": "2026-10-31T22:14:19Z",
+          "user": "Mornholt"
+        },
+        {
+          "file": "File:Ágatha Ruiz de la Prada (2010).jpg",
+          "rev": 1361145763,
+          "ts": "2026-06-25T23:40:05Z",
+          "user": "Ikamborden"
+        },
+        {
+          "file": "File:Ágatha Ruiz de la prada(2010).jpg",
+          "rev": 888887989,
+          "ts": "2019-03-22T00:59:17Z",
+          "user": "RonBot"
+        }
+      ]
+    },
+    {
+      "lang": "tr",
+      "article": "Firdevs Kiremitçi",
+      "label": "Firdevs Kiremitçi",
+      "qid": "Q126724242",
+      "topRev": 38348346,
+      "more": false,
+      "lead": "File:Firdevs Kiremitçi 1 Manisa BB WV TWVL 20261004 (1).JPG",
+      "timeline": [
+        {
+          "file": "File:Firdevs Kiremitçi 1 Manisa BB WV TWVL 20261004 (1).JPG",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Francesca Michielin",
+      "label": "Francesca Michielin",
+      "qid": "Q439571",
+      "topRev": 1382410770,
+      "more": true,
+      "lead": "File:Francesca Michielin at the 83rd Venice Film Festival.jpg",
+      "timeline": [
+        {
+          "file": "File:Francesca Michielin at the 83rd Venice Film Festival.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        },
+        {
+          "file": "File:ESC2016 - Italy Meet & Greet 02 - Francesca Michielin (cropped).jpg",
+          "rev": 1371035502,
+          "ts": "2026-08-24T05:57:31Z",
+          "user": "Jevansen"
+        }
+      ]
+    },
+    {
+      "lang": "it",
+      "article": "Giovanni Emejuru",
+      "label": "Giovanni Emejuru",
+      "qid": "Q137891317",
+      "topRev": 153047338,
+      "more": false,
+      "lead": "File:Giovanni Emejuru 7 BC Roma Eurocup 20260930 (7).JPG",
+      "timeline": [
+        {
+          "file": "File:Giovanni Emejuru 7 BC Roma Eurocup 20260930 (7).JPG",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "it",
+      "article": "Giuseppe Bonito (regista)",
+      "label": "Giuseppe Bonito",
+      "qid": "Q83698401",
+      "topRev": 152992657,
+      "more": false,
+      "lead": "File:Giuseppe Bonito at 83rd Venice International Film Festival-2.jpg",
+      "timeline": [
+        {
+          "file": "File:Giuseppe Bonito at 83rd Venice International Film Festival-2.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "tr",
+      "article": "Gizem Mısra Aşçı",
+      "label": "Gizem Mısra Aşçı",
+      "qid": "Q125876793",
+      "topRev": 38394756,
+      "more": false,
+      "lead": "File:Gizem Mısra Aşçı 19 Manisa BB WV TWVL 20261004 (1).JPG",
+      "timeline": [
+        {
+          "file": "File:Gizem Mısra Aşçı 19 Manisa BB WV TWVL 20261004 (1).JPG",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "fr",
+      "article": "Gérald Ayayi",
+      "label": "Gérald Ayayi",
+      "qid": "Q105728225",
+      "topRev": 240662860,
+      "more": false,
+      "lead": "File:Gérald Ayayi 11 BC Roma Eurocup 20260930 (2).JPG",
+      "timeline": [
+        {
+          "file": "File:Gérald Ayayi 11 BC Roma Eurocup 20260930 (2).JPG",
+          "rev": 240662860,
+          "ts": "2026-10-24T09:53:51Z",
+          "user": "Jeanbaptista"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Götz Aly",
+      "label": "Götz Aly",
+      "qid": "Q65730",
+      "topRev": 1381032065,
+      "more": true,
+      "lead": "File:Götz Aly auf der Frankfurter Buchmesse 2025-7614.jpg",
+      "timeline": [
+        {
+          "file": "File:Götz Aly auf der Frankfurter Buchmesse 2025-7614.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Hakim Zziwa",
+      "label": "Hakim Zziwa",
+      "qid": "Q130344639",
+      "topRev": 1382462074,
+      "more": false,
+      "lead": "File:Hakim Zziwa Silicon Valley African Film Festival 2026 01.jpg",
+      "timeline": [
+        {
+          "file": "File:Hakim Zziwa Silicon Valley African Film Festival 2026 01.jpg",
+          "rev": 1382462074,
+          "ts": "2026-10-28T20:49:53Z",
+          "user": "Jessekornblum"
+        }
+      ]
+    },
+    {
+      "lang": "tr",
+      "article": "Hande Naz Sunar",
+      "label": "Hande Naz Sunar",
+      "qid": "Q139700668",
+      "topRev": 38394972,
+      "more": false,
+      "lead": "File:Hande Naz Sunar 12 Göztepe SK WV TWVC 20260927 (3).JPG",
+      "timeline": [
+        {
+          "file": "File:Hande Naz Sunar 12 Göztepe SK WV TWVC 20260927 (3).JPG",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Hannah Wakeford",
+      "label": "Hannah R Wakeford",
+      "qid": "Q56486826",
+      "topRev": 1381990159,
+      "more": false,
+      "lead": "File:Hannah Wakeford at AAAS 2025 03.jpg",
+      "timeline": [
+        {
+          "file": "File:Hannah Wakeford at AAAS 2025 03.jpg",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Hazal Selin Uygur",
+      "label": "Hazal Selin Uygur",
+      "qid": "Q3478136",
+      "topRev": 1382752497,
+      "more": false,
+      "lead": "File:Hazal Selin Uygur 15 Aras Kargo SK WV TWVC 20260927 (1).JPG",
+      "timeline": [
+        {
+          "file": "File:Hazal Selin Uygur 15 Aras Kargo SK WV TWVC 20260927 (1).JPG",
+          "rev": null,
+          "ts": null,
+          "user": null
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Iliona",
+      "label": "Iliona",
+      "qid": "Q109039329",
+      "topRev": 1382546954,
+      "more": false,
+      "lead": "File:Iliona at the 2026 Montreux Jazz Festival 09.jpg",
+      "timeline": [
+        {
+          "file": "File:Iliona at the 2026 Montreux Jazz Festival 09.jpg",
+          "rev": 1382546954,
+          "ts": "2026-10-29T05:21:27Z",
+          "user": "Bula Hailan"
+        },
+        {
+          "file": "File:Iliona at the 2026 Montreux Jazz Festival 08.jpg",
+          "rev": 1381270183,
+          "ts": "2026-10-21T05:15:02Z",
+          "user": "Linxedits28"
+        },
+        {
+          "file": "File:Iliona Francos 2022.jpg",
+          "rev": 1371019456,
+          "ts": "2026-08-24T04:13:57Z",
+          "user": "Jevansen"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Isabel Webster",
+      "label": "Isabel Webster",
+      "qid": "Q17029561",
+      "topRev": 1383052896,
+      "more": false,
+      "lead": "File:Isabel Webster at BAFTAs 2026 02 (cropped).jpg",
+      "timeline": [
+        {
+          "file": "File:Isabel Webster at BAFTAs 2026 02 (cropped).jpg",
+          "rev": 1383052896,
+          "ts": "2026-10-31T19:03:33Z",
+          "user": "LeeGer"
+        },
+        {
+          "file": "File:Isabel Webster.jpg",
+          "rev": 744642831,
+          "ts": "2016-10-16T15:15:54Z",
+          "user": "Unattributed"
+        },
+        {
+          "file": "File:Isabel Webster Sky News.jpg",
+          "rev": 613447383,
+          "ts": "2014-06-18T16:27:39Z",
+          "user": "Tomh903"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Isabelle Bourne",
+      "label": "Isabelle Bourne",
+      "qid": "Q119568446",
+      "topRev": 1383334787,
+      "more": false,
+      "lead": "File:Isabelle Bourne 34 Australia 20260906 (5).JPG",
+      "timeline": [
+        {
+          "file": "File:Isabelle Bourne 34 Australia 20260906 (5).JPG",
+          "rev": 1383334787,
+          "ts": "2026-11-02T04:27:32Z",
+          "user": "DaHuzyBru"
+        },
+        {
+          "file": "File:Perth Lynx vs Adelaide Lightning, Perth HPC, 5 January 2025 05 - Isabelle Bourne (cropped).jpg",
+          "rev": 1377332845,
+          "ts": "2026-09-28T23:55:39Z",
+          "user": "Zyxw"
+        }
+      ]
     }
   ],
   "depth": 4,
@@ -224667,7 +225324,7 @@
     "lastMode": "new",
     "recheck": {
       "startedAt": "2026-11-01T09:21:41.707Z",
-      "cursor": "File:Fenerbahçe WB vs Valencia Basket (women) EuroLeague Women 20251104 (7).jpg"
+      "cursor": "File:Iyana Martín 44 Spain 20260905 (1).JPG"
     }
   }
 }
