@@ -2,7 +2,7 @@
   "schema": 1,
   "algoVersion": 3,
   "identity": "category|Category:Photographs by Mateusz Malta",
-  "asOf": "2026-11-01T09:08:12.738Z",
+  "asOf": "2026-11-02T11:00:35.367Z",
   "input": {
     "type": "category",
     "title": "Category:Photographs by Mateusz Malta"
@@ -1317,7 +1317,7 @@
   "depth": 1,
   "bg": {
     "lastFull": "2026-11-01T09:08:12.737Z",
-    "lastRun": "2026-11-01T09:08:12.737Z",
-    "lastMode": "full"
+    "lastRun": "2026-11-02T11:00:35.367Z",
+    "lastMode": "new"
   }
 }
