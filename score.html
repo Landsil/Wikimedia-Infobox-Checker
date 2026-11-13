@@ -224,6 +224,14 @@ const AGE_RULE = `Age (taken, else uploaded): up to ${NEW_MONTHS} months +${AGE_
 const $ = id => document.getElementById(id);
 const esc = s => (s == null ? "" : String(s)).replace(/[&<>"']/g,
   c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+// A person's name from Wikidata: English, then the "mul" label (Wikidata's
+// default for all languages), then the Q-id. Items whose label has been moved to
+// "mul" have no "en" label at all — Q42, Douglas Adams, is one — and reading
+// only "en" put 180 people into the saved History records as bare Q-ids.
+const labelOf = (entity, fallback) => {
+  const l = (entity && entity.labels) || {};
+  return (l.en && l.en.value) || (l.mul && l.mul.value) || fallback;
+};
 const link = (url, text) =>
   url ? `<a href="${esc(url)}" target="_blank" rel="noopener">${esc(text)}</a>` : esc(text);
 const row = (k, v, warn) =>
@@ -451,8 +459,29 @@ async function depictingTitles(qid) {
   }
   return { titles: titles.slice(0, PHOTO_CAP), total: Math.max(total, titles.length) };
 }
-async function photoDetails(titles) {
+// Which of these files mark `qid` as their main subject: depicts (P180) at
+// preferred rank, shown on Commons as "prominent". Information only — it does
+// not count towards any score, because the rank is rarely set: measured on five
+// people (2026-11-13), 11 of 125 files had it and three people had none at all,
+// so its absence says nothing. Where it is set, an uploader has said in so many
+// words that this photo is of this person, which is worth showing.
+async function prominentFor(qid, pageIds) {
+  const out = new Set();
+  for (const b of chunked(pageIds, BATCH)) {
+    const ents = (await apiGet(COMMONS_API, { action: "wbgetentities", ids: b.map(id => "M" + id).join("|"),
+      props: "claims" })).entities || {};
+    for (const [mid, e] of Object.entries(ents)) {
+      // MediaInfo answers under "statements" even when "claims" was asked for.
+      const st = ((e.statements || e.claims || {}).P180) || [];
+      if (st.some(c => c.rank === "preferred" && (((c.mainsnak || {}).datavalue || {}).value || {}).id === qid))
+        out.add(Number(mid.slice(1)));
+    }
+  }
+  return out;
+}
+async function photoDetails(titles, qid) {
   const out = {};
+  const ids = [];
   for (const b of chunked(titles, BATCH))
     for await (const q of mwQuery(COMMONS_API, { titles: b.join("|"), prop: "imageinfo",
         iiprop: "timestamp|url|size|extmetadata", iiurlwidth: String(ANALYSIS_WIDTH),
@@ -461,11 +490,18 @@ async function photoDetails(titles) {
         const i = (p.imageinfo || [])[0]; if (!i) continue;
         const ext = i.extmetadata || {}, a = parseAuthor((ext.Artist || {}).value);
         const w = i.width || null, h = i.height || null;
-        out[p.title] = { title: p.title, page: i.descriptionurl, thumb: i.thumburl || i.url,
+        if (p.pageid) ids.push(p.pageid);
+        out[p.title] = { title: p.title, pageid: p.pageid, page: i.descriptionurl, thumb: i.thumburl || i.url,
           author: a.name, author_url: a.url, description: stripHtml((ext.ImageDescription || {}).value),
           taken: cleanDate(stripHtml((ext.DateTimeOriginal || {}).value)) || i.timestamp || "", uploaded: i.timestamp || "",
           width: w, height: h, megapixels: (w && h) ? Math.round(w * h / 100000) / 10 : null };
       }
+  if (qid && ids.length) {
+    try {
+      const main = await prominentFor(qid, ids);
+      for (const f of Object.values(out)) f.prominent = main.has(f.pageid);
+    } catch (_) { /* a nicety: the page works the same without it */ }
+  }
   return out;
 }
 
@@ -672,6 +708,7 @@ function photoCard(it) {
         : m.facingEstimate != null ? row("Head", `${m.facingEstimate ? "facing the camera" : "turned away"} <span class="muted">(estimated from body points)</span>`) : ""}
       ${m.blink != null ? row("Eyes", `${m.blink < MAX_BLINK ? "open" : "closed"} (blink ${m.blink.toFixed(2)}) · look-away ${m.look.toFixed(2)}`) : ""}
       ${row("Framing", `${esc(m.framing)} <span class="muted">(${esc(m.why)})</span>`)}
+      ${p.prominent ? row("On Commons", "marked as the main subject of this photo") : ""}
       ${row("Resolution", p.megapixels != null ? `${p.megapixels} MP (${p.width}×${p.height})` : "", p.megapixels == null || p.megapixels < LOW_RES_MP)}
       ${row("Date taken", esc(dateOnly(p.taken)) + (m.ageYears != null ? ` <span class="muted">(${ageText(m.ageYears)})</span>` : ""), m.agePoints == null || m.agePoints < AGE_POINTS_NEW)}
       ${cropRow("generic", m.crops.generic)}${cropRow("infobox", m.crops.infobox)}
@@ -706,15 +743,15 @@ async function run() {
     const r = await resolvePerson(inp);
     if (r.error) { say(r.error, true); return; }
     if (!r.label) {
-      const ent = (await apiGet(WIKIDATA_API, { action: "wbgetentities", ids: r.qid, props: "labels", languages: "en" })).entities || {};
-      r.label = ((ent[r.qid] || {}).labels || {}).en ? ent[r.qid].labels.en.value : (r.article || r.qid);
+      const ent = (await apiGet(WIKIDATA_API, { action: "wbgetentities", ids: r.qid, props: "labels", languages: "en|mul" })).entities || {};
+      r.label = labelOf(ent[r.qid], r.article || r.qid);
     }
     person = r;
     const art = r.article ? link(wpArticleUrl(r.lang, r.article), r.label) + ` (${esc(r.lang.toUpperCase())})` : esc(r.label);
     $("subject").innerHTML = `<div class="tl-person">${art} · ${link("https://www.wikidata.org/wiki/" + r.qid, r.qid)}</div>`;
     say("Finding photos that depict them…");
     const { titles, total } = await depictingTitles(r.qid);
-    const info = await photoDetails(titles);
+    const info = await photoDetails(titles, r.qid);
     const photos = titles.map(t => info[t]).filter(Boolean);
     if (window.WikiPortraits) await WikiPortraits.ready;
     const t0 = performance.now();

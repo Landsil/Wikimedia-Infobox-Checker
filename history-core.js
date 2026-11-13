@@ -58,6 +58,18 @@ export function mergeCurrent(timeline, lead) {
 // background job calls configureApi() with the bot profile: a descriptive
 // User-Agent, maxlag=5, and pacing under the per-minute limit for identified bots.
 const api = { userAgent: null, maxlag: null, minIntervalMs: 0, maxLagWaitMs: 30 * 60 * 1000, last: 0 };
+// A person's name from Wikidata: English, then the "mul" label (Wikidata's
+// default for all languages), then the Q-id. Items whose label has been moved to
+// "mul" have no "en" label at all — Q42, Douglas Adams, is one — and reading
+// only "en" put 180 people into the saved History records as bare Q-ids.
+export const LABEL_LANGS = "en|mul";
+export const nameFromTitle = t => (t ? String(t).replace(/_/g, " ").replace(/\s+\([^)]*\)$/, "") : null);
+
+export const labelOf = (entity, fallback) => {
+  const l = (entity && entity.labels) || {};
+  return (l.en && l.en.value) || (l.mul && l.mul.value) || fallback;
+};
+
 export function configureApi(opts) { Object.assign(api, opts); }
 // Running totals, for the background job's summary (how much time lag cost).
 const stats = { requests: 0, lagWaits: 0, lagWaitMs: 0, throttled: 0, qidsKnown: 0, qidsFetched: 0 };
@@ -74,7 +86,12 @@ function retryDelayMs(resp, attempt) {
 }
 export async function apiGet(base, params) {
   const s = new URLSearchParams(params); s.set("format", "json"); s.set("origin", "*");
-  if (api.maxlag != null) s.set("maxlag", String(api.maxlag));
+  // Not on Wikidata. There maxlag reports Query Service (WDQS) replication lag,
+  // which has nothing to do with serving wbgetentities, and this job only ever
+  // reads Wikidata — so passing it made monthly re-checks stall for hours on a
+  // backlog our reads neither cause nor worsen. It stays on Commons and the
+  // Wikipedias, where it does measure the load our requests add to.
+  if (api.maxlag != null && base !== WIKIDATA_API) s.set("maxlag", String(api.maxlag));
   const url = `${base}?${s.toString()}`;
   const init = { credentials: "omit", ...(api.userAgent ? { headers: { "User-Agent": api.userAgent } } : {}) };
   let lagWaited = 0, lagTries = 0;
@@ -161,10 +178,12 @@ function subjectFromQids(qids, entities, known) {
     const human = (claims.P31 || []).some(s => { try { return s.mainsnak.datavalue.value.id === "Q5"; } catch (_) { return false; } });
     if (!human) continue;
     const sl = e.sitelinks || {};
-    const label = (e.labels && e.labels.en && e.labels.en.value) || q;
     let site = "enwiki", title = (sl.enwiki || {}).title;
     if (!title) for (const [s, l] of Object.entries(sl)) { if (s.endsWith("wiki") && !NON_WIKIPEDIA_WIKIS.has(s)) { site = s; title = l.title; break; } }
     if (!title) continue;
+    // English, then "mul", then the article's own title — which for someone with
+    // only a Spanish or German article is their name — and only then the Q-id.
+    const label = labelOf(e, nameFromTitle(title) || q);
     return { lang: wikiLang(site), article: title, label, qid: q };
   }
   return null;
@@ -179,7 +198,7 @@ export async function resolveSubjectFromFile(fileTitle) {
   const st = (ents["M" + page.pageid] || {});
   const qids = allDepictsQids(st.statements || st.claims || {});
   if (!qids.length) return { error: `“${fileTitle}” has no depicts (P180) statement, so I can't tell who it's of.` };
-  const we = await wbGetEntities(WIKIDATA_API, qids.slice(0, BATCH), "claims|sitelinks|labels", { languages: "en" });
+  const we = await wbGetEntities(WIKIDATA_API, qids.slice(0, BATCH), "claims|sitelinks|labels", { languages: LABEL_LANGS });
   const subj = subjectFromQids(qids, we);
   return subj || { error: `“${fileTitle}” depicts something that isn't a person with a Wikipedia article.` };
 }
@@ -214,7 +233,7 @@ async function batchResolve(files, onProgress, known) {
   const wd = {};
   n = 0;
   for (const b of chunked(allQids)) {
-    Object.assign(wd, await wbGetEntities(WIKIDATA_API, b, "claims|sitelinks|labels", { languages: "en" }));
+    Object.assign(wd, await wbGetEntities(WIKIDATA_API, b, "claims|sitelinks|labels", { languages: LABEL_LANGS }));
     n += b.length;
     if (onProgress) onProgress(`Resolving people ${n}/${allQids.length}…`);
   }
@@ -422,6 +441,25 @@ export async function currentTopRev(lang, article) {
 // Marks each looked-up person `_leadChecked` (not saved) for flagOutside().
 // Updates people in place; calls onChanged(p) for each rebuilt one. A person
 // whose rebuild fails is left as it was. Returns { checked, rebuilt, filled }.
+// Fill in names that were saved as bare Q-ids. Records written before labelOf()
+// read the "mul" label hold the Q-id for everyone whose name lives only there;
+// re-fetching labels for just those people costs one request per 50 and fixes
+// them without rebuilding anything. Returns how many were renamed.
+export async function relabel(people, { onProgress } = {}) {
+  const todo = people.filter(p => p.qid && (!p.label || /^Q\d+$/.test(p.label)));
+  let fixed = 0, n = 0;
+  for (const b of chunked(todo)) {
+    const ents = await wbGetEntities(WIKIDATA_API, b.map(p => p.qid), "labels", { languages: LABEL_LANGS });
+    for (const p of b) {
+      const name = labelOf(ents[p.qid], null) || nameFromTitle(p.article);
+      if (name && name !== p.label) { p.label = name; fixed++; }
+    }
+    n += b.length;
+    if (onProgress) onProgress(`${n}/${todo.length}`);
+  }
+  return { checked: todo.length, fixed };
+}
+
 export async function refreshPeople(people, count, { onProgress, onChanged } = {}) {
   const byLang = {};
   for (const p of people) (byLang[p.lang] = byLang[p.lang] || []).push(p);

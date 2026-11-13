@@ -151,7 +151,16 @@ async function refreshCategory(st, path, out) {
     await save(path, toRecord(st));
   }
   if (st.pending.length) out.push(`finished scan: +${await drainPending(st, path, "unfinished scan")} people`);
-  // 2. People whose current photo changed (one batched lookup per 50 people).
+  // 2a. Names saved as bare Q-ids before "mul" labels were read. Cheap — only
+  //     those people, 50 per request — and a no-op once they are all fixed.
+  checkTime();
+  const rl = await core.relabel(st.people, { onProgress: every(60000, m => log(`  names: ${m}`)) });
+  if (rl.checked) {
+    out.push(`${rl.fixed} of ${rl.checked} names filled in that were saved as Q-ids`);
+    log(`  names: ${rl.fixed} of ${rl.checked} Q-id labels filled in`);
+    if (rl.fixed) await save(path, toRecord(st));
+  }
+  // 2b. People whose current photo changed (one batched lookup per 50 people).
   checkTime();
   const t0 = Date.now();
   const r = await core.refreshPeople(st.people, rec.count, { onProgress: every(60000, m => log(`  people: ${m}`)) });

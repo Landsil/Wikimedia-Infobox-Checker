@@ -72,6 +72,12 @@
         largest Wikipedias: missing, poor or good.</span>
     </div>
     <div class="filter-item">
+      <button type="button" id="sort_readers" class="toggle" aria-pressed="false">
+        Most-read first</button>
+      <span class="filter-note">Puts the people whose article is read most at the
+        top, using the last 30 days of page views.</span>
+    </div>
+    <div class="filter-item">
       <button type="button" id="only_other_gaps" class="toggle" aria-pressed="false" disabled>
         Only missing or poor photo on another Wikipedia</button>
       <span class="filter-note">Needs "Check other Wikipedias".</span>
@@ -209,7 +215,7 @@
 const COMMONS_API = "https://commons.wikimedia.org/w/api.php";
 const WIKIDATA_API = "https://www.wikidata.org/w/api.php";
 const BATCH = 50;              // titles=/ids= capped at 50 per request (non-bot)
-const THUMB_WIDTH = 320;
+const THUMB_WIDTH = 330;   // a standard Commons thumbnail width; 320 was served as 330 anyway
 const STALE_MONTHS = 12;       // infobox photo flagged red when older than this
 const LOW_RES_MP = 2.0;        // resolution flagged red below this (megapixels)
 const MAX_RETRIES = 6;
@@ -235,6 +241,15 @@ const NON_WIKIPEDIA_WIKIS = new Set([
 const $ = id => document.getElementById(id);
 const esc = s => (s == null ? "" : String(s)).replace(/[&<>"']/g,
   c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+// A person's name from Wikidata: English, then the "mul" label (Wikidata's
+// default for all languages), then the Q-id. Items whose label has been moved to
+// "mul" have no "en" label at all — Q42, Douglas Adams, is one — and reading
+// only "en" put 180 people into the saved History records as bare Q-ids.
+const nameFromTitle = t => (t ? String(t).replace(/_/g, " ").replace(/\s+\([^)]*\)$/, "") : null);
+const labelOf = (entity, fallback) => {
+  const l = (entity && entity.labels) || {};
+  return (l.en && l.en.value) || (l.mul && l.mul.value) || fallback;
+};
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 function chunked(arr, size = BATCH) {
@@ -451,6 +466,40 @@ const wikipediaApiUrl = site => `https://${wikiLang(site)}.wikipedia.org/w/api.p
 let skippedWikis = new Set();
 // How much of the category tree the last search covered (see renderResults).
 let treeScope = { categories: 1, truncated: false };
+// Page views over the last 30 days, per article: Map("site\ntitle" -> views).
+// Asked for on its own, not added to the pageimages request: measured on 50 en
+// titles, pageimages|pageviews needed 4 requests (the two continuations
+// interleave) where pageviews alone answered all 50 in 1.
+async function fetchArticleViews(articles, onProgress) {
+  const bySite = {};
+  for (const [site, title] of articles) (bySite[site] = bySite[site] || new Set()).add(title);
+  const views = new Map();
+  const sites = Object.keys(bySite);
+  for (const [i, [site, titleSet]] of Object.entries(bySite).entries()) {
+    if (onProgress) onProgress(`Counting readers ${i + 1}/${sites.length} (${wikiLang(site)})…`);
+    try {
+      for (const batch of chunked([...titleSet].sort())) {
+        const alias = {};
+        for await (const query of mwQuery(wikipediaApiUrl(site),
+            { titles: batch.join("|"), prop: "pageviews", pvipdays: "30", redirects: "1" })) {
+          for (const e of query.normalized || []) alias[e.to] = e.from;
+          for (const e of query.redirects || []) alias[e.to] = alias[e.from] || e.from;
+          for (const page of Object.values(query.pages || {})) {
+            if (!page.pageviews) continue;
+            // Days with no data come back as null, which is not zero but unknown.
+            const total = Object.values(page.pageviews).reduce((n, v) => n + (v || 0), 0);
+            views.set(`${site}\n${alias[page.title] || page.title}`, total);
+          }
+        }
+      }
+    } catch (err) {
+      skippedWikis.add(wikiLang(site));
+      console.warn(`Infobox Finder: no page views from ${site} (${err && err.message})`);
+    }
+  }
+  return views;
+}
+
 async function fetchArticleLeadImages(articles, onProgress) {
   const bySite = {};
   for (const [site, title] of articles) (bySite[site] = bySite[site] || new Set()).add(title);
@@ -824,15 +873,14 @@ async function fetchPersonData(files) {
 
   for (const batch of chunked(qids)) {
     const entities = await wbGetEntities(
-      WIKIDATA_API, batch, "claims|sitelinks|labels", { languages: "en" });
+      WIKIDATA_API, batch, "claims|sitelinks|labels", { languages: "en|mul" });
     for (const [qid, entity] of Object.entries(entities)) {
       const claims = entity.claims || {};
       const human = isHuman(claims);
       persons[qid] = { human };
       if (!human) continue;
       const [site, articleTitle] = pickWikipediaSitelink(entity.sitelinks || {});
-      const labels = entity.labels || {};
-      persons[qid].label = (labels.en && labels.en.value) || qid;
+      persons[qid].label = labelOf(entity, nameFromTitle(articleTitle) || qid);
       persons[qid].p18 = firstP18Filename(claims);
       persons[qid].site = site;
       persons[qid].article_title = articleTitle;
@@ -1127,12 +1175,20 @@ const infoboxPhoto = b => b.has_image
 // Comparison rows grouped by depicted person, as in Infobox History: one heading
 // (article link · Wikidata item) over all of that person's candidates. People
 // keep the order of their first (newest) candidate.
+const viewsOf = r => {
+  const b = r.infobox;
+  if (!articleViews || !b.wiki_site || !b.wiki_article_title) return null;
+  const v = articleViews.get(`${b.wiki_site}\n${b.wiki_article_title}`);
+  return v == null ? null : v;
+};
 function personHeading(r) {
   const c = r.candidate, b = r.infobox;
   const name = b.wiki_article_url
     ? link(b.wiki_article_url, c.depicted_label) + ` (${esc(wikiLang(b.wiki_site || "").toUpperCase())})`
     : esc(c.depicted_label);
-  return `<div class="tl-person">${name} · ${link(c.wikidata_url, c.depicted_qid)}</div>`;
+  const v = viewsOf(r);
+  const readers = v == null ? "" : ` · <span class="readers">${v.toLocaleString("en-GB")} readers in 30 days</span>`;
+  return `<div class="tl-person">${name} · ${link(c.wikidata_url, c.depicted_qid)}${readers}</div>`;
 }
 function personGroups(rows) {
   const groups = new Map();
@@ -1141,7 +1197,13 @@ function personGroups(rows) {
     if (!groups.has(k)) groups.set(k, []);
     groups.get(k).push(r);
   }
-  return [...groups.values()].map(rs => personHeading(rs[0]) + rs.map(pairRow).join("")).join("");
+  let list = [...groups.values()];
+  // Stable: people with no count (no article, or a wiki that did not answer)
+  // keep their newest-first order, after everyone who has one.
+  if (pressed("sort_readers") && articleViews)
+    list = list.map((rs, i) => ({ rs, i, v: viewsOf(rs[0]) }))
+      .sort((a, b) => (b.v ?? -1) - (a.v ?? -1) || a.i - b.i).map(x => x.rs);
+  return list.map(rs => personHeading(rs[0]) + rs.map(pairRow).join("")).join("");
 }
 const pairRow = r =>
   `<div class="pair pair-cmp">${candidateMeta(r.candidate)}${candidatePhoto(r.candidate)}`
@@ -1318,6 +1380,7 @@ let allCurrent = [];
 // "Check other Wikipedias": lead image per "site\ntitle" (null = no photo),
 // filled on demand once per search; null until checked.
 let otherLead = null;
+let articleViews = null;     // "site\ntitle" -> 30-day views, fetched when "Most-read first" is first switched on
 let otherInfo = new Map();   // lead file -> { megapixels, taken, … } for judging it
 let otherShown = false;      // the toggle is on (switching it off keeps the data for next time)
 // Each other-language article: no photo, a poor one (by file), or a good one —
@@ -1481,6 +1544,27 @@ $("check_other").addEventListener("click", async () => {
   otherShown = true; renderResults();
 });
 
+// Counted on first switch-on per search: one request per 50 articles per wiki.
+$("sort_readers").addEventListener("click", async () => {
+  const btn = $("sort_readers");
+  if (pressed("sort_readers")) { btn.setAttribute("aria-pressed", "false"); renderResults(); return; }
+  if (!articleViews) {
+    btn.disabled = true;
+    try {
+      const seen = new Set(), articles = [];
+      for (const r of allResults) {
+        const b = r.infobox;
+        if (!b.wiki_site || !b.wiki_article_title) continue;
+        const k = `${b.wiki_site}\n${b.wiki_article_title}`;
+        if (!seen.has(k)) { seen.add(k); articles.push([b.wiki_site, b.wiki_article_title]); }
+      }
+      articleViews = await fetchArticleViews(articles, msg => { $("status").textContent = msg; });
+    } finally { btn.disabled = false; }
+  }
+  btn.setAttribute("aria-pressed", "true");
+  renderResults();
+});
+
 // "Find previous photo by a different author" — fetched on click (the revision
 // history walk is the expensive part, so it stays out of the main search).
 // data-lang empty = check every wiki this photo is live on; otherwise just that
@@ -1561,6 +1645,8 @@ $("f").addEventListener("submit", async e => {
       msg => { status.textContent = msg; });
     allResults = search.results;
     otherLead = null; otherInfo = new Map(); otherShown = false;   // "Check other Wikipedias" is per search
+    articleViews = null;
+    $("sort_readers").setAttribute("aria-pressed", "false");
     $("check_other").setAttribute("aria-pressed", "false");
     $("only_other_gaps").setAttribute("aria-pressed", "false");
     allNoDepicts = search.noDepicts;

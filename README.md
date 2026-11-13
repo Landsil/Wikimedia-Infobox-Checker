@@ -41,6 +41,7 @@ A landing hub links to self-contained tool pages; all share one stylesheet.
 | `headshots/` | **Headshots** — installable, offline PWA for an event shoot: badge photos → names → grouped, renamed headshots. Its own scope, worker and storage |
 | `wikiportraits.js` | WikiPortraits photographer badge, shared by `finder.html` and `history.html` (classic script) |
 | `style.css` | Shared styles for all pages |
+| `toolinfo.json` | The five tools described for [Toolhub](https://toolhub.wikimedia.org/), Wikimedia's tool catalogue ([toolinfo 1.2.2](https://gerrit.wikimedia.org/r/plugins/gitiles/wikimedia/toolhub/+/refs/heads/main/jsonschema/toolinfo/1.2.2.json)). Not registered yet: Toolhub's crawler reads it once the raw URL is added at *Add or remove tools* |
 
 `finder.html` and `gaps.html` embed their own JS pipeline, so each is
 independently openable. `history.html` imports `history-core.js` as an ES
@@ -108,6 +109,7 @@ client-side, so switching is instant and costs no API calls.
 | Hide when current photo is good | on | Hides a match when the infobox photo is already good, whoever took it |
 | Show no-depicts photos | off | **Exclusive view**: only unused photos with no `P180` |
 | Show category photos already in use | off | **Exclusive view**: only category photos that *are* an article's current infobox photo. One row per photo, listing every article it is live on |
+| Most-read first | off | Orders people by how many readers their article had in the last 30 days, and shows the figure beside each name. The one toggle that makes requests: counted on first switch-on per search, one request per 50 articles per wiki |
 
 The two exclusive views replace the comparison results and disable the other
 toggles (and each other). Author matching prefers the Commons **user-page URL**
@@ -351,6 +353,37 @@ There is no published SLA or typical-response-time figure for the Wikimedia
 APIs; WDQS lag is tracked only on Grafana dashboards with no documented "normal"
 value, so there is nothing meaningful to gate on anyway.
 
+### Page views cost a request of their own
+
+`prop=pageviews` is asked for separately, not added to the `pageimages` request
+that already exists. Measured on 50 English titles (2026-11-13):
+`pageimages|pageviews` took **4** requests, because the two props' continuations
+interleave, while `pageviews` alone answered all 50 in **1**. A three-title test
+had suggested it was free; it isn't, which is also why both pages fetch it only
+when *Most-read first* is switched on.
+
+### Names come from `en`, then `mul`
+
+Wikidata has moved many labels to `mul`, its "default for all languages" label,
+and those items have no `en` label at all. Q42, Douglas Adams, is one. Every page
+used to request `languages=en` and fall back to the Q-id, so people whose name
+lives only in `mul` were shown as `Q42` — 180 of the people in the saved History
+records. `labelOf()` reads `en`, then `mul`, then the title of the person's own
+article (someone with only a Spanish article has their name as its title), and
+only then the Q-id. It is defined once per page, since `finder.html`,
+`gaps.html` and `score.html` embed their own pipelines.
+
+### Thumbnail sizes
+
+Commons serves only standard thumbnail widths — 20, 40, 60, 120, 250, 330, 500,
+960, 1280, 1920, 3840 — and quantises anything else upwards, while still
+reporting the width that was asked for (`iiurlwidth=320` came back as
+`thumbwidth=320` with a `330px-` URL). Non-standard widths are slated for rate
+limiting ([T402792](https://phabricator.wikimedia.org/T402792)), so
+`THUMB_WIDTH` is 330. Thumbnails are now served from `thumb.wikimedia.org`, which
+like `upload.wikimedia.org` sends `Access-Control-Allow-Origin: *` — the score
+page depends on that to read pixels.
+
 ### Rate limits (2026)
 
 Wikimedia now enforces per-minute limits on the Action API
@@ -420,6 +453,7 @@ Given an English Wikipedia category and a subcategory depth:
 | 3 | assess | Commons `imageinfo` on the lead images | resolution + age of existing photos |
 | 4 | `fetchP18Images` | Wikidata `wbgetentities` | candidate via P18, batched |
 | 5 | (on demand) `fetchDepictingFiles` | Commons `list=search` `haswbstatement:P180=Q…` (`srinfo=totalhits`) | the first `DEPICT_LIMIT` (8) files that depict the person, plus the total; one search per person, so a per-person button and a **Show Commons photos for all** toggle |
+| 6 | (on demand) `countReaders` | `prop=pageviews` (`pvipdays=30`) | **Most-read first**: one request per 50 people, only for people not counted yet, so *Load more* adds one per 50 new people |
 
 A gap = a **living** person whose article photo is **missing, under 2 MP, or
 >12 months old**. `Category:Tennis players` is almost all subcategories, so a
@@ -1004,6 +1038,15 @@ the browser** with Google's MediaPipe and scored by simple rules shown on the pa
 
 ### What it measures, and the trial rules
 
+**"Marked as the main subject"** is shown when a photo's depicts statement for
+the person has *preferred* rank, which Commons labels "prominent". It is
+information only and counts towards no score, because the rank is rarely set:
+measured on five people (2026-11-13), 11 of 125 files had it, and Ashley Walters,
+Sekou Diaby and Tut Nyuot had none at all, so its absence says nothing. Where it
+is set, an uploader has stated that the photo is *of* this person. It costs one
+`wbgetentities` request per 50 photos.
+
+
 Every photo is assumed to show at least one face, so a measurement that can't
 be made is **unknown (?)**, not a fail. Three steps (CPU delegate):
 
@@ -1237,16 +1280,21 @@ heavy load some queued runs may be dropped.
 - **Bot etiquette** (non-interactive, unlike the page): `User-Agent`
   `WikimediaInfoboxCheckerBot/1.0 (<repo URL>[; <contact>]) node/<version>`,
   per the [User-Agent policy](https://foundation.wikimedia.org/wiki/Policy:Wikimedia_Foundation_User-Agent_Policy);
-  `maxlag=5` on every wiki, per
+  `maxlag=5` on Commons and the Wikipedias, per
   [Manual:Maxlag parameter](https://www.mediawiki.org/wiki/Manual:Maxlag_parameter)
-  and [Wikidata:Bots](https://www.wikidata.org/wiki/Wikidata:Bots) ("Bots should
-  respect maxlag") — waits ≥ 5 s, doubling to 60 s; serial requests paced to
-  `REQS_PER_MIN` = 180, under the 200/min bot limit. **Wikidata's lag includes
-  Query Service (WDQS) lag**, which is often above 5 s (2026-10-13 14:13 UTC:
-  9.25 s from `wdqs1014` while the databases were at 0.2–0.7 s), so the
-  Wikidata step — resolving who a file depicts — can stall for a while. Refreshing
-  stored people only uses Wikipedia and isn't affected. If lag lasts over 60
-  minutes the run saves and stops; the next run continues.
+  — waits ≥ 5 s, doubling to 60 s; serial requests paced to `REQS_PER_MIN` = 180,
+  under the 200/min bot limit. If lag lasts over 60 minutes the run saves and
+  stops; the next run continues.
+- **No `maxlag` on Wikidata.** There it reports **Query Service (WDQS)
+  replication lag**, which is often above 5 s (2026-10-13 14:13 UTC: 9.25 s from
+  `wdqs1014` while the databases were at 0.2–0.7 s) and has nothing to do with
+  serving `wbgetentities`. The job only *reads* Wikidata, so passing it made
+  monthly re-checks stall for hours on a backlog these reads neither cause nor
+  worsen. [Wikidata:Bots](https://www.wikidata.org/wiki/Wikidata:Bots) asks bots
+  to respect maxlag when *editing*; this job never edits.
+- **Names saved as Q-ids are filled in** at the start of each category refresh
+  (`relabel()`): only those people, one request per 50, and a no-op once none
+  remain. On the 2026-11-13 records that was 180 people in 5 requests.
 - **Contact address**: set an Actions secret `WIKIMEDIA_CONTACT` (e.g. an email)
   to have it appended to the `User-Agent`. It's sent only to Wikimedia's servers
   and never appears in the repo or the logs. Without it, the repo URL is the
@@ -1261,7 +1309,7 @@ At the top of each tool's `<script>` (history: `history-core.js`; background job
 | Constant | Value | Meaning |
 | :-- | :-- | :-- |
 | `BATCH` | 50 | Items per `titles=`/`ids=` request (non-bot cap) |
-| `THUMB_WIDTH` | 320 | Requested thumbnail width |
+| `THUMB_WIDTH` | 330 | Requested thumbnail width — a standard Commons size (see *Thumbnail sizes*) |
 | `STALE_MONTHS` | 12 | Age at which a photo is flagged stale (finder, gaps, history; not the score page) |
 | `NEW_MONTHS` / `FINE_MONTHS` / `BAD_YEARS` | 6 / 12 / 10 | (score) Age bands: new, fine if the rest passes, always bad |
 | `AGE_POINTS_NEW` / `AGE_POINTS_FINE` / `AGE_POINTS_AT_BAD` | 1 / 0.5 / −3.5 | (score) Age points at those bands; linear between 1 and 10 years |

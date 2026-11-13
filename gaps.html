@@ -52,6 +52,8 @@
       </select></label></div>
     <div class="filter-item"><label class="age-filter">Max age
       <input type="number" id="max_age" min="0" placeholder="any"></label></div>
+    <div class="filter-item"><button type="button" id="sort_readers" class="toggle" aria-pressed="false">Most-read first</button>
+      <span class="filter-note">People whose article is read most go to the top, by the last 30 days of page views.</span></div>
     <div class="filter-item"><button type="button" id="check_all" class="toggle" aria-pressed="false">Show Commons photos for all</button>
       <span class="filter-note">Search Commons for photos depicting each person (one search each, kept). Off: back to the per-person buttons.</span></div>
     <div class="filter-item"><button type="button" id="export_raw" class="secondary">Export CSV</button></div>
@@ -123,7 +125,7 @@ const EN_WIKI_API = "https://en.wikipedia.org/w/api.php";
 const COMMONS_API = "https://commons.wikimedia.org/w/api.php";
 const WIKIDATA_API = "https://www.wikidata.org/w/api.php";
 const BATCH = 50;
-const THUMB_WIDTH = 320;
+const THUMB_WIDTH = 330;   // a standard Commons thumbnail width; 320 was served as 330 anyway
 const STALE_MONTHS = 12;        // infobox photo flagged when older than this
 const LOW_RES_MP = 2.0;         // flagged below this (megapixels)
 const GAP_CHUNK = 1500;         // articles processed per "Find gaps" / "Load more"
@@ -137,6 +139,14 @@ const BACKOFF_BASE = 1.0;
 const $ = id => document.getElementById(id);
 const esc = s => (s == null ? "" : String(s)).replace(/[&<>"']/g,
   c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+// A person's name from Wikidata: English, then the "mul" label (Wikidata's
+// default for all languages), then the Q-id. Items whose label has been moved to
+// "mul" have no "en" label at all — Q42, Douglas Adams, is one — and reading
+// only "en" put 180 people into the saved History records as bare Q-ids.
+const labelOf = (entity, fallback) => {
+  const l = (entity && entity.labels) || {};
+  return (l.en && l.en.value) || (l.mul && l.mul.value) || fallback;
+};
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const link = (url, text) =>
   url ? `<a href="${esc(url)}" target="_blank" rel="noopener">${esc(text)}</a>` : esc(text);
@@ -306,6 +316,33 @@ async function collectMore(walk, maxNew, onProgress) {
   }
   if (!walk.frontier.length) walk.done = true;
   return found;
+}
+
+// Page views over the last 30 days for these English articles, written onto
+// each gap as g.views (null when Wikipedia has no figure). Only gaps not yet
+// counted are asked about, so Load more costs one request per 50 new people.
+// A separate query on purpose: alongside pageimages it took 4 requests per 50
+// titles in a test, on its own 1.
+async function countReaders(gaps, onProgress) {
+  const todo = gaps.filter(g => g.views === undefined);
+  let n = 0;
+  for (const batch of chunked(todo)) {
+    if (onProgress) onProgress(`Counting readers ${n + 1}–${n + batch.length} of ${todo.length}…`);
+    const byTitle = new Map(batch.map(g => [g.title, g]));
+    const alias = {};
+    for await (const query of mwQuery(EN_WIKI_API,
+        { titles: batch.map(g => g.title).join("|"), prop: "pageviews", pvipdays: "30", redirects: "1" })) {
+      for (const e of query.normalized || []) alias[e.to] = e.from;
+      for (const e of query.redirects || []) alias[e.to] = alias[e.from] || e.from;
+      for (const page of Object.values(query.pages || {})) {
+        const g = byTitle.get(alias[page.title] || page.title);
+        if (!g || !page.pageviews) continue;
+        g.views = Object.values(page.pageviews).reduce((t, v) => t + (v || 0), 0);
+      }
+    }
+    for (const g of batch) if (g.views === undefined) g.views = null;
+    n += batch.length;
+  }
 }
 
 async function fetchArticlePhotoState(titles, onProgress) {
@@ -558,8 +595,8 @@ async function runPerson(inp) {
     say("Resolving the person…");
     const r = await resolvePerson(inp);
     if (r.error) { status.className = "error"; status.textContent = r.error; return; }
-    const ent = (await wbGetEntities(WIKIDATA_API, [r.qid], "labels|claims", { languages: "en" }))[r.qid] || {};
-    const label = (ent.labels && ent.labels.en && ent.labels.en.value) || r.article || r.qid;
+    const ent = (await wbGetEntities(WIKIDATA_API, [r.qid], "labels|claims", { languages: "en|mul" }))[r.qid] || {};
+    const label = labelOf(ent, r.article || r.qid);
     const p18 = firstP18(ent.claims || {});
     let lead = null;                                     // current infobox photo of that article
     if (r.article) {
@@ -655,6 +692,7 @@ function personMeta(g) {
     <div class="row"><span class="v"><strong>${link(g.article_url, g.title)}</strong> ${badge}</span></div>
     ${g.wikidata_url ? row("Wikidata", link(g.wikidata_url, g.qid)) : ""}
     ${g.age != null ? row("Age", "~" + g.age) : ""}
+    ${g.views != null ? row("Readers", `${g.views.toLocaleString("en-GB")} in 30 days`) : ""}
     ${cur}
   </div>`;
 }
@@ -733,7 +771,11 @@ function isShown(g) {
 function renderGaps() {
   // gapRow needs each gap's index in allGaps (for the depicts buttons), so map
   // with the real index and filter after.
-  const html = allGaps.map((g, i) => isShown(g) ? gapRow(g, i) : "").join("");
+  let order = allGaps.map((g, i) => [g, i]);
+  // Stable, so people without a figure keep their place after those with one.
+  if (pressed("sort_readers"))
+    order = order.sort(([a, ai], [b, bi]) => (b.views ?? -1) - (a.views ?? -1) || ai - bi);
+  const html = order.map(([g, i]) => isShown(g) ? gapRow(g, i) : "").join("");
   $("results").innerHTML = html ? `<div class="gap-grid">${html}</div>`
                                 : `<div class="none">Nothing matches the current filters.</div>`;
   const shown = allGaps.filter(isShown).length;
@@ -925,6 +967,17 @@ $("results").addEventListener("click", async e => {
     setTimeout(() => { copy.textContent = "Copy"; copy.classList.remove("copied"); }, 1500);
   }
 });
+$("sort_readers").addEventListener("click", async () => {
+  const btn = $("sort_readers");
+  if (pressed("sort_readers")) { btn.setAttribute("aria-pressed", "false"); renderGaps(); return; }
+  btn.disabled = true;
+  try { await countReaders(allGaps, msg => { $("status").textContent = msg; }); }
+  catch (err) { $("status").className = "error"; $("status").textContent = "Could not count readers: " + err.message; return; }
+  finally { btn.disabled = false; }
+  btn.setAttribute("aria-pressed", "true");
+  renderGaps();
+});
+
 // "Show Commons photos for all": on = fetch whoever isn't fetched yet, then show
 // everyone's depicting files; off = back to only the ones opened per person.
 const CHECK_ALL_LABEL = "Show Commons photos for all";
@@ -967,6 +1020,7 @@ async function loadChunk(reset) {
       const gaps = await processTitles(titles, say);
       scanned += titles.length;
       allGaps = allGaps.concat(gaps);
+      if (pressed("sort_readers")) await countReaders(gaps, say);
     }
     $("filters").hidden = allGaps.length === 0 && walk.done;
     renderGaps();
@@ -984,6 +1038,7 @@ function startSearch() {
   const inp = parseInput($("category").value);
   person = null;
   showAllDepicts = false; $("check_all").setAttribute("aria-pressed", "false");
+  $("sort_readers").setAttribute("aria-pressed", "false");
   $("results").innerHTML = ""; $("filters").hidden = true; $("loadmore").hidden = true;
   if (!inp) { $("status").className = "error"; $("status").textContent = "Enter a category, an article link or a file."; return; }
   if (inp.type === "article" || inp.type === "file") { runPerson(inp); return; }
