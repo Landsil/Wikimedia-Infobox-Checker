@@ -2,16 +2,16 @@
   "schema": 1,
   "algoVersion": 3,
   "identity": "category|Category:Photographs by Mateusz Malta",
-  "asOf": "2026-11-09T11:28:04.875Z",
+  "asOf": "2026-11-16T11:13:08.487Z",
   "input": {
     "type": "category",
     "title": "Category:Photographs by Mateusz Malta"
   },
   "type": "category",
   "count": 3,
-  "addedThrough": "2026-10-26T07:53:19Z",
+  "addedThrough": "2026-11-12T23:55:44Z",
   "uncapped": true,
-  "scanned": 280,
+  "scanned": 297,
   "pending": [],
   "done": [
     "en:Alasdair Beckett-King",
@@ -67,7 +67,10 @@
     "en:Matt Parker",
     "en:Eiza González",
     "de:Joy Gharoro-Akpojotor",
-    "en:Naomi Ackie"
+    "en:Naomi Ackie",
+    "en:Anjali Goswami",
+    "en:Sandra Knapp",
+    "en:Tom Scott (presenter)"
   ],
   "people": [
     {
@@ -430,7 +433,7 @@
     {
       "lang": "en",
       "article": "GK Barry",
-      "label": "Q120833071",
+      "label": "GK Barry",
       "qid": "Q120833071",
       "topRev": 1378478508,
       "more": false,
@@ -1245,7 +1248,7 @@
       "qid": "Q572761",
       "topRev": 1381470684,
       "more": false,
-      "lead": "File:Eiza González at 2026 London Film Festival 01.jpg",
+      "lead": "File:Eiza González at 2026 London Film Festival 01 (cropped2).jpg",
       "timeline": [
         {
           "file": "File:Eiza González at 2026 London Film Festival 01.jpg",
@@ -1270,7 +1273,7 @@
     {
       "lang": "de",
       "article": "Joy Gharoro-Akpojotor",
-      "label": "Q136410047",
+      "label": "Joy Gharoro-Akpojotor",
       "qid": "Q136410047",
       "topRev": 271307548,
       "more": false,
@@ -1312,12 +1315,81 @@
           "user": "Pacharah"
         }
       ]
+    },
+    {
+      "lang": "en",
+      "article": "Anjali Goswami",
+      "label": "Anjali Goswami",
+      "qid": "Q21502458",
+      "topRev": 1385035606,
+      "more": false,
+      "lead": "File:Anjali Goswami at Michael Faraday Prize Lecture Life in the fast lane 02.jpg",
+      "timeline": [
+        {
+          "file": "File:Anjali Goswami at Michael Faraday Prize Lecture Life in the fast lane 02.jpg",
+          "rev": 1385035606,
+          "ts": "2026-11-11T14:53:09Z",
+          "user": "Landsil"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Sandra Knapp",
+      "label": "Sandra Knapp",
+      "qid": "Q276405",
+      "topRev": 1385035446,
+      "more": false,
+      "lead": "File:Sandra Knapp at Michael Faraday Prize Lecture in 2026.jpg",
+      "timeline": [
+        {
+          "file": "File:Sandra Knapp at Michael Faraday Prize Lecture in 2026.jpg",
+          "rev": 1385035446,
+          "ts": "2026-11-11T14:51:56Z",
+          "user": "Landsil"
+        },
+        {
+          "file": "File:Sandy Knapp collecting Solanum sinuatiexcisum - TS 2012.jpg",
+          "rev": 1380703944,
+          "ts": "2026-10-17T10:00:38Z",
+          "user": "GreenC bot"
+        }
+      ]
+    },
+    {
+      "lang": "en",
+      "article": "Tom Scott (presenter)",
+      "label": "Tom Scott",
+      "qid": "Q7817504",
+      "topRev": 1385405691,
+      "more": false,
+      "lead": "File:Tom Scott in 2026.jpg",
+      "timeline": [
+        {
+          "file": "File:Tom Scott in 2026.jpg",
+          "rev": 1385405691,
+          "ts": "2026-11-13T04:07:37Z",
+          "user": "Matchacloudss"
+        },
+        {
+          "file": "File:Tom Scott at the Jet Lag Japanorama Red Carpet (cropped) 3.jpg",
+          "rev": 1383740483,
+          "ts": "2026-11-04T15:06:17Z",
+          "user": "LuigiMcpe4549"
+        },
+        {
+          "file": "File:Tom Scott at the Jet Lag Japanorama Red Carpet (cropped).jpg",
+          "rev": 1382059597,
+          "ts": "2026-10-26T09:35:11Z",
+          "user": "Strugglehouse"
+        }
+      ]
     }
   ],
   "depth": 1,
   "bg": {
     "lastFull": "2026-11-01T09:08:12.737Z",
-    "lastRun": "2026-11-09T11:28:04.875Z",
+    "lastRun": "2026-11-16T11:13:08.487Z",
     "lastMode": "new"
   }
 }
