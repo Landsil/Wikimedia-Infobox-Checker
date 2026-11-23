@@ -2,16 +2,16 @@
   "schema": 1,
   "algoVersion": 3,
   "identity": "category|Category:Photographs by Mateusz Malta",
-  "asOf": "2026-11-16T11:13:08.487Z",
+  "asOf": "2026-11-23T12:32:53.824Z",
   "input": {
     "type": "category",
     "title": "Category:Photographs by Mateusz Malta"
   },
   "type": "category",
   "count": 3,
-  "addedThrough": "2026-11-12T23:55:44Z",
+  "addedThrough": "2026-11-22T08:32:24Z",
   "uncapped": true,
-  "scanned": 297,
+  "scanned": 298,
   "pending": [],
   "done": [
     "en:Alasdair Beckett-King",
@@ -1363,7 +1363,7 @@
       "qid": "Q7817504",
       "topRev": 1385405691,
       "more": false,
-      "lead": "File:Tom Scott in 2026.jpg",
+      "lead": "File:Tom Scott in 2026 (cropped).jpg",
       "timeline": [
         {
           "file": "File:Tom Scott in 2026.jpg",
@@ -1389,7 +1389,7 @@
   "depth": 1,
   "bg": {
     "lastFull": "2026-11-01T09:08:12.737Z",
-    "lastRun": "2026-11-16T11:13:08.487Z",
+    "lastRun": "2026-11-23T12:32:53.824Z",
     "lastMode": "new"
   }
 }
